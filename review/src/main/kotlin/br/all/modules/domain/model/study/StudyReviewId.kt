@@ -3,7 +3,8 @@ package br.all.modules.domain.model.study
 import br.all.modules.domain.common.ddd.Identifier
 import br.all.modules.domain.common.ddd.Notification
 
-data class StudyReviewId(val value: Long) : Identifier {
+@JvmInline
+value class StudyReviewId(val value: Long) : Identifier {
 
     init {
         val notification = validate()

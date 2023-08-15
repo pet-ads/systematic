@@ -6,7 +6,7 @@ import org.mapstruct.factory.Mappers
 import org.springframework.stereotype.Repository
 
 @Repository
-class StudyReviewRepositoryImpl (val repository: MongoStudyReviewRepository): StudyReviewRepository {
+open class StudyReviewRepositoryImpl (val repository: MongoStudyReviewRepository): StudyReviewRepository {
     override fun create(studyReviewDto: StudyReviewDto) {
         val mapper = Mappers.getMapper(StudyReviewDbMapper::class.java)
         repository.save(mapper.toDocument(studyReviewDto))
