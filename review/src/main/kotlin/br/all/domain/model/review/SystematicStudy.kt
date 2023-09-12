@@ -11,8 +11,8 @@ class SystematicStudy(
     val protocolId : ProtocolId,
     val title : String,
     val description : String,
-    val researchers : MutableSet<ResearcherId> = mutableSetOf(),
-    val searchSessions : MutableSet<SearchSessionId> = mutableSetOf(),
+    private val researchers : MutableSet<ResearcherId> = mutableSetOf(),
+    private val searchSessions : MutableSet<SearchSessionId> = mutableSetOf(),
 ) : Entity(id) {
     // todo: backing properties for researcher and searchSessions?
     init {
