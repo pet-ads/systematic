@@ -1,20 +1,15 @@
 package br.all.domain.model.review
 
-import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.session.SearchSessionId
 import br.all.domain.shared.ddd.Entity
 
 // todo: replace type title and description properties from String to Text when it is implemented
 class SystematicStudy(
-    id : ReviewId,
-    val protocolId : ProtocolId,
+    val id : ReviewId,
     val title : String,
     val description : String,
-    private val researchers : MutableSet<ResearcherId> = mutableSetOf(),
-    private val searchSessions : MutableSet<SearchSessionId> = mutableSetOf(),
+    val researchers : MutableSet<ResearcherId>,
 ) : Entity(id) {
-    // todo: backing properties for researcher and searchSessions?
     init {
         require(researchers.isNotEmpty()) { "There must be at least one researcher working on this systematic study!" }
     }
@@ -28,10 +23,7 @@ class SystematicStudy(
         researchers.remove(researcherId)
     }
 
-    fun addSearchSession(sessionId: SearchSessionId) = searchSessions.add(sessionId)
-
-    override fun toString() : String {
-        return "SystematicStudy(protocolId=$protocolId, title='$title', description='$description', " +
-                "researchers=$researchers, searchSessions=$searchSessions)"
+    override fun toString(): String {
+        return "SystematicStudy(id=$id, title='$title', description='$description', researchers=$researchers)"
     }
 }
