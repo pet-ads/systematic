@@ -14,6 +14,8 @@ class SystematicStudy(
         require(researchers.isNotEmpty()) { "There must be at least one researcher working on this systematic study!" }
     }
 
+    companion object
+
     fun addResearcher(researcherId : ResearcherId) = researchers.add(researcherId)
 
     fun removeResearcher(researcherId: ResearcherId) {
