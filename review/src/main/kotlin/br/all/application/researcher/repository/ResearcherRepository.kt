@@ -1,7 +1,7 @@
 package br.all.application.researcher.repository
 
-import br.all.domain.model.researcher.ResearcherId
+import java.util.UUID
 
 interface ResearcherRepository {
-    fun existsById(id : ResearcherId) : Boolean
+    fun existsById(id : UUID) : Boolean
 }
