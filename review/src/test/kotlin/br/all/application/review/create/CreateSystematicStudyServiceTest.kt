@@ -11,6 +11,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 import kotlin.test.assertEquals
@@ -46,5 +47,21 @@ class CreateSystematicStudyServiceTest {
 
         val systematicStudy = createSystematicStudyService.create(requestModel)
         assertEquals(dto, systematicStudy)
+    }
+
+    @Test
+    fun `Should throw IllegalArgumentException for nonexistent researcher`() {
+        val nonExistentResearcherId = UUID.randomUUID()
+        val requestModel = SystematicStudyRequestModel("Some title", "Some description",
+                                setOf(nonExistentResearcherId))
+        val id = UUID.randomUUID()
+        val dto = SystematicStudy.fromRequestModel(id, requestModel).toDto()
+
+        every { uuidGeneratorService.next() } returns id
+        every { researcherRepository.existsById(nonExistentResearcherId) } returns false
+        every { systematicStudyRepository.create(dto) } returns Unit
+        every { systematicStudyRepository.findById(id) } returns Optional.of(dto)
+
+        assertThrows<IllegalArgumentException> { createSystematicStudyService.create(requestModel) }
     }
 }
