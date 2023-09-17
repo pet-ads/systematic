@@ -1,5 +1,6 @@
 package br.all.application.review.create
 
+import br.all.application.researcher.repository.ResearcherRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
@@ -20,22 +21,26 @@ class CreateSystematicStudyServiceTest {
     private lateinit var systematicStudyRepository : SystematicStudyRepository
     @MockK
     private lateinit var uuidGeneratorService: UuidGeneratorService
+    @MockK
+    private lateinit var researcherRepository : ResearcherRepository
     private lateinit var createSystematicStudyService : CreateSystematicStudyService
 
     @BeforeEach
     fun setUp() {
-        createSystematicStudyService = CreateSystematicStudyService(systematicStudyRepository, uuidGeneratorService)
+        createSystematicStudyService = CreateSystematicStudyService(systematicStudyRepository, researcherRepository,
+                                            uuidGeneratorService)
     }
 
     @Test
     fun `Should create an systematic study`() {
+        val researcherId = UUID.randomUUID()
         val requestModel = SystematicStudyRequestModel("Some title", "Some description",
-                                setOf(UUID.randomUUID()))
-
+                                setOf(researcherId))
         val id = UUID.randomUUID()
         val dto = SystematicStudy.fromRequestModel(id, requestModel).toDto()
 
         every { uuidGeneratorService.next() } returns id
+        every { researcherRepository.existsById(researcherId) } returns true
         every { systematicStudyRepository.create(dto) } returns Unit
         every { systematicStudyRepository.findById(id) } returns Optional.of(dto)
 
