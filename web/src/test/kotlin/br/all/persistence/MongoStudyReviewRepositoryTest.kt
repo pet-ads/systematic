@@ -2,20 +2,19 @@ package br.all.persistence
 
 import br.all.infrastructure.study.MongoStudyReviewRepository
 import br.all.infrastructure.study.StudyReviewDocument
-import br.all.infrastructure.study.StudyRevuewIdGeneratorService
+import br.all.infrastructure.study.StudyReviewIdGeneratorService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.UUID
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @SpringBootTest
 class MongoStudyReviewRepositoryTest (
     @Autowired private val sut: MongoStudyReviewRepository,
-    @Autowired private val idService: StudyRevuewIdGeneratorService
+    @Autowired private val idService: StudyReviewIdGeneratorService
 ) {
 
     @BeforeEach
