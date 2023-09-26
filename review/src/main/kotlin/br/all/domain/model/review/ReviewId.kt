@@ -6,6 +6,7 @@ import java.util.UUID
 
 @JvmInline
 value class ReviewId(val value: UUID) : Identifier {
+
     init {
         val notification = validate()
         require(notification.hasNoErrors()) { notification.message() }
@@ -13,7 +14,5 @@ value class ReviewId(val value: UUID) : Identifier {
 
     override fun validate(): Notification = Notification()
 
-    override fun toString(): String {
-        return value.toString()
-    }
+    override fun toString() = value.toString()
 }

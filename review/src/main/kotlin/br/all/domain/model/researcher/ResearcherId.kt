@@ -6,6 +6,7 @@ import java.util.UUID
 
 @JvmInline
 value class ResearcherId(val value : UUID ) : Identifier {
+
     override fun validate() = Notification()
 
     override fun toString() = value.toString()
