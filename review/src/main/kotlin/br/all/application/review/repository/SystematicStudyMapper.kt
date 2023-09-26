@@ -10,8 +10,8 @@ fun SystematicStudy.toDto() = SystematicStudyDto(
     id.value,
     title,
     description,
-    researchers.map { it.value }
-        .toSet(),
+    owner.value,
+    collaborators.map { it.value }.toSet(),
 )
 
 fun SystematicStudy.Companion.fromRequestModel(id: UUID, requestModel: SystematicStudyRequestModel) : SystematicStudy {
@@ -19,7 +19,8 @@ fun SystematicStudy.Companion.fromRequestModel(id: UUID, requestModel: Systemati
         ReviewId(id),
         requestModel.title,
         requestModel.description,
-        requestModel.researchers
+        ResearcherId(requestModel.owner),
+        requestModel.collaborators
             .map { ResearcherId(it) }
             .toMutableSet(),
     )

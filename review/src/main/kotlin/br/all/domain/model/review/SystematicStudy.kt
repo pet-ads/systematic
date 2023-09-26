@@ -11,6 +11,7 @@ class SystematicStudy(
     val collaborators : MutableSet<ResearcherId>,
 ) : Entity(id) {
 
+    //TODO: add all unit tests
     companion object
 
     fun addResearcher(researcherId : ResearcherId) = collaborators.add(researcherId)

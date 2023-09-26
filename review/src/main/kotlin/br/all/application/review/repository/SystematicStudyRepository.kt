@@ -7,5 +7,4 @@ interface SystematicStudyRepository {
 
     fun findById(systematicStudyId : UUID) : Optional<SystematicStudyDto>
 
-    fun findAll() : List<SystematicStudyDto>
 }

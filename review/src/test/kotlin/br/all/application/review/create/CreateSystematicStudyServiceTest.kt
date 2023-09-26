@@ -19,49 +19,61 @@ import kotlin.test.assertEquals
 @ExtendWith(MockKExtension::class)
 class CreateSystematicStudyServiceTest {
     @MockK
-    private lateinit var systematicStudyRepository : SystematicStudyRepository
+    private lateinit var systematicStudyRepository: SystematicStudyRepository
+
     @MockK
     private lateinit var uuidGeneratorService: UuidGeneratorService
+
     @MockK
-    private lateinit var researcherRepository : ResearcherRepository
-    private lateinit var createSystematicStudyService : CreateSystematicStudyService
+    private lateinit var researcherRepository: ResearcherRepository
+
+    private lateinit var sut: CreateSystematicStudyService
 
     @BeforeEach
     fun setUp() {
-        createSystematicStudyService = CreateSystematicStudyService(systematicStudyRepository, researcherRepository,
-                                            uuidGeneratorService)
+        sut = CreateSystematicStudyService(systematicStudyRepository, researcherRepository, uuidGeneratorService)
     }
 
+    //TODO: add all missing unit tests
+
     @Test
-    fun `Should create an systematic study`() {
+    fun `Should create a systematic study`() {
         val researcherId = UUID.randomUUID()
-        val requestModel = SystematicStudyRequestModel("Some title", "Some description",
-                                setOf(researcherId))
+        val requestModel = SystematicStudyRequestModel(
+            "Some title",
+            "Some description",
+            researcherId,
+            setOf(researcherId)
+        )
         val id = UUID.randomUUID()
         val dto = SystematicStudy.fromRequestModel(id, requestModel).toDto()
 
         every { uuidGeneratorService.next() } returns id
-        every { researcherRepository.existsById(researcherId) } returns true
+        every { researcherRepository.exists(researcherId) } returns true
         every { systematicStudyRepository.create(dto) } returns Unit
         every { systematicStudyRepository.findById(id) } returns Optional.of(dto)
 
-        val systematicStudy = createSystematicStudyService.create(requestModel)
+        val systematicStudy = sut.create(requestModel)
         assertEquals(dto, systematicStudy)
     }
 
     @Test
     fun `Should throw IllegalArgumentException for nonexistent researcher`() {
         val nonExistentResearcherId = UUID.randomUUID()
-        val requestModel = SystematicStudyRequestModel("Some title", "Some description",
-                                setOf(nonExistentResearcherId))
+        val requestModel = SystematicStudyRequestModel(
+            "Some title",
+            "Some description",
+            nonExistentResearcherId,
+            emptySet()
+        )
         val id = UUID.randomUUID()
         val dto = SystematicStudy.fromRequestModel(id, requestModel).toDto()
 
         every { uuidGeneratorService.next() } returns id
-        every { researcherRepository.existsById(nonExistentResearcherId) } returns false
+        every { researcherRepository.exists(nonExistentResearcherId) } returns false
         every { systematicStudyRepository.create(dto) } returns Unit
         every { systematicStudyRepository.findById(id) } returns Optional.of(dto)
 
-        assertThrows<IllegalArgumentException> { createSystematicStudyService.create(requestModel) }
+        assertThrows<IllegalArgumentException> { sut.create(requestModel) }
     }
 }
