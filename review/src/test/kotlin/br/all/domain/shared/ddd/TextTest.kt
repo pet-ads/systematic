@@ -1,5 +1,6 @@
 package br.all.domain.shared.ddd
 
+import br.all.domain.shared.utils.Text
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
