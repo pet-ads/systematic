@@ -3,6 +3,9 @@ package br.all.domain.model.study
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.ddd.ValueObject
 
+//TODO: SAULO - Add study type as enum to include all ARTICLE, INPROCEEDINGS, MISC, BOOK, BOOKTITLE, PROCEEDINGS...
+//https://www.bibtex.com/e/entry-types/
+//TODO: SAULO - Add a field named type to hold the study type (we will convert back to bibtex in a near future)
 data class Study(
     val title: String,
     val year: Int,
