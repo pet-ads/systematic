@@ -2,6 +2,7 @@ package br.all.application.study.change
 
 import br.all.application.study.create.StudyReviewRequestModel
 import br.all.application.study.repository.StudyReviewRepository
+import br.all.application.study.repository.fromDtoToStudyReview
 import br.all.application.study.repository.fromStudyRequestModel
 import br.all.domain.model.review.ReviewId
 import br.all.domain.model.study.SelectionStatus
@@ -16,5 +17,18 @@ class ChangeStudyReview(
         //Encontrar StudyReview
         val studyReviewDTO = repository.findById(reviewID.value, studyReviewId.value)
 
+        //Trasformar DTO em objeto
+        var studyReview = StudyReview.Companion.fromDtoToStudyReview(studyReviewDTO)
+
+        //Mudar Selection Status
+        when(newSelectionStatus){
+            SelectionStatus.UNCLASSIFIED -> studyReview.unclassifyInSelection()
+            SelectionStatus.DUPLICATED -> studyReview.()
+                SelectionStatus.INCLUDED ->
+            "EXCLUDED" -> SelectionStatus.EXCLUDED
+            else -> {
+                SelectionStatus.UNCLASSIFIED
+            }
+        }
     }
 }
