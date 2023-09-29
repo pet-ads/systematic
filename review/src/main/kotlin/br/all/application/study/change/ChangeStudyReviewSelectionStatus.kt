@@ -9,7 +9,7 @@ import br.all.domain.model.study.StudyReview
 import br.all.domain.model.study.StudyReviewId
 import java.util.UUID
 
-class ChangeStudyReviewSelectionStatus(
+class ChangeStudyReview(
     private val repository: StudyReviewRepository
 ) {
     fun changeSelectionStatus(reviewID: ReviewId, studyReviewId: StudyReviewId, newSelectionStatus: SelectionStatus){
