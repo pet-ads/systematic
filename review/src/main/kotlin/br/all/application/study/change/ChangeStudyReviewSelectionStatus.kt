@@ -4,6 +4,7 @@ import br.all.application.study.create.StudyReviewRequestModel
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromDtoToStudyReview
 import br.all.application.study.repository.fromStudyRequestModel
+import br.all.application.study.repository.toDto
 import br.all.domain.model.review.ReviewId
 import br.all.domain.model.study.SelectionStatus
 import br.all.domain.model.study.StudyReview
@@ -23,12 +24,15 @@ class ChangeStudyReview(
         //Mudar Selection Status
         when(newSelectionStatus){
             SelectionStatus.UNCLASSIFIED -> studyReview.unclassifyInSelection()
-            SelectionStatus.DUPLICATED -> studyReview.()
-                SelectionStatus.INCLUDED ->
-            "EXCLUDED" -> SelectionStatus.EXCLUDED
+            SelectionStatus.DUPLICATED -> studyReview.markAsDuplicate()
+            SelectionStatus.INCLUDED -> studyReview.includeInSelection()
+            SelectionStatus.EXCLUDED -> studyReview.excludeInSelection()
             else -> {
                 SelectionStatus.UNCLASSIFIED
             }
         }
+
+        //Salvar no banco
+        repository.create(studyReview.toDto())
     }
 }
