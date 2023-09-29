@@ -4,7 +4,7 @@ enum class ReadingPriority {
     VERY_LOW,
     LOW,
     HIGH,
-    VERY_HIGH
+    VERY_HIGH;
 
     companion object {
         fun convertStringToReadingPriorityEnum(value: String): ReadingPriority {
