@@ -6,7 +6,7 @@ import br.all.domain.model.study.*
 import java.util.*
 
 fun StudyReview.toDto() = StudyReviewDto(
-    id.value,
+    studyId.value,
     reviewId.value,
     title,
     year,
@@ -18,28 +18,15 @@ fun StudyReview.toDto() = StudyReviewDto(
     doi.toString(),
     searchSources,
     criteria,
-    formAnswers.mapValues { (_, answer) -> answer.toString() }.toMap(),
-    qualityAnswers.mapValues { (_, answer) -> answer.toString() }.toMap(),
+    formAnswers.mapValues { (_, answer) -> answer.value.toString() }.toMap(),
+    qualityAnswers.mapValues { (_, answer) -> answer.value.toString() }.toMap(),
     comments,
     readingPriority.toString(),
     extractionStatus.toString(),
     selectionStatus.toString()
 )
 
-fun StudyReview.Companion.fromStudyRequestModel(reviewId: UUID, studyId: Long, study: StudyReviewRequestModel) = StudyReview(
-    StudyReviewId(studyId),
-    ReviewId(reviewId),
-    study.title,
-    study.year,
-    study.authors,
-    study.venue,
-    study.abstract,
-    study.keywords,
-    mutableSetOf(study.source)
-)
-
-// TODO Make conversion of Map<UUID, String> for MutableMap<UUID, Answer<*>>
-fun StudyReview.Companion.fromDtoToStudyReview(dto: StudyReviewDto ) = StudyReview(
+fun StudyReview.Companion.fromDto(dto: StudyReviewDto ) = StudyReview(
     StudyReviewId(dto.id),
     ReviewId(dto.reviewId),
     dto.title,
@@ -52,10 +39,22 @@ fun StudyReview.Companion.fromDtoToStudyReview(dto: StudyReviewDto ) = StudyRevi
     dto.references.toMutableList(),
     Doi(dto.doi),
     dto.criteria.toMutableSet(),
-    dto.formAnswers,
-    dto.qualityAnswers,
+    dto.formAnswers.mapValues { (questionId, answer) -> Answer(questionId, answer) }.toMutableMap(),
+    dto.qualityAnswers.mapValues { (questionId, answer) -> Answer(questionId, answer) }.toMutableMap(),
     dto.comments,
     ReadingPriority.convertStringToReadingPriorityEnum(dto.readingPriority),
     SelectionStatus.convertStringToSelectionStatusEnum(dto.selectionStatus),
     ExtractionStatus.convertStringToExtractionStatusEnum(dto.extractionStatus)
+)
+
+fun StudyReview.Companion.fromStudyRequestModel(reviewId: UUID, studyId: Long, study: StudyReviewRequestModel) = StudyReview(
+    StudyReviewId(studyId),
+    ReviewId(reviewId),
+    study.title,
+    study.year,
+    study.authors,
+    study.venue,
+    study.abstract,
+    study.keywords,
+    mutableSetOf(study.source)
 )

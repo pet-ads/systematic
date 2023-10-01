@@ -5,7 +5,7 @@ import br.all.domain.model.review.ReviewId
 import java.util.*
 
 class StudyReview(
-    val id: StudyReviewId,
+    val studyId: StudyReviewId,
     val reviewId: ReviewId,
     val title: String,
     val year: Int,
@@ -23,7 +23,7 @@ class StudyReview(
     var readingPriority: ReadingPriority = ReadingPriority.LOW,
     selectionStatus: SelectionStatus = SelectionStatus.UNCLASSIFIED,
     extractionStatus: ExtractionStatus = ExtractionStatus.UNCLASSIFIED,
-) : Entity(id) {
+) : Entity(studyId) {
 
     private val study: Study
     var selectionStatus: SelectionStatus = selectionStatus
