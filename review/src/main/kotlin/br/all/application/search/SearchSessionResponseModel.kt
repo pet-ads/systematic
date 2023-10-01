@@ -1,4 +1,4 @@
-package br.all.domain.model.session
+package br.all.application.search
 
 data class SearchSessionResponseModel(
     val sessionId: String,

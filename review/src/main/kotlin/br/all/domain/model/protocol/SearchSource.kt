@@ -1,4 +1,4 @@
-package br.all.domain.model.search
+package br.all.domain.model.protocol
 
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.ddd.ValueObject

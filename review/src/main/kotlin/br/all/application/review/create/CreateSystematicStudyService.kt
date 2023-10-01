@@ -17,7 +17,7 @@ class CreateSystematicStudyService(
     private val uuidGeneratorService: UuidGeneratorService,
 ) {
 
-    fun create(requestModel: SystematicStudyRequestModel): SystematicStudyDto {
+    fun create(requestModel: SystematicStudyRequestModel): SystematicStudyDto{
         val notification = Notification()
 
         if (!researcherRepository.exists(requestModel.owner))
@@ -35,8 +35,7 @@ class CreateSystematicStudyService(
         systematicStudyRepository.create(systematicStudy.toDto())
 
         //TODO: Is there any reason for throwing here? Is it a data issue?
-        return systematicStudyRepository.findById(id).orElseThrow {
-            CouldNotCreateEntityException("Could not create a systematic study with such data!")
-        }
+        return systematicStudyRepository.findById(id) ?:
+            run { throw CouldNotCreateEntityException("Problem while connection to database") }
     }
 }

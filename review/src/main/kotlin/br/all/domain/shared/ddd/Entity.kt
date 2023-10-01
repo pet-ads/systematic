@@ -1,6 +1,6 @@
 package br.all.domain.shared.ddd
 
-abstract class Entity(private val id: Identifier) {
+abstract class Entity(protected val id: Identifier) {
 
     final override fun equals(other: Any?) = when {
         this === other -> true

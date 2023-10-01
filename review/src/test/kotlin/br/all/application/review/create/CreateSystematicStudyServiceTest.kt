@@ -51,14 +51,14 @@ class CreateSystematicStudyServiceTest {
         every { uuidGeneratorService.next() } returns id
         every { researcherRepository.exists(researcherId) } returns true
         every { systematicStudyRepository.create(dto) } returns Unit
-        every { systematicStudyRepository.findById(id) } returns Optional.of(dto)
+        every { systematicStudyRepository.findById(id) } returns dto
 
         val systematicStudy = sut.create(requestModel)
         assertEquals(dto, systematicStudy)
     }
 
     @Test
-    fun `Should throw IllegalArgumentException for nonexistent researcher`() {
+    fun `Should throw IllegalArgumentException for nonexistent owner`() {
         val nonExistentResearcherId = UUID.randomUUID()
         val requestModel = SystematicStudyRequestModel(
             "Some title",
@@ -72,7 +72,29 @@ class CreateSystematicStudyServiceTest {
         every { uuidGeneratorService.next() } returns id
         every { researcherRepository.exists(nonExistentResearcherId) } returns false
         every { systematicStudyRepository.create(dto) } returns Unit
-        every { systematicStudyRepository.findById(id) } returns Optional.of(dto)
+        every { systematicStudyRepository.findById(id) } returns dto
+
+        assertThrows<IllegalArgumentException> { sut.create(requestModel) }
+    }
+
+    @Test
+    fun `Should throw IllegalArgumentException for nonexistent collaborator`(){
+        val owner = UUID.randomUUID()
+        val nonExistingCollaborator = UUID.randomUUID()
+        val requestModel = SystematicStudyRequestModel(
+            "Some title",
+            "Some description",
+            owner,
+            setOf(nonExistingCollaborator)
+        )
+        val id = UUID.randomUUID()
+        val dto = SystematicStudy.fromRequestModel(id, requestModel).toDto()
+
+        every { uuidGeneratorService.next() } returns id
+        every { researcherRepository.exists(owner) } returns true
+        every { researcherRepository.exists(nonExistingCollaborator) } returns false
+        every { systematicStudyRepository.create(dto) } returns Unit
+        every { systematicStudyRepository.findById(id) } returns dto
 
         assertThrows<IllegalArgumentException> { sut.create(requestModel) }
     }
