@@ -81,6 +81,10 @@ class StudyReview(
         extractionStatus = ExtractionStatus.EXCLUDED
     }
 
+    fun markAsDuplicate(){
+        selectionStatus = SelectionStatus.DUPLICATED
+    }
+
     fun unclassifyInExtraction() = apply { extractionStatus = ExtractionStatus.UNCLASSIFIED }
 
     override fun toString(): String {

@@ -37,3 +37,25 @@ fun StudyReview.Companion.fromStudyRequestModel(reviewId: UUID, studyId: Long, s
     study.keywords,
     mutableSetOf(study.source)
 )
+
+// TODO Make conversion of Map<UUID, String> for MutableMap<UUID, Answer<*>>
+fun StudyReview.Companion.fromDtoToStudyReview(dto: StudyReviewDto ) = StudyReview(
+    StudyReviewId(dto.id),
+    ReviewId(dto.reviewId),
+    dto.title,
+    dto.year,
+    dto.authors,
+    dto.venue,
+    dto.abstract,
+    dto.keywords.toMutableSet(),
+    dto.searchSources.toMutableSet(),
+    dto.references.toMutableList(),
+    Doi(dto.doi),
+    dto.criteria.toMutableSet(),
+    dto.formAnswers,
+    dto.qualityAnswers,
+    dto.comments,
+    ReadingPriority.convertStringToReadingPriorityEnum(dto.readingPriority),
+    SelectionStatus.convertStringToSelectionStatusEnum(dto.selectionStatus),
+    ExtractionStatus.convertStringToExtractionStatusEnum(dto.extractionStatus)
+)
