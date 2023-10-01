@@ -65,7 +65,7 @@ class EmailTest {
     //TODO Google of GPT for any possible format of invalid e-mail and create a test for it
 
     @Test
-    fun `EMAIL with incorrect format should include error message`() {
+    fun `email with incorrect format should include error message`() {
         val emailValue = "invalid-email-format"
         val exception = assertThrows<IllegalArgumentException> {
             Email(emailValue)
