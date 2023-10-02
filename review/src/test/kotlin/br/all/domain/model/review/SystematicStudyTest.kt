@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.CsvSource
 import java.util.*
 
 class SystematicStudyTest {
-
     @ParameterizedTest
     @CsvSource("'',Some description", "Some title,''")
     fun `Should not create systematic study without title or description`(title: String, description: String){
@@ -37,8 +36,10 @@ class SystematicStudyTest {
         val sut = SystematicStudy(ReviewId(UUID.randomUUID()), "title", "description",
                 ResearcherId(UUID.randomUUID()))
         val researcherId = ResearcherId(UUID.randomUUID())
+
         sut.addCollaborator(researcherId)
         assertTrue(sut.containsCollaborator(researcherId))
+
         sut.removeCollaborator(researcherId)
         assertFalse(sut.containsCollaborator(researcherId))
     }
@@ -47,7 +48,8 @@ class SystematicStudyTest {
     fun `Should throw if try to remove absent collaborator`(){
         val sut = SystematicStudy(ReviewId(UUID.randomUUID()), "title", "description",
                 ResearcherId(UUID.randomUUID()))
-        assertThrows<NoSuchElementException> { sut.removeCollaborator(ResearcherId(UUID.randomUUID()))}
+        val newOwner = ResearcherId(UUID.randomUUID())
+        assertThrows<NoSuchElementException> { sut.removeCollaborator(newOwner) }
     }
 
     @Test
@@ -63,12 +65,12 @@ class SystematicStudyTest {
         val sut = SystematicStudy(ReviewId(UUID.randomUUID()), "title", "description",
                 ResearcherId(UUID.randomUUID()))
         val newOwner = ResearcherId(UUID.randomUUID())
+
         sut.changeOwner(newOwner)
 
         assertAll("change owner",
             { assertTrue(sut.containsCollaborator(newOwner)) },
             { assertEquals(sut.owner, newOwner)}
         )
-
     }
 }
