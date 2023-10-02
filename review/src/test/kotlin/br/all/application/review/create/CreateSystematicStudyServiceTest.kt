@@ -49,7 +49,7 @@ class CreateSystematicStudyServiceTest {
         val dto = SystematicStudy.fromRequestModel(id, requestModel).toDto()
 
         every { uuidGeneratorService.next() } returns id
-        every { researcherRepository.exists(researcherId) } returns true
+        every { researcherRepository.existsById(researcherId) } returns true
         every { systematicStudyRepository.create(dto) } returns Unit
         every { systematicStudyRepository.findById(id) } returns dto
 
@@ -70,7 +70,7 @@ class CreateSystematicStudyServiceTest {
         val dto = SystematicStudy.fromRequestModel(id, requestModel).toDto()
 
         every { uuidGeneratorService.next() } returns id
-        every { researcherRepository.exists(nonExistentResearcherId) } returns false
+        every { researcherRepository.existsById(nonExistentResearcherId) } returns false
         every { systematicStudyRepository.create(dto) } returns Unit
         every { systematicStudyRepository.findById(id) } returns dto
 
@@ -91,8 +91,8 @@ class CreateSystematicStudyServiceTest {
         val dto = SystematicStudy.fromRequestModel(id, requestModel).toDto()
 
         every { uuidGeneratorService.next() } returns id
-        every { researcherRepository.exists(owner) } returns true
-        every { researcherRepository.exists(nonExistingCollaborator) } returns false
+        every { researcherRepository.existsById(owner) } returns true
+        every { researcherRepository.existsById(nonExistingCollaborator) } returns false
         every { systematicStudyRepository.create(dto) } returns Unit
         every { systematicStudyRepository.findById(id) } returns dto
 
