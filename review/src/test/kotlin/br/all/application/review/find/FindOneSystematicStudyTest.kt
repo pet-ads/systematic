@@ -33,4 +33,13 @@ class FindOneSystematicStudyTest {
         val responseModel = sut.findById(studyId)
         assertEquals(1, responseModel.studies.size)
     }
+
+    @Test
+    fun `Should not find any systematic study`() {
+        val studyId = UUID.randomUUID()
+        every { systematicStudyRepository.findById(studyId) } returns null
+
+        val responseModel = sut.findById(studyId)
+        assertEquals(0, responseModel.studies.size)
+    }
 }
