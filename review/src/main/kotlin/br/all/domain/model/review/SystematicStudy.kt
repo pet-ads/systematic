@@ -5,12 +5,12 @@ import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
 
 class SystematicStudy(
-    val systematicStudyId: ReviewId,
+    val reviewId: ReviewId,
     val title: String,
     val description: String,
     var owner: ResearcherId,
     val collaborators: MutableSet<ResearcherId> = mutableSetOf(),
-) : Entity(systematicStudyId) {
+) : Entity(reviewId) {
 
     init {
         val notification = validate()
@@ -41,6 +41,5 @@ class SystematicStudy(
         collaborators.remove(researcherId)
     }
 
-    override fun toString() = "SystematicStudy(id=$id, title='$title', description='$description', researchers=$collaborators)"
-
+    override fun toString() = "SystematicStudy(id=$reviewId, title='$title', description='$description', researchers=$collaborators)"
 }
