@@ -53,8 +53,8 @@ class SystematicStudyTest {
 
     @Test
     fun `Should throw if try to remove absent collaborator`(){
-        val newOwner = ResearcherId(UUID.randomUUID())
-        assertThrows<NoSuchElementException> { sut.removeCollaborator(newOwner) }
+        val absentResearcher = ResearcherId(UUID.randomUUID())
+        assertThrows<NoSuchElementException> { sut.removeCollaborator(absentResearcher) }
     }
 
     @Test
