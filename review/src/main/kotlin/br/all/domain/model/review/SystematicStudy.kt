@@ -5,12 +5,14 @@ import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
 
 class SystematicStudy(
-    val reviewId: ReviewId,
-    val title: String,
-    val description: String,
-    var owner: ResearcherId,
-    val collaborators: MutableSet<ResearcherId> = mutableSetOf(),
+        val reviewId: ReviewId,
+        val title: String,
+        val description: String,
+        var owner: ResearcherId,
+        collaborators: MutableSet<ResearcherId> = mutableSetOf(),
 ) : Entity(reviewId) {
+    private val _collaborators = collaborators
+    val collaborators get() = _collaborators.toSet()
 
     init {
         val notification = validate()
@@ -32,22 +34,22 @@ class SystematicStudy(
 
     fun changeOwner(researcherId: ResearcherId){
         if (!containsCollaborator(researcherId))
-            collaborators.add(researcherId)
+            _collaborators.add(researcherId)
         owner = researcherId
     }
 
-    fun addCollaborator(researcherId: ResearcherId) = collaborators.add(researcherId)
+    fun addCollaborator(researcherId: ResearcherId) = _collaborators.add(researcherId)
 
     fun removeCollaborator(researcherId: ResearcherId) {
         if (researcherId == owner)
             throw IllegalStateException("Cannot remove the Systematic Study owner: $owner")
         if (!containsCollaborator(researcherId))
             throw NoSuchElementException("Cannot remove member that is not part of the collaboration")
-        collaborators.remove(researcherId)
+        _collaborators.remove(researcherId)
     }
 
-    fun containsCollaborator(researcherId: ResearcherId) = collaborators.contains(researcherId)
+    fun containsCollaborator(researcherId: ResearcherId) = _collaborators.contains(researcherId)
 
     override fun toString() = "SystematicStudy(reviewId=$reviewId, title='$title', description='$description', " +
-            "owner=$owner, collaborators=$collaborators)"
+            "owner=$owner, _collaborators=$_collaborators)"
 }
