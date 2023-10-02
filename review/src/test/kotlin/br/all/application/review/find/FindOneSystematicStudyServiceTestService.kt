@@ -14,14 +14,14 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExtendWith(MockKExtension::class)
-class FindOneSystematicStudyTest {
+class FindOneSystematicStudyServiceTestService {
     @MockK
     private lateinit var systematicStudyRepository : SystematicStudyRepository
-    private lateinit var sut : FindOneSystematicStudy
+    private lateinit var sut : FindOneSystematicStudyService
 
     @BeforeEach
     fun setUp() {
-        sut = FindOneSystematicStudy(systematicStudyRepository)
+        sut = FindOneSystematicStudyService(systematicStudyRepository)
     }
 
     @Test

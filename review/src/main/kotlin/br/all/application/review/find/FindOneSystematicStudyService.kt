@@ -4,7 +4,7 @@ import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import java.util.*
 
-class FindOneSystematicStudy(private val systematicStudyRepository: SystematicStudyRepository) {
+class FindOneSystematicStudyService(private val systematicStudyRepository: SystematicStudyRepository) {
     fun findById(studyId: UUID) : SystematicStudyResponseModel {
         val studies = mutableListOf<SystematicStudyDto>()
 
