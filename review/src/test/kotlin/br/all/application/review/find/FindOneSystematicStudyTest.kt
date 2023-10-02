@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @ExtendWith(MockKExtension::class)
 class FindOneSystematicStudyTest {
@@ -52,5 +53,11 @@ class FindOneSystematicStudyTest {
         val studyId = UUID.randomUUID()
         every { systematicStudyRepository.findById(studyId) } returns null
         return studyId
+    }
+
+    @Test
+    fun `Should systematic study exist`() {
+        val studyId = mockkRepositoryToFindOne()
+        assertTrue { sut.existById(studyId) }
     }
 }
