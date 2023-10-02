@@ -29,7 +29,6 @@ class SystematicStudy(
         return notification
     }
 
-    //TODO: add all unit tests
     companion object
 
     fun changeOwner(researcherId: ResearcherId){
