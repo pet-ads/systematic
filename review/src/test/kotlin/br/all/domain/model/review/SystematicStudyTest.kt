@@ -4,29 +4,17 @@ import br.all.domain.model.researcher.ResearcherId
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import java.util.*
 
 class SystematicStudyTest {
 
-    @Test
-    fun `Should not create systematic study without title`(){
+    @ParameterizedTest
+    @CsvSource("'',Some description", "Some title,''")
+    fun `Should not create systematic study without title or description`(title: String, description: String){
         assertThrows<IllegalArgumentException> {
-            SystematicStudy(
-                ReviewId(UUID.randomUUID()),
-                "",
-                "description",
-                ResearcherId(UUID.randomUUID()))
-        }
-    }
-
-    @Test
-    fun `Should not create systematic study without description`(){
-        assertThrows<IllegalArgumentException> {
-            SystematicStudy(
-                ReviewId(UUID.randomUUID()),
-                "Title",
-                "",
-                ResearcherId(UUID.randomUUID()))
+            SystematicStudy(ReviewId(UUID.randomUUID()), title, description, ResearcherId(UUID.randomUUID()))
         }
     }
 
