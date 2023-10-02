@@ -58,7 +58,7 @@ class CreateSystematicStudyServiceTest {
     }
 
     @Test
-    fun `Should throw IllegalArgumentException for nonexistent owner`() {
+    fun `Should throw NoSuchElementException for nonexistent owner`() {
         val nonExistentResearcherId = UUID.randomUUID()
         val requestModel = SystematicStudyRequestModel(
             "Some title",
