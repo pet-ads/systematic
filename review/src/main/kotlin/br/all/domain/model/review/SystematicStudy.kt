@@ -40,9 +40,9 @@ class SystematicStudy(
 
     fun removeCollaborator(researcherId: ResearcherId) {
         if (researcherId == owner)
-            throw IllegalStateException("Can not remove the Systematic Study owner: $owner")
+            throw IllegalStateException("Cannot remove the Systematic Study owner: $owner")
         if (!containsCollaborator(researcherId))
-            throw NoSuchElementException("Can not remove member that is not part of the collaboration")
+            throw NoSuchElementException("Cannot remove member that is not part of the collaboration")
         collaborators.remove(researcherId)
     }
 
