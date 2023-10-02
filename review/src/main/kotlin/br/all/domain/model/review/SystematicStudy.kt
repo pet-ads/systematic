@@ -31,7 +31,7 @@ class SystematicStudy(
     companion object
 
     fun changeOwner(researcherId: ResearcherId){
-        if (!collaborators.contains(researcherId))
+        if (!containsCollaborator(researcherId))
             collaborators.add(researcherId)
         owner = researcherId
     }
@@ -41,10 +41,12 @@ class SystematicStudy(
     fun removeCollaborator(researcherId: ResearcherId) {
         if (researcherId == owner)
             throw IllegalStateException("Can not remove the Systematic Study owner: $owner")
-        if (!collaborators.contains(researcherId))
+        if (!containsCollaborator(researcherId))
             throw NoSuchElementException("Can not remove member that is not part of the collaboration")
         collaborators.remove(researcherId)
     }
+
+    fun containsCollaborator(researcherId: ResearcherId) = collaborators.contains(researcherId)
 
     override fun toString() = "SystematicStudy(reviewId=$reviewId, title='$title', description='$description', " +
             "owner=$owner, collaborators=$collaborators)"

@@ -1,11 +1,10 @@
 package br.all.domain.model.review
 
 import br.all.domain.model.researcher.ResearcherId
-
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.UUID
+import java.util.*
 
 class SystematicStudyTest {
 
@@ -35,7 +34,7 @@ class SystematicStudyTest {
     fun `should owner be a collaborator`(){
         val ownerId = ResearcherId(UUID.randomUUID())
         val sut = SystematicStudy(ReviewId(UUID.randomUUID()), "title", "description", ownerId)
-        assertTrue(sut.collaborators.contains(ownerId))
+        assertTrue(sut.containsCollaborator(ownerId))
     }
 
     @Test
@@ -50,9 +49,9 @@ class SystematicStudyTest {
         val sut = SystematicStudy(ReviewId(UUID.randomUUID()), "title", "description", ResearcherId(UUID.randomUUID()))
         val researcherId = ResearcherId(UUID.randomUUID())
         sut.addCollaborator(researcherId)
-        assertTrue(sut.collaborators.contains(researcherId))
+        assertTrue(sut.containsCollaborator(researcherId))
         sut.removeCollaborator(researcherId)
-        assertFalse(sut.collaborators.contains(researcherId))
+        assertFalse(sut.containsCollaborator(researcherId))
     }
 
     @Test
@@ -75,7 +74,7 @@ class SystematicStudyTest {
         sut.changeOwner(newOwner)
 
         assertAll("change owner",
-            { assertTrue(sut.collaborators.contains(newOwner)) },
+            { assertTrue(sut.containsCollaborator(newOwner)) },
             { assertEquals(sut.owner, newOwner)}
         )
 
