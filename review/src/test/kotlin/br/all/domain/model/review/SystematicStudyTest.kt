@@ -46,7 +46,8 @@ class SystematicStudyTest {
 
     @Test
     fun `Should remove valid collaborator`(){
-        val sut = SystematicStudy(ReviewId(UUID.randomUUID()), "title", "description", ResearcherId(UUID.randomUUID()))
+        val sut = SystematicStudy(ReviewId(UUID.randomUUID()), "title", "description",
+                ResearcherId(UUID.randomUUID()))
         val researcherId = ResearcherId(UUID.randomUUID())
         sut.addCollaborator(researcherId)
         assertTrue(sut.containsCollaborator(researcherId))
@@ -56,20 +57,23 @@ class SystematicStudyTest {
 
     @Test
     fun `Should throw if try to remove absent collaborator`(){
-        val sut = SystematicStudy(ReviewId(UUID.randomUUID()), "title", "description", ResearcherId(UUID.randomUUID()))
+        val sut = SystematicStudy(ReviewId(UUID.randomUUID()), "title", "description",
+                ResearcherId(UUID.randomUUID()))
         assertThrows<NoSuchElementException> { sut.removeCollaborator(ResearcherId(UUID.randomUUID()))}
     }
 
     @Test
     fun `Should add new collaborator`(){
-        val sut = SystematicStudy(ReviewId(UUID.randomUUID()), "title", "description", ResearcherId(UUID.randomUUID()))
+        val sut = SystematicStudy(ReviewId(UUID.randomUUID()), "title", "description",
+                ResearcherId(UUID.randomUUID()))
         sut.addCollaborator(ResearcherId(UUID.randomUUID()))
         assertEquals(2, sut.collaborators.size)
     }
 
     @Test
     fun `Should add new owner to collaborators if not present yet`(){
-        val sut = SystematicStudy(ReviewId(UUID.randomUUID()), "title", "description", ResearcherId(UUID.randomUUID()))
+        val sut = SystematicStudy(ReviewId(UUID.randomUUID()), "title", "description",
+                ResearcherId(UUID.randomUUID()))
         val newOwner = ResearcherId(UUID.randomUUID())
         sut.changeOwner(newOwner)
 
