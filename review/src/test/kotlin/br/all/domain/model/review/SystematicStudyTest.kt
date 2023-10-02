@@ -19,7 +19,6 @@ class SystematicStudyTest {
         sut = SystematicStudy(reviewId, "Some title", "Some description", owner)
     }
     
-    
     @ParameterizedTest
     @CsvSource("'',Some description", "Some title,''")
     fun `Should not create systematic study without title or description`(title: String, description: String){
