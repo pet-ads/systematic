@@ -34,8 +34,6 @@ class CreateSystematicStudyServiceTest {
         sut = CreateSystematicStudyService(systematicStudyRepository, researcherRepository, uuidGeneratorService)
     }
 
-    //TODO: add all missing unit tests
-
     @Test
     fun `Should create a systematic study`() {
         val researcherId = UUID.randomUUID()
