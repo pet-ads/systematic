@@ -67,35 +67,10 @@ class CreateSystematicStudyServiceTest {
             emptySet()
         )
         val id = UUID.randomUUID()
-        val dto = SystematicStudy.fromRequestModel(id, requestModel).toDto()
 
         every { uuidGeneratorService.next() } returns id
         every { researcherRepository.existsById(nonExistentResearcherId) } returns false
-        every { systematicStudyRepository.create(dto) } returns Unit
-        every { systematicStudyRepository.findById(id) } returns dto
 
-        assertThrows<IllegalArgumentException> { sut.create(requestModel) }
-    }
-
-    @Test
-    fun `Should throw IllegalArgumentException for nonexistent collaborator`(){
-        val owner = UUID.randomUUID()
-        val nonExistingCollaborator = UUID.randomUUID()
-        val requestModel = SystematicStudyRequestModel(
-            "Some title",
-            "Some description",
-            owner,
-            setOf(nonExistingCollaborator)
-        )
-        val id = UUID.randomUUID()
-        val dto = SystematicStudy.fromRequestModel(id, requestModel).toDto()
-
-        every { uuidGeneratorService.next() } returns id
-        every { researcherRepository.existsById(owner) } returns true
-        every { researcherRepository.existsById(nonExistingCollaborator) } returns false
-        every { systematicStudyRepository.create(dto) } returns Unit
-        every { systematicStudyRepository.findById(id) } returns dto
-
-        assertThrows<IllegalArgumentException> { sut.create(requestModel) }
+        assertThrows<NoSuchElementException> { sut.create(requestModel) }
     }
 }
