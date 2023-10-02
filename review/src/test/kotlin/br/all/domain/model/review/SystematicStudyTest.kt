@@ -18,7 +18,7 @@ class SystematicStudyTest {
         val owner = ResearcherId(UUID.randomUUID())
         sut = SystematicStudy(reviewId, "Some title", "Some description", owner)
     }
-    
+
     @ParameterizedTest
     @CsvSource("'',Some description", "Some title,''")
     fun `Should not create systematic study without title or description`(title: String, description: String){
@@ -42,12 +42,11 @@ class SystematicStudyTest {
     @Test
     fun `Should remove valid collaborator`(){
         val researcherId = ResearcherId(UUID.randomUUID())
+        val localSut = SystematicStudy(sut.reviewId, sut.title, sut.description, sut.owner, mutableSetOf(researcherId))
 
-        sut.addCollaborator(researcherId)
-        assertTrue(sut.containsCollaborator(researcherId))
+        localSut.removeCollaborator(researcherId)
 
-        sut.removeCollaborator(researcherId)
-        assertFalse(sut.containsCollaborator(researcherId))
+        assertFalse(localSut.containsCollaborator(researcherId))
     }
 
     @Test
