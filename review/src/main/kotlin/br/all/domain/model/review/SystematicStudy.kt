@@ -46,5 +46,6 @@ class SystematicStudy(
         collaborators.remove(researcherId)
     }
 
-    override fun toString() = "SystematicStudy(id=$reviewId, title='$title', description='$description', researchers=$collaborators)"
+    override fun toString() = "SystematicStudy(reviewId=$reviewId, title='$title', description='$description', " +
+            "owner=$owner, collaborators=$collaborators)"
 }
