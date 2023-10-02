@@ -24,22 +24,33 @@ class FindOneSystematicStudyTest {
 
     @Test
     fun `Should find a single systematic study`() {
+        val studyId = mockkRepositoryToFindOne()
+
+        val responseModel = sut.findById(studyId)
+        assertEquals(1, responseModel.studies.size)
+    }
+
+    private fun mockkRepositoryToFindOne(): UUID {
         val studyId = UUID.randomUUID()
         val systematicStudyDto = SystematicStudyDto(studyId, "Some title", "Some description",
                                         UUID.randomUUID(), emptySet())
 
         every { systematicStudyRepository.findById(studyId) } returns systematicStudyDto
 
-        val responseModel = sut.findById(studyId)
-        assertEquals(1, responseModel.studies.size)
+        return studyId
     }
 
     @Test
     fun `Should not find any systematic study`() {
-        val studyId = UUID.randomUUID()
-        every { systematicStudyRepository.findById(studyId) } returns null
+        val studyId = mockkRepositoryToFindNothing()
 
         val responseModel = sut.findById(studyId)
         assertEquals(0, responseModel.studies.size)
+    }
+
+    private fun mockkRepositoryToFindNothing(): UUID {
+        val studyId = UUID.randomUUID()
+        every { systematicStudyRepository.findById(studyId) } returns null
+        return studyId
     }
 }
