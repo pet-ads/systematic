@@ -11,6 +11,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 import kotlin.test.assertEquals
@@ -42,5 +44,19 @@ class ChangeSystematicStudyOwnerServiceTest {
 
         val updatedStudy = sut.changeOwner(reviewId, newOwnerId)
         assertEquals(newOwnerId, updatedStudy.owner)
+    }
+
+    @Test
+    fun `Should throw NoSuchElementException for nonexistent systematic study`() {
+        val systematicStudyId = UUID.randomUUID()
+        val newOwner = UUID.randomUUID()
+
+        every { researcherRepository.existsById(newOwner) } returns true
+        every { systematicStudyRepository.findById(systematicStudyId) } returns null
+
+        assertAll("Throw for nonexistent study", {
+            val exception = assertThrows<NoSuchElementException> { sut.changeOwner(systematicStudyId, newOwner) }
+            assertEquals("Cannot find a systematic study with id: $systematicStudyId", exception.message)
+        })
     }
 }
