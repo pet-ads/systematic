@@ -29,7 +29,7 @@ class ChangeSystematicStudyOwnerService(
     private fun tryToFindSystematicStudy(newOwner: UUID, reviewId: UUID) : SystematicStudyDto {
         val notification = Notification()
 
-        if (researcherRepository.existsById(newOwner))
+        if (!researcherRepository.existsById(newOwner))
             notification.addError("The id $newOwner does not belong to any existent researcher!")
         val possibleSystematicStudy = systematicStudyRepository.findById(reviewId) ?: run {
             notification.addError("Cannot find a systematic study with id: $reviewId")
