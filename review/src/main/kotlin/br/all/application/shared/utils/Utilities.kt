@@ -4,5 +4,5 @@ fun requireThatExists(doesItExist: Boolean, message: () -> String = { "There is 
     if (!doesItExist) throw NoSuchElementException(message())
 }
 
-fun <T> requireThatExists(value: () -> T?, message: () -> String = { "There is not such element" }) : T =
-    value() ?: throw NoSuchElementException(message())
+fun <T> requireThatExists(value: () -> T?, message: () -> String = { "There is not such element" }) = value() ?:
+    throw NoSuchElementException(message())
