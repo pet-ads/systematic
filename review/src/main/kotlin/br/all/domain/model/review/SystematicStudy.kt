@@ -1,5 +1,6 @@
 package br.all.domain.model.review
 
+import br.all.application.shared.utils.requireThatExists
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
@@ -44,8 +45,11 @@ class SystematicStudy(
     fun removeCollaborator(researcherId: ResearcherId) {
         if (researcherId == owner)
             throw IllegalStateException("Cannot remove the Systematic Study owner: $owner")
-        if (!containsCollaborator(researcherId))
-            throw NoSuchElementException("Cannot remove member that is not part of the collaboration")
+
+        requireThatExists(containsCollaborator(researcherId)) {
+            "Cannot remove member that is not part of the collaboration"
+        }
+
         _collaborators.remove(researcherId)
     }
 
