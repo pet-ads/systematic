@@ -48,15 +48,15 @@ class ChangeSystematicStudyOwnerServiceTest {
 
     @Test
     fun `Should throw NoSuchElementException for nonexistent systematic study`() {
-        val systematicStudyId = UUID.randomUUID()
+        val review = UUID.randomUUID()
         val newOwner = UUID.randomUUID()
 
         every { researcherRepository.existsById(newOwner) } returns true
-        every { systematicStudyRepository.findById(systematicStudyId) } returns null
+        every { systematicStudyRepository.findById(review) } returns null
 
         assertAll("Throw for nonexistent study", {
-            val exception = assertThrows<NoSuchElementException> { sut.changeOwner(systematicStudyId, newOwner) }
-            assertEquals("Cannot find a systematic study with id: $systematicStudyId", exception.message)
+            val exception = assertThrows<NoSuchElementException> { sut.changeOwner(review, newOwner) }
+            assertEquals("Cannot find a systematic study with id: $review", exception.message)
         })
     }
 }
