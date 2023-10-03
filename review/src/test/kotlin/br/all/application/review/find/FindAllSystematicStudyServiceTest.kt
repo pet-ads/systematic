@@ -31,6 +31,14 @@ class FindAllSystematicStudyServiceTest {
         assertEquals(5, responseModel.studies.size)
     }
 
+    @Test
+    fun `Should return an empty response model when there is no studies`() {
+        every { systematicStudyRepository.findAll() } returns emptyList()
+
+        val responseModel = sut.findAll()
+        assertEquals(0, responseModel.studies.size)
+    }
+
     private fun getDummyListOfSystematicStudies(length: Int) : List<SystematicStudyDto> {
         val listOfStudies = mutableListOf<SystematicStudyDto>()
 
