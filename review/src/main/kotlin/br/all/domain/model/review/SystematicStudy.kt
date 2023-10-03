@@ -8,11 +8,13 @@ class SystematicStudy(
     val reviewId: ReviewId,
     val title: String,
     val description: String,
-    var owner: ResearcherId,
+    owner: ResearcherId,
     collaborators: MutableSet<ResearcherId> = mutableSetOf(),
 ) : Entity(reviewId) {
     private val _collaborators = collaborators
     val collaborators get() = _collaborators.toSet()
+    var owner = owner
+        private set
 
     init {
         val notification = validate()
