@@ -19,6 +19,7 @@ import kotlin.test.assertEquals
 class UpdateSystematicStudyServiceTest{
     @MockK
     private lateinit var systematicStudyRepository: SystematicStudyRepository
+    private lateinit var systematicStudyId: UUID
     private lateinit var updatingSystematicStudy: SystematicStudy
     private lateinit var oldDto: SystematicStudyDto
     private lateinit var sut: UpdateSystematicStudyService
@@ -27,7 +28,7 @@ class UpdateSystematicStudyServiceTest{
     fun setUp() {
         sut = UpdateSystematicStudyService(systematicStudyRepository)
 
-        val systematicStudyId = UUID.randomUUID()
+        systematicStudyId = UUID.randomUUID()
         updatingSystematicStudy = SystematicStudy(ReviewId(systematicStudyId), "Old title",
                             "Old description", ResearcherId(UUID.randomUUID()))
         oldDto = updatingSystematicStudy.toDto()
@@ -35,12 +36,11 @@ class UpdateSystematicStudyServiceTest{
 
     @Test
     fun `Should only the title be updated`() {
-        val systematicStudyId = updatingSystematicStudy.reviewId.value
         val requestModel = UpdateSystematicStudyRequestModel("New title", null)
 
         updatingSystematicStudy.rename("New title")
         val newDto = updatingSystematicStudy.toDto()
-        mockkRepositoryToSunnyDay(systematicStudyId, newDto)
+        mockkRepositoryToSunnyDay(newDto)
 
         val updateStudy = sut.update(systematicStudyId, requestModel)
         assertEquals("New title", updateStudy.title)
@@ -49,19 +49,18 @@ class UpdateSystematicStudyServiceTest{
 
     @Test
     fun `Should only the description be updated`() {
-        val systematicStudyId = updatingSystematicStudy.reviewId.value
         val requestModel = UpdateSystematicStudyRequestModel(null, "New description")
 
         updatingSystematicStudy.changeDescription("New description")
         val newDto = updatingSystematicStudy.toDto()
-        mockkRepositoryToSunnyDay(systematicStudyId, newDto)
+        mockkRepositoryToSunnyDay(newDto)
 
         val updatedStudy = sut.update(systematicStudyId, requestModel)
         assertEquals("Old title", updatedStudy.title)
         assertEquals("New description", updatedStudy.description)
     }
 
-    private fun mockkRepositoryToSunnyDay(systematicStudyId: UUID, newDto: SystematicStudyDto) {
+    private fun mockkRepositoryToSunnyDay(newDto: SystematicStudyDto) {
         every { systematicStudyRepository.findById(systematicStudyId) } returns oldDto
         every { systematicStudyRepository.create(newDto) } returns Unit
     }
