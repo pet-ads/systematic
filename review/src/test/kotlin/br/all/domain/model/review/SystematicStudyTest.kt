@@ -4,6 +4,7 @@ import br.all.domain.model.researcher.ResearcherId
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -70,6 +71,14 @@ class SystematicStudyTest {
         assertAll("change owner",
             { assertTrue(sut.containsCollaborator(newOwner)) },
             { assertEquals(sut.owner, newOwner)}
+        )
+    }
+
+    @Test
+    fun `Should successfully change the title`() {
+        assertAll("changing the title",
+            { assertDoesNotThrow { sut.rename("New title") } },
+            { assertEquals("New title", sut.title) }
         )
     }
 }
