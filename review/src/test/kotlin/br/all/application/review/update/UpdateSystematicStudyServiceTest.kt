@@ -40,12 +40,15 @@ class UpdateSystematicStudyServiceTest{
 
         updatingSystematicStudy.rename("New title")
         val newDto = updatingSystematicStudy.toDto()
-
-        every { systematicStudyRepository.findById(systematicStudyId) } returns oldDto
-        every { systematicStudyRepository.create(newDto) } returns Unit
+        mockkRepositoryToSunnyDay(systematicStudyId, newDto)
 
         val updateStudy = sut.update(systematicStudyId, requestModel)
         assertEquals("New title", updateStudy.title)
         assertEquals("Old description", updateStudy.description)
+    }
+
+    private fun mockkRepositoryToSunnyDay(systematicStudyId: UUID, newDto: SystematicStudyDto) {
+        every { systematicStudyRepository.findById(systematicStudyId) } returns oldDto
+        every { systematicStudyRepository.create(newDto) } returns Unit
     }
 }
