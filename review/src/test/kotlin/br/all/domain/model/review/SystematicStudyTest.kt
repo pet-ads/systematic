@@ -75,11 +75,12 @@ class SystematicStudyTest {
         )
     }
 
-    @Test
-    fun `Should successfully change the title`() {
+    @ParameterizedTest(name = "[{index}]: title = \"{0}\"")
+    @ValueSource(strings = ["New title", "T"])
+    fun `Should successfully change the title`(title: String) {
         assertAll("changing the title",
-            { assertDoesNotThrow { sut.rename("New title") } },
-            { assertEquals("New title", sut.title) }
+            { assertDoesNotThrow { sut.rename(title) } },
+            { assertEquals(title, sut.title) }
         )
     }
 
