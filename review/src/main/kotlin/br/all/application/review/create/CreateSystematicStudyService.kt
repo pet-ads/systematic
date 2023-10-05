@@ -5,9 +5,9 @@ import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
-import br.all.application.shared.utils.requireThatExists
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.services.UuidGeneratorService
+import br.all.domain.shared.utils.requireThatExists
 
 class CreateSystematicStudyService(
     private val systematicStudyRepository: SystematicStudyRepository,
