@@ -75,7 +75,7 @@ class SystematicStudyTest {
         )
     }
 
-    @ParameterizedTest(name = "[{index}]: title = \"{0}\"")
+    @ParameterizedTest
     @ValueSource(strings = ["New title", "T"])
     fun `Should successfully change the title`(title: String) {
         assertAll("changing the title",
