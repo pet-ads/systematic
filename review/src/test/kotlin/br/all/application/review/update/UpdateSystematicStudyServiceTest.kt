@@ -12,6 +12,8 @@ import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -72,6 +74,21 @@ class UpdateSystematicStudyServiceTest{
         val updatedStudy = sut.update(systematicStudyId, requestModel)
         assertEquals("New title", updatedStudy.title)
         assertEquals("New description", updatedStudy.description)
+    }
+
+    @ParameterizedTest
+    @CsvSource(",", "Old title,Old description")
+    fun `Should the study keep the same`(title: String?, description: String?) {
+        val requestModel = UpdateSystematicStudyRequestModel(title, description)
+
+        updatingSystematicStudy.rename(title ?: updatingSystematicStudy.title)
+        updatingSystematicStudy.changeDescription(description ?: updatingSystematicStudy.description)
+        val newDto = updatingSystematicStudy.toDto()
+        mockkRepositoryToSunnyDay(newDto)
+
+        val updatedStudy = sut.update(systematicStudyId, requestModel)
+        assertEquals("Old title", updatedStudy.title)
+        assertEquals("Old description", updatedStudy.description)
     }
 
     private fun mockkRepositoryToSunnyDay(newDto: SystematicStudyDto) {
