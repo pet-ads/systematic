@@ -7,8 +7,8 @@ import br.all.domain.shared.utils.requireThatExists
 
 class SystematicStudy(
     val reviewId: ReviewId,
-    val title: String,
-    val description: String,
+    title: String,
+    description: String,
     owner: ResearcherId,
     collaborators: MutableSet<ResearcherId> = mutableSetOf(),
 ) : Entity(reviewId) {
@@ -16,10 +16,13 @@ class SystematicStudy(
     val collaborators get() = _collaborators.toSet()
     var owner = owner
         private set
+    lateinit var title: String
+        private set
+    lateinit var description: String
+        private set
 
     init {
-        val notification = validate()
-        require(notification.hasNoErrors()) { notification.message() }
+        setTitleOrDescription(title = title, description = description)
         collaborators.add(owner)
     }
 
@@ -38,6 +41,18 @@ class SystematicStudy(
         if (!containsCollaborator(researcherId))
             _collaborators.add(researcherId)
         owner = researcherId
+    }
+
+    fun rename(title: String) = setTitleOrDescription(title = title)
+
+    fun changeDescription(description: String) = setTitleOrDescription(description = description)
+
+    private fun setTitleOrDescription(title: String? = null, description: String? = null) {
+        this.title = title ?: this.title
+        this.description = description ?: this.description
+
+        val notification = validate()
+        require(notification.hasNoErrors()) { notification.message() }
     }
 
     fun addCollaborator(researcherId: ResearcherId) = _collaborators.add(researcherId)
