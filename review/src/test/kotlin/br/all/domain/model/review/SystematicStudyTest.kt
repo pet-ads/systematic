@@ -98,4 +98,10 @@ class SystematicStudyTest {
             { assertEquals(description, sut.description) }
         )
     }
+
+    @ParameterizedTest(name = "[{index}]: description = \"{0}\"")
+    @ValueSource(strings = ["", " "])
+    fun `Should throw IllegalArgumentException when trying to assign invalid descriptions`(description: String) {
+        assertThrows<IllegalArgumentException> { sut.changeDescription(description) }
+    }
 }
