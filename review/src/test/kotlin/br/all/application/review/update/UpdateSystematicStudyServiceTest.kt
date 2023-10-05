@@ -17,8 +17,8 @@ import kotlin.test.assertEquals
 @ExtendWith(MockKExtension::class)
 class UpdateSystematicStudyServiceTest{
     @MockK
-    private lateinit var systematicStudyRepository : SystematicStudyRepository
-    private lateinit var sut : UpdateSystematicStudyService
+    private lateinit var systematicStudyRepository: SystematicStudyRepository
+    private lateinit var sut: UpdateSystematicStudyService
 
     @BeforeEach
     fun setUp() {
