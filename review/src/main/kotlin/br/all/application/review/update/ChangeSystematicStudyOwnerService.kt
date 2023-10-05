@@ -5,10 +5,10 @@ import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.review.repository.toDto
-import br.all.application.shared.utils.requireThatExists
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.shared.ddd.Notification
+import br.all.domain.shared.utils.requireThatExists
 import java.util.*
 
 class ChangeSystematicStudyOwnerService(

@@ -1,9 +1,9 @@
 package br.all.domain.model.review
 
-import br.all.application.shared.utils.requireThatExists
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
+import br.all.domain.shared.utils.requireThatExists
 
 class SystematicStudy(
     val reviewId: ReviewId,
