@@ -89,4 +89,13 @@ class SystematicStudyTest {
     fun `Should throw IllegalArgumentException when trying to assign any kind of empty title`(title: String) {
         assertThrows<IllegalArgumentException> { sut.rename(title) }
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["New description", "D"])
+    fun `Should successfully change the description`(description: String) {
+        assertAll("changing the description",
+            { assertDoesNotThrow { (sut.changeDescription(description)) } },
+            { assertEquals(description, sut.description) }
+        )
+    }
 }
