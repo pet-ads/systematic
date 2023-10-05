@@ -11,6 +11,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -89,6 +90,13 @@ class UpdateSystematicStudyServiceTest{
         val updatedStudy = sut.update(systematicStudyId, requestModel)
         assertEquals("Old title", updatedStudy.title)
         assertEquals("Old description", updatedStudy.description)
+    }
+
+    @Test
+    fun `Should throw NoSuchElementException for nonexistent systematic study`() {
+        val requestModel = UpdateSystematicStudyRequestModel(null, null)
+        every { systematicStudyRepository.findById(systematicStudyId) } returns null
+        assertThrows<NoSuchElementException> { sut.update(systematicStudyId, requestModel) }
     }
 
     private fun mockkRepositoryToSunnyDay(newDto: SystematicStudyDto) {
