@@ -8,6 +8,7 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.ValueSource
 import java.util.*
 
 class SystematicStudyTest {
@@ -80,5 +81,11 @@ class SystematicStudyTest {
             { assertDoesNotThrow { sut.rename("New title") } },
             { assertEquals("New title", sut.title) }
         )
+    }
+
+    @ParameterizedTest(name = "[{index}]: title = \"{0}\"")
+    @ValueSource(strings = ["", " "])
+    fun `Should throw IllegalArgumentException when trying to assign any kind of empty title`(title: String) {
+        assertThrows<IllegalArgumentException> { sut.rename(title) }
     }
 }
