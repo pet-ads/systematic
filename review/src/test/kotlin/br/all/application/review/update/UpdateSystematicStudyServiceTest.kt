@@ -1,5 +1,6 @@
 package br.all.application.review.update
 
+import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.toDto
 import br.all.domain.model.researcher.ResearcherId
@@ -18,23 +19,27 @@ import kotlin.test.assertEquals
 class UpdateSystematicStudyServiceTest{
     @MockK
     private lateinit var systematicStudyRepository: SystematicStudyRepository
+    private lateinit var updatingSystematicStudy: SystematicStudy
+    private lateinit var oldDto: SystematicStudyDto
     private lateinit var sut: UpdateSystematicStudyService
 
     @BeforeEach
     fun setUp() {
         sut = UpdateSystematicStudyService(systematicStudyRepository)
+
+        val systematicStudyId = UUID.randomUUID()
+        updatingSystematicStudy = SystematicStudy(ReviewId(systematicStudyId), "Old title",
+                            "Old description", ResearcherId(UUID.randomUUID()))
+        oldDto = updatingSystematicStudy.toDto()
     }
 
     @Test
     fun `Should only the title be updated`() {
-        val systematicStudyId = UUID.randomUUID()
+        val systematicStudyId = updatingSystematicStudy.reviewId.value
         val requestModel = UpdateSystematicStudyRequestModel("New title", null)
-        val systematicStudy = SystematicStudy(ReviewId(systematicStudyId), "Old title",
-            "Old description", ResearcherId(UUID.randomUUID()))
-        val oldDto = systematicStudy.toDto()
 
-        systematicStudy.rename("New title")
-        val newDto = systematicStudy.toDto()
+        updatingSystematicStudy.rename("New title")
+        val newDto = updatingSystematicStudy.toDto()
 
         every { systematicStudyRepository.findById(systematicStudyId) } returns oldDto
         every { systematicStudyRepository.create(newDto) } returns Unit
