@@ -60,6 +60,20 @@ class UpdateSystematicStudyServiceTest{
         assertEquals("New description", updatedStudy.description)
     }
 
+    @Test
+    fun `Should both title and description be updated`() {
+        val requestModel = UpdateSystematicStudyRequestModel("New title", "New description")
+
+        updatingSystematicStudy.rename("New title")
+        updatingSystematicStudy.changeDescription("New description")
+        val newDto = updatingSystematicStudy.toDto()
+        mockkRepositoryToSunnyDay(newDto)
+
+        val updatedStudy = sut.update(systematicStudyId, requestModel)
+        assertEquals("New title", updatedStudy.title)
+        assertEquals("New description", updatedStudy.description)
+    }
+
     private fun mockkRepositoryToSunnyDay(newDto: SystematicStudyDto) {
         every { systematicStudyRepository.findById(systematicStudyId) } returns oldDto
         every { systematicStudyRepository.create(newDto) } returns Unit
