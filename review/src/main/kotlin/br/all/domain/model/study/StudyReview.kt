@@ -83,6 +83,7 @@ class StudyReview(
 
     fun markAsDuplicate(){
         selectionStatus = SelectionStatus.DUPLICATED
+        extractionStatus = ExtractionStatus.DUPLICATED
     }
 
     fun markAsVeryLowReadingPriority(){

@@ -5,7 +5,7 @@ import br.all.application.study.repository.fromDto
 import br.all.application.study.repository.toDto
 import br.all.domain.model.study.StudyReview
 
-class UpdateStudyReviewReadingPriority(private val repository: StudyReviewRepository) {
+class UpdateStudyReviewReadingPriorityService(private val repository: StudyReviewRepository) {
 
     fun changeStatus(requestModel: UpdateStudyReviewRequestModel){
         val studyReviewDto = repository.findById(requestModel.reviewID, requestModel.studyReviewId)
