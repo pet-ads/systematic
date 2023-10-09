@@ -12,8 +12,7 @@ value class SearchSessionID(val value: UUID) : Identifier {
         require(notification.hasNoErrors()) { notification.message() }
     }
 
-    //TODO you don't need a body if a function has online one line
-    override fun validate() = Notification()
+    override fun validate(): Notification = Notification()
 
     override fun toString(): String = value.toString()
 }
