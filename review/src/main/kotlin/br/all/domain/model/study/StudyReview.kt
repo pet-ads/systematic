@@ -85,6 +85,22 @@ class StudyReview(
         selectionStatus = SelectionStatus.DUPLICATED
     }
 
+    fun markAsVeryLowReadingPriority(){
+        readingPriority = ReadingPriority.VERY_LOW
+    }
+
+    fun markAsLowReadingPriority(){
+        readingPriority = ReadingPriority.LOW
+    }
+
+    fun markAsHighReadingPriority(){
+        readingPriority = ReadingPriority.HIGH
+    }
+
+    fun markAsVeryHighReadingPriority(){
+        readingPriority = ReadingPriority.VERY_HIGH
+    }
+
     fun unclassifyInExtraction() = apply { extractionStatus = ExtractionStatus.UNCLASSIFIED }
 
     override fun toString(): String {

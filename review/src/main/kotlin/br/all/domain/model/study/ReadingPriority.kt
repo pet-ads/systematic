@@ -13,7 +13,7 @@ enum class ReadingPriority {
                 "LOW" -> LOW
                 "HIGH" -> HIGH
                 "VERY_HIGH" -> VERY_HIGH
-                else -> {LOW}
+                else -> LOW
             }
         }
     }
