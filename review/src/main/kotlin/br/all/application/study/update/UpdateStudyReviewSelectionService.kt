@@ -1,12 +1,13 @@
 package br.all.application.study.update
 
+import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromDto
 import br.all.application.study.repository.toDto
 import br.all.domain.model.study.StudyReview
 
 class UpdateStudyReviewSelectionService(private val repository: StudyReviewRepository) {
-    fun changeStatus(requestModel: UpdateStudyReviewRequestModel){
+    fun changeStatus(requestModel: UpdateStudyReviewRequestModel): StudyReviewDto{
         val studyReviewDto = repository.findById(requestModel.reviewID, requestModel.studyReviewId)
 
         val studyReview = StudyReview.fromDto(studyReviewDto)
@@ -20,5 +21,6 @@ class UpdateStudyReviewSelectionService(private val repository: StudyReviewRepos
         }
 
         repository.create(studyReview.toDto())
+        return repository.findById(requestModel.reviewID, requestModel.studyReviewId)
     }
 }
