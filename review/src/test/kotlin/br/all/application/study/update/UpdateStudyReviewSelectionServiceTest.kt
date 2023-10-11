@@ -24,7 +24,17 @@ import java.util.*
 
 @ExtendWith(MockKExtension::class)
 class UpdateStudyReviewSelectionServiceTest {
+    @MockK
+    private lateinit var repository: StudyReviewRepositoryStub
+    @InjectMockKs
+    private lateinit var sut: UpdateStudyReviewSelectionService
 
-    
+    @BeforeEach
+    fun setUp() {
+        sut = UpdateStudyReviewSelectionService(repository)
+    }
+
+
+
 
 }
