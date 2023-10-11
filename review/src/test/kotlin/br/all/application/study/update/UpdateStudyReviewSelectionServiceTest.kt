@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.test.asserter
 import org.mockito.Mockito.`when`
 import java.util.*
 
@@ -34,7 +35,24 @@ class UpdateStudyReviewSelectionServiceTest {
         sut = UpdateStudyReviewSelectionService(repository)
     }
 
+    @Test
+    @DisplayName("Should change selection status on update: UNCLASSIFIED -> INCLUDED")
+    fun shouldChangeSelectionStatusOnUpdate() {
+        //Given
+        val uuid = UUID.randomUUID()
+        val studyReviewDto = repository.findById(uuid, 1L)
+        val requestModel = UpdateStudyReviewRequestModel(
+            uuid,
+            1L,
+            "INCLUDED"
+        )
 
+        //When
+        val updatedStudyReviewDto = sut.changeStatus(requestModel)
 
+        //Then
+        assertNotEquals(studyReviewDto.selectionStatus, updatedStudyReviewDto.selectionStatus)
+
+    }
 
 }
