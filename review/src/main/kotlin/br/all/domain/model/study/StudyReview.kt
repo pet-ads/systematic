@@ -33,7 +33,7 @@ class StudyReview(
 
     init {
         require(searchSources.size > 0) { "The study must be related to at least one search source." }
-        study = Study(title, year, authors, venue, abstract, keywords, references, doi)
+        study = Study(StudyTypes.UNKNOWN, title, year, authors, venue, abstract, keywords, references, doi)
     }
 
     companion object

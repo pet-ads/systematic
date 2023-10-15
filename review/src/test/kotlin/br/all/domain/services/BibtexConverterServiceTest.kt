@@ -13,7 +13,6 @@ class BibtexConverterServiceTest {
 
     private lateinit var sut: BibtexConverterService
 
-    //TODO Fix the code to make all tests pass. Add other tests to cope with the new study types, missing and optional fields
     @BeforeEach
     fun setup() {
         sut = BibtexConverterService()
