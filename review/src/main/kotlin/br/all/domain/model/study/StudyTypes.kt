@@ -1,0 +1,9 @@
+package br.all.domain.model.study
+
+enum class StudyType {
+    ARTICLE, BOOK, BOOKLET,
+    INBOOK, INCOLLECTION, INPROCEEDINGS,
+    MANUAL, MASTERSTHESIS, MISC,
+    PHDTHESIS, PROCEEDINGS, TECHREPORT,
+    UNPUBLISHED, UNKNOWN
+}

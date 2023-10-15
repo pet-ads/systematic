@@ -1,5 +1,7 @@
+package br.all.domain.services
+
 import br.all.domain.model.study.Doi
-import br.all.domain.services.BibtexConverterService
+import br.all.domain.model.study.StudyTypes
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
@@ -9,80 +11,437 @@ import kotlin.test.assertTrue
 
 class BibtexConverterServiceTest {
 
-    private lateinit var sut : BibtexConverterService
+    private lateinit var sut: BibtexConverterService
 
+    //TODO Fix the code to make all tests pass. Add other tests to cope with the new study types, missing and optional fields
     @BeforeEach
     fun setup() {
         sut = BibtexConverterService()
     }
 
-    //TODO Fix the code to make all tests pass. Add other tests to cope with the new study types, missing and optional fields
     @Test
-    fun testConvertBibtexToStudyList() {
-        //TODO create supporting methods to avoid clutter or spreading repeated testing input over multiple tests. Maybe create a map of test entries and use it
-        val bibtex = """
-            @article{Smith2021,
-                title = {A New Study},
-                year = {2021},
-                author = {John Smith},
-                journal = {Journal of Studies},
-                abstract = {This is the abstract},
+    fun `should not accept a blank entry, resulting in a IllegalArgumentException`() {
+
+        assertThrows<IllegalArgumentException> { sut.convertMany("") }
+    }
+
+    @Test
+    fun `should not accept a unknown type entry, resulting in a IllegalArgumentException`() {
+
+        val bibtex = testInputs["unknown type of bibtex"].toString()
+
+        assertThrows<IllegalArgumentException> { sut.convertMany(bibtex) }
+    }
+
+    @Test
+    fun `should not accept invalid title entry, resulting in a IllegalArgumentException`() {
+
+        val bibtex = testInputs["invalid title"].toString()
+
+        assertThrows<IllegalArgumentException> { sut.convertMany(bibtex) }
+    }
+
+    @Test
+    fun `should not accept a invalid author entry, resulting in a IllegalArgumentException`() {
+
+        val bibtex = testInputs["invalid authors"].toString()
+
+        assertThrows<IllegalArgumentException> { sut.convertMany(bibtex) }
+    }
+
+    @Test
+    fun `should not accept a invalid year entry, resulting in a IllegalArgumentException`() {
+
+        val bibtex = testInputs["invalid year"].toString()
+
+        assertThrows<IllegalArgumentException> { sut.convertMany(bibtex) }
+    }
+
+    @Test
+    fun `should not accept a invalid venue entry, resulting in a IllegalArgumentException`() {
+
+        val bibtex = testInputs["invalid venue"].toString()
+
+        assertThrows<IllegalArgumentException> { sut.convertMany(bibtex) }
+    }
+
+    @Test
+    fun `sshould not accept a invalid abstract entry, resulting in a IllegalArgumentException`() {
+
+        val bibtex = testInputs["invalid abstract"].toString()
+
+        assertThrows<IllegalArgumentException> { sut.convertMany(bibtex) }
+    }
+
+    @Test
+    fun `should not accept a invalid doi entry, resulting in a IllegalArgumentException`() {
+
+        val bibtex = testInputs["invalid doi"].toString()
+
+        assertThrows<IllegalArgumentException> { sut.convertMany(bibtex) }
+    }
+
+    @Test
+    fun `should create study from missing optional fields input`(){
+
+        val bibtex = testInputs["article missing optional fields"].toString()
+
+        val(type, title, year, authors, venue, abstract) = sut.convertMany(bibtex)[0]
+
+        assertAll(
+            "bibtex",
+            { assertEquals(StudyTypes.ARTICLE, type) },
+            { assertEquals("The independence of the continuum hypothesis", title) },
+            { assertEquals(1963, year) },
+            { assertEquals("P. J. Cohen", authors) },
+            { assertEquals("Proceedings of the National Academy of Sciences", venue) },
+            { assertEquals("Lorem Ipsum", abstract) },
+        )
+    }
+
+    @Test
+    fun `should create article from valid input`() {
+
+        val bibtex = testInputs["valid article"].toString()
+
+        val (type, title, year, authors, venue, abstract, keywords, references, doi) = sut.convertMany(bibtex)[0]
+
+        assertAll(
+            "bibtex",
+            { assertEquals(StudyTypes.ARTICLE, type) },
+            { assertEquals("Non-cooperative Games", title) },
+            { assertEquals(1951, year) },
+            { assertEquals("Nash, John", authors) },
+            { assertEquals("Annals of Mathematics", venue) },
+            { assertEquals("Lorem Ipsum", abstract) },
+            { assertTrue("keyword1" in keywords) },
+            { assertTrue("keyword2" in keywords) },
+            { assertEquals(2, references.size) },
+            { assertEquals("https://doi.org/10.1234/doi", doi?.value) },
+        )
+
+    }
+
+    @Test
+    fun `should create inproceedings from valid input`() {
+
+        val bibtex = testInputs["valid inproceedings"].toString()
+
+        val (type, title, year, authors, venue, abstract ,_, references, doi) = sut.convertMany(bibtex)[0]
+
+        assertAll(
+            "bibtex",
+            { assertEquals(StudyTypes.INPROCEEDINGS, type) },
+            { assertEquals("Onofre {Trindade Júnior}", authors) },
+            { assertEquals("{Using SOA in Critical-Embedded Systems}", title) },
+            { assertEquals("Proceedings of the 4${'$'}^{th}${'$'}  IEEE (CPSCom'11)", venue) },
+            { assertEquals(2011, year) },
+            { assertEquals("Lorem ipsum", abstract) },
+            { assertEquals(listOf("ref3", "ref4"), references) },
+            { assertEquals(Doi("https://doi.org/10.1021/ci025584y"), doi) },
+        )
+    }
+
+    @Test
+    fun `should create techreport from valid input`() {
+
+        val bibtex = testInputs["valid techreport"].toString()
+
+        val (type, title, year, authors, venue, abstract) = sut.convertMany(bibtex)[0]
+
+        assertAll(
+            "bibtex",
+            { assertEquals(StudyTypes.TECHREPORT, type) },
+            { assertEquals("Rafael Serapilha Durelli", authors) },
+            { assertEquals("Uma abordagem apoiada por linguagens específicas de domínio " +
+                    "para a criação de linhas de produto de software embarcado", title) },
+            { assertEquals("Universidade Federal de São Carlos (UFSCar)", venue) },
+            { assertEquals(2011, year) },
+            { assertEquals("Lorem Ipsum", abstract) },
+        )
+    }
+
+    @Test
+    fun `should create book from valid input`() {
+
+        val bibtex = testInputs["valid book"].toString()
+
+        val (type, title, year, authors, venue, abstract) = sut.convertMany(bibtex)[0]
+
+        assertAll(
+            "bibtex",
+            { assertEquals(StudyTypes.BOOK, type) },
+            { assertEquals("Len Bass and Paul Clements and Rick Kazman", authors) },
+            { assertEquals("Software Architecture in Practice", title) },
+            { assertEquals("Addison-Wesley", venue) },
+            { assertEquals(2012, year) },
+            { assertEquals("Lorem Ipsum", abstract) },
+        )
+    }
+
+    @Test
+    fun `should create proceedings from valid input`() {
+
+        val bibtex = testInputs["valid proceedings"].toString()
+
+        val (type, title, year, authors, venue, abstract) = sut.convertMany(bibtex)[0]
+
+        assertAll(
+            "bibtex",
+            { assertEquals(StudyTypes.PROCEEDINGS, type) },
+            { assertEquals("Susan Stepney and Sergey Verlan", authors) },
+            { assertEquals("Proceedings of the 17th International Conference on Computation " +
+                    "and Natural Computation, Fontainebleau, France", title) },
+            { assertEquals("Springer", venue) },
+            { assertEquals(2018, year) },
+            { assertEquals("Lorem Ipsum", abstract) },
+        )
+    }
+
+    @Test
+    fun `should create phdthesis from valid input`() {
+
+        val bibtex = testInputs["valid phdthesis"].toString()
+
+        val (type, title, year, authors, venue, abstract) = sut.convertMany(bibtex)[0]
+
+        assertAll(
+            "bibtex",
+            { assertEquals(StudyTypes.PHDTHESIS, type) },
+            { assertEquals("Rempel, Robert Charles", authors) },
+            { assertEquals("Relaxation Effects for Coupled Nuclear Spins", title) },
+            { assertEquals("Stanford University", venue) },
+            { assertEquals(1956, year) },
+            { assertEquals("Lorem Ipsum", abstract) },
+        )
+    }
+
+    @Test
+    fun `should create mastersthesis from valid input`() {
+
+        val bibtex = testInputs["valid mastersthesis"].toString()
+
+        val (type, title, year, authors, venue, abstract) = sut.convertMany(bibtex)[0]
+
+        assertAll(
+            "bibtex",
+            { assertEquals(StudyTypes.MASTERSTHESIS, type) },
+            { assertEquals("Jian Tang", authors) },
+            { assertEquals("Spin structure of the nucleon in the asymptotic limit", title) },
+            { assertEquals("Massachusetts Institute of Technology", venue) },
+            { assertEquals(1996, year) },
+            { assertEquals("Lorem Ipsum", abstract) },
+        )
+    }
+
+    @Test
+    fun `should create inbook from valid input`() {
+
+        val bibtex = testInputs["valid inbook"].toString()
+
+        val (type, title, year, authors, venue, abstract) = sut.convertMany(bibtex)[0]
+
+        assertAll(
+            "bibtex",
+            { assertEquals(StudyTypes.INBOOK, type) },
+            { assertEquals("Lisa A. Urry and Michael L. Cain and Steven A. Wasserman " +
+                    "and Peter V. Minorsky and Jane B. Reece", authors) },
+            { assertEquals("Photosynthesis", title) },
+            { assertEquals("Campbell Biology", venue) },
+            { assertEquals(2016, year) },
+            { assertEquals("Lorem Ipsum", abstract) },
+        )
+    }
+
+    @Test
+    fun `should create booklet from valid input`() {
+
+        val bibtex = testInputs["valid booklet"].toString()
+
+        val (type, title, year, authors, venue, abstract) = sut.convertMany(bibtex)[0]
+
+        assertAll(
+            "bibtex",
+            { assertEquals(StudyTypes.BOOKLET, type) },
+            { assertEquals("Maria Swetla", authors) },
+            { assertEquals("Canoe tours in {S}weden", title) },
+            { assertEquals("Distributed at the Stockholm Tourist Office", venue) },
+            { assertEquals(2015, year) },
+            { assertEquals("Lorem Ipsum", abstract) },
+        )
+    }
+
+    @Test
+    fun `should create manual from valid input`() {
+
+        val bibtex = testInputs["valid manual"].toString()
+
+        val (type, title, year, authors, venue, abstract) = sut.convertMany(bibtex)[0]
+
+        assertAll(
+            "bibtex",
+            { assertEquals(StudyTypes.MANUAL, type) },
+            { assertEquals("{R Core Team}", authors) },
+            { assertEquals("{R}: A Language and Environment for Statistical Computing", title) },
+            { assertEquals("R Foundation for Statistical Computing", venue) },
+            { assertEquals(2018, year) },
+            { assertEquals("Lorem Ipsum", abstract) },
+        )
+    }
+
+    @Test
+    fun `should create misc from valid input`() {
+
+        val bibtex = testInputs["valid misc"].toString()
+
+        val (type, title, year, authors, venue, abstract) = sut.convertMany(bibtex)[0]
+
+        assertAll(
+            "bibtex",
+            { assertEquals(StudyTypes.MISC, type) },
+            { assertEquals("{NASA}", authors) },
+            { assertEquals("Pluto: The 'Other' Red Planet", title) },
+            { assertEquals("\\url{https://www.nasa.gov/nh/pluto-the-other-red-planet}", venue) },
+            { assertEquals(2015, year) },
+            { assertEquals("Lorem Ipsum", abstract) },
+        )
+    }
+
+    @Test
+    fun `should create unpublished from valid input`() {
+
+        val bibtex = testInputs["valid unpublished"].toString()
+
+        val (type, title, year, authors, venue, abstract) = sut.convertMany(bibtex)[0]
+
+        assertAll(
+            "bibtex",
+            { assertEquals(StudyTypes.UNPUBLISHED, type) },
+            { assertEquals("Mohinder Suresh", authors) },
+            { assertEquals("Evolution: a revised theory", title) },
+            { assertEquals("Lorem Ipsum", venue) },
+            { assertEquals(2006, year) },
+            { assertEquals("Lorem Ipsum", abstract) },
+        )
+    }
+
+    @Test
+    fun `should create a list from multiple different valid bibtex entries as input`() {
+
+        val bibtex = testInputs["multiple bibtex entries"].toString()
+
+        val studyList = sut.convertMany(bibtex)
+
+        assertEquals(7, studyList.size)
+
+    }
+
+    private val testInputs = mapOf(
+        "unknown type of bibtex" to """
+            @{nash51,
+                title = {Non-cooperative Games},
+                year = {1951},
+                author = {Nash, John},
+                journal = {Annals of Mathematics},
+                abstract = {Lorem Ipsum},
                 keywords = {keyword1, keyword2},
                 references = {ref1, ref2},
                 doi = {10.1234/doi}
             }
-            @article{Doe2022,
-                title = {Another Study},
-                year = {2022},
-                author = {Jane Doe},
-                journal = {Another Journal},
-                abstract = {Another abstract},
-                keywords = {keyword3, keyword4},
-                references = {ref3, ref4},
-                doi = {10.5678/doi}
+        """,
+
+        "invalid title" to """
+            @article{nash51,
+                year = {1951},
+                author = {Nash, John},
+                journal = {Annals of Mathematics},
+                abstract = {Lorem Ipsum},
+                keywords = {keyword1, keyword2},
+                references = {ref1, ref2},
+                doi = {10.1234/doi}
             }
-        """.trimIndent()
+        """,
 
-        val converter = BibtexConverterService() // TODO use @BeforeEach to instantiate all common text fixture
-        val studies = sut.convertMany(bibtex)
+        "invalid year" to """
+            @article{nash51,
+                title = {Non-cooperative Games},
+                journal = {Annals of Mathematics},
+                abstract = {Lorem Ipsum},
+                keywords = {keyword1, keyword2},
+                references = {ref1, ref2},
+                doi = {10.1234/doi}
+            }
+        """,
 
-        assertEquals(2, studies.size)
+        "invalid abstract" to """
+            @article{nash51,
+                title = {Non-cooperative Games},
+                year = {1951},
+                journal = {Annals of Mathematics},
+                keywords = {keyword1, keyword2},
+                references = {ref1, ref2},
+                doi = {10.1234/doi}
+            }
+        """,
 
-        val study1 = studies[0]
-        assertEquals("A New Study", study1.title)
-        assertEquals(2021, study1.year)
-        assertEquals("John Smith", study1.authors)
-        assertEquals("Journal of Studies", study1.venue)
-        assertEquals("This is the abstract", study1.abstract)
-        assertTrue("keyword1" in study1.keywords)
-        assertTrue("keyword2" in study1.keywords)
-        assertEquals(2, study1.references.size)
-        assertEquals("10.1234/doi", study1.doi?.value)
+        "invalid venue" to """
+            @article{nash51,
+                title = {Non-cooperative Games},
+                year = {1951},
+                abstract = {Lorem Ipsum},
+                keywords = {keyword1, keyword2},
+                references = {ref1, ref2},
+                doi = {10.1234/doi}
+            }
+        """,
 
-        val study2 = studies[1]
-        //TODO use assertAll instead of independent hard assertions (if the first fails, the following will not be tested)
-        assertEquals("Another Study", study2.title)
-        assertEquals(2022, study2.year)
-        assertEquals("Jane Doe", study2.authors)
-        assertEquals("Another Journal", study2.venue)
-        assertEquals("Another abstract", study2.abstract)
-        assertTrue("keyword3" in study2.keywords)
-        assertTrue("keyword4" in study2.keywords)
-        assertEquals(2, study2.references.size)
-        assertEquals("10.5678/doi", study2.doi?.value)
-    }
+        "invalid doi" to """
+            @article{nash51,
+                title = {Non-cooperative Games},
+                year = {1951},
+                journal = {Annals of Mathematics},
+                abstract = {Lorem Ipsum},
+                keywords = {keyword1, keyword2},
+                references = {ref1, ref2},
+            }
+        """,
 
-    //TODO notice the next test method name using ` ` to improve legibility
-    @Test
-    fun testConvertBibtexToStudyListWithEmptyInput() {
-        val bibtex = "" // TODO keep it simple
-        val converter = BibtexConverterService()
-        assertThrows<IllegalArgumentException> {converter.convertMany("")}
-    }
+        "invalid authors" to """
+            @article{nash51,
+                title = {Non-cooperative Games},
+                year = {1951},
+                journal = {Annals of Mathematics},
+                abstract = {Lorem Ipsum},
+                keywords = {keyword1, keyword2},
+                references = {ref1, ref2},
+                doi = {10.1234/doi}
+            }
+        """,
 
-    @Test
-    fun `should create improceedings from valid input`(){
-        val bibtex = """
+        "article missing optional fields" to """
+            @article{CitekeyArticle,
+                title = {The independence of the continuum hypothesis},
+                year = {1963},
+                author = {P. J. Cohen},
+                journal = {Proceedings of the National Academy of Sciences},
+                abstract = {Lorem Ipsum},
+            }
+        """,
+
+        "valid article" to """
+            @article{nash51,
+                title = {Non-cooperative Games},
+                year = {1951},
+                author = {Nash, John},
+                journal = {Annals of Mathematics},
+                abstract = {Lorem Ipsum},
+                keywords = {keyword1, keyword2},
+                references = {ref1, ref2},
+                doi = {10.1234/doi}
+            }
+        """,
+
+        "valid inproceedings" to """
             @INPROCEEDINGS{Rodrigues11MOSA,
               author    = {Onofre {Trindade Júnior}},
               title     = {{Using SOA in Critical-Embedded Systems}},
@@ -94,69 +453,199 @@ class BibtexConverterServiceTest {
               references = {ref3, ref4},
               doi        = {10.1021/ci025584y}
             }
-            """.trimIndent()
+        """,
 
-        val (title, year, authors, venue, abstract, keywords, references, doi) = sut.convertMany(bibtex)[0]
+        "valid techreport" to """
+            @Techreport{Durelli2011LPSRM,
+                author    = {Rafael Serapilha Durelli},
+                title     = {Uma abordagem apoiada por linguagens específicas de domínio para a criação de linhas de produto de software embarcado},
+                institution  = {Universidade Federal de São Carlos (UFSCar)},
+                year      = {2011},
+                type      = {Dissertação de Mestrado},
+                address   = {São Carlos, SP},
+                abstract  = {Lorem Ipsum}
+            }
+        """,
 
-        assertAll("bibtex",
-            { assertEquals("Onofre {Trindade Júnior}", authors) },
-            { assertEquals("Using SOA in Critical-Embedded Systems", title) },
-            { assertEquals("Proceedings of the 4${'$'}^{th}${'$'}  IEEE (CPSCom'11)", venue) },
-            { assertEquals(2011, year) },
-            { assertEquals("Lorem ipsum", abstract) },
-            { assertEquals(setOf("keyword3, keyword4"), keywords) },
-            { assertEquals(listOf("ref3", "ref4"), references) },
-            { assertEquals(Doi("https://doi.org/10.1021/ci025584y"), doi) },
-        )
-    }
+        "valid book" to """
+            @BOOK{Bass03SAPRr,
+              title      = {Software Architecture in Practice},
+              publisher  = {Addison-Wesley},
+              year       = {2012},
+              series     = {SEI Series in Software Engineering},
+              edition    = {3},
+              author     = {Len Bass and Paul Clements and Rick Kazman},
+              abstract    = {Lorem Ipsum}
+            }
+        """,
 
-    //TODO real test enties
-    /*
-@Techreport{Durelli2011LPSRM,
-  author    = {Rafael Serapilha Durelli},
-  title     = {Uma abordagem apoiada por linguagens específicas de domínio para a criação de linhas de produto de software embarcado},
-  institution  = {Universidade Federal de São Carlos (UFSCar)},
-  year      = {2011},
-  type      = {Dissertação de Mestrado},
-  address   = {São Carlos, SP},
-}
+        "valid proceedings" to """
+            @proceedings{CitekeyProceedings,
+              editor    = {Susan Stepney and Sergey Verlan},
+              title     = {Proceedings of the 17th International Conference on Computation and Natural Computation, Fontainebleau, France},
+              series    = {Lecture Notes in Computer Science},
+              volume    = {10867},
+              publisher = {Springer},
+              address   = {Cham, Switzerland},
+              year      = {2018},
+              abstract  = {Lorem Ipsum}
+            }
+        """,
 
-@ARTICLE{Arsanjani07S3,
-  author     = {Arsanjani, A. and Zhang, L.-J. and Ellis, M. and Allam, A. and Channabasavaiah, K.},
-  title      = {{S3}: {A} service-oriented reference architecture},
-  journal    = {{IT} Professional},
-  year       = {2007},
-  volume     = {9},
-  pages      = {10-17},
-  number     = {3},
-  issn       = {15209202},
-}
+        "valid phdthesis" to """
+            @phdthesis{CitekeyPhdthesis,
+              author  = {Rempel, Robert Charles},
+              title   = {Relaxation Effects for Coupled Nuclear Spins},
+              school  = {Stanford University},
+              address = {Stanford, CA},
+              year    = {1956},
+              month   = {jun}
+              abstract = {Lorem Ipsum}
+            }
+        """,
 
-@MISC{AGX12Tiriba,
-  author    = {{AGX}},
-  title     = {{VANT Tiriba}},
-  howpublished = {Online},
-  year      = {2012},
-  note      = {\url{http://www.agx.com.br/} (Acessado em 15/08/2012)},
-}
+        "valid mastersthesis" to """
+            @mastersthesis{CitekeyMastersthesis,
+              author  = {Jian Tang},
+              title   = {Spin structure of the nucleon in the asymptotic limit},
+              school  = {Massachusetts Institute of Technology},
+              year    = {1996},
+              address = {Cambridge, MA},
+              month   = {sep}
+              abstract = {Lorem Ipsum}
+            }
+        """,
 
-@INPROCEEDINGS{Azaiez04GAMA,
-  author    = {S. Azaiez and  F. Oquendo},
-  title     = {{GAMA}: Towards Architecture-centric Software Engineering of Mobile Agent Systems},
-  booktitle = {Proceedings of the 3$^{rd}$ International Workshop on Software Engineering for Large-Scale Multi-Agent Systems (SELMAS'04) at the 26$^{th}$ IEEE/ACM International Conference on Software Engineering (ICSE'04)},
-  pages     = {56-65},
-  year      = {2004},
-  address   = {Edinburgh, UK},
-  month     = {May.}
-}
+        "valid inbook" to """
+            @inbook{CitekeyInbook,
+              author    = {Lisa A. Urry and Michael L. Cain and Steven A. Wasserman and Peter V. Minorsky and Jane B. Reece},
+              title     = {Photosynthesis},
+              booktitle = {Campbell Biology},
+              year      = {2016},
+              publisher = {Pearson},
+              address   = {New York, NY},
+              pages     = {187--221}
+              abstract  = {Lorem Ipsum}
+            }
+        """,
 
-@BOOK{Bass03SAPRr,
-  title      = {Software Architecture in Practice},
-  publisher  = {Addison-Wesley},
-  year       = {2012},
-  series     = {SEI Series in Software Engineering},
-  edition    = {3},
-  author     = {Len Bass and Paul Clements and Rick Kazman},
-}
- */
+        "valid booklet" to """
+            @booklet{CitekeyBooklet,
+              title        = {Canoe tours in {S}weden},
+              author       = {Maria Swetla}, 
+              howpublished = {Distributed at the Stockholm Tourist Office},
+              month        = {jul},
+              year         = {2015},
+              abstract     = {Lorem Ipsum}
+            }
+        """,
+
+        "valid manual" to """
+            @manual{CitekeyManual,
+              title        = {{R}: A Language and Environment for Statistical Computing},
+              author       = {{R Core Team}},
+              organization = {R Foundation for Statistical Computing},
+              address      = {Vienna, Austria},
+              year         = {2018},
+              abstract     = {Lorem Ipsum}
+            }
+        """,
+
+        "valid misc" to """
+            @misc{CitekeyMisc,
+              title        = {Pluto: The 'Other' Red Planet},
+              author       = {{NASA}},
+              howpublished = {\url{https://www.nasa.gov/nh/pluto-the-other-red-planet}},
+              year         = {2015},
+              note         = {Accessed: 2018-12-06}
+              abstract     = {Lorem Ipsum}
+            }
+        """,
+
+        "valid unpublished" to """
+            @unpublished{CitekeyUnpublished,
+              author = {Mohinder Suresh},
+              title  = {Evolution: a revised theory},
+              year   = {2006},
+              journal = {Lorem Ipsum},
+              abstract = {Lorem Ipsum}
+            }
+        """,
+
+        "multiple bibtex entries" to """
+            @article{nash51,
+                title = {Non-cooperative Games},
+                year = {1951},
+                author = {Nash, John},
+                journal = {Annals of Mathematics},
+                abstract = {Lorem Ipsum},
+                keywords = {keyword1, keyword2},
+                references = {ref1, ref2},
+                doi = {10.1234/doi}
+            }
+            
+            @INPROCEEDINGS{Rodrigues11MOSA,
+              author    = {Onofre {Trindade Júnior}},
+              title     = {{Using SOA in Critical-Embedded Systems}},
+              booktitle = {Proceedings of the 4${'$'}^{th}${'$'}  IEEE (CPSCom'11)},
+              year      = {2011},
+              pages     = {733-738},
+              address   = {Dalian, China},
+              abstract  = {Lorem ipsum},
+              references = {ref3, ref4},
+              doi        = {10.1021/ci025584y}
+            }
+            
+            @Techreport{Durelli2011LPSRM,
+                author    = {Rafael Serapilha Durelli},
+                title     = {Uma abordagem apoiada por linguagens específicas de domínio para a criação de linhas de produto de software embarcado},
+                institution  = {Universidade Federal de São Carlos (UFSCar)},
+                year      = {2011},
+                type      = {Dissertação de Mestrado},
+                address   = {São Carlos, SP},
+                abstract  = {Lorem Ipsum}
+            }
+            
+            @BOOK{Bass03SAPRr,
+              title      = {Software Architecture in Practice},
+              publisher  = {Addison-Wesley},
+              year       = {2012},
+              series     = {SEI Series in Software Engineering},
+              edition    = {3},
+              author     = {Len Bass and Paul Clements and Rick Kazman},
+              abstract    = {Lorem Ipsum}
+            }
+            
+            @proceedings{CitekeyProceedings,
+              editor    = {Susan Stepney and Sergey Verlan},
+              title     = {Proceedings of the 17th International Conference on Computation and Natural Computation, Fontainebleau, France},
+              series    = {Lecture Notes in Computer Science},
+              volume    = {10867},
+              publisher = {Springer},
+              address   = {Cham, Switzerland},
+              year      = {2018},
+              abstract  = {Lorem Ipsum}
+            }
+            
+            @phdthesis{CitekeyPhdthesis,
+              author  = {Rempel, Robert Charles},
+              title   = {Relaxation Effects for Coupled Nuclear Spins},
+              school  = {Stanford University},
+              address = {Stanford, CA},
+              year    = {1956},
+              month   = {jun}
+              abstract = {Lorem Ipsum}
+            }
+            
+            @mastersthesis{CitekeyMastersthesis,
+              author  = {Jian Tang},
+              title   = {Spin structure of the nucleon in the asymptotic limit},
+              school  = {Massachusetts Institute of Technology},
+              year    = {1996},
+              address = {Cambridge, MA},
+              month   = {sep}
+              abstract = {Lorem Ipsum}
+            }
+        """
+    )
 }
