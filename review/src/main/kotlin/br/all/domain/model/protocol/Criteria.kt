@@ -15,6 +15,12 @@ data class Criteria(
     }
 
     override fun validate(): Notification {
-        TODO("Not yet implemented")
+        val notification = Notification()
+        val pattern = Regex("^([a-z]+ ?)+$")
+
+        if (!pattern.matches(description))
+            notification.addError("Wrong criteria format! Provided: \"$description\"")
+
+        return notification
     }
 }
