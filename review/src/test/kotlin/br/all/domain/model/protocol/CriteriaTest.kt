@@ -2,6 +2,7 @@ package br.all.domain.model.protocol
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 
 class CriteriaTest {
     @Test
@@ -24,6 +25,13 @@ class CriteriaTest {
     @Test
     fun `Should accept digits and not punctuation symbols when they are not within not quoted words`() {
         assertDoesNotThrow { Criteria("7 not quoted & 2023 #3&", Criteria.CriteriaType.INCLUSION) }
+    }
+
+    @Test
+    fun `Should throw if there are digits and symbols within not quoted words`() {
+        assertThrows<IllegalArgumentException> {
+            Criteria("1word w0rd f4 @word w@rd h&", Criteria.CriteriaType.INCLUSION)
+        }
     }
 
     @Test
