@@ -12,18 +12,19 @@ class LabeledScale(
 ) : Question<Label>(id, protocolId, code, description) {
 
     private val _scales = scales.map{(key, value) -> Label(key, value)}
+
     override fun validate(): Notification {
         val notification = super.validate()
 
         if (_scales.isEmpty())
-            notification.addError("Can not create a LabeledScale without Label to pick")
+            notification.addError("Can not create a Labeled Scale without a label to choose.")
         return notification
     }
 
     override fun validateAnswer(value: Label?) = _scales.first { it == value }
 
     override fun toString() =
-        "LabeledScale(QuestionId: $id, ProtocolId: $protocolId, Code: $code, Description: $description, " +
-                "Scales: $_scales, Answer: $answer.)"
+        "LabeledScale(QuestionId: $id, ProtocolId: $protocolId, Code: $code, " +
+                "Description: $description, Scales: $_scales, Answer: $answer.)"
 
 }

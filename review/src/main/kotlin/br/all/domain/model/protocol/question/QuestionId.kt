@@ -6,6 +6,7 @@ import java.util.UUID
 
 @JvmInline
 value class QuestionId(val value: UUID) : Identifier {
+
     init {
         val notification = validate()
         require(notification.hasNoErrors()) { notification.message() }
