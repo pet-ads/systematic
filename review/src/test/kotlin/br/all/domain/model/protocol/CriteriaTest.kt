@@ -15,4 +15,9 @@ class CriteriaTest {
             Criteria("PHRASE WITH WORDS OF ONLY UPPERCASE LETTERS", Criteria.CriteriaType.INCLUSION)
         }
     }
+    
+    @Test
+    fun `Should accept digits and not punctuation symbols when they are not within not quoted words`() {
+        assertDoesNotThrow { Criteria("7 not quoted & 2023 #3&", Criteria.CriteriaType.INCLUSION) }
+    }
 }
