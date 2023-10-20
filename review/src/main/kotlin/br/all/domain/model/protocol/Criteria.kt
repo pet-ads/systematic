@@ -16,7 +16,7 @@ data class Criteria(
 
     override fun validate(): Notification {
         val notification = Notification()
-        val pattern = Regex("^(([^a-z]+ )?[a-z]+( ?| [^a-z]+( |$)?))+$", RegexOption.IGNORE_CASE)
+        val pattern = Regex("^(([^a-z]+ )?[a-z]+( ?| [^a-z]+( |$)?)|\".+\")+$", RegexOption.IGNORE_CASE)
 
         if (!pattern.matches(description))
             notification.addError("Wrong criteria format! Provided: \"$description\"")
