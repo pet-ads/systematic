@@ -9,6 +9,7 @@ data class Email(val email: String) : ValueObject() {
         val notification = validate()
         require(notification.hasNoErrors()) {notification.message()}
     }
+
     override fun validate(): Notification {
         val notification = Notification()
 

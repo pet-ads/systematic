@@ -5,12 +5,12 @@ import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
 
 class SystematicStudy(
-    val id: ReviewId,
+    val systematicStudyId: ReviewId,
     val title: String,
     val description: String,
     var owner: ResearcherId,
     val collaborators: MutableSet<ResearcherId> = mutableSetOf(),
-) : Entity(id) {
+) : Entity(systematicStudyId) {
 
     init {
         val notification = validate()
