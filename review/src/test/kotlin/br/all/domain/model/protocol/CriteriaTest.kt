@@ -30,7 +30,7 @@ class CriteriaTest {
 
     @Test
     fun `Should throw if there are digits and symbols within not quoted words`() {
-        val invalidDescription = "1word w0rd f4 @word w@rd h&"
+        val invalidDescription = "1word w0rd f4 \"w0rd\" normal words \"quoted words\" @word w@rd h&"
         val exception = assertThrows<IllegalArgumentException> {
             Criteria(invalidDescription, Criteria.CriteriaType.INCLUSION)
         }
