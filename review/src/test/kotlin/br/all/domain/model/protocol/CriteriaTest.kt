@@ -20,4 +20,9 @@ class CriteriaTest {
     fun `Should accept digits and not punctuation symbols when they are not within not quoted words`() {
         assertDoesNotThrow { Criteria("7 not quoted & 2023 #3&", Criteria.CriteriaType.INCLUSION) }
     }
+
+    @Test
+    fun `Should accept digits and symbols within words if it is quoted`() {
+        assertDoesNotThrow { Criteria("\"quoted.word$8946532s\"", Criteria.CriteriaType.INCLUSION) }
+    }
 }
