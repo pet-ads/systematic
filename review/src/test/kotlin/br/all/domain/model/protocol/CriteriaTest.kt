@@ -15,6 +15,11 @@ class CriteriaTest {
             Criteria("PHRASE WITH WORDS OF ONLY UPPERCASE LETTERS", Criteria.CriteriaType.INCLUSION)
         }
     }
+
+    @Test
+    fun `Should accept words with uppercase and lowercase letters`() {
+        assertDoesNotThrow { Criteria("Green gReen gREEN GrEEN", Criteria.CriteriaType.INCLUSION) }
+    }
     
     @Test
     fun `Should accept digits and not punctuation symbols when they are not within not quoted words`() {
