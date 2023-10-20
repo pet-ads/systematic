@@ -6,11 +6,9 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 data class SearchSessionRequestModel(
-    val systematicStudyId: Any,
+    val systematicStudyId: UUID,
     val reviewId: UUID,
     val source: SearchSource,
     val searchString: String,
     val additionalInfo: String?
-) {
-
-}
+)
