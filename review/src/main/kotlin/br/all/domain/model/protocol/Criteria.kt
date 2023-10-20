@@ -17,6 +17,8 @@ data class Criteria(
     override fun validate(): Notification {
         val notification = Notification()
 
+        if (description.isBlank())
+            notification.addError("A criteria cannot have a blank description!")
         if (descriptionHasDigitsAndSymbolsWithinNotQuotedWords())
             notification.addError("Symbols and numbers should be within not quoted words in criteria " +
                     "description. Provided: $description")
