@@ -42,4 +42,12 @@ class CriteriaTest {
     fun `Should accept digits and symbols within words if it is quoted`() {
         assertDoesNotThrow { Criteria("\"quoted.word$8946532s\"", Criteria.CriteriaType.INCLUSION) }
     }
+
+    @Test
+    fun `Should throw with useful message when description is blank`() {
+        val exception = assertThrows<IllegalArgumentException> {
+            Criteria("", Criteria.CriteriaType.INCLUSION)
+        }
+        assertEquals("A criteria cannot have a blank description!", exception.message)
+    }
 }
