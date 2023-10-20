@@ -16,11 +16,18 @@ data class Criteria(
 
     override fun validate(): Notification {
         val notification = Notification()
-        val pattern = Regex("^([^a-z]+ )?([a-z]+( ?| [^a-z]+( |$))|\".+\")+$", RegexOption.IGNORE_CASE)
 
-        if (!pattern.matches(description))
-            notification.addError("Wrong criteria format! Provided: \"$description\"")
+        if (descriptionHasDigitsAndSymbolsWithinNotQuotedWords())
+            notification.addError("Symbols and numbers should be within not quoted words in criteria " +
+                    "description. Provided: $description")
 
         return notification
+    }
+
+    private fun descriptionHasDigitsAndSymbolsWithinNotQuotedWords() : Boolean {
+        val notQuotedWords = Regex("\"[^\"]+\"|'[^']+'").split(description)
+        val pattern = Regex("[a-z]*[^a-z ]+[a-z]+|[a-z]+[^a-z ]+", RegexOption.IGNORE_CASE)
+
+        return notQuotedWords.any { pattern.containsMatchIn(it) }
     }
 }
