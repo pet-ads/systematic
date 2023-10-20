@@ -3,6 +3,7 @@ package br.all.domain.model.protocol
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import kotlin.test.assertEquals
 
 class CriteriaTest {
     @Test
@@ -29,9 +30,12 @@ class CriteriaTest {
 
     @Test
     fun `Should throw if there are digits and symbols within not quoted words`() {
-        assertThrows<IllegalArgumentException> {
-            Criteria("1word w0rd f4 @word w@rd h&", Criteria.CriteriaType.INCLUSION)
+        val invalidDescription = "1word w0rd f4 @word w@rd h&"
+        val exception = assertThrows<IllegalArgumentException> {
+            Criteria(invalidDescription, Criteria.CriteriaType.INCLUSION)
         }
+        assertEquals("Symbols and numbers should be within not quoted words in criteria description. " +
+                "Provided: $invalidDescription", exception.message)
     }
 
     @Test
