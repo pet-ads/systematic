@@ -5,6 +5,10 @@ import br.all.application.review.repository.SystematicStudyRepository
 import java.util.*
 
 class FindOneSystematicStudyService(private val systematicStudyRepository: SystematicStudyRepository) {
+
+    //TODO: Why find one is returning a list as a reponse model? How about return SystematicStudyDto instead
+    // ou null instead?
+
     fun findById(studyId: UUID) : SystematicStudyResponseModel {
         val studies = mutableListOf<SystematicStudyDto>()
 

@@ -15,9 +15,9 @@ class CreateSystematicStudyService(
     private val uuidGeneratorService: UuidGeneratorService,
 ) {
     fun create(requestModel: SystematicStudyRequestModel): SystematicStudyDto{
-        requireThatExists(researcherRepository.existsById(requestModel.owner)) {
-            "Could not find a researcher ID for the owner: ${requestModel.owner}!"
-        }
+
+        if(!researcherRepository.existsById(requestModel.owner))
+            throw NoSuchElementException("Could not find a researcher ID for the owner: ${requestModel.owner}!")
 
         val id = uuidGeneratorService.next()
         val systematicStudyDto = SystematicStudy.fromRequestModel(id, requestModel).toDto()
