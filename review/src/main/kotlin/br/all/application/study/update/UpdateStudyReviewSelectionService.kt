@@ -6,19 +6,17 @@ import br.all.application.study.repository.toDto
 import br.all.domain.model.study.StudyReview
 
 class UpdateStudyReviewSelectionService(private val repository: StudyReviewRepository) {
-    fun changeStatus(requestModel: UpdateStudyReviewRequestModel){
-        val studyReviewDto = repository.findById(requestModel.reviewID, requestModel.studyReviewId)
-
+    fun changeStatus(request: UpdateStudyReviewRequestModel){
+        val studyReviewDto = repository.findById(request.reviewID, request.studyReviewId)
         val studyReview = StudyReview.fromDto(studyReviewDto)
 
-        when(requestModel.newStatus.uppercase()){
+        when(request.status.uppercase()){
             "UNCLASSIFIED" -> studyReview.unclassifyInSelection()
             "DUPLICATED" -> studyReview.markAsDuplicate()
             "INCLUDED" -> studyReview.includeInSelection()
             "EXCLUDED" -> studyReview.excludeInSelection()
-            else -> throw IllegalArgumentException("Unknown study review status: ${requestModel.newStatus}.")
+            else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
         }
-
         repository.create(studyReview.toDto())
     }
 }

@@ -1,6 +1,6 @@
 package br.all.domain.model.study
 
-enum class StudyTypes {
+enum class StudyType {
     ARTICLE, BOOK, BOOKLET,
     INBOOK, INCOLLECTION, INPROCEEDINGS,
     MANUAL, MASTERSTHESIS, MISC,

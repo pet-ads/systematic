@@ -1,7 +1,7 @@
 package br.all.domain.services
 
 import br.all.domain.model.study.Doi
-import br.all.domain.model.study.StudyTypes
+import br.all.domain.model.study.StudyType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
@@ -89,7 +89,7 @@ class BibtexConverterServiceTest {
 
         assertAll(
             "bibtex",
-            { assertEquals(StudyTypes.ARTICLE, type) },
+            { assertEquals(StudyType.ARTICLE, type) },
             { assertEquals("The independence of the continuum hypothesis", title) },
             { assertEquals(1963, year) },
             { assertEquals("P. J. Cohen", authors) },
@@ -107,7 +107,7 @@ class BibtexConverterServiceTest {
 
         assertAll(
             "bibtex",
-            { assertEquals(StudyTypes.ARTICLE, type) },
+            { assertEquals(StudyType.ARTICLE, type) },
             { assertEquals("Non-cooperative Games", title) },
             { assertEquals(1951, year) },
             { assertEquals("Nash, John", authors) },
@@ -130,7 +130,7 @@ class BibtexConverterServiceTest {
 
         assertAll(
             "bibtex",
-            { assertEquals(StudyTypes.INPROCEEDINGS, type) },
+            { assertEquals(StudyType.INPROCEEDINGS, type) },
             { assertEquals("Onofre {Trindade Júnior}", authors) },
             { assertEquals("{Using SOA in Critical-Embedded Systems}", title) },
             { assertEquals("Proceedings of the 4${'$'}^{th}${'$'}  IEEE (CPSCom'11)", venue) },
@@ -150,7 +150,7 @@ class BibtexConverterServiceTest {
 
         assertAll(
             "bibtex",
-            { assertEquals(StudyTypes.TECHREPORT, type) },
+            { assertEquals(StudyType.TECHREPORT, type) },
             { assertEquals("Rafael Serapilha Durelli", authors) },
             { assertEquals("Uma abordagem apoiada por linguagens específicas de domínio " +
                     "para a criação de linhas de produto de software embarcado", title) },
@@ -169,7 +169,7 @@ class BibtexConverterServiceTest {
 
         assertAll(
             "bibtex",
-            { assertEquals(StudyTypes.BOOK, type) },
+            { assertEquals(StudyType.BOOK, type) },
             { assertEquals("Len Bass and Paul Clements and Rick Kazman", authors) },
             { assertEquals("Software Architecture in Practice", title) },
             { assertEquals("Addison-Wesley", venue) },
@@ -187,7 +187,7 @@ class BibtexConverterServiceTest {
 
         assertAll(
             "bibtex",
-            { assertEquals(StudyTypes.PROCEEDINGS, type) },
+            { assertEquals(StudyType.PROCEEDINGS, type) },
             { assertEquals("Susan Stepney and Sergey Verlan", authors) },
             { assertEquals("Proceedings of the 17th International Conference on Computation " +
                     "and Natural Computation, Fontainebleau, France", title) },
@@ -206,7 +206,7 @@ class BibtexConverterServiceTest {
 
         assertAll(
             "bibtex",
-            { assertEquals(StudyTypes.PHDTHESIS, type) },
+            { assertEquals(StudyType.PHDTHESIS, type) },
             { assertEquals("Rempel, Robert Charles", authors) },
             { assertEquals("Relaxation Effects for Coupled Nuclear Spins", title) },
             { assertEquals("Stanford University", venue) },
@@ -224,7 +224,7 @@ class BibtexConverterServiceTest {
 
         assertAll(
             "bibtex",
-            { assertEquals(StudyTypes.MASTERSTHESIS, type) },
+            { assertEquals(StudyType.MASTERSTHESIS, type) },
             { assertEquals("Jian Tang", authors) },
             { assertEquals("Spin structure of the nucleon in the asymptotic limit", title) },
             { assertEquals("Massachusetts Institute of Technology", venue) },
@@ -242,7 +242,7 @@ class BibtexConverterServiceTest {
 
         assertAll(
             "bibtex",
-            { assertEquals(StudyTypes.INBOOK, type) },
+            { assertEquals(StudyType.INBOOK, type) },
             { assertEquals("Lisa A. Urry and Michael L. Cain and Steven A. Wasserman " +
                     "and Peter V. Minorsky and Jane B. Reece", authors) },
             { assertEquals("Photosynthesis", title) },
@@ -261,7 +261,7 @@ class BibtexConverterServiceTest {
 
         assertAll(
             "bibtex",
-            { assertEquals(StudyTypes.BOOKLET, type) },
+            { assertEquals(StudyType.BOOKLET, type) },
             { assertEquals("Maria Swetla", authors) },
             { assertEquals("Canoe tours in {S}weden", title) },
             { assertEquals("Distributed at the Stockholm Tourist Office", venue) },
@@ -279,7 +279,7 @@ class BibtexConverterServiceTest {
 
         assertAll(
             "bibtex",
-            { assertEquals(StudyTypes.MANUAL, type) },
+            { assertEquals(StudyType.MANUAL, type) },
             { assertEquals("{R Core Team}", authors) },
             { assertEquals("{R}: A Language and Environment for Statistical Computing", title) },
             { assertEquals("R Foundation for Statistical Computing", venue) },
@@ -297,7 +297,7 @@ class BibtexConverterServiceTest {
 
         assertAll(
             "bibtex",
-            { assertEquals(StudyTypes.MISC, type) },
+            { assertEquals(StudyType.MISC, type) },
             { assertEquals("{NASA}", authors) },
             { assertEquals("Pluto: The 'Other' Red Planet", title) },
             { assertEquals("\\url{https://www.nasa.gov/nh/pluto-the-other-red-planet}", venue) },
@@ -315,7 +315,7 @@ class BibtexConverterServiceTest {
 
         assertAll(
             "bibtex",
-            { assertEquals(StudyTypes.UNPUBLISHED, type) },
+            { assertEquals(StudyType.UNPUBLISHED, type) },
             { assertEquals("Mohinder Suresh", authors) },
             { assertEquals("Evolution: a revised theory", title) },
             { assertEquals("Lorem Ipsum", venue) },

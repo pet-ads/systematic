@@ -1,13 +1,13 @@
 package br.all.domain.services
 
-import br.all.domain.model.review.ReviewId
 import br.all.domain.model.study.*
 import java.util.*
 
 class BibtexConverterService {
 
-    private val venueTypes = listOf("journal", "booktitle", "institution",
-        "organization", "publisher", "series", "school", "howpublished"
+    private val venueTypes = listOf(
+        "journal", "booktitle", "institution", "organization",
+        "publisher", "series", "school", "howpublished"
     )
     private val authorTypes = listOf("author", "authors", "editor")
 
@@ -37,8 +37,11 @@ class BibtexConverterService {
 
     fun convertMany(bibtex: String): List<Study> {
         require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
-        val split = bibtex.splitToSequence("@").map { it.trim() }.filter { it.isNotBlank() }
-        return split.map { convert(it) }.toList()
+        return bibtex.splitToSequence("@")
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .map { convert(it) }
+            .toList()
     }
 
     private fun convert(bibtexEntry: String): Study {
@@ -96,26 +99,27 @@ class BibtexConverterService {
         return references?.split(",")?.map { it.trim() } ?: emptyList()
     }
 
-    private fun extractStudyType(bibtexEntry: String): StudyTypes {
+    private fun extractStudyType(bibtexEntry: String): StudyType {
         val entryTypeRegex = Regex("""\b(\w+)\{""")
         val matchResult = entryTypeRegex.find(bibtexEntry)
+        val studyTypeName = matchResult?.groupValues?.get(1)?.uppercase(Locale.getDefault()) ?: "UNKNOWN"
+        return StudyType.valueOf(studyTypeName)
 
-        return when (matchResult?.groupValues?.get(1)?.lowercase(Locale.getDefault())) {
-            "article" -> StudyTypes.ARTICLE
-            "book" -> StudyTypes.BOOK
-            "booklet" -> StudyTypes.BOOKLET
-            "inbook" -> StudyTypes.INBOOK
-            "incollection" -> StudyTypes.INCOLLECTION
-            "inproceedings" -> StudyTypes.INPROCEEDINGS
-            "manual" -> StudyTypes.MANUAL
-            "mastersthesis" -> StudyTypes.MASTERSTHESIS
-            "misc" -> StudyTypes.MISC
-            "phdthesis" -> StudyTypes.PHDTHESIS
-            "proceedings" -> StudyTypes.PROCEEDINGS
-            "techreport" -> StudyTypes.TECHREPORT
-            "unpublished" -> StudyTypes.UNPUBLISHED
-            else -> StudyTypes.UNKNOWN
-        }
+        /*return when (studyTypeName){
+            "article" -> StudyType.ARTICLE
+            "book" -> StudyType.BOOK
+            "booklet" -> StudyType.BOOKLET
+            "inbook" -> StudyType.INBOOK
+            "incollection" -> StudyType.INCOLLECTION
+            "inproceedings" -> StudyType.INPROCEEDINGS
+            "manual" -> StudyType.MANUAL
+            "mastersthesis" -> StudyType.MASTERSTHESIS
+            "misc" -> StudyType.MISC
+            "phdthesis" -> StudyType.PHDTHESIS
+            "proceedings" -> StudyType.PROCEEDINGS
+            "techreport" -> StudyType.TECHREPORT
+            "unpublished" -> StudyType.UNPUBLISHED
+            else -> StudyType.UNKNOWN
+        }*/
     }
-
 }

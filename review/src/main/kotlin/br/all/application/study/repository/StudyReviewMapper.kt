@@ -8,6 +8,7 @@ import java.util.*
 fun StudyReview.toDto() = StudyReviewDto(
     studyId.value,
     reviewId.value,
+    studyType.toString(),
     title,
     year,
     authors,
@@ -29,6 +30,7 @@ fun StudyReview.toDto() = StudyReviewDto(
 fun StudyReview.Companion.fromDto(dto: StudyReviewDto ) = StudyReview(
     StudyReviewId(dto.id),
     ReviewId(dto.reviewId),
+    StudyType.valueOf(dto.studyType),
     dto.title,
     dto.year,
     dto.authors,
@@ -50,6 +52,7 @@ fun StudyReview.Companion.fromDto(dto: StudyReviewDto ) = StudyReview(
 fun StudyReview.Companion.fromStudyRequestModel(reviewId: UUID, studyId: Long, study: StudyReviewRequestModel) = StudyReview(
     StudyReviewId(studyId),
     ReviewId(reviewId),
+    StudyType.valueOf(study.type.uppercase()),
     study.title,
     study.year,
     study.authors,

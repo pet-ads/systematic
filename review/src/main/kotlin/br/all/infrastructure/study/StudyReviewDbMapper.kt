@@ -6,6 +6,7 @@ fun StudyReviewDocument.toDto() = StudyReviewDto(
     id,
     reviewId,
     title,
+    type,
     year,
     authors,
     venue,
@@ -26,6 +27,7 @@ fun StudyReviewDocument.toDto() = StudyReviewDto(
 fun StudyReviewDto.toDocument() = StudyReviewDocument(
     id,
     reviewId,
+    studyType,
     title,
     year,
     authors,

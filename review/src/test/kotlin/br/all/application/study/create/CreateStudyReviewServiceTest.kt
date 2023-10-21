@@ -31,6 +31,7 @@ class CreateStudyReviewServiceTest {
     @Test
     fun `Should create study`() {
         val requestModel = StudyReviewRequestModel(
+            "ARTICLE",
             "Title",
             2020,
             "Authors",

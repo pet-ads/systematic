@@ -9,6 +9,7 @@ class StudyReviewDocument (
     @Id
     val id: Long,
     val reviewId: UUID,
+    val type: String,
     val title: String,
     val year: Int,
     val authors: String,

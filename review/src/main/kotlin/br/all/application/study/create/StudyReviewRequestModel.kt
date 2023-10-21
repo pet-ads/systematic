@@ -1,6 +1,7 @@
 package br.all.application.study.create
 
 data class StudyReviewRequestModel (
+    val type: String,
     val title: String,
     val year: Int,
     val authors: String,
