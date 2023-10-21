@@ -12,63 +12,55 @@ class SystematicStudy(
     owner: ResearcherId,
     collaborators: MutableSet<ResearcherId> = mutableSetOf(),
 ) : Entity(reviewId) {
+
     private val _collaborators = collaborators
     val collaborators get() = _collaborators.toSet()
+
     var owner = owner
         private set
-    lateinit var title: String
-        private set
-    lateinit var description: String
-        private set
+
+    //TODO I changed trying to keep it symple
+    var title: String = title
+        set(value) {
+            require(value.isNotBlank()) { "Title must not be blank." }
+            field = value
+        }
+
+    var description = description
+        set(value){
+            require(value.isNotBlank()) { "Description must not be blank." }
+            field = value
+        }
 
     init {
-        setTitleOrDescription(title = title, description = description)
         collaborators.add(owner)
-    }
-
-    private fun validate() : Notification {
-        val notification = Notification()
-        if(title.isBlank())
-            notification.addError("Title must not be blank")
-        if(description.isBlank())
-            notification.addError("Description must not be blank")
-        return notification
     }
 
     companion object
 
+    fun addCollaborator(researcherId: ResearcherId) = _collaborators.add(researcherId)
+
     fun changeOwner(researcherId: ResearcherId){
-        if (!containsCollaborator(researcherId))
+        if (!_collaborators.contains(researcherId))
             _collaborators.add(researcherId)
         owner = researcherId
     }
-
-    fun rename(title: String) = setTitleOrDescription(title = title)
-
-    fun changeDescription(description: String) = setTitleOrDescription(description = description)
-
-    private fun setTitleOrDescription(title: String? = null, description: String? = null) {
-        this.title = title ?: this.title
-        this.description = description ?: this.description
-
-        val notification = validate()
-        require(notification.hasNoErrors()) { notification.message() }
-    }
-
-    fun addCollaborator(researcherId: ResearcherId) = _collaborators.add(researcherId)
 
     fun removeCollaborator(researcherId: ResearcherId) {
         if (researcherId == owner)
             throw IllegalStateException("Cannot remove the Systematic Study owner: $owner")
 
-        requireThatExists(containsCollaborator(researcherId)) {
-            "Cannot remove member that is not part of the collaboration"
-        }
+        if(!_collaborators.contains(researcherId))
+            throw NoSuchElementException("Cannot remove member that is not part of the collaboration: $researcherId")
 
+        //TODO muito legal que você esteja pegando a ideia de funções, mas acho que para esse caso não fica mais
+        // claro se fizer diretamente?
+
+        //requireThatExists(containsCollaborator(researcherId)) {
+        //    "Cannot remove member that is not part of the collaboration"
+        //}
         _collaborators.remove(researcherId)
     }
-
-    fun containsCollaborator(researcherId: ResearcherId) = _collaborators.contains(researcherId)
 
     override fun toString() = "SystematicStudy(reviewId=$reviewId, title='$title', description='$description', " +
             "owner=$owner, _collaborators=$_collaborators)"
