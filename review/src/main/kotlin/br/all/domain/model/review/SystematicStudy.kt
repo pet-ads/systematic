@@ -5,11 +5,11 @@ import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
 
 class SystematicStudy(
-        val reviewId: ReviewId,
-        val title: String,
-        val description: String,
-        var owner: ResearcherId,
-        collaborators: MutableSet<ResearcherId> = mutableSetOf(),
+    val reviewId: ReviewId,
+    val title: String,
+    val description: String,
+    var owner: ResearcherId,
+    collaborators: MutableSet<ResearcherId> = mutableSetOf(),
 ) : Entity(reviewId) {
     private val _collaborators = collaborators
     val collaborators get() = _collaborators.toSet()
