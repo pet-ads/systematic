@@ -2,8 +2,6 @@ package br.all.domain.model.review
 
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.shared.ddd.Entity
-import br.all.domain.shared.ddd.Notification
-import br.all.domain.shared.utils.requireThatExists
 
 class SystematicStudy(
     val reviewId: ReviewId,
@@ -19,20 +17,21 @@ class SystematicStudy(
     var owner = owner
         private set
 
-    //TODO I changed trying to keep it symple
-    var title: String = title
+    var title: String = ""
         set(value) {
             require(value.isNotBlank()) { "Title must not be blank." }
             field = value
         }
 
-    var description = description
+    var description = ""
         set(value){
             require(value.isNotBlank()) { "Description must not be blank." }
             field = value
         }
 
     init {
+        this.title = title
+        this.description = description
         collaborators.add(owner)
     }
 
