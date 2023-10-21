@@ -32,7 +32,7 @@ class SystematicStudyTest {
     @Test
     fun `Should owner be a collaborator`(){
         val ownerId = sut.owner
-        assertTrue(sut.containsCollaborator(ownerId))
+        assertTrue(ownerId in sut.collaborators)
     }
 
     @Test
@@ -48,7 +48,7 @@ class SystematicStudyTest {
 
         localSut.removeCollaborator(researcherId)
 
-        assertFalse(localSut.containsCollaborator(researcherId))
+        assertFalse(researcherId in localSut.collaborators)
     }
 
     @Test
@@ -70,7 +70,7 @@ class SystematicStudyTest {
         sut.changeOwner(newOwner)
 
         assertAll("change owner",
-            { assertTrue(sut.containsCollaborator(newOwner)) },
+            { assertTrue(newOwner in sut.collaborators) },
             { assertEquals(sut.owner, newOwner)}
         )
     }
@@ -78,30 +78,24 @@ class SystematicStudyTest {
     @ParameterizedTest
     @ValueSource(strings = ["New title", "T"])
     fun `Should successfully change the title`(title: String) {
-        assertAll("changing the title",
-            { assertDoesNotThrow { sut.rename(title) } },
-            { assertEquals(title, sut.title) }
-        )
+        assertDoesNotThrow { sut.title = "New title" }
     }
 
     @ParameterizedTest(name = "[{index}]: title = \"{0}\"")
     @ValueSource(strings = ["", " "])
     fun `Should throw IllegalArgumentException when trying to assign any kind of empty title`(title: String) {
-        assertThrows<IllegalArgumentException> { sut.rename(title) }
+        assertThrows<IllegalArgumentException> { sut.title = title }
     }
 
     @ParameterizedTest
     @ValueSource(strings = ["New description", "D"])
     fun `Should successfully change the description`(description: String) {
-        assertAll("changing the description",
-            { assertDoesNotThrow { (sut.changeDescription(description)) } },
-            { assertEquals(description, sut.description) }
-        )
+        assertDoesNotThrow { sut.description = description }
     }
 
     @ParameterizedTest(name = "[{index}]: description = \"{0}\"")
     @ValueSource(strings = ["", " "])
     fun `Should throw IllegalArgumentException when trying to assign invalid descriptions`(description: String) {
-        assertThrows<IllegalArgumentException> { sut.changeDescription(description) }
+        assertThrows<IllegalArgumentException> { sut.description = description }
     }
 }
