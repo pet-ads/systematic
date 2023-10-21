@@ -17,6 +17,7 @@ class StudyReviewRepositoryStub : StudyReviewRepository{
         return StudyReviewDto(
             id = studyId,
             reviewId = reviewId,
+            studyType = "ARTICLE",
             title = "Título do Estudo",
             year = 2023,
             authors = "Autor 1, Autor 2",
