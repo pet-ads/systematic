@@ -2,6 +2,7 @@ package br.all.domain.model.review
 
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.shared.ddd.Entity
+import br.all.domain.shared.utils.requireThatExists
 
 class SystematicStudy(
     val reviewId: ReviewId,
@@ -45,12 +46,9 @@ class SystematicStudy(
     }
 
     fun removeCollaborator(researcherId: ResearcherId) {
-        if (researcherId == owner)
-            throw IllegalStateException("Cannot remove the Systematic Study owner: $owner")
-
-        if(researcherId !in _collaborators)
-            throw NoSuchElementException("Cannot remove member that is not part of the collaboration: $researcherId")
-
+        check(researcherId != owner) { "Cannot remove the Systematic Study owner: $owner" }
+        requireThatExists(researcherId in _collaborators)
+            { "Cannot remove member that is not part of the collaboration: $researcherId" }
         _collaborators.remove(researcherId)
     }
 
