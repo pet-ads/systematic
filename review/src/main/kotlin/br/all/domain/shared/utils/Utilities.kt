@@ -4,5 +4,5 @@ inline fun requireThatExists(doesItExist: Boolean, message: () -> String = { "Th
     if (!doesItExist) throw NoSuchElementException(message())
 }
 
-inline fun <T> requireThatExists(value: () -> T?, message: () -> String = { "There is not such element" }) = value() ?:
+inline fun <T> requireThatExists(value: T?, message: () -> String = { "There is not such element" }) = value ?:
     throw NoSuchElementException(message())

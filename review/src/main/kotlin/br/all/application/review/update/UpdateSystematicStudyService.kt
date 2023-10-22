@@ -10,9 +10,8 @@ import java.util.*
 
 class UpdateSystematicStudyService(private val systematicStudyRepository: SystematicStudyRepository) {
     fun update(systematicStudyId: UUID, request: UpdateSystematicStudyRequestModel): SystematicStudyResponseModel {
-        //TODO esse require parece que complica mais que ajuda. Não sei. Não é melhor um if simples?
-        val dto = requireThatExists({ systematicStudyRepository.findById(systematicStudyId) })
-                                        { "Cannot find systematic study id with id: $systematicStudyId" }
+        val dto = requireThatExists(systematicStudyRepository.findById(systematicStudyId))
+                        { "Cannot find systematic study id with id: $systematicStudyId" }
 
         val systematicStudy = SystematicStudy.fromDto(dto).apply {
             title = request.title ?: title
