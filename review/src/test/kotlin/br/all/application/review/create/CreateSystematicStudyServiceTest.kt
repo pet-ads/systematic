@@ -4,6 +4,7 @@ import br.all.application.researcher.repository.ResearcherRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
+import br.all.application.review.util.FakeSystematicStudyRepository
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.services.UuidGeneratorService
 import io.mockk.every
@@ -18,7 +19,6 @@ import kotlin.test.assertEquals
 
 @ExtendWith(MockKExtension::class)
 class CreateSystematicStudyServiceTest {
-    @MockK
     private lateinit var systematicStudyRepository: SystematicStudyRepository
 
     @MockK
@@ -31,6 +31,7 @@ class CreateSystematicStudyServiceTest {
 
     @BeforeEach
     fun setUp() {
+        systematicStudyRepository = FakeSystematicStudyRepository()
         sut = CreateSystematicStudyService(systematicStudyRepository, researcherRepository, uuidGeneratorService)
     }
 
@@ -48,10 +49,9 @@ class CreateSystematicStudyServiceTest {
 
         every { uuidGeneratorService.next() } returns id
         every { researcherRepository.existsById(researcherId) } returns true
-        every { systematicStudyRepository.create(dto) } returns Unit
-        every { systematicStudyRepository.findById(id) } returns dto
 
-        val systematicStudy = sut.create(requestModel)
+        sut.create(requestModel)
+        val systematicStudy = systematicStudyRepository.findById(id)
         assertEquals(dto, systematicStudy)
     }
 
