@@ -5,6 +5,7 @@ import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.review.repository.toDto
+import br.all.application.review.shared.SystematicStudyResponseModel
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.shared.ddd.Notification
@@ -15,7 +16,7 @@ class ChangeSystematicStudyOwnerService(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val researcherRepository: ResearcherRepository,
 ) {
-    fun changeOwner(reviewId: UUID, newOwner: UUID) {
+    fun changeOwner(reviewId: UUID, newOwner: UUID): SystematicStudyResponseModel {
         val notification = Notification()
 
         if (!researcherRepository.existsById(newOwner))
@@ -36,10 +37,6 @@ class ChangeSystematicStudyOwnerService(
 
         systematicStudyRepository.create(systematicStudy.toDto())
 
-        //TODO I believe that there is no need to return the full payload only to inform it is ok
-        /*val newDto = systematicStudy.toDto()
-        systematicStudyRepository.create(newDto)
-
-        return newDto*/
+        return SystematicStudyResponseModel(reviewId)
     }
 }
