@@ -34,22 +34,16 @@ class UpdateSystematicStudyServiceTest{
     @Test
     fun `Should only the title be updated`() {
         val requestModel = UpdateSystematicStudyRequestModel("New title", null)
+        val updatedStudy = executeUpdateInSunnyDay(requestModel)
 
-        systematicStudyRepository.create(systematicStudyDto)
-        sut.update(systematicStudyId, requestModel)
-        val updateStudy = systematicStudyRepository.findById(systematicStudyId)
-
-        assertEquals("New title", updateStudy?.title)
-        assertEquals("Old description", updateStudy?.description)
+        assertEquals("New title", updatedStudy?.title)
+        assertEquals("Old description", updatedStudy?.description)
     }
 
     @Test
     fun `Should only the description be updated`() {
         val requestModel = UpdateSystematicStudyRequestModel(null, "New description")
-
-        systematicStudyRepository.create(systematicStudyDto)
-        sut.update(systematicStudyId, requestModel)
-        val updatedStudy = systematicStudyRepository.findById(systematicStudyId)
+        val updatedStudy = executeUpdateInSunnyDay(requestModel)
 
         assertEquals("Old title", updatedStudy?.title)
         assertEquals("New description", updatedStudy?.description)
@@ -58,10 +52,7 @@ class UpdateSystematicStudyServiceTest{
     @Test
     fun `Should both title and description be updated`() {
         val requestModel = UpdateSystematicStudyRequestModel("New title", "New description")
-
-        systematicStudyRepository.create(systematicStudyDto)
-        sut.update(systematicStudyId, requestModel)
-        val updatedStudy = systematicStudyRepository.findById(systematicStudyId)
+        val updatedStudy = executeUpdateInSunnyDay(requestModel)
 
         assertEquals("New title", updatedStudy?.title)
         assertEquals("New description", updatedStudy?.description)
@@ -71,13 +62,16 @@ class UpdateSystematicStudyServiceTest{
     @CsvSource(",", "Old title,Old description")
     fun `Should the study keep the same`(title: String?, description: String?) {
         val requestModel = UpdateSystematicStudyRequestModel(title, description)
-
-        systematicStudyRepository.create(systematicStudyDto)
-        sut.update(systematicStudyId, requestModel)
-        val updatedStudy = systematicStudyRepository.findById(systematicStudyId)
+        val updatedStudy = executeUpdateInSunnyDay(requestModel)
 
         assertEquals("Old title", updatedStudy?.title)
         assertEquals("Old description", updatedStudy?.description)
+    }
+
+    private fun executeUpdateInSunnyDay(requestModel: UpdateSystematicStudyRequestModel): SystematicStudyDto? {
+        systematicStudyRepository.create(systematicStudyDto)
+        sut.update(systematicStudyId, requestModel)
+        return systematicStudyRepository.findById(systematicStudyId)
     }
 
     @Test
