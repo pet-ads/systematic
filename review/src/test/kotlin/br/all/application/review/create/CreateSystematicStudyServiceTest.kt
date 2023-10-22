@@ -20,13 +20,10 @@ import kotlin.test.assertEquals
 @ExtendWith(MockKExtension::class)
 class CreateSystematicStudyServiceTest {
     private lateinit var systematicStudyRepository: SystematicStudyRepository
-
     @MockK
     private lateinit var uuidGeneratorService: UuidGeneratorService
-
     @MockK
     private lateinit var researcherRepository: ResearcherRepository
-
     private lateinit var sut: CreateSystematicStudyService
 
     @BeforeEach
