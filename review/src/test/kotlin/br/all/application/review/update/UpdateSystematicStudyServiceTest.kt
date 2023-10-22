@@ -3,6 +3,7 @@ package br.all.application.review.update
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.FakeSystematicStudyRepository
+import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -35,8 +36,10 @@ class UpdateSystematicStudyServiceTest{
         val requestModel = UpdateSystematicStudyRequestModel("New title", null)
         val updatedStudy = executeUpdateInSunnyDay(requestModel)
 
-        assertEquals("New title", updatedStudy?.title)
-        assertEquals("Old description", updatedStudy?.description)
+        assertAll(
+            { assertEquals("New title", updatedStudy?.title) },
+            { assertEquals("Old description", updatedStudy?.description) },
+        )
     }
 
     @Test
@@ -44,8 +47,10 @@ class UpdateSystematicStudyServiceTest{
         val requestModel = UpdateSystematicStudyRequestModel(null, "New description")
         val updatedStudy = executeUpdateInSunnyDay(requestModel)
 
-        assertEquals("Old title", updatedStudy?.title)
-        assertEquals("New description", updatedStudy?.description)
+        assertAll(
+            { assertEquals("Old title", updatedStudy?.title) },
+            { assertEquals("New description", updatedStudy?.description) },
+        )
     }
 
     @Test
@@ -53,8 +58,10 @@ class UpdateSystematicStudyServiceTest{
         val requestModel = UpdateSystematicStudyRequestModel("New title", "New description")
         val updatedStudy = executeUpdateInSunnyDay(requestModel)
 
-        assertEquals("New title", updatedStudy?.title)
-        assertEquals("New description", updatedStudy?.description)
+        assertAll(
+            { assertEquals("New title", updatedStudy?.title) },
+            { assertEquals("New description", updatedStudy?.description) },
+        )
     }
 
     @ParameterizedTest
@@ -63,8 +70,10 @@ class UpdateSystematicStudyServiceTest{
         val requestModel = UpdateSystematicStudyRequestModel(title, description)
         val updatedStudy = executeUpdateInSunnyDay(requestModel)
 
-        assertEquals("Old title", updatedStudy?.title)
-        assertEquals("Old description", updatedStudy?.description)
+        assertAll(
+            { assertEquals("Old title", updatedStudy?.title) },
+            { assertEquals("Old description", updatedStudy?.description) },
+        )
     }
 
     private fun executeUpdateInSunnyDay(requestModel: UpdateSystematicStudyRequestModel): SystematicStudyDto? {
