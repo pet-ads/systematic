@@ -13,7 +13,6 @@ import java.util.*
 
 class UpdateSystematicStudyServiceTest{
     private lateinit var systematicStudyRepository: SystematicStudyRepository
-    private var systematicStudyId = UUID.randomUUID()
     private lateinit var systematicStudyDto: SystematicStudyDto
     private lateinit var sut: UpdateSystematicStudyService
 
@@ -23,7 +22,7 @@ class UpdateSystematicStudyServiceTest{
         sut = UpdateSystematicStudyService(systematicStudyRepository)
 
         systematicStudyDto = SystematicStudyDto(
-            systematicStudyId,
+            UUID.randomUUID(),
             "Old title",
             "Old description",
             UUID.randomUUID(),
@@ -70,13 +69,13 @@ class UpdateSystematicStudyServiceTest{
 
     private fun executeUpdateInSunnyDay(requestModel: UpdateSystematicStudyRequestModel): SystematicStudyDto? {
         systematicStudyRepository.create(systematicStudyDto)
-        sut.update(systematicStudyId, requestModel)
-        return systematicStudyRepository.findById(systematicStudyId)
+        sut.update(systematicStudyDto.id, requestModel)
+        return systematicStudyRepository.findById(systematicStudyDto.id)
     }
 
     @Test
     fun `Should throw NoSuchElementException for nonexistent systematic study`() {
         val requestModel = UpdateSystematicStudyRequestModel(null, null)
-        assertThrows<NoSuchElementException> { sut.update(systematicStudyId, requestModel) }
+        assertThrows<NoSuchElementException> { sut.update(systematicStudyDto.id, requestModel) }
     }
 }
