@@ -1,6 +1,7 @@
 package br.all.application.review.update
 
 import br.all.application.researcher.repository.ResearcherRepository
+import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.toDto
 import br.all.application.review.util.FakeSystematicStudyRepository
 import br.all.domain.model.researcher.ResearcherId
@@ -21,11 +22,12 @@ import kotlin.test.assertEquals
 class ChangeSystematicStudyOwnerServiceTest {
     @MockK
     private lateinit var researcherRepository : ResearcherRepository
-    private var systematicStudyRepository = FakeSystematicStudyRepository()
+    private lateinit var systematicStudyRepository : SystematicStudyRepository
     private lateinit var sut : ChangeSystematicStudyOwnerService
 
     @BeforeEach
     fun setUp() {
+        systematicStudyRepository = FakeSystematicStudyRepository()
         sut = ChangeSystematicStudyOwnerService(systematicStudyRepository, researcherRepository)
     }
 
