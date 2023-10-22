@@ -17,10 +17,10 @@ class UpdateSystematicStudyService(private val systematicStudyRepository: System
             title = request.title ?: title
             description = request.description ?: description
         }
-
         val newDto = systematicStudy.toDto()
+        
         if (dto != newDto) systematicStudyRepository.create(newDto)
-
+        
         return SystematicStudyResponseModel(systematicStudyId)
     }
 }
