@@ -52,12 +52,6 @@ class SystematicStudy(
         if(!_collaborators.contains(researcherId))
             throw NoSuchElementException("Cannot remove member that is not part of the collaboration: $researcherId")
 
-        //TODO muito legal que você esteja pegando a ideia de funções, mas acho que para esse caso não fica mais
-        // claro se fizer diretamente?
-
-        //requireThatExists(containsCollaborator(researcherId)) {
-        //    "Cannot remove member that is not part of the collaboration"
-        //}
         _collaborators.remove(researcherId)
     }
 
