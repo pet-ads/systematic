@@ -40,8 +40,7 @@ class SystematicStudy(
     fun addCollaborator(researcherId: ResearcherId) = _collaborators.add(researcherId)
 
     fun changeOwner(researcherId: ResearcherId){
-        if (!_collaborators.contains(researcherId))
-            _collaborators.add(researcherId)
+        if (researcherId !in _collaborators) _collaborators.add(researcherId)
         owner = researcherId
     }
 
@@ -49,7 +48,7 @@ class SystematicStudy(
         if (researcherId == owner)
             throw IllegalStateException("Cannot remove the Systematic Study owner: $owner")
 
-        if(!_collaborators.contains(researcherId))
+        if(researcherId !in _collaborators)
             throw NoSuchElementException("Cannot remove member that is not part of the collaboration: $researcherId")
 
         _collaborators.remove(researcherId)
