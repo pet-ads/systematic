@@ -2,11 +2,7 @@ package br.all.application.review.update
 
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.review.repository.toDto
 import br.all.application.review.util.FakeSystematicStudyRepository
-import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.ReviewId
-import br.all.domain.model.review.SystematicStudy
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -17,29 +13,29 @@ import java.util.*
 
 class UpdateSystematicStudyServiceTest{
     private lateinit var systematicStudyRepository: SystematicStudyRepository
-    private lateinit var systematicStudyId: UUID
-    private lateinit var updatingSystematicStudy: SystematicStudy
-    private lateinit var oldDto: SystematicStudyDto
+    private var systematicStudyId = UUID.randomUUID()
+    private lateinit var systematicStudyDto: SystematicStudyDto
     private lateinit var sut: UpdateSystematicStudyService
 
     @BeforeEach
     fun setUp() {
         systematicStudyRepository = FakeSystematicStudyRepository()
         sut = UpdateSystematicStudyService(systematicStudyRepository)
-        systematicStudyId = UUID.randomUUID()
-        updatingSystematicStudy = SystematicStudy(ReviewId(systematicStudyId), "Old title",
-                            "Old description", ResearcherId(UUID.randomUUID()))
-        oldDto = updatingSystematicStudy.toDto()
+
+        systematicStudyDto = SystematicStudyDto(
+            systematicStudyId,
+            "Old title",
+            "Old description",
+            UUID.randomUUID(),
+            emptySet()
+        )
     }
 
     @Test
     fun `Should only the title be updated`() {
         val requestModel = UpdateSystematicStudyRequestModel("New title", null)
 
-        updatingSystematicStudy.title = "New title"
-        val newDto = updatingSystematicStudy.toDto()
-        systematicStudyRepository.create(oldDto)
-
+        systematicStudyRepository.create(systematicStudyDto)
         sut.update(systematicStudyId, requestModel)
         val updateStudy = systematicStudyRepository.findById(systematicStudyId)
 
@@ -51,10 +47,7 @@ class UpdateSystematicStudyServiceTest{
     fun `Should only the description be updated`() {
         val requestModel = UpdateSystematicStudyRequestModel(null, "New description")
 
-        updatingSystematicStudy.description = "New description"
-        val newDto = updatingSystematicStudy.toDto()
-        systematicStudyRepository.create(oldDto)
-
+        systematicStudyRepository.create(systematicStudyDto)
         sut.update(systematicStudyId, requestModel)
         val updatedStudy = systematicStudyRepository.findById(systematicStudyId)
 
@@ -66,11 +59,7 @@ class UpdateSystematicStudyServiceTest{
     fun `Should both title and description be updated`() {
         val requestModel = UpdateSystematicStudyRequestModel("New title", "New description")
 
-        updatingSystematicStudy.title = "New title"
-        updatingSystematicStudy.description = "New description"
-        val newDto = updatingSystematicStudy.toDto()
-        systematicStudyRepository.create(oldDto)
-
+        systematicStudyRepository.create(systematicStudyDto)
         sut.update(systematicStudyId, requestModel)
         val updatedStudy = systematicStudyRepository.findById(systematicStudyId)
 
@@ -83,11 +72,7 @@ class UpdateSystematicStudyServiceTest{
     fun `Should the study keep the same`(title: String?, description: String?) {
         val requestModel = UpdateSystematicStudyRequestModel(title, description)
 
-        updatingSystematicStudy.title = title ?: updatingSystematicStudy.title
-        updatingSystematicStudy.description = description ?: updatingSystematicStudy.description
-        val newDto = updatingSystematicStudy.toDto()
-        systematicStudyRepository.create(oldDto)
-
+        systematicStudyRepository.create(systematicStudyDto)
         sut.update(systematicStudyId, requestModel)
         val updatedStudy = systematicStudyRepository.findById(systematicStudyId)
 
