@@ -9,14 +9,14 @@ class FindOneSystematicStudyService(private val systematicStudyRepository: Syste
     //TODO: Why find one is returning a list as a reponse model? How about return SystematicStudyDto instead
     // ou null instead?
 
-    fun findById(studyId: UUID) : SystematicStudyResponseModel {
+    fun findById(studyId: UUID) : FindSystematicStudyResponseModel {
         val studies = mutableListOf<SystematicStudyDto>()
 
         systematicStudyRepository.findById(studyId)?.let{
             studies.add(it)
         }
 
-        return SystematicStudyResponseModel(studies)
+        return FindSystematicStudyResponseModel(studies)
     }
 
     fun existById(studyId: UUID) = systematicStudyRepository.findById(studyId) != null
