@@ -45,6 +45,11 @@ class PhraseTest {
     fun `Should allow punctuation signs to follow words`() {
         assertDoesNotThrow { Phrase("word, word; word. word: word) word] word} word? word!") }
     }
+    
+    @Test
+    fun `Should hyphens and apostrophes be able to be within words`() {
+        assertDoesNotThrow { Phrase("word-more-word word's") }
+    }
 
     @Test
     fun `Should accept digits and symbols within words if it is quoted`() {
