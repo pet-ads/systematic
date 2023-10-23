@@ -15,7 +15,7 @@ data class Phrase(val text: String) : ValueObject() {
         if (text.isBlank())
             notification.addError("A phrase must not be blank!")
         if (textHasDigitsAndSymbolsWithinNotQuotedWords())
-            notification.addError("Symbols and numbers should not be within not quoted words in a phrase. " +
+            notification.addError("Symbols should not be within not quoted words in a phrase. " +
                     "Provided: $text")
 
         return notification

@@ -27,12 +27,12 @@ class PhraseTest {
     }
 
     @Test
-    fun `Should throw if there are digits and symbols within not quoted words`() {
-        val invalidPhrase = "1word w0rd f4 \"w0rd\" normal words \"quoted words\" @word w@rd h&"
+    fun `Should throw if there are symbols within not quoted words`() {
+        val invalidPhrase = "normal words \"quoted words\" @word w@rd h&"
         val exception = assertThrows<IllegalArgumentException> {
-            Phrase("1word w0rd f4 \"w0rd\" normal words \"quoted words\" @word w@rd h&")
+            Phrase(invalidPhrase)
         }
-        assertEquals("Symbols and numbers should not be within not quoted words in a phrase. " +
+        assertEquals("Symbols should not be within not quoted words in a phrase. " +
                 "Provided: $invalidPhrase", exception.message)
     }
 
