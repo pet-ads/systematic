@@ -2,45 +2,56 @@ package br.all.domain.model.review
 
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.shared.ddd.Entity
-import br.all.domain.shared.ddd.Notification
+import br.all.domain.shared.utils.requireThatExists
 
 class SystematicStudy(
-    val systematicStudyId: ReviewId,
-    val title: String,
-    val description: String,
-    var owner: ResearcherId,
-    val collaborators: MutableSet<ResearcherId> = mutableSetOf(),
-) : Entity(systematicStudyId) {
+    val reviewId: ReviewId,
+    title: String,
+    description: String,
+    owner: ResearcherId,
+    collaborators: MutableSet<ResearcherId> = mutableSetOf(),
+) : Entity(reviewId) {
+
+    private val _collaborators = collaborators
+    val collaborators get() = _collaborators.toSet()
+
+    var owner = owner
+        private set
+
+    var title: String = ""
+        set(value) {
+            require(value.isNotBlank()) { "Title must not be blank." }
+            field = value
+        }
+
+    var description = ""
+        set(value){
+            require(value.isNotBlank()) { "Description must not be blank." }
+            field = value
+        }
 
     init {
-        val notification = validate()
-        require(notification.hasNoErrors()) { notification.message() }
+        this.title = title
+        this.description = description
         collaborators.add(owner)
     }
 
-    private fun validate() : Notification {
-        val notification = Notification()
-        if(title.isBlank()) notification.addError("Title must not be blank")
-        if(description.isBlank()) notification.addError("Description must not be blank")
-        return notification
-    }
-
-    //TODO: add all unit tests
     companion object
 
+    fun addCollaborator(researcherId: ResearcherId) = _collaborators.add(researcherId)
+
     fun changeOwner(researcherId: ResearcherId){
-        if (!collaborators.contains(researcherId)) collaborators.add(researcherId)
+        if (researcherId !in _collaborators) _collaborators.add(researcherId)
         owner = researcherId
     }
 
-    fun addCollaborator(researcherId: ResearcherId) = collaborators.add(researcherId)
-
     fun removeCollaborator(researcherId: ResearcherId) {
-        if (researcherId == owner) throw IllegalStateException("Can not remove the Systematic Study owner: $owner")
-        if (!collaborators.contains(researcherId)) throw NoSuchElementException("Can not remove member that is not part of the collaboration")
-        collaborators.remove(researcherId)
+        check(researcherId != owner) { "Cannot remove the Systematic Study owner: $owner" }
+        requireThatExists(researcherId in _collaborators)
+            { "Cannot remove member that is not part of the collaboration: $researcherId" }
+        _collaborators.remove(researcherId)
     }
 
-    override fun toString() = "SystematicStudy(id=$id, title='$title', description='$description', researchers=$collaborators)"
-
+    override fun toString() = "SystematicStudy(reviewId=$reviewId, title='$title', description='$description', " +
+            "owner=$owner, _collaborators=$_collaborators)"
 }

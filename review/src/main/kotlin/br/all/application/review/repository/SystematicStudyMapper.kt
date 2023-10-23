@@ -7,7 +7,7 @@ import br.all.domain.model.review.SystematicStudy
 import java.util.*
 
 fun SystematicStudy.toDto() = SystematicStudyDto(
-    systematicStudyId.value,
+    reviewId.value,
     title,
     description,
     owner.value,
@@ -20,8 +20,15 @@ fun SystematicStudy.Companion.fromRequestModel(id: UUID, requestModel: Systemati
         requestModel.title,
         requestModel.description,
         ResearcherId(requestModel.owner),
-        requestModel.collaborators
-            .map { ResearcherId(it) }
-            .toMutableSet(),
     )
 }
+
+fun SystematicStudy.Companion.fromDto(dto: SystematicStudyDto) = SystematicStudy(
+    ReviewId(dto.id),
+    dto.title,
+    dto.description,
+    ResearcherId(dto.owner),
+    dto.collaborators
+        .map { ResearcherId(it) }
+        .toMutableSet(),
+)
