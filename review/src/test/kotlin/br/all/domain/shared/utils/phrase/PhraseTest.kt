@@ -37,6 +37,11 @@ class PhraseTest {
     }
 
     @Test
+    fun `Should digits be within not quoted words`() {
+        assertDoesNotThrow { Phrase("CO2 H2O 1x e4") }
+    }
+
+    @Test
     fun `Should accept digits and symbols within words if it is quoted`() {
         assertDoesNotThrow { Phrase("\"quoted.word$8946532s\"") }
     }
