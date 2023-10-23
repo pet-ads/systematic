@@ -23,7 +23,7 @@ data class Phrase(val text: String) : ValueObject() {
 
     private fun textHasDigitsAndSymbolsWithinNotQuotedWords() : Boolean {
         val notQuotedWords = Regex("\"[^\"]+\"|'[^']+'").split(text)
-        val pattern = Regex("[a-z]*[^a-z ]+[a-z]+|[a-z]+[^a-z ]+", RegexOption.IGNORE_CASE)
+        val pattern = Regex("[a-z]*[^a-z0-9 ]+[a-z]+|[a-z]+[^a-z0-9 ]+", RegexOption.IGNORE_CASE)
 
         return notQuotedWords.any { pattern.containsMatchIn(it) }
     }
