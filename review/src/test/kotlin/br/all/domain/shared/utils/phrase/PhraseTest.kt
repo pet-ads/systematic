@@ -42,6 +42,11 @@ class PhraseTest {
     }
 
     @Test
+    fun `Should allow punctuation signs to follow words`() {
+        assertDoesNotThrow { Phrase("word, word; word. word: word) word] word} word? word!") }
+    }
+
+    @Test
     fun `Should accept digits and symbols within words if it is quoted`() {
         assertDoesNotThrow { Phrase("\"quoted.word$8946532s\"") }
     }
