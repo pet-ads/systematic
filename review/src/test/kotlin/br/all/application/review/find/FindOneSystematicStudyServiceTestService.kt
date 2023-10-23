@@ -26,20 +26,14 @@ class FindOneSystematicStudyServiceTestService {
 
     @Test
     fun `Should find a single systematic study`() {
-        val studyId = mockkRepositoryToFindOne()
-
-        val responseModel = sut.findById(studyId)
-        assertEquals(1, responseModel.studies.size)
-    }
-
-    private fun mockkRepositoryToFindOne(): UUID {
         val studyId = UUID.randomUUID()
         val systematicStudyDto = SystematicStudyDto(studyId, "Some title", "Some description",
-                                        UUID.randomUUID(), emptySet())
+            UUID.randomUUID(), emptySet())
 
         every { systematicStudyRepository.findById(studyId) } returns systematicStudyDto
 
-        return studyId
+        val responseModel = sut.findById(studyId)
+        assertEquals(systematicStudyDto, responseModel)
     }
 
     @Test
@@ -47,7 +41,7 @@ class FindOneSystematicStudyServiceTestService {
         val studyId = mockkRepositoryToFindNothing()
 
         val responseModel = sut.findById(studyId)
-        assertEquals(0, responseModel.studies.size)
+        assertEquals(null, responseModel)
     }
 
     private fun mockkRepositoryToFindNothing(): UUID {
@@ -58,7 +52,11 @@ class FindOneSystematicStudyServiceTestService {
 
     @Test
     fun `Should systematic study exist`() {
-        val studyId = mockkRepositoryToFindOne()
+        val studyId = UUID.randomUUID()
+        val systematicStudyDto = SystematicStudyDto(studyId, "Some title", "Some description",
+            UUID.randomUUID(), emptySet())
+
+        every { systematicStudyRepository.findById(studyId) } returns systematicStudyDto
         assertTrue { sut.existById(studyId) }
     }
 
