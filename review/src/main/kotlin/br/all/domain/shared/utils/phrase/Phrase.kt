@@ -14,14 +14,14 @@ data class Phrase(val text: String) : ValueObject() {
 
         if (text.isBlank())
             notification.addError("A phrase must not be blank!")
-        if (descriptionHasDigitsAndSymbolsWithinNotQuotedWords())
+        if (textHasDigitsAndSymbolsWithinNotQuotedWords())
             notification.addError("Symbols and numbers should not be within not quoted words in a phrase. " +
                     "Provided: $text")
 
         return notification
     }
 
-    private fun descriptionHasDigitsAndSymbolsWithinNotQuotedWords() : Boolean {
+    private fun textHasDigitsAndSymbolsWithinNotQuotedWords() : Boolean {
         val notQuotedWords = Regex("\"[^\"]+\"|'[^']+'").split(text)
         val pattern = Regex("[a-z]*[^a-z ]+[a-z]+|[a-z]+[^a-z ]+", RegexOption.IGNORE_CASE)
 
