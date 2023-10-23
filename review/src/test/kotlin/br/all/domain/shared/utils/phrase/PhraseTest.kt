@@ -44,6 +44,6 @@ class PhraseTest {
     @Test
     fun `Should throw with useful message when description is blank`() {
         val exception = assertThrows<IllegalArgumentException> { Phrase("") }
-        assertEquals("A criteria cannot have a blank description!", exception.message)
+        assertEquals("A phrase must not be blank!", exception.message)
     }
 }
