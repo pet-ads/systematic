@@ -12,4 +12,6 @@ class FakeSystematicStudyRepository : SystematicStudyRepository {
     override fun findById(systematicStudyId: UUID): SystematicStudyDto? = db[systematicStudyId]
 
     override fun findAll(): List<SystematicStudyDto> = db.values.toList()
+
+    override fun existsById(systematicStudyId: UUID) = systematicStudyId in db.keys
 }
