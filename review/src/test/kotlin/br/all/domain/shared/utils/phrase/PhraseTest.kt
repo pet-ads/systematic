@@ -63,6 +63,11 @@ class PhraseTest {
     }
 
     @Test
+    fun `Should a word be able to follow a open parenthesis or bracket or brace`() {
+        assertDoesNotThrow { Phrase("(word [word {word") }
+    }
+
+    @Test
     fun `Should throw with useful message when description is blank`() {
         val exception = assertThrows<IllegalArgumentException> { Phrase("") }
         assertEquals("A phrase must not be blank!", exception.message)
