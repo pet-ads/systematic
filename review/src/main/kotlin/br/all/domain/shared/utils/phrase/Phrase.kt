@@ -14,6 +14,8 @@ data class Phrase(val text: String) : ValueObject() {
 
         if (text.isBlank())
             notification.addError("A phrase must not be blank!")
+        if (groupingSignsAreNotCorrectlyClose())
+            notification.addError("Parenthesis, brackets and/or braces should be closed appropriately!")
         if (textHasDigitsAndSymbolsWithinNotQuotedWords())
             notification.addError("Symbols should not be within not quoted words in a phrase. " +
                     "Provided: $text")
@@ -31,5 +33,26 @@ data class Phrase(val text: String) : ValueObject() {
                 startsOrEndsWithHyphenOrApostrophe, RegexOption.IGNORE_CASE)
 
         return notQuotedWords.any { pattern.containsMatchIn(it) }
+    }
+
+    private fun groupingSignsAreNotCorrectlyClose() : Boolean {
+        val openingSigns = setOf('(', '[', '{')
+        val closingSigns = setOf(')', ']', '}')
+        val signs = mutableListOf<Char>()
+
+        for (c in text) {
+            if (c in openingSigns) {
+                signs.add(c)
+                continue
+            }
+            if (c !in closingSigns) continue
+            if (signs.isEmpty()) return true
+
+            val lastOpeningSing = signs.last()
+            if (closingSigns.indexOf(c) != openingSigns.indexOf(lastOpeningSing)) return true
+
+            signs.removeLast()
+        }
+        return false
     }
 }
