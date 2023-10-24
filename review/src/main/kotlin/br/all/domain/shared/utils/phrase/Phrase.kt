@@ -26,11 +26,12 @@ data class Phrase(val text: String) : ValueObject() {
     private fun textHasDigitsAndSymbolsWithinNotQuotedWords() : Boolean {
         val notQuotedWords = Regex("\"[^\"]+\"|'[^']+'").split(text)
 
-        val notAllowedSymbolsWithin = "[a-z]*[^a-z0-9'\\- ]+[a-z]+"
-        val notAllowedSymbolsAfter = "[a-z]+[^a-z0-9,.;:?\\]})!'\\- ]+"
-        val startsOrEndsWithHyphenOrApostrophe = "[a-z]+[-']([^a-z0-9 ]+|\\$)|(^|[^a-z0-9])[-'][a-z]+"
-        val pattern = Regex("$notAllowedSymbolsWithin|$notAllowedSymbolsAfter|" +
-                startsOrEndsWithHyphenOrApostrophe, RegexOption.IGNORE_CASE)
+        val symbols = "[^a-z0-9(\\[{'\\- ]"
+        val symbolsInside = "[a-z]+($symbols|[(\\[{])+[a-z]+"
+        val startsWithSymbols = "$symbols+[a-z]+"
+        val endsWithNotAllowedSymbols = "[a-z]+[^a-z0-9(\\[{'\\-,.;:?\\]})! ]"
+        val pattern = Regex("$symbolsInside|$startsWithSymbols|$endsWithNotAllowedSymbols",
+            RegexOption.IGNORE_CASE)
 
         return notQuotedWords.any { pattern.containsMatchIn(it) }
     }
