@@ -20,7 +20,7 @@ class Protocol(
     val studyTypeDefinition: Phrase,
     val selectionProcess: Phrase,
     selectionCriteria: Set<Criteria>,
-    val dataCollectionProcess: String,
+    val dataCollectionProcess: Phrase,
     val analysisAndSynthesisProcess: Phrase,
     extractionFormFields: Set<QuestionId> = emptySet(),
     qualityFormFields: Set<QuestionId> = emptySet(),
