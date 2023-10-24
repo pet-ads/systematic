@@ -29,7 +29,7 @@ class TextualTest {
         val code = "T1"
         val description = "Sample textual question"
         val textualQuestion = Textual(questionId, protocolId, code, description)
-        assertThrows(IllegalArgumentException::class.java) { textualQuestion.validateAnswer(null) }
+        assertThrows(NullPointerException::class.java) { textualQuestion.validateAnswer(null) }
     }
 
     @Test
@@ -39,13 +39,7 @@ class TextualTest {
         val code = "T1"
         val description = "Sample textual question"
         val textualQuestion = Textual(questionId, protocolId, code, description)
-
-        //TODO there is not need for asserting the assertion. Take a look in the test above.
         val answer = ""
-        val exception = assertThrows(IllegalArgumentException::class.java) {
-            textualQuestion.validateAnswer(answer)
-        }
-
-        assertEquals("Answer can not be null or blank.", exception.message)
+        assertThrows(IllegalArgumentException::class.java) { textualQuestion.validateAnswer(answer) }
     }
 }

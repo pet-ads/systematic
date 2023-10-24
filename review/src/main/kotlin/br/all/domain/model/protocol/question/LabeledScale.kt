@@ -11,7 +11,12 @@ class LabeledScale(
     scales: Map<String, Int>
 ) : Question<Label>(id, protocolId, code, description) {
 
-    private val _scales = scales.map{(key, value) -> Label(key, value)}
+    private val _scales = scales.map { (key, value) -> Label(key, value) }
+
+    init {
+        val notification = validate()
+        require(notification.hasNoErrors()) { notification.message() }
+    }
 
     override fun validate(): Notification {
         val notification = super.validate()

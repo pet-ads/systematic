@@ -18,11 +18,6 @@ abstract class Question<T>(
 
     abstract fun validateAnswer(value: T?): T
 
-    init {
-        val notification = validate()
-        require(notification.hasNoErrors()) { notification.message() }
-    }
-
     protected open fun validate(): Notification {
         val notification = Notification()
         if (code.isBlank())

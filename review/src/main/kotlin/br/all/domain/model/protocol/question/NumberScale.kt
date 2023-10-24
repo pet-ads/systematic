@@ -22,11 +22,10 @@ class NumberScale(
 
     override fun validate(): Notification {
         val notification = super.validate()
-        if (higher > lower)
-            notification.addError("\"Higher\" value must be greater or equal than \"lower\" value.")
+        if (higher < lower)
+            notification.addError("\"Higher\" ${higher} value must be greater or equal than \"lower\" value.")
         return notification
     }
 
-    //TODO: use on line statement for simple methods
     override fun toString() = "NumberScale(questionId=$id, higher=$higher, lower=$lower)"
 }
