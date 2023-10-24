@@ -1,25 +1,27 @@
 package br.all.domain.model.protocol
 
+import br.all.domain.model.review.ReviewId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.utils.Language
+import br.all.domain.shared.utils.phrase.Phrase
 
 class Protocol(
-    protocolId: ProtocolId,
-    val goal: String,
-    val justification: String,
+    val protocolId: ProtocolId,
+    val reviewId: ReviewId,
+    val goal: Phrase,
+    val justification: Phrase,
     val researchQuestions: Set<ResearchQuestion>,
     keywords: Set<String>,
-    sources: Set<SearchSource>,
-    val sourcesSelectionMethod: String,
-    val searchMethod: String,
+    val searchString: String,
+    informationSources: Set<SearchSource>,
+    val sourcesSelectionCriteria: Phrase,
+    val searchMethod: Phrase,
     studiesLanguages: Set<Language>,
-    val studyTypeDefinition: String,
-    val selectionMethod: String,
+    val studyTypeDefinition: Phrase,
+    val selectionProcess: Phrase,
     selectionCriteria: Set<Criteria>,
-    val extractionMethod: String,
-    val qualityEvaluationMethod: String,
-    val summarizationMethod: String,
-    val publishingMethod: String,
+    val dataCollectionProcess: String,
+    val analysisAndSynthesisProcess: Phrase,
     extractionFormFields: Set<QuestionId> = emptySet(),
     qualityFormFields: Set<QuestionId> = emptySet(),
     val picoc: PICOC? = null,
@@ -27,8 +29,8 @@ class Protocol(
     private val _keywords = keywords.toMutableSet()
     val keywords get() = _keywords.toSet()
 
-    private val _sources = sources.toMutableSet()
-    val sources get() = _sources.toSet()
+    private val _informationSources = informationSources.toMutableSet()
+    val informationSources get() = _informationSources.toSet()
 
     private val _studiesLanguages = studiesLanguages.toMutableSet()
     val studiesLanguages get() = _studiesLanguages.toSet()
@@ -47,9 +49,9 @@ class Protocol(
     fun removeKeyword(keyword: String) = _keywords.removeKeepingOne(keyword)
                                             { "There must be at least one keyword defined!" }
 
-    fun addSearchSource(searchSource: SearchSource) = _sources.add(searchSource)
+    fun addSearchSource(searchSource: SearchSource) = _informationSources.add(searchSource)
 
-    fun removeSearchSource(searchSource: SearchSource) = _sources.removeKeepingOne(searchSource)
+    fun removeSearchSource(searchSource: SearchSource) = _informationSources.removeKeepingOne(searchSource)
                                                 { "There must be at least one search source!" }
 
     fun addLanguage(language: Language) = _studiesLanguages.add(language)
