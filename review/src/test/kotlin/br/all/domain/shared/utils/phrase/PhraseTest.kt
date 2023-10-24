@@ -57,6 +57,12 @@ class PhraseTest {
     }
 
     @Test
+    fun `Should throw if parenthesis and brackets and braces are not appropriately closed`() {
+        val exception = assertThrows<IllegalArgumentException> { Phrase("(({[ word })]") }
+        assertEquals("Parenthesis, brackets and/or braces should be closed appropriately!", exception.message)
+    }
+
+    @Test
     fun `Should throw with useful message when description is blank`() {
         val exception = assertThrows<IllegalArgumentException> { Phrase("") }
         assertEquals("A phrase must not be blank!", exception.message)
