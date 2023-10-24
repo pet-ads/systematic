@@ -43,7 +43,7 @@ class PhraseTest {
 
     @Test
     fun `Should allow punctuation signs to follow words`() {
-        assertDoesNotThrow { Phrase("word, word; word. word: word) word] word} word? word!") }
+        assertDoesNotThrow { Phrase("word, word; word. word: ( word) [ word] { word} word? word!") }
     }
     
     @Test
