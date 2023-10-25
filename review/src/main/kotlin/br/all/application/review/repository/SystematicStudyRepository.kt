@@ -7,4 +7,7 @@ interface SystematicStudyRepository {
 
     fun findById(systematicStudyId : UUID) : SystematicStudyDto?
 
+    fun findAll() : List<SystematicStudyDto>
+
+    fun existsById(systematicStudyId: UUID) : Boolean
 }
