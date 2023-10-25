@@ -59,6 +59,7 @@ class MongoStudyReviewRepositoryTest (
         return StudyReviewDocument(
             id,
             reviewId,
+            "Article",
             "Test title",
             2023,
             "Lucas",
