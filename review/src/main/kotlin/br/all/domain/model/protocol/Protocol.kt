@@ -9,20 +9,26 @@ import br.all.domain.shared.utils.phrase.Phrase
 class Protocol(
     val protocolId: ProtocolId,
     val reviewId: ReviewId,
+
     val goal: Phrase,
     val justification: Phrase,
+
     val researchQuestions: Set<ResearchQuestion>,
     keywords: Set<String>,
     val searchString: String,
     informationSources: Set<SearchSource>,
     val sourcesSelectionCriteria: Phrase,
+
     val searchMethod: Phrase,
     studiesLanguages: Set<Language>,
     val studyTypeDefinition: Phrase,
+
     val selectionProcess: Phrase,
     selectionCriteria: Set<Criteria>,
+
     val dataCollectionProcess: Phrase,
     val analysisAndSynthesisProcess: Phrase,
+
     extractionFormFields: Set<QuestionId> = emptySet(),
     qualityFormFields: Set<QuestionId> = emptySet(),
     val picoc: PICOC? = null,
