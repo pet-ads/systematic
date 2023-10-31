@@ -4,9 +4,10 @@ import java.util.function.Predicate
 
 class NeverEmptyMutableSet<T> private constructor(
     private val innerSet: MutableSet<T>,
-    vararg source: T,
+    source: Collection<T>,
 ): MutableSet<T> by innerSet {
-    constructor(vararg source: T) : this(mutableSetOf(), source = source)
+    constructor(vararg source: T) : this(source.toSet())
+    constructor(source: Collection<T>) : this(mutableSetOf(), source = source)
 
     init {
         require(source.isNotEmpty()) { "Unable to create a NeverEmptyMutableSet from an empty source of elements!" }
@@ -18,7 +19,9 @@ class NeverEmptyMutableSet<T> private constructor(
     override fun clear() = clear(elementAt(0))
 
     fun clear(keepingElement: T) {
-        innerSet.removeIf { it == keepingElement }
+        require(keepingElement in innerSet) { "Unable to clear the set because the given element to keep " +
+                "(keepingElement=$keepingElement) are not in this set!" }
+        innerSet.retainAll { it == keepingElement }
     }
 
     override fun remove(element: T): Boolean {
@@ -51,4 +54,6 @@ class NeverEmptyMutableSet<T> private constructor(
 
 fun <T> Set<T>.toNeverEmptyMutableSet() = NeverEmptyMutableSet(elementAt(0)).also { it.addAll(this) }
 
-fun <T> neverEmptyMutableSetOf(element: T, vararg elements: T) = NeverEmptyMutableSet(element, elements)
+fun <T> neverEmptyMutableSetOf(element: T, vararg elements: T) = NeverEmptyMutableSet(
+    elements.toMutableSet().also {it.add(element) }
+)
