@@ -52,19 +52,6 @@ class Protocol(
     private val _qualityFormFields = qualityFormFields.toMutableSet()
     val qualityFormFields get() = _qualityFormFields.toSet()
 
-    fun addKeyword(keyword: String) = _keywords.add(keyword)
-    fun removeKeyword(keyword: String) = _keywords.remove(keyword)
-    fun addSearchSource(searchSource: SearchSource) = _informationSources.add(searchSource)
-    fun removeSearchSource(searchSource: SearchSource) = _informationSources.remove(searchSource)
-    fun addLanguage(language: Language) = _studiesLanguages.add(language)
-    fun removeLanguage(language: Language) = _studiesLanguages.remove(language)
-    fun addSelectionCriteria(criteria: Criteria) = _selectionCriteria.add(criteria)
-    fun removeSelectionCriteria(criteria: Criteria) = _selectionCriteria.remove(criteria)
-    fun addExtractionField(questionId: QuestionId) = _extractionFormFields.add(questionId)
-    fun removeExtractionField(questionId: QuestionId) = _extractionFormFields.remove(questionId)
-    fun addQualityField(questionId: QuestionId) = _qualityFormFields.add(questionId)
-    fun removeQualityField(questionId: QuestionId) = _qualityFormFields.remove(questionId)
-
     init {
         val notification = validate()
         require(notification.hasNoErrors()) { notification.message() }
@@ -82,4 +69,17 @@ class Protocol(
 
         return notification
     }
+
+    fun addKeyword(keyword: String) = _keywords.add(keyword)
+    fun removeKeyword(keyword: String) = _keywords.remove(keyword)
+    fun addSearchSource(searchSource: SearchSource) = _informationSources.add(searchSource)
+    fun removeSearchSource(searchSource: SearchSource) = _informationSources.remove(searchSource)
+    fun addLanguage(language: Language) = _studiesLanguages.add(language)
+    fun removeLanguage(language: Language) = _studiesLanguages.remove(language)
+    fun addSelectionCriteria(criteria: Criteria) = _selectionCriteria.add(criteria)
+    fun removeSelectionCriteria(criteria: Criteria) = _selectionCriteria.remove(criteria)
+    fun addExtractionField(questionId: QuestionId) = _extractionFormFields.add(questionId)
+    fun removeExtractionField(questionId: QuestionId) = _extractionFormFields.remove(questionId)
+    fun addQualityField(questionId: QuestionId) = _qualityFormFields.add(questionId)
+    fun removeQualityField(questionId: QuestionId) = _qualityFormFields.remove(questionId)
 }
