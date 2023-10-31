@@ -40,4 +40,10 @@ class NeverEmptyMutableSetTest {
             { assertContains(sut, 50) },
         )
     }
+    
+    @Test
+    fun `Should throw IllegalStateException when trying to remove an element when there is only one remaining`() {
+        val sut = neverEmptyMutableSetOf(10)
+        assertThrows<IllegalStateException> { sut.remove(10) }
+    }
 }
