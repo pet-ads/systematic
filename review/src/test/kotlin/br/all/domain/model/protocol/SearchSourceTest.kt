@@ -1,6 +1,5 @@
-package br.all.domain.shared.ddd
+package br.all.domain.model.protocol
 
-import br.all.domain.model.protocol.SearchSource
 import br.all.domain.shared.utils.Text
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
