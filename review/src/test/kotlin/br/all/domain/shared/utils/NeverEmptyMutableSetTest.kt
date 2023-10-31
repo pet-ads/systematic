@@ -3,6 +3,7 @@ package br.all.domain.shared.utils
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertThrows
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 class NeverEmptyMutableSetTest {
@@ -25,6 +26,18 @@ class NeverEmptyMutableSetTest {
         assertAll(
             { assertEquals(1, sut.size) },
             { assertEquals(30, sut.first()) }
+        )
+    }
+    
+    @Test
+    fun `Should successfully create an NeverEmptyMutableSet of Int`() {
+        val sut = neverEmptyMutableSetOf(10, 20, 30, 40, 50)
+        assertAll(
+            { assertContains(sut, 10) },
+            { assertContains(sut, 20) },
+            { assertContains(sut, 30) },
+            { assertContains(sut, 40) },
+            { assertContains(sut, 50) },
         )
     }
 }
