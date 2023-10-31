@@ -50,6 +50,8 @@ class NeverEmptyMutableSet<T> private constructor(
     operator fun get(index: Int) = elementAt(index)
 
     fun toMutableSet() = innerSet.toMutableSet()
+
+    override fun toString() = innerSet.joinToString(", ", "[", "]")
 }
 
 fun <T> Set<T>.toNeverEmptyMutableSet() = NeverEmptyMutableSet(elementAt(0)).also { it.addAll(this) }
