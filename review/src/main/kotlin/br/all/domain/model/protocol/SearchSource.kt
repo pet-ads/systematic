@@ -16,7 +16,7 @@ data class SearchSource(val searchSource: String) : ValueObject() {
 
         if (searchSource.isBlank())
             notification.addError("A search source must not be blank!")
-        if (!regex.matches(searchSource))
+        if (!(regex matches searchSource))
             notification.addError("A search source must contain words with only letters and that begin " +
                     "with a capital one! Provided: $searchSource")
 
