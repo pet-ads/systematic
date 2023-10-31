@@ -5,6 +5,7 @@ import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class NeverEmptyMutableSetTest {
     @Test
@@ -45,5 +46,11 @@ class NeverEmptyMutableSetTest {
     fun `Should throw IllegalStateException when trying to remove an element when there is only one remaining`() {
         val sut = neverEmptyMutableSetOf(10)
         assertThrows<IllegalStateException> { sut.remove(10) }
+    }
+
+    @Test
+    fun `Should successfully remove an element if it exists and it will not cause in empty set`() {
+        val sut = neverEmptyMutableSetOf(10, 20)
+        assertTrue { sut.remove(20) }
     }
 }
