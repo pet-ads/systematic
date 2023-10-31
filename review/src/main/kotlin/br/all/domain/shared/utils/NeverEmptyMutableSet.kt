@@ -20,7 +20,7 @@ class NeverEmptyMutableSet<T>(
 
     override fun remove(element: T): Boolean {
         check(size > 1) { "Unable to remove elements so far because it would cause this set to be empty!" }
-        return removeIf { it == element }
+        return removeIf{ it == element }
     }
 
     override fun removeAll(elements: Collection<T>): Boolean {
@@ -38,19 +38,7 @@ class NeverEmptyMutableSet<T>(
     }
 
     override fun removeIf(filter: Predicate<in T>): Boolean {
-        var somethingWasRemoved = false
-        val iterator = iterator()
-
-        while (iterator.hasNext() && size > 1) {
-            val element = iterator.next()
-
-            if (filter.test(element)) {
-                somethingWasRemoved = true
-                remove(element)
-            }
-        }
-
-        return somethingWasRemoved
+        return super.removeIf(filter.and { size > 1 })
     }
 
     operator fun get(index: Int) = elementAt(index)
