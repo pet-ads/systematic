@@ -93,6 +93,16 @@ class NeverEmptyMutableSetTest {
         sut.retainAll(setOf(10, 20, 30, 40, 50))
         assertEquals(5, sut.size)
     }
+    
+    @Test
+    fun `Should one element be retained if elements argument contains only one that is also in the set`() {
+        val sut = generateSetOf(5)
+        sut.retainAll(setOf(10, 60, 70, 80, 90))
+        assertAll(
+            { assertEquals(1, sut.size) },
+            { assertContains(sut, 10) }
+        )
+    }
 
     private fun generateSetOf(size: Int): NeverEmptyMutableSet<Int> {
         val sut = neverEmptyMutableSetOf(10)
