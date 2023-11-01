@@ -25,6 +25,7 @@ class NeverEmptyMutableSet<T> private constructor(
     }
 
     override fun remove(element: T): Boolean {
+        if (element !in innerSet) return false
         check(size > 1) { "Unable to remove elements so far because it would cause this set to be empty!" }
         return innerSet.remove(element)
     }
