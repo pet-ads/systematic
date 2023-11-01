@@ -60,4 +60,13 @@ class NeverEmptyMutableSetTest {
         val sut = neverEmptyMutableSetOf(10)
         assertFalse { sut.remove(20) }
     }
+
+    @Test
+    fun `Should remove all elements listed in a collection if its size is lower than the set`() {
+        val sut = neverEmptyMutableSetOf(10, 20, 30, 40, 50)
+
+        sut.removeAll(setOf(30, 40, 50))
+
+        assertEquals(2, sut.size)
+    }
 }
