@@ -31,9 +31,10 @@ class NeverEmptyMutableSet<T> private constructor(
     }
 
     override fun removeAll(elements: Collection<T>): Boolean {
-        require(elements.size < size || elements.size == size && !containsAll(elements))
+        val elementsAsSet = elements.toSet()
+        require(elementsAsSet.size < size || innerSet.intersect(elementsAsSet).size < size)
             { "Unable to remove elements: $elements; because it would cause this set to be empty!" }
-        return innerSet.removeAll(elements.toSet())
+        return innerSet.removeAll(elementsAsSet)
     }
 
     override fun retainAll(elements: Collection<T>): Boolean {

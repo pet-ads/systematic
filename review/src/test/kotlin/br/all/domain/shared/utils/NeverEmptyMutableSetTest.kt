@@ -2,6 +2,7 @@ package br.all.domain.shared.utils
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -68,5 +69,15 @@ class NeverEmptyMutableSetTest {
         sut.removeAll(setOf(30, 40, 50))
 
         assertEquals(2, sut.size)
+    }
+
+    @Test
+    fun `Should remove all elements if number of elements that are in the set are lower than the set size`() {
+        val sut = neverEmptyMutableSetOf(10, 20, 30, 40, 50)
+
+        assertAll(
+            { assertDoesNotThrow { sut.removeAll(setOf(10, 20, 30, 60, 70, 80)) } },
+            { assertEquals(2, sut.size) }
+        )
     }
 }
