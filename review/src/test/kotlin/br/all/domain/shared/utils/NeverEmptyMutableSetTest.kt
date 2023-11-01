@@ -104,6 +104,12 @@ class NeverEmptyMutableSetTest {
         )
     }
 
+    @Test
+    fun `Should throw if no elements to retain was given`() {
+        val sut = generateSetOf(5)
+        assertThrows<IllegalArgumentException> { sut.retainAll(emptySet()) }
+    }
+
     private fun generateSetOf(size: Int): NeverEmptyMutableSet<Int> {
         val sut = neverEmptyMutableSetOf(10)
         repeat(size - 1) { sut.add((it + 2) * 10 ) }
