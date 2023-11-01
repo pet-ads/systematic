@@ -87,6 +87,13 @@ class NeverEmptyMutableSetTest {
         assertThrows<IllegalArgumentException> { sut.removeAll(setOf(10, 20, 30, 40, 50, 60)) }
     }
 
+    @Test
+    fun `Should retain all elements`() {
+        val sut = generateSetOf(5)
+        sut.retainAll(setOf(10, 20, 30, 40, 50))
+        assertEquals(5, sut.size)
+    }
+
     private fun generateSetOf(size: Int): NeverEmptyMutableSet<Int> {
         val sut = neverEmptyMutableSetOf(10)
         repeat(size - 1) { sut.add((it + 2) * 10 ) }
