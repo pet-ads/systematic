@@ -38,7 +38,7 @@ class NeverEmptyMutableSet<T> private constructor(
     }
 
     override fun retainAll(elements: Collection<T>): Boolean {
-        require(elements.isEmpty() || elements.none{ it in innerSet }) {
+        require(elements.isNotEmpty() && elements.any { it in innerSet }) {
             "At least one element should be kept in this set! The provided collection: $elements; would cause " +
                     "in all elements being removed!"
         }
