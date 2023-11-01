@@ -80,4 +80,10 @@ class NeverEmptyMutableSetTest {
             { assertEquals(2, sut.size) }
         )
     }
+
+    @Test
+    fun `Should throw if all elements of the set are in the elements argument`() {
+        val sut = neverEmptyMutableSetOf(10, 20, 30, 40, 50)
+        assertThrows<IllegalArgumentException> { sut.removeAll(setOf(10, 20, 30, 40, 50, 60)) }
+    }
 }
