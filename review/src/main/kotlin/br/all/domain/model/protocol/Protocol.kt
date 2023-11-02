@@ -30,8 +30,8 @@ class Protocol(
     val dataCollectionProcess: Phrase,
     val analysisAndSynthesisProcess: Phrase,
 
-    extractionFormFields: Set<QuestionId> = emptySet(),
-    qualityFormFields: Set<QuestionId> = emptySet(),
+    extractionQuestions: Set<QuestionId> = emptySet(),
+    ropQuestions: Set<QuestionId> = emptySet(),
     val picoc: PICOC? = null,
 ) : Entity(protocolId) {
     private val _keywords = keywords.toNeverEmptyMutableSet()
@@ -46,11 +46,11 @@ class Protocol(
     private val _selectionCriteria = selectionCriteria.toNeverEmptyMutableSet()
     val selectionCriteria get() = _selectionCriteria.toSet()
 
-    private val _extractionFormFields = extractionFormFields.toMutableSet()
-    val extractionFormFields get() = _extractionFormFields.toSet()
+    private val _extractionQuestions = extractionQuestions.toMutableSet()
+    val extractionQuestions get() = _extractionQuestions.toSet()
 
-    private val _qualityFormFields = qualityFormFields.toMutableSet()
-    val qualityFormFields get() = _qualityFormFields.toSet()
+    private val _robQuestions = ropQuestions.toMutableSet()
+    val ropQuestions get() = _robQuestions.toSet()
 
     init {
         val notification = validate()
@@ -78,8 +78,8 @@ class Protocol(
     fun removeLanguage(language: Language) = _studiesLanguages.remove(language)
     fun addSelectionCriteria(criteria: Criteria) = _selectionCriteria.add(criteria)
     fun removeSelectionCriteria(criteria: Criteria) = _selectionCriteria.remove(criteria)
-    fun addExtractionField(questionId: QuestionId) = _extractionFormFields.add(questionId)
-    fun removeExtractionField(questionId: QuestionId) = _extractionFormFields.remove(questionId)
-    fun addQualityField(questionId: QuestionId) = _qualityFormFields.add(questionId)
-    fun removeQualityField(questionId: QuestionId) = _qualityFormFields.remove(questionId)
+    fun addExtractionField(questionId: QuestionId) = _extractionQuestions.add(questionId)
+    fun removeExtractionField(questionId: QuestionId) = _extractionQuestions.remove(questionId)
+    fun addQualityField(questionId: QuestionId) = _robQuestions.add(questionId)
+    fun removeQualityField(questionId: QuestionId) = _robQuestions.remove(questionId)
 }
