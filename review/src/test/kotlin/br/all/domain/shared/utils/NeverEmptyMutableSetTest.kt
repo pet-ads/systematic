@@ -116,6 +116,13 @@ class NeverEmptyMutableSetTest {
         assertThrows<IllegalArgumentException>{ sut.retainAll(setOf(60, 70, 80, 90, 100)) }
     }
 
+    @Test
+    fun `Should remove all elements that fit the predicate`() {
+        val sut = generateSetOf(5)
+        sut.removeIf { it >= 20 }
+        assertEquals(1, sut.size)
+    }
+
     private fun generateSetOf(size: Int): NeverEmptyMutableSet<Int> {
         val sut = neverEmptyMutableSetOf(10)
         repeat(size - 1) { sut.add((it + 2) * 10 ) }
