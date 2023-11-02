@@ -123,6 +123,13 @@ class NeverEmptyMutableSetTest {
         assertEquals(1, sut.size)
     }
 
+    @Test
+    fun `Should keep one element if the predicate fits for every element`() {
+        val sut = generateSetOf(5)
+        sut.removeIf { it % 10 == 0 }
+        assertEquals(1, sut.size)
+    }
+
     private fun generateSetOf(size: Int): NeverEmptyMutableSet<Int> {
         val sut = neverEmptyMutableSetOf(10)
         repeat(size - 1) { sut.add((it + 2) * 10 ) }
