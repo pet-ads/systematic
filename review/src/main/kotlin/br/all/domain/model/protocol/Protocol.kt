@@ -7,7 +7,7 @@ import br.all.domain.shared.utils.Language
 import br.all.domain.shared.utils.phrase.Phrase
 import br.all.domain.shared.utils.toNeverEmptyMutableSet
 
-class Protocol(
+class Protocol internal constructor(
     val protocolId: ProtocolId,
     val reviewId: ReviewId,
 
@@ -31,7 +31,7 @@ class Protocol(
     val analysisAndSynthesisProcess: Phrase,
 
     extractionQuestions: Set<QuestionId> = emptySet(),
-    ropQuestions: Set<QuestionId> = emptySet(),
+    robQuestions: Set<QuestionId> = emptySet(),
     val picoc: PICOC? = null,
 ) : Entity(protocolId) {
     private val _keywords = keywords.toNeverEmptyMutableSet()
@@ -49,12 +49,16 @@ class Protocol(
     private val _extractionQuestions = extractionQuestions.toMutableSet()
     val extractionQuestions get() = _extractionQuestions.toSet()
 
-    private val _robQuestions = ropQuestions.toMutableSet()
+    private val _robQuestions = robQuestions.toMutableSet()
     val ropQuestions get() = _robQuestions.toSet()
 
     init {
         val notification = validate()
         require(notification.hasNoErrors()) { notification.message() }
+    }
+
+    companion object {
+        fun write() = ProtocolBuilder.start()
     }
 
     fun validate(): Notification {
