@@ -14,7 +14,7 @@ data class Label(
 
     private fun validate(): Notification {
         val notification = Notification()
-        if (name.isBlank()) notification.addError("Label name can not be blank: \"$name\"")
+        if (name.isBlank()) notification.addError("Label name must not be blank: \"$name\"")
         if (value < 0) notification.addError("Value must be a positive integer: $value")
         return notification
     }

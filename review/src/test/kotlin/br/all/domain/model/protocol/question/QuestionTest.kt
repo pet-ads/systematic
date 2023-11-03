@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Assertions.*
 import java.util.*
 
 class QuestionTest {
+
+    //TODO não entendi porque está fazendo isso. Aqui você está mudando o comportamento do que está testando.
+    //Não é uma boa ideia.
     private class QuestionA(id: QuestionId, protocolId: ProtocolId, code: String, description: String) :
         Question<Int>(id, protocolId, code, description) {
         override fun validateAnswer(value: Int?): Int {
@@ -28,7 +31,6 @@ class QuestionTest {
         val protocolId = ProtocolId(UUID.randomUUID())
         val code = ""
         val description = "Sample question"
-
         assertThrows(IllegalArgumentException::class.java) { QuestionA(questionId, protocolId, code, description) }
     }
 
@@ -38,7 +40,6 @@ class QuestionTest {
         val protocolId = ProtocolId(UUID.randomUUID())
         val code = "a"
         val description = ""
-
         assertThrows(IllegalArgumentException::class.java) { QuestionA(questionId, protocolId, code, description) }
     }
 
@@ -48,8 +49,6 @@ class QuestionTest {
         val protocolId = ProtocolId(UUID.randomUUID())
         val code = ""
         val description = ""
-
         assertThrows(IllegalArgumentException::class.java) { QuestionA(questionId, protocolId, code, description) }
     }
-
 }

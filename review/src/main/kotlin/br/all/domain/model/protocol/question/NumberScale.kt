@@ -8,9 +8,18 @@ class NumberScale(
     protocolId: ProtocolId,
     code: String,
     description: String,
-    private val higher: Int,
-    private val lower: Int,
+    val higher: Int,
+    val lower: Int,
 ) : Question<Int>(id, protocolId, code, description) {
+
+    override fun validate(): Notification {
+        val notification = super.validate()
+        if (higher < lower)
+            notification.addError(
+                "\"Higher\" value (${higher}) must be greater or equal than \"lower\" (${lower}) value."
+            )
+        return notification
+    }
 
     override fun validateAnswer(value: Int?): Int {
         if (value == null)
@@ -20,12 +29,8 @@ class NumberScale(
         return value
     }
 
-    override fun validate(): Notification {
-        val notification = super.validate()
-        if (higher < lower)
-            notification.addError("\"Higher\" ${higher} value must be greater or equal than \"lower\" value.")
-        return notification
-    }
+    operator fun component5(): Int = higher
+    operator fun component6(): Int = lower
 
     override fun toString() = "NumberScale(questionId=$id, higher=$higher, lower=$lower)"
 }

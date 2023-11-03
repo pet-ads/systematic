@@ -20,9 +20,8 @@ class LabeledScale(
 
     override fun validate(): Notification {
         val notification = super.validate()
-
         if (_scales.isEmpty())
-            notification.addError("Can not create a Labeled Scale without a label to choose.")
+            notification.addError("Can not create a labeled scale without a label to choose.")
         return notification
     }
 

@@ -16,8 +16,6 @@ abstract class Question<T>(
             field = validateAnswer(value)
         }
 
-    abstract fun validateAnswer(value: T?): T
-
     protected open fun validate(): Notification {
         val notification = Notification()
         if (code.isBlank())
@@ -28,4 +26,6 @@ abstract class Question<T>(
 
         return notification
     }
+
+    protected abstract fun validateAnswer(value: T?): T
 }
