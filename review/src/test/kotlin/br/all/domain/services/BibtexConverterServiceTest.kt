@@ -1,21 +1,107 @@
 package br.all.domain.services
 
-import br.all.domain.model.study.Doi
-import br.all.domain.model.study.StudyType
+import br.all.domain.model.review.ReviewId
+import br.all.domain.model.study.*
+import br.all.infrastructure.shared.SequenceGeneratorService
+import br.all.infrastructure.study.StudyReviewIdGeneratorService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertThrows
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
+import org.mockito.MockitoAnnotations
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.mongodb.core.MongoOperations
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class BibtexConverterServiceTest {
 
     private lateinit var sut: BibtexConverterService
+    private lateinit var idGeneratorService: IdGeneratorService
 
     @BeforeEach
     fun setup() {
-        sut = BibtexConverterService()
+        val reviewId = ReviewId(UUID.randomUUID())
+        idGeneratorService = mock(IdGeneratorService::class.java)
+        sut = BibtexConverterService(reviewId, idGeneratorService)
+        `when`(idGeneratorService.next())
+            .thenReturn(1L)
+            .thenReturn(2L)
+            .thenReturn(3L)
+            .thenReturn(4L)
+            .thenReturn(5L)
+            .thenReturn(6L)
+            .thenReturn(7L)
+    }
+
+    @Test
+    fun `convertManyToStudyReview should not accept a blank bibtex entry as input`() {
+
+        assertThrows<IllegalArgumentException> {
+            sut.convertManyToStudyReview(ReviewId(UUID.randomUUID()),"")
+        }
+    }
+
+    @Test
+    fun `should create studyReview from valid input`() {
+        val bibtex = testInputs["valid article"].toString()
+
+        val studyReview = sut.convertManyToStudyReview(ReviewId(UUID.randomUUID()), bibtex)
+
+        assertAll(
+            "bibtex",
+            { assertEquals("1", studyReview[0].studyId.toString()) },
+            { assertEquals(StudyType.ARTICLE, studyReview[0].studyType) },
+            { assertEquals("Non-cooperative Games", studyReview[0].title) },
+            { assertEquals(1951, studyReview[0].year) },
+            { assertEquals("Nash, John", studyReview[0].authors) },
+            { assertEquals("Annals of Mathematics", studyReview[0].venue) },
+            { assertEquals("Lorem Ipsum", studyReview[0].abstract) },
+            { assertTrue("keyword1" in studyReview[0].keywords) },
+            { assertTrue("keyword2" in studyReview[0].keywords) },
+            { assertEquals(2, studyReview[0].references.size) },
+            { assertEquals("https://doi.org/10.1234/doi", studyReview[0].doi?.value) },
+            { assertEquals(1, studyReview[0].searchSources.size) },
+            { assertTrue(studyReview[0].criteria.isEmpty()) },
+            { assertTrue(studyReview[0].formAnswers.isEmpty()) },
+            { assertTrue(studyReview[0].qualityAnswers.isEmpty()) },
+            { assertEquals("", studyReview[0].comments) },
+            { assertEquals(ReadingPriority.LOW, studyReview[0].readingPriority) },
+            { assertEquals(SelectionStatus.UNCLASSIFIED, studyReview[0].selectionStatus) },
+            { assertEquals(ExtractionStatus.UNCLASSIFIED, studyReview[0].extractionStatus) }
+        )
+    }
+
+    @Test
+    fun `Should create a StudyReview list from multiple bibtex entries as input`() {
+        val bibtex = testInputs["multiple bibtex entries"].toString()
+
+        val studyReviewList = sut.convertManyToStudyReview(ReviewId(UUID.randomUUID()), bibtex)
+
+        assertEquals(7, studyReviewList.size)
+    }
+
+    @Test
+    fun `Should create a valid sequence of studyIds from multiple bibtex entries as input`() {
+        val bibtex = testInputs["multiple bibtex entries"].toString()
+
+        val studyReviewList = sut.convertManyToStudyReview(ReviewId(UUID.randomUUID()), bibtex)
+
+        assertAll(
+            "bibtex",
+            { assertEquals("1", studyReviewList[0].studyId.toString()) },
+            { assertEquals("2", studyReviewList[1].studyId.toString()) },
+            { assertEquals("3", studyReviewList[2].studyId.toString()) },
+            { assertEquals("4", studyReviewList[3].studyId.toString()) },
+            { assertEquals("5", studyReviewList[4].studyId.toString()) },
+            { assertEquals("6", studyReviewList[5].studyId.toString()) },
+            { assertEquals("7", studyReviewList[6].studyId.toString()) },
+        )
     }
 
     @Test
@@ -81,11 +167,11 @@ class BibtexConverterServiceTest {
     }
 
     @Test
-    fun `should create study from missing optional fields input`(){
+    fun `should create study from missing optional fields input`() {
 
         val bibtex = testInputs["article missing optional fields"].toString()
 
-        val(type, title, year, authors, venue, abstract) = sut.convertMany(bibtex)[0]
+        val (type, title, year, authors, venue, abstract) = sut.convertMany(bibtex)[0]
 
         assertAll(
             "bibtex",
@@ -126,7 +212,7 @@ class BibtexConverterServiceTest {
 
         val bibtex = testInputs["valid inproceedings"].toString()
 
-        val (type, title, year, authors, venue, abstract ,_, references, doi) = sut.convertMany(bibtex)[0]
+        val (type, title, year, authors, venue, abstract, _, references, doi) = sut.convertMany(bibtex)[0]
 
         assertAll(
             "bibtex",
@@ -152,8 +238,12 @@ class BibtexConverterServiceTest {
             "bibtex",
             { assertEquals(StudyType.TECHREPORT, type) },
             { assertEquals("Rafael Serapilha Durelli", authors) },
-            { assertEquals("Uma abordagem apoiada por linguagens específicas de domínio " +
-                    "para a criação de linhas de produto de software embarcado", title) },
+            {
+                assertEquals(
+                    "Uma abordagem apoiada por linguagens específicas de domínio " +
+                            "para a criação de linhas de produto de software embarcado", title
+                )
+            },
             { assertEquals("Universidade Federal de São Carlos (UFSCar)", venue) },
             { assertEquals(2011, year) },
             { assertEquals("Lorem Ipsum", abstract) },
@@ -189,8 +279,12 @@ class BibtexConverterServiceTest {
             "bibtex",
             { assertEquals(StudyType.PROCEEDINGS, type) },
             { assertEquals("Susan Stepney and Sergey Verlan", authors) },
-            { assertEquals("Proceedings of the 17th International Conference on Computation " +
-                    "and Natural Computation, Fontainebleau, France", title) },
+            {
+                assertEquals(
+                    "Proceedings of the 17th International Conference on Computation " +
+                            "and Natural Computation, Fontainebleau, France", title
+                )
+            },
             { assertEquals("Springer", venue) },
             { assertEquals(2018, year) },
             { assertEquals("Lorem Ipsum", abstract) },
@@ -243,8 +337,12 @@ class BibtexConverterServiceTest {
         assertAll(
             "bibtex",
             { assertEquals(StudyType.INBOOK, type) },
-            { assertEquals("Lisa A. Urry and Michael L. Cain and Steven A. Wasserman " +
-                    "and Peter V. Minorsky and Jane B. Reece", authors) },
+            {
+                assertEquals(
+                    "Lisa A. Urry and Michael L. Cain and Steven A. Wasserman " +
+                            "and Peter V. Minorsky and Jane B. Reece", authors
+                )
+            },
             { assertEquals("Photosynthesis", title) },
             { assertEquals("Campbell Biology", venue) },
             { assertEquals(2016, year) },
