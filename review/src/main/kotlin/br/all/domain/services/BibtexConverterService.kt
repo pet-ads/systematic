@@ -1,9 +1,12 @@
 package br.all.domain.services
 
+import br.all.domain.model.review.ReviewId
 import br.all.domain.model.study.*
+import org.springframework.stereotype.Service
 import java.util.*
 
-class BibtexConverterService {
+@Service
+class BibtexConverterService(val reviewId: ReviewId, private val studyReviewIdGeneratorService: IdGeneratorService) {
 
     private val venueTypes = listOf(
         "journal", "booktitle", "institution", "organization",
@@ -11,29 +14,43 @@ class BibtexConverterService {
     )
     private val authorTypes = listOf("author", "authors", "editor")
 
-//    fun convertToStudyReview(study: Study): StudyReview{
-//        return StudyReview(
-//            StudyReviewId(),
-//            ReviewId(),
-//            study.type,
-//            study.title,
-//            study.year,
-//            study.authors,
-//            study.venue,
-//            study.abstract,
-//            study.keywords,
-//            mutableSetOf("insert SearchSources"),
-//            study.references,
-//            study.doi,
-//            mutableSetOf(),
-//            mutableMapOf(),
-//            mutableMapOf(),
-//            "",
-//            ReadingPriority.LOW,
-//            SelectionStatus.UNCLASSIFIED,
-//            ExtractionStatus.UNCLASSIFIED
-//        )
-//    }
+    fun convertManyToStudyReview(reviewId: ReviewId, bibtex: String): List<StudyReview> {
+        require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
+
+        val studies = convertMany(bibtex)
+
+        return studies.map { study: Study -> convertToStudyReview(reviewId, bibtex) }
+    }
+
+    private fun convertToStudyReview(reviewId: ReviewId, bibtex: String): StudyReview {
+        require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
+
+        val studyReviewId = StudyReviewId(studyReviewIdGeneratorService.next())
+
+        val study = convert(bibtex)
+
+        return StudyReview(
+            studyReviewId,
+            reviewId,
+            study.type,
+            study.title,
+            study.year,
+            study.authors,
+            study.venue,
+            study.abstract,
+            study.keywords,
+            mutableSetOf("insert SearchSources"),
+            study.references,
+            study.doi,
+            mutableSetOf(),
+            mutableMapOf(),
+            mutableMapOf(),
+            "",
+            ReadingPriority.LOW,
+            SelectionStatus.UNCLASSIFIED,
+            ExtractionStatus.UNCLASSIFIED
+        )
+    }
 
     fun convertMany(bibtex: String): List<Study> {
         require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
@@ -104,22 +121,5 @@ class BibtexConverterService {
         val matchResult = entryTypeRegex.find(bibtexEntry)
         val studyTypeName = matchResult?.groupValues?.get(1)?.uppercase(Locale.getDefault()) ?: "UNKNOWN"
         return StudyType.valueOf(studyTypeName)
-
-        /*return when (studyTypeName){
-            "article" -> StudyType.ARTICLE
-            "book" -> StudyType.BOOK
-            "booklet" -> StudyType.BOOKLET
-            "inbook" -> StudyType.INBOOK
-            "incollection" -> StudyType.INCOLLECTION
-            "inproceedings" -> StudyType.INPROCEEDINGS
-            "manual" -> StudyType.MANUAL
-            "mastersthesis" -> StudyType.MASTERSTHESIS
-            "misc" -> StudyType.MISC
-            "phdthesis" -> StudyType.PHDTHESIS
-            "proceedings" -> StudyType.PROCEEDINGS
-            "techreport" -> StudyType.TECHREPORT
-            "unpublished" -> StudyType.UNPUBLISHED
-            else -> StudyType.UNKNOWN
-        }*/
     }
 }
