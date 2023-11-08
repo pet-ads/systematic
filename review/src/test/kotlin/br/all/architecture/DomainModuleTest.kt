@@ -39,7 +39,7 @@ class DomainModuleTest {
     @ArchTest
     fun `should application only be accessed by infrastructure, service or itself`(importedClasses: JavaClasses) =
         classes().that().resideInAPackage("..application..")
-            .should().onlyBeAccessed().byAnyPackage("..application..", "..infrastructure..", "..services..")
+            .should().onlyBeAccessed().byAnyPackage("..application..", "..infrastructure..", "..controller..")
             .check(importedClasses)
 
     @ArchTest
