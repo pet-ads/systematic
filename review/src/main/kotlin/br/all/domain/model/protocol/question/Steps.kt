@@ -3,10 +3,6 @@ package br.all.domain.model.protocol.question
 import br.all.domain.model.protocol.question.QuestionBuilder.Companion.BuildLabeledScaleStep
 import br.all.domain.model.protocol.question.QuestionBuilder.Companion.BuildNumberScaleStep
 import br.all.domain.model.protocol.question.QuestionBuilder.Companion.BuildPickListStep
-import br.all.domain.model.protocol.question.QuestionBuilder.Companion.CodeStep
-import br.all.domain.model.protocol.question.QuestionBuilder.Companion.DescriptionStep
-import br.all.domain.model.protocol.question.QuestionBuilder.Companion.ProtocolIdStep
-import br.all.domain.model.protocol.question.QuestionBuilder.Companion.FirstIdStep
 import br.all.domain.model.protocol.question.QuestionBuilder.Companion.NumberScaleLowerStep
 import br.all.domain.model.protocol.question.QuestionBuilder.Companion.TypeStep
 import br.all.domain.model.protocol.ProtocolId
@@ -14,38 +10,15 @@ import br.all.domain.model.protocol.ProtocolId
 class Steps(
     private var id: QuestionId,
     private var protocolId: ProtocolId,
-    private var code: String = "",
-    private var description: String = "",
-    private var scales: Map<String, Int> = emptyMap(), //verificar
+    private var code: String,
+    private var description: String,
+    private var scales: Map<String, Int> = emptyMap(),
     private var higher: Int = 0,
     private var lower: Int = 0,
     private var options: List<String> = emptyList()
 
 
-) : FirstIdStep, ProtocolIdStep, CodeStep, DescriptionStep, TypeStep, BuildLabeledScaleStep, BuildPickListStep, BuildNumberScaleStep, NumberScaleLowerStep{
-
-
-
-
-    override fun questionCalled(id: QuestionId): ProtocolIdStep{
-        this.id = id
-        return this
-    }
-
-    override fun protocolIdStep(protocolId: ProtocolId): CodeStep {
-        this.protocolId = protocolId
-        return this
-    }
-
-    override fun codeStep(code: String): DescriptionStep {
-        this.code = code
-        return this
-    }
-
-    override fun descriptionStep(description: String): TypeStep {
-        this.description = description
-        return this
-    }
+) : TypeStep, BuildLabeledScaleStep, BuildPickListStep, BuildNumberScaleStep, NumberScaleLowerStep{
 
     override fun labeledScaleType(scales: Map<String, Int>): BuildLabeledScaleStep {
         this.scales = scales
