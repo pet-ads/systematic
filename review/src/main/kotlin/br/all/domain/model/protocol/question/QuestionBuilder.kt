@@ -4,23 +4,12 @@ import br.all.domain.model.protocol.ProtocolId
 
 class QuestionBuilder private constructor() {
     companion object {
-        fun newBuilder(id: QuestionId, protocolId: ProtocolId): FirstIdStep = Steps(id, protocolId)
-        //questioStepBUilder.newBuilder.step1().step2()
-        interface FirstIdStep {
-            fun questionCalled(id: QuestionId): ProtocolIdStep
-        }
-
-        interface ProtocolIdStep {
-            fun protocolIdStep(protocolId: ProtocolId): CodeStep
-        }
-
-        interface CodeStep {
-            fun codeStep(code: String): DescriptionStep
-        }
-
-        interface DescriptionStep {
-            fun descriptionStep(description: String): TypeStep
-        }
+        fun newBuilder(
+            id: QuestionId,
+            protocolId: ProtocolId,
+            code: String,
+            description: String
+        ): TypeStep = Steps(id, protocolId, code, description)
 
         interface TypeStep {
             fun labeledScaleType(scales: Map<String, Int>): BuildLabeledScaleStep
