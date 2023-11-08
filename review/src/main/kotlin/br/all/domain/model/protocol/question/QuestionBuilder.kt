@@ -4,7 +4,9 @@ import br.all.domain.model.protocol.ProtocolId
 
 class QuestionBuilder private constructor() {
     companion object {
-        fun newBuilder(): FirstIdStep = Steps()
+
+
+       // fun newBuilder(): FirstIdStep = Steps()
         //questioStepBUilder.newBuilder.step1().step2()
         interface FirstIdStep {
             fun questionCalled(id: QuestionId): ProtocolIdStep

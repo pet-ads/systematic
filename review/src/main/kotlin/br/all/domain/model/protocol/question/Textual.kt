@@ -15,4 +15,9 @@ class Textual(
         if (value.isBlank()) throw IllegalArgumentException("Answer must not be blank.")
         return value
     }
+
+    override fun toString() =
+        "Id = $id, ProtocolId = $protocolId, Code = $code, Description = $description, Answer = $answer"
+
+
 }
