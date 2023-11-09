@@ -4,12 +4,14 @@ import br.all.domain.model.protocol.ProtocolId
 
 class QuestionBuilder private constructor() {
     companion object {
+
         fun newBuilder(
             id: QuestionId,
             protocolId: ProtocolId,
             code: String,
             description: String
         ): TypeStep = Steps(id, protocolId, code, description)
+
 
         interface TypeStep {
             fun labeledScaleType(scales: Map<String, Int>): BuildLabeledScaleStep
