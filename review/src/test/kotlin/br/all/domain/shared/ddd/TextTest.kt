@@ -36,6 +36,18 @@ class TextTest {
     }
 
     @Test
+    fun `valid text with special characters should stil valid`() {
+        val textValue = "Mussum Ipsum, cacilds vidis litro abertis.  Nulla id gravida magna, ut semper sapien. Todo mundo vê os porris que eu tomo, mas ninguém vê os tombis que eu levo! Leite de capivaris, leite de mula manquis sem cabeça. Admodum accumsan disputationi eu sit. Vide electram sadipscing et per. Si num tem leite então bota uma pinga aí cumpadi! A ordem dos tratores não altera o pão duris. Negão é teu passadis, eu sou faxa pretis. Nullam volutpat risus nec leo commodo, ut interdum diam laoreet. Sed non consequat odio."
+        val text = Text(textValue)
+        val newTextValue = textValue + "(test!@#$%)"
+        assertDoesNotThrow {
+            Text(textValue)
+            Text(newTextValue)
+        }
+
+    }
+
+    @Test
     fun `empty TEXT should throw an exception`() {
         val textValue = ""
         assertThrows<IllegalArgumentException> {
