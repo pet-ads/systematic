@@ -16,7 +16,12 @@ data class Text(val text: String) : ValueObject() {
         if (text.isEmpty()) notification.addError("Text must not be empty.")
         if (text.isBlank()) notification.addError("Text must not be blank.")
 
-        //TODO What is not a Text? @@@ is a text? Regex baby!
+        val pattern = Regex("^(?![!@#$%¨&*()_+='<>,.:;|/?`´^~{}\\[\\]\"-]+).*")
+
+
+        if(!pattern.matches(text)){
+            notification.addError("Should be a valid text")
+        }
 
         return notification
     }
