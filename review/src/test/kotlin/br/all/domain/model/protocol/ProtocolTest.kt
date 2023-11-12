@@ -261,6 +261,14 @@ class ProtocolTest {
         assertThrows<IllegalStateException> { sut.removeSelectionCriteria(removingCriteria) }
     }
 
+    @Test
+    fun `Should throw when trying to remove a criteria that is not defined in the protocol`() {
+        val sut = generateProtocol()
+        val nonexistentCriteria = Criteria.toInclude(Phrase("Nice thoughts"))
+
+        assertThrows<NoSuchElementException> { sut.removeSelectionCriteria(nonexistentCriteria) }
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
