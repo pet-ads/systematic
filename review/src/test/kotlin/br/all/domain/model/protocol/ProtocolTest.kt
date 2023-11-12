@@ -268,6 +268,19 @@ class ProtocolTest {
 
         assertThrows<NoSuchElementException> { sut.removeSelectionCriteria(nonexistentCriteria) }
     }
+    
+    @Test
+    fun `Should add a new extraction question if it is not defined yet`() {
+        val sut = generateProtocol()
+        val newExtractionQuestion = QuestionId(10)
+
+        sut.addExtractionField(newExtractionQuestion)
+
+        assertAll(
+            { assertEquals(1, sut.extractionQuestions.size) },
+            { assertContains(sut.extractionQuestions, newExtractionQuestion) },
+        )
+    }
 
     private fun generateProtocol(
         searchString: String = "String",
