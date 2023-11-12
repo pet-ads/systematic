@@ -43,37 +43,37 @@ class ProtocolTest {
 
     @Test
     fun `Should add a new keyword if it is not in the protocol yet`() {
-        val protocol = generateProtocol()
+        val sut = generateProtocol()
         val newKeyword = "New keyword"
 
-        protocol.addKeyword(newKeyword)
+        sut.addKeyword(newKeyword)
 
         assertAll(
-            { assertEquals(2, protocol.keywords.size) },
-            { assertContains(protocol.keywords, newKeyword) }
+            { assertEquals(2, sut.keywords.size) },
+            { assertContains(sut.keywords, newKeyword) }
         )
     }
 
     @Test
     fun `Should do nothing when trying to add a keyword that already is in the protocol`() {
-        val protocol = generateProtocol()
+        val sut = generateProtocol()
         val keyword = "Keyword"
 
         assertAll(
-            { assertDoesNotThrow { protocol.addKeyword(keyword) } },
-            { assertEquals(1, protocol.keywords.size) }
+            { assertDoesNotThrow { sut.addKeyword(keyword) } },
+            { assertEquals(1, sut.keywords.size) }
         )
     }
 
     @Test
     fun `Should successfully remove a keyword if it is not the last one`() {
         val removingKeyword = "Keyword"
-        val protocol = generateProtocol(keywords = setOf(removingKeyword, "Other keyword"))
+        val sut = generateProtocol(keywords = setOf(removingKeyword, "Other keyword"))
 
         assertAll(
-            { assertDoesNotThrow { protocol.removeKeyword(removingKeyword) } },
-            { assertEquals(1, protocol.keywords.size) },
-            { assertTrue { removingKeyword !in protocol.keywords } },
+            { assertDoesNotThrow { sut.removeKeyword(removingKeyword) } },
+            { assertEquals(1, sut.keywords.size) },
+            { assertTrue { removingKeyword !in sut.keywords } },
         )
     }
 
