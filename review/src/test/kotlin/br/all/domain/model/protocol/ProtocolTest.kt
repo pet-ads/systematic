@@ -335,6 +335,16 @@ class ProtocolTest {
         )
     }
 
+    @Test
+    fun `Should existent rob questions be successfully removed`() {
+        val robQuestion = QuestionId(10)
+        val sut = generateProtocol(robQuestions = setOf(robQuestion))
+
+        sut.removeRobQuestion(robQuestion)
+
+        assertEquals(0, sut.robQuestions.size)
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
