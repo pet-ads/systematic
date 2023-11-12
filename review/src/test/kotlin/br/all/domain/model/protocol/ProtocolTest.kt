@@ -282,6 +282,17 @@ class ProtocolTest {
         )
     }
 
+    @Test
+    fun `Should do nothing when trying to add a extraction question that has already been defined`() {
+        val question = QuestionId(10)
+        val sut = generateProtocol(extractionQuestions = setOf(question))
+
+        assertAll(
+            { assertDoesNotThrow { sut.addExtractionQuestion(question) } },
+            { assertEquals(1, sut.extractionQuestions.size) },
+        )
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
@@ -291,6 +302,7 @@ class ProtocolTest {
         keywords: Set<String> = setOf("Keyword"),
         sources: Set<SearchSource> = setOf(SearchSource("SomeSourceWithManyPhilosophicalArticles")),
         languages: Set<Language> = setOf(Language(Language.LangType.ENGLISH)),
+        extractionQuestions: Set<QuestionId> = emptySet()
     ): Protocol {
         val protocolId = ProtocolId(UUID.randomUUID())
         val reviewId = ReviewId(UUID.randomUUID())
@@ -306,6 +318,7 @@ class ProtocolTest {
             .selectStudiesBy(criteria)
             .collectDataBy(Phrase("Reading the articles and reflect about them"))
             .analyseDataBy(Phrase("Analyse opinions on each article"))
+            .extractDataByAnswering(extractionQuestions)
             .finish()
     }
 }
