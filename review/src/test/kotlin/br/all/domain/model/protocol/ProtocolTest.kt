@@ -147,6 +147,19 @@ class ProtocolTest {
         assertThrows<NoSuchElementException> { sut.removeInformationSource(nonexistentSource) }
     }
 
+    @Test
+    fun `Should add a new language if it is not in the protocol`() {
+        val sut = generateProtocol()
+        val newLanguage = Language(Language.LangType.PORTUGUESE)
+
+        sut.addLanguage(newLanguage)
+
+        assertAll(
+            { assertEquals(2, sut.studiesLanguages.size) },
+            { assertContains(sut.studiesLanguages, newLanguage) },
+        )
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
