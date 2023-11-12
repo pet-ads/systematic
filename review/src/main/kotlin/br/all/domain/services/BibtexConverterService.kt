@@ -5,28 +5,22 @@ import br.all.domain.model.study.*
 import org.springframework.stereotype.Service
 import java.util.*
 
-@Service
 class BibtexConverterService(val reviewId: ReviewId, private val studyReviewIdGeneratorService: IdGeneratorService) {
 
-    private val venueTypes = listOf(
-        "journal", "booktitle", "institution", "organization",
-        "publisher", "series", "school", "howpublished"
-    )
     private val authorTypes = listOf("author", "authors", "editor")
+    private val venueTypes = listOf("journal", "booktitle", "institution",
+        "organization", "publisher", "series", "school", "howpublished")
 
     fun convertManyToStudyReview(reviewId: ReviewId, bibtex: String): List<StudyReview> {
         require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
-
         val studies = convertMany(bibtex)
-
-        return studies.map { study: Study -> convertToStudyReview(reviewId, bibtex) }
+        return studies.map { convertToStudyReview(reviewId, bibtex) }
     }
 
     private fun convertToStudyReview(reviewId: ReviewId, bibtex: String): StudyReview {
         require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
 
         val studyReviewId = StudyReviewId(studyReviewIdGeneratorService.next())
-
         val study = convert(bibtex)
 
         return StudyReview(
@@ -52,6 +46,9 @@ class BibtexConverterService(val reviewId: ReviewId, private val studyReviewIdGe
         )
     }
 
+    //TODO this function must be private, since it is not safe to have a study not owner by a review.
+    // The public methods are those who create StudyReviews. Update test cases to only test the public methods
+    // (this one will be private)
     fun convertMany(bibtex: String): List<Study> {
         require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
         return bibtex.splitToSequence("@")

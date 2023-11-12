@@ -5,5 +5,4 @@ import java.util.*
 data class UpdateStudyReviewRequestModel (
     val reviewID: UUID,
     val studyReviewId: Long,
-    val status: String){
-}
+    val status: String)
