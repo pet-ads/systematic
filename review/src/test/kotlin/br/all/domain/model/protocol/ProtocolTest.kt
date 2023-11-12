@@ -216,6 +216,17 @@ class ProtocolTest {
         )
     }
 
+    @Test
+    fun `Should do nothing when trying to add a repeated criteria`() {
+        val sut = generateProtocol()
+        val repeatedCriteria = Criteria.toInclude(Phrase("It has deep reflexion about life"))
+
+        assertAll(
+            { assertDoesNotThrow { sut.addSelectionCriteria(repeatedCriteria) } },
+            { assertEquals(2, sut.selectionCriteria.size) },
+        )
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
