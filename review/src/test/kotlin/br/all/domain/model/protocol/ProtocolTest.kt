@@ -345,6 +345,14 @@ class ProtocolTest {
         assertEquals(0, sut.robQuestions.size)
     }
 
+    @Test
+    fun `Should throw when trying to remove nonexistent rob questions`() {
+        val sut = generateProtocol()
+        val removingQuestion = QuestionId(10)
+
+        assertThrows<NoSuchElementException> { sut.removeRobQuestion(removingQuestion) }
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
