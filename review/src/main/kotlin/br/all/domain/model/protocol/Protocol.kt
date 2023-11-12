@@ -51,7 +51,7 @@ class Protocol internal constructor(
     val extractionQuestions get() = _extractionQuestions.toSet()
 
     private val _robQuestions = robQuestions.toMutableSet()
-    val ropQuestions get() = _robQuestions.toSet()
+    val robQuestions get() = _robQuestions.toSet()
 
     init {
         val notification = validate()
