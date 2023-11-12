@@ -5,6 +5,7 @@ import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.utils.Language
 import br.all.domain.shared.utils.Phrase
+import br.all.domain.shared.utils.requireThatExists
 import br.all.domain.shared.utils.toNeverEmptyMutableSet
 
 class Protocol internal constructor(
@@ -75,7 +76,13 @@ class Protocol internal constructor(
     }
 
     fun addKeyword(keyword: String) = _keywords.add(keyword)
-    fun removeKeyword(keyword: String) = _keywords.remove(keyword)
+
+    fun removeKeyword(keyword: String) {
+        requireThatExists(keyword in _keywords)
+            { "Unable to remove a keyword that are in the protocol! Provided: $keyword" }
+        _keywords.remove(keyword)
+    }
+
     fun addSearchSource(searchSource: SearchSource) = _informationSources.add(searchSource)
     fun removeSearchSource(searchSource: SearchSource) = _informationSources.remove(searchSource)
     fun addLanguage(language: Language) = _studiesLanguages.add(language)
