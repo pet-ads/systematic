@@ -293,6 +293,16 @@ class ProtocolTest {
         )
     }
 
+    @Test
+    fun `Should remove a extraction question if its present`() {
+        val removingQuestion = QuestionId(10)
+        val sut = generateProtocol(extractionQuestions = setOf(removingQuestion))
+
+        sut.removeExtractionQuestion(removingQuestion)
+
+        assertEquals(0, sut.extractionQuestions.size)
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
