@@ -302,6 +302,14 @@ class ProtocolTest {
 
         assertEquals(0, sut.extractionQuestions.size)
     }
+    
+    @Test
+    fun `Should throw when trying to remove a question that does not belongs to the protocol`() {
+        val sut = generateProtocol()
+        val removingQuestion = QuestionId(10)
+
+        assertThrows<NoSuchElementException> { sut.removeExtractionQuestion(removingQuestion) }
+    }
 
     private fun generateProtocol(
         searchString: String = "String",
