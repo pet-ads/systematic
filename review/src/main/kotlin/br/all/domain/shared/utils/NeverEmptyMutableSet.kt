@@ -56,9 +56,9 @@ class NeverEmptyMutableSet<T> private constructor(
     override fun toString() = innerSet.joinToString(", ", "[", "]")
 }
 
-fun <T> Set<T>.toNeverEmptyMutableSet() {
+fun <T> Set<T>.toNeverEmptyMutableSet(): NeverEmptyMutableSet<T> {
     check(isNotEmpty()) { "Cannot create a NeverEmptyMutableSet from this set because it is empty! This set: $this" }
-    NeverEmptyMutableSet(elementAt(0)).also { it.addAll(this) }
+    return NeverEmptyMutableSet(elementAt(0)).also { it.addAll(this) }
 }
 
 fun <T> neverEmptyMutableSetOf(element: T, vararg elements: T) = NeverEmptyMutableSet(
