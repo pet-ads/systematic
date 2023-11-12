@@ -187,6 +187,14 @@ class ProtocolTest {
         )
     }
 
+    @Test
+    fun `Should throw when trying to remove the last language`() {
+        val sut = generateProtocol()
+        val removingLanguage = Language(Language.LangType.ENGLISH)
+
+        assertThrows<IllegalStateException> { sut.removeLanguage(removingLanguage) }
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
