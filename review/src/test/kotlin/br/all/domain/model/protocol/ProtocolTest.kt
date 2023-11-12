@@ -12,27 +12,21 @@ class ProtocolTest {
     @Test
     fun `Should successfully create a protocol`() {
         assertDoesNotThrow {
-            generateProtocol("String", setOf(
-                Criteria(Phrase("It has deep reflexion about life"), Criteria.CriteriaType.INCLUSION),
-                Criteria(Phrase("It does not talk about life!"), Criteria.CriteriaType.EXCLUSION),
-            ))
+            generateProtocol()
         }
     }
 
     @Test
     fun `Should throw if the search string is blank`() {
         assertThrows<IllegalArgumentException> {
-            generateProtocol("", setOf(
-                Criteria(Phrase("It has deep reflexion about life"), Criteria.CriteriaType.INCLUSION),
-                Criteria(Phrase("It does not talk about life!"), Criteria.CriteriaType.EXCLUSION),
-            ))
+            generateProtocol("")
         }
     }
 
     @Test
     fun `Should throw if there is no inclusion criteria`() {
         assertThrows<IllegalArgumentException> {
-            generateProtocol("String", setOf(
+            generateProtocol(criteria =  setOf(
                 Criteria(Phrase("It does not talk about life!"), Criteria.CriteriaType.EXCLUSION),
             ))
         }
@@ -41,13 +35,19 @@ class ProtocolTest {
     @Test
     fun `Should throw if there is no exclusion criteria`() {
         assertThrows<IllegalArgumentException> {
-            generateProtocol("String", setOf(
+            generateProtocol(criteria =  setOf(
                 Criteria(Phrase("It has deep reflexion about life"), Criteria.CriteriaType.INCLUSION),
             ))
         }
     }
 
-    private fun generateProtocol(searchString: String, criteria: Set<Criteria>): Protocol {
+    private fun generateProtocol(
+        searchString: String = "String",
+        criteria: Set<Criteria> = setOf(
+            Criteria(Phrase("It has deep reflexion about life"), Criteria.CriteriaType.INCLUSION),
+            Criteria(Phrase("It does not talk about life!"), Criteria.CriteriaType.EXCLUSION),
+        )
+    ): Protocol {
         val protocolId = ProtocolId(UUID.randomUUID())
         val reviewId = ReviewId(UUID.randomUUID())
 
