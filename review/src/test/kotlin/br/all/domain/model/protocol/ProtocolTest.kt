@@ -202,6 +202,19 @@ class ProtocolTest {
 
         assertThrows<NoSuchElementException> { sut.removeLanguage(nonexistentLanguage) }
     }
+    
+    @Test
+    fun `Should add a new criteria if it is not in the protocol`() {
+        val sut = generateProtocol()
+        val newCriteria = Criteria.toInclude(Phrase("Nice thoughts"))
+
+        sut.addSelectionCriteria(newCriteria)
+
+        assertAll(
+            { assertEquals(3, sut.selectionCriteria.size) },
+            { assertContains(sut.selectionCriteria, newCriteria) },
+        )
+    }
 
     private fun generateProtocol(
         searchString: String = "String",
