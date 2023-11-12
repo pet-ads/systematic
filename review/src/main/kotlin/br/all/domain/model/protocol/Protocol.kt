@@ -84,14 +84,48 @@ class Protocol internal constructor(
     }
 
     fun addInformationSource(searchSource: SearchSource) = _informationSources.add(searchSource)
-    fun removeInformationSource(searchSource: SearchSource) = _informationSources.remove(searchSource)
+
+    fun removeInformationSource(informationSource: SearchSource) {
+        requireThatExists(informationSource in _informationSources)
+            { "Unable to remove a information source that is not in the protocol! Provided: $informationSource" }
+        _informationSources.remove(informationSource)
+    }
 
     fun addLanguage(language: Language) = _studiesLanguages.add(language)
-    fun removeLanguage(language: Language) = _studiesLanguages.remove(language)
+
+    fun removeLanguage(language: Language) {
+        requireThatExists(language in _studiesLanguages)
+            { "Unable to remove a language that is not in the protocol! Provided: $language" }
+        _studiesLanguages.remove(language)
+    }
+
     fun addSelectionCriteria(criteria: Criteria) = _selectionCriteria.add(criteria)
-    fun removeSelectionCriteria(criteria: Criteria) = _selectionCriteria.remove(criteria)
+
+    fun removeSelectionCriteria(criteria: Criteria) {
+        requireThatExists(criteria in _selectionCriteria)
+            { "Unable to remove a criteria that has never been  defined in the protocol! Provided: $criteria" }
+        check(isAbleToRemoveCriteriaWithSameTypeOf(criteria))
+            { "Cannot remove $criteria because it would cause in no criteria of its type!" }
+        _selectionCriteria.remove(criteria)
+    }
+
+    private fun isAbleToRemoveCriteriaWithSameTypeOf(criteria: Criteria): Boolean {
+        return _selectionCriteria.count { it.type == criteria.type } > 1
+    }
+
     fun addExtractionField(questionId: QuestionId) = _extractionQuestions.add(questionId)
-    fun removeExtractionField(questionId: QuestionId) = _extractionQuestions.remove(questionId)
+
+    fun removeExtractionField(questionId: QuestionId) {
+        requireThatExists(questionId in _extractionQuestions)
+            { "Unable to remove a question that does not belongs to this protocol! Provided: $questionId" }
+        _extractionQuestions.remove(questionId)
+    }
+
     fun addQualityField(questionId: QuestionId) = _robQuestions.add(questionId)
-    fun removeQualityField(questionId: QuestionId) = _robQuestions.remove(questionId)
+
+    fun removeQualityField(questionId: QuestionId) {
+        requireThatExists(questionId in _robQuestions)
+            { "Unable to remove a question that does not belongs to this protocol! Provided: $questionId" }
+        _robQuestions.remove(questionId)
+    }
 }
