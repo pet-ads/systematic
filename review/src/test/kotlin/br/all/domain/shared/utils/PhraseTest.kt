@@ -1,4 +1,4 @@
-package br.all.domain.shared.utils.phrase
+package br.all.domain.shared.utils
 
 import br.all.domain.shared.utils.Phrase
 import org.junit.jupiter.api.Test
