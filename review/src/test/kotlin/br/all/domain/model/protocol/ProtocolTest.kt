@@ -171,6 +171,22 @@ class ProtocolTest {
         )
     }
 
+    @Test
+    fun `Should successfully remove a language if it is not the last one`() {
+        val removingLanguage = Language(Language.LangType.PORTUGUESE)
+        val sut = generateProtocol(languages = setOf(
+            removingLanguage,
+            Language(Language.LangType.ENGLISH),
+        ))
+
+        sut.removeLanguage(removingLanguage)
+
+        assertAll(
+            { assertEquals(1, sut.studiesLanguages.size) },
+            { assertTrue { removingLanguage !in sut.studiesLanguages } },
+        )
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
@@ -179,6 +195,7 @@ class ProtocolTest {
         ),
         keywords: Set<String> = setOf("Keyword"),
         sources: Set<SearchSource> = setOf(SearchSource("SomeSourceWithManyPhilosophicalArticles")),
+        languages: Set<Language> = setOf(Language(Language.LangType.ENGLISH)),
     ): Protocol {
         val protocolId = ProtocolId(UUID.randomUUID())
         val reviewId = ReviewId(UUID.randomUUID())
@@ -189,7 +206,7 @@ class ProtocolTest {
             .searchProcessWillFollow(Phrase("Reading philosophical articles"), searchString)
             .at(sources)
             .selectedBecause(Phrase("I want so"))
-            .searchStudiesOf(setOf(Language(Language.LangType.ENGLISH)), Phrase("Primaries and secondaries"))
+            .searchStudiesOf(languages, Phrase("Primaries and secondaries"))
             .selectionProcessWillFollowAs(Phrase("Classify articles by criteria"))
             .selectStudiesBy(criteria)
             .collectDataBy(Phrase("Reading the articles and reflect about them"))
