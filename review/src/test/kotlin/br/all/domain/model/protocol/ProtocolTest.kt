@@ -10,6 +10,7 @@ import org.junit.jupiter.api.assertThrows
 import java.util.*
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class ProtocolTest {
     @Test
@@ -64,17 +65,30 @@ class ProtocolTest {
         )
     }
 
+    @Test
+    fun `Should successfully remove a keyword if it is not the last one`() {
+        val removingKeyword = "Keyword"
+        val protocol = generateProtocol(keywords = setOf(removingKeyword, "Other keyword"))
+
+        assertAll(
+            { assertDoesNotThrow { protocol.removeKeyword(removingKeyword) } },
+            { assertEquals(1, protocol.keywords.size) },
+            { assertTrue { removingKeyword !in protocol.keywords } },
+        )
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
             Criteria.toInclude(Phrase("It has deep reflexion about life")),
             Criteria.toExclude(Phrase("It does not talk about life!")),
-        )
+        ),
+        keywords: Set<String> = setOf("Keyword"),
     ): Protocol {
         val protocolId = ProtocolId(UUID.randomUUID())
         val reviewId = ReviewId(UUID.randomUUID())
 
-        return Protocol.write().identifiedBy(protocolId, reviewId, setOf("Keyword"))
+        return Protocol.write().identifiedBy(protocolId, reviewId, keywords)
             .researchesFor(Phrase("Something")).because(Phrase("It is important"))
             .toAnswer(setOf(ResearchQuestion(Phrase("What is the question which its answer is 42?"))))
             .searchProcessWillFollow(Phrase("Reading philosophical articles"), searchString)
