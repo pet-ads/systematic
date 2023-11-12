@@ -274,7 +274,7 @@ class ProtocolTest {
         val sut = generateProtocol()
         val newExtractionQuestion = QuestionId(10)
 
-        sut.addExtractionField(newExtractionQuestion)
+        sut.addExtractionQuestion(newExtractionQuestion)
 
         assertAll(
             { assertEquals(1, sut.extractionQuestions.size) },

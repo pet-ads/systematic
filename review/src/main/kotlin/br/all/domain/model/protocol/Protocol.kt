@@ -113,17 +113,17 @@ class Protocol internal constructor(
         return _selectionCriteria.count { it.type == criteria.type } > 1
     }
 
-    fun addExtractionField(questionId: QuestionId) = _extractionQuestions.add(questionId)
+    fun addExtractionQuestion(questionId: QuestionId) = _extractionQuestions.add(questionId)
 
-    fun removeExtractionField(questionId: QuestionId) {
+    fun removeExtractionQuestion(questionId: QuestionId) {
         requireThatExists(questionId in _extractionQuestions)
             { "Unable to remove a question that does not belongs to this protocol! Provided: $questionId" }
         _extractionQuestions.remove(questionId)
     }
 
-    fun addQualityField(questionId: QuestionId) = _robQuestions.add(questionId)
+    fun addRobQuestion(questionId: QuestionId) = _robQuestions.add(questionId)
 
-    fun removeQualityField(questionId: QuestionId) {
+    fun removeRobQuestion(questionId: QuestionId) {
         requireThatExists(questionId in _robQuestions)
             { "Unable to remove a question that does not belongs to this protocol! Provided: $questionId" }
         _robQuestions.remove(questionId)
