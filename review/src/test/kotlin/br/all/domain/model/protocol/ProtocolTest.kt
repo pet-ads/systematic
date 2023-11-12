@@ -104,6 +104,17 @@ class ProtocolTest {
         )
     }
 
+    @Test
+    fun `Should do nothing when trying to add a information source that already is in the protocol`() {
+        val sut = generateProtocol()
+        val existentInformationSource = SearchSource("Some Source With Many Philosophical Articles")
+
+        assertAll(
+            { assertDoesNotThrow { sut.addInformationSource(existentInformationSource) } },
+            { assertEquals(1, sut.informationSources.size) }
+        )
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
