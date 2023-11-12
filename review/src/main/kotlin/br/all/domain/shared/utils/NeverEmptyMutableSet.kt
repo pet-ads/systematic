@@ -62,5 +62,5 @@ fun <T> Set<T>.toNeverEmptyMutableSet() {
 }
 
 fun <T> neverEmptyMutableSetOf(element: T, vararg elements: T) = NeverEmptyMutableSet(
-    elements.toMutableSet().also {it.add(element) }
+    elements.toMutableSet().also { it.add(element) }
 )
