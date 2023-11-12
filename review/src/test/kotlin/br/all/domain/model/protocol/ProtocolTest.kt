@@ -249,6 +249,18 @@ class ProtocolTest {
         )
     }
 
+    @ParameterizedTest
+    @CsvSource("It has deep reflection about life,INCLUSION", "It does not talk about life!,EXCLUSION")
+    fun `Should throw when trying to remove the last criteria o a type`(
+        description: Phrase,
+        type: Criteria.CriteriaType
+    ) {
+        val sut = generateProtocol()
+        val removingCriteria = Criteria(description, type)
+
+        assertThrows<IllegalStateException> { sut.removeSelectionCriteria(removingCriteria) }
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
