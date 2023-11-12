@@ -53,6 +53,17 @@ class ProtocolTest {
         )
     }
 
+    @Test
+    fun `Should do nothing when trying to add a keyword that already is in the protocol`() {
+        val protocol = generateProtocol()
+        val keyword = "Keyword"
+
+        assertAll(
+            { assertDoesNotThrow { protocol.addKeyword(keyword) } },
+            { assertEquals(1, protocol.keywords.size) }
+        )
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
