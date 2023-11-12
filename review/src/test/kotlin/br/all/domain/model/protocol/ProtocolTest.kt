@@ -311,6 +311,19 @@ class ProtocolTest {
         assertThrows<NoSuchElementException> { sut.removeExtractionQuestion(removingQuestion) }
     }
 
+    @Test
+    fun `Should a new rob question successfully if it is not defined`() {
+        val sut = generateProtocol()
+        val newRobQuestion = QuestionId(10)
+
+        sut.addRobQuestion(newRobQuestion)
+
+        assertAll(
+            { assertEquals(1, sut.robQuestions.size) },
+            { assertContains(sut.robQuestions, newRobQuestion) },
+        )
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
