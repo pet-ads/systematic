@@ -4,9 +4,12 @@ import br.all.domain.model.review.ReviewId
 import br.all.domain.shared.utils.Language
 import br.all.domain.shared.utils.Phrase
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.util.*
+import kotlin.test.assertContains
+import kotlin.test.assertEquals
 
 class ProtocolTest {
     @Test
@@ -35,6 +38,19 @@ class ProtocolTest {
         assertThrows<IllegalArgumentException> {
             generateProtocol(criteria =  setOf(Criteria.toInclude(Phrase("It has deep reflexion about life"))))
         }
+    }
+
+    @Test
+    fun `Should add a new keyword if it is not in the protocol yet`() {
+        val protocol = generateProtocol()
+        val newKeyword = "New keyword"
+
+        protocol.addKeyword(newKeyword)
+
+        assertAll(
+            { assertEquals(2, protocol.keywords.size) },
+            { assertContains(protocol.keywords, newKeyword) }
+        )
     }
 
     private fun generateProtocol(
