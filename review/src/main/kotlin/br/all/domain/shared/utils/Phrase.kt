@@ -12,18 +12,20 @@ data class Phrase(val text: String) : ValueObject() {
     override fun validate(): Notification {
         val notification = Notification()
 
-        if (text.isBlank())
+        if (text.isBlank()) {
             notification.addError("A phrase must not be blank!")
+            return notification
+        }
         if (groupingSignsAreNotCorrectlyClose())
             notification.addError("Parenthesis, brackets and/or braces should be closed appropriately!")
-        if (textHasDigitsAndSymbolsWithinNotQuotedWords())
+        if (textHasSymbolsWithinNotQuotedWords())
             notification.addError("Symbols should not be within not quoted words in a phrase. " +
                     "Provided: $text")
 
         return notification
     }
 
-    private fun textHasDigitsAndSymbolsWithinNotQuotedWords() : Boolean {
+    private fun textHasSymbolsWithinNotQuotedWords() : Boolean {
         val notQuotedWords = Regex("\"[^\"]+\"|'[^']+'").split(text)
 
         val symbols = "[^a-z0-9(\\[{'\\- ]"
