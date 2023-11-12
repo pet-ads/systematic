@@ -324,6 +324,17 @@ class ProtocolTest {
         )
     }
 
+    @Test
+    fun `Should do nothing when trying to add repeated rob questions`() {
+        val repeatedQuestion = QuestionId(10)
+        val sut = generateProtocol(robQuestions = setOf(repeatedQuestion))
+
+        assertAll(
+            { assertDoesNotThrow { sut.addRobQuestion(repeatedQuestion) } },
+            { assertEquals(1, sut.robQuestions.size) },
+        )
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
@@ -333,7 +344,8 @@ class ProtocolTest {
         keywords: Set<String> = setOf("Keyword"),
         sources: Set<SearchSource> = setOf(SearchSource("SomeSourceWithManyPhilosophicalArticles")),
         languages: Set<Language> = setOf(Language(Language.LangType.ENGLISH)),
-        extractionQuestions: Set<QuestionId> = emptySet()
+        extractionQuestions: Set<QuestionId> = emptySet(),
+        robQuestions: Set<QuestionId> = emptySet(),
     ): Protocol {
         val protocolId = ProtocolId(UUID.randomUUID())
         val reviewId = ReviewId(UUID.randomUUID())
@@ -350,6 +362,7 @@ class ProtocolTest {
             .collectDataBy(Phrase("Reading the articles and reflect about them"))
             .analyseDataBy(Phrase("Analyse opinions on each article"))
             .extractDataByAnswering(extractionQuestions)
+            .qualityFormConsiders(robQuestions)
             .finish()
     }
 }
