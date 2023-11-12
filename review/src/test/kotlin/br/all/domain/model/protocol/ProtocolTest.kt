@@ -131,6 +131,14 @@ class ProtocolTest {
         )
     }
 
+    @Test
+    fun `Should throw when trying to remove the last information source`() {
+        val sut = generateProtocol()
+        val removingSource = SearchSource("SomeSourceWithManyPhilosophicalArticles")
+
+        assertThrows<IllegalStateException> { sut.removeInformationSource(removingSource) }
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
