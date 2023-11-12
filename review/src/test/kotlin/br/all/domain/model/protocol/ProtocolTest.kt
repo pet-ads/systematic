@@ -77,6 +77,14 @@ class ProtocolTest {
         )
     }
 
+    @Test
+    fun `Should throw when trying to remove the last keyword`() {
+        val removingKeyword = "Keyword"
+        val sut = generateProtocol()
+
+        assertThrows<IllegalStateException> { sut.removeKeyword(removingKeyword) }
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
