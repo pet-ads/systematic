@@ -12,7 +12,7 @@ data class SearchSource(val searchSource: String) : ValueObject() {
 
     override fun validate(): Notification {
         val notification = Notification()
-        val regex = Regex("([A-Z][a-z]+)( [A-Z][A-Za-z]+)*")
+        val regex = Regex("([A-Z][A-Za-z]+)( [A-Z][A-Za-z]+)*")
 
         if (searchSource.isBlank())
             notification.addError("A search source must not be blank!")
