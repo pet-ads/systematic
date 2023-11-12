@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import java.util.*
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -224,6 +226,26 @@ class ProtocolTest {
         assertAll(
             { assertDoesNotThrow { sut.addSelectionCriteria(repeatedCriteria) } },
             { assertEquals(2, sut.selectionCriteria.size) },
+        )
+    }
+
+    @ParameterizedTest
+    @CsvSource("Nice thoughts,INCLUSION", "Bad thoughts,EXCLUSION")
+    fun `Should successfully remove a criteria if it is not the last of such type`(
+        description: Phrase,
+        type: Criteria.CriteriaType,
+    ) {
+        val sut = generateProtocol(criteria = setOf(
+            Criteria.toInclude(Phrase("It has deep reflection about life!")),
+            Criteria.toInclude(Phrase("Nice thoughts")),
+            Criteria.toExclude(Phrase("It does not talk about life")),
+            Criteria.toExclude(Phrase("Bad thoughts")),
+        ))
+        val removingCriteria = Criteria(description, type)
+
+        assertAll(
+            { assertDoesNotThrow { sut.removeSelectionCriteria(removingCriteria) } },
+            { assertEquals(3, sut.selectionCriteria.size) },
         )
     }
 
