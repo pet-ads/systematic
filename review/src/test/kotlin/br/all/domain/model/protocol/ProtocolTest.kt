@@ -91,6 +91,19 @@ class ProtocolTest {
         assertThrows<NoSuchElementException> { sut.removeKeyword("Nonexistent keyword") }
     }
 
+    @Test
+    fun `Should add a information source if it is not in the protocol yet`() {
+        val sut = generateProtocol()
+        val newSearchSource = SearchSource("New SearchSource")
+
+        sut.addInformationSource(newSearchSource)
+
+        assertAll(
+            { assertEquals(2, sut.informationSources.size) },
+            { assertContains(sut.informationSources, newSearchSource) }
+        )
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
