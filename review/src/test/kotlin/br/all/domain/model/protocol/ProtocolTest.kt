@@ -195,6 +195,14 @@ class ProtocolTest {
         assertThrows<IllegalStateException> { sut.removeLanguage(removingLanguage) }
     }
 
+    @Test
+    fun `Should throw when trying to remove a nonexistent language from protocol`() {
+        val sut = generateProtocol()
+        val nonexistentLanguage = Language(Language.LangType.PORTUGUESE)
+
+        assertThrows<NoSuchElementException> { sut.removeLanguage(nonexistentLanguage) }
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
