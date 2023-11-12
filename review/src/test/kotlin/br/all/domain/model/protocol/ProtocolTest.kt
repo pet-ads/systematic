@@ -139,6 +139,14 @@ class ProtocolTest {
         assertThrows<IllegalStateException> { sut.removeInformationSource(removingSource) }
     }
 
+    @Test
+    fun `Should throw when trying to remove a information source that does not exist`() {
+        val sut = generateProtocol()
+        val nonexistentSource = SearchSource("Nonexistent Source")
+
+        assertThrows<NoSuchElementException> { sut.removeInformationSource(nonexistentSource) }
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
