@@ -85,6 +85,12 @@ class ProtocolTest {
         assertThrows<IllegalStateException> { sut.removeKeyword(removingKeyword) }
     }
 
+    @Test
+    fun `Should throw when trying to remove an nonexistent keyword`() {
+        val sut = generateProtocol()
+        assertThrows<NoSuchElementException> { sut.removeKeyword("Nonexistent keyword") }
+    }
+
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
