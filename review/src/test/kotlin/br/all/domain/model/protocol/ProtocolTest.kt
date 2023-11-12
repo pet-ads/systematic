@@ -114,6 +114,22 @@ class ProtocolTest {
             { assertEquals(1, sut.informationSources.size) }
         )
     }
+    
+    @Test
+    fun `Should successfully remove a information source if it is not the last one`() {
+        val removingSource = SearchSource("PhilosophicalSource")
+        val sut = generateProtocol(sources = setOf(
+            removingSource,
+            SearchSource("Other Source"),
+        ))
+
+        sut.removeInformationSource(removingSource)
+
+        assertAll(
+            { assertEquals(1, sut.informationSources.size) },
+            { assertTrue { removingSource !in sut.informationSources } },
+        )
+    }
 
     private fun generateProtocol(
         searchString: String = "String",
@@ -122,6 +138,7 @@ class ProtocolTest {
             Criteria.toExclude(Phrase("It does not talk about life!")),
         ),
         keywords: Set<String> = setOf("Keyword"),
+        sources: Set<SearchSource> = setOf(SearchSource("SomeSourceWithManyPhilosophicalArticles")),
     ): Protocol {
         val protocolId = ProtocolId(UUID.randomUUID())
         val reviewId = ReviewId(UUID.randomUUID())
@@ -130,7 +147,7 @@ class ProtocolTest {
             .researchesFor(Phrase("Something")).because(Phrase("It is important"))
             .toAnswer(setOf(ResearchQuestion(Phrase("What is the question which its answer is 42?"))))
             .searchProcessWillFollow(Phrase("Reading philosophical articles"), searchString)
-            .at(setOf(SearchSource("Some Source With Many Philosophical Articles")))
+            .at(sources)
             .selectedBecause(Phrase("I want so"))
             .searchStudiesOf(setOf(Language(Language.LangType.ENGLISH)), Phrase("Primaries and secondaries"))
             .selectionProcessWillFollowAs(Phrase("Classify articles by criteria"))
