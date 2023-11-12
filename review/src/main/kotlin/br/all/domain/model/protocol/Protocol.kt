@@ -83,8 +83,9 @@ class Protocol internal constructor(
         _keywords.remove(keyword)
     }
 
-    fun addSearchSource(searchSource: SearchSource) = _informationSources.add(searchSource)
-    fun removeSearchSource(searchSource: SearchSource) = _informationSources.remove(searchSource)
+    fun addInformationSource(searchSource: SearchSource) = _informationSources.add(searchSource)
+    fun removeInformationSource(searchSource: SearchSource) = _informationSources.remove(searchSource)
+
     fun addLanguage(language: Language) = _studiesLanguages.add(language)
     fun removeLanguage(language: Language) = _studiesLanguages.remove(language)
     fun addSelectionCriteria(criteria: Criteria) = _selectionCriteria.add(criteria)
