@@ -4,7 +4,7 @@ import br.all.domain.model.review.ReviewId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.utils.Language
-import br.all.domain.shared.utils.phrase.Phrase
+import br.all.domain.shared.utils.Phrase
 import br.all.domain.shared.utils.toNeverEmptyMutableSet
 
 class Protocol internal constructor(

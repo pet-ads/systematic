@@ -2,7 +2,7 @@ package br.all.domain.model.protocol
 
 import br.all.domain.model.review.ReviewId
 import br.all.domain.shared.utils.Language
-import br.all.domain.shared.utils.phrase.Phrase
+import br.all.domain.shared.utils.Phrase
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows

@@ -1,5 +1,6 @@
 package br.all.domain.shared.utils.phrase
 
+import br.all.domain.shared.utils.Phrase
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
