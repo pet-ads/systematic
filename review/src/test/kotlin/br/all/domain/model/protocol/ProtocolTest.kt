@@ -26,26 +26,22 @@ class ProtocolTest {
     @Test
     fun `Should throw if there is no inclusion criteria`() {
         assertThrows<IllegalArgumentException> {
-            generateProtocol(criteria =  setOf(
-                Criteria(Phrase("It does not talk about life!"), Criteria.CriteriaType.EXCLUSION),
-            ))
+            generateProtocol(criteria =  setOf(Criteria.toExclude(Phrase("It does not talk about life!"))))
         }
     }
 
     @Test
     fun `Should throw if there is no exclusion criteria`() {
         assertThrows<IllegalArgumentException> {
-            generateProtocol(criteria =  setOf(
-                Criteria(Phrase("It has deep reflexion about life"), Criteria.CriteriaType.INCLUSION),
-            ))
+            generateProtocol(criteria =  setOf(Criteria.toInclude(Phrase("It has deep reflexion about life"))))
         }
     }
 
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
-            Criteria(Phrase("It has deep reflexion about life"), Criteria.CriteriaType.INCLUSION),
-            Criteria(Phrase("It does not talk about life!"), Criteria.CriteriaType.EXCLUSION),
+            Criteria.toInclude(Phrase("It has deep reflexion about life")),
+            Criteria.toExclude(Phrase("It does not talk about life!")),
         )
     ): Protocol {
         val protocolId = ProtocolId(UUID.randomUUID())
