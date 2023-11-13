@@ -44,7 +44,7 @@ class FindOneProtocolServiceImplTest {
         assertEquals(null, sut.findById(protocolId))
     }
 
-    private fun getDummyProtocolDto(protocolId: UUID) = ProtocolDto(
+    private fun getDummyProtocolDto(protocolId: UUID = UUID.randomUUID()) = ProtocolDto(
         id = protocolId,
         reviewId = UUID.randomUUID(),
 
