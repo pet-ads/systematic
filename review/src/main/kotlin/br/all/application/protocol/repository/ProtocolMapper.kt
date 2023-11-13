@@ -4,35 +4,35 @@ import br.all.application.protocol.create.ProtocolRequestModel
 import br.all.domain.model.protocol.*
 import br.all.domain.model.review.ReviewId
 import br.all.domain.shared.utils.Language
-import br.all.domain.shared.utils.Phrase
+import br.all.domain.shared.utils.toPhrase
 import java.util.*
 
 fun Protocol.toDto() = ProtocolDto(
     id = protocolId.value,
     reviewId = reviewId.value,
 
-    goal = goal.text,
-    justification = justification.text,
+    goal = goal.toString(),
+    justification = justification.toString(),
 
-    researchQuestions = researchQuestions.map { it.description.text }
+    researchQuestions = researchQuestions.map { it.description.toString() }
         .toSet(),
     keywords = keywords,
     searchString = searchString,
     informationSources = informationSources.map { it.searchSource }
         .toSet(),
-    sourcesSelectionCriteria = sourcesSelectionCriteria.text,
+    sourcesSelectionCriteria = sourcesSelectionCriteria.toString(),
 
-    searchMethod = searchMethod.text,
+    searchMethod = searchMethod.toString(),
     studiesLanguages = studiesLanguages.map { it.langType.name }
         .toSet(),
-    studyTypeDefinition = studyTypeDefinition.text,
+    studyTypeDefinition = studyTypeDefinition.toString(),
 
-    selectionProcess = selectionProcess.text,
-    selectionCriteria = selectionCriteria.map { it.description.text to it.type.name }
+    selectionProcess = selectionProcess.toString(),
+    selectionCriteria = selectionCriteria.map { it.description.toString() to it.type.name }
         .toSet(),
 
-    dataCollectionProcess = dataCollectionProcess.text,
-    analysisAndSynthesisProcess = analysisAndSynthesisProcess.text,
+    dataCollectionProcess = dataCollectionProcess.toString(),
+    analysisAndSynthesisProcess = analysisAndSynthesisProcess.toString(),
 
     extractionQuestions = extractionQuestions.map { it.id }
         .toSet(),
@@ -40,46 +40,46 @@ fun Protocol.toDto() = ProtocolDto(
         .toSet(),
 
     picoc = picoc?.let { PICOCDto(
-        it.population.text,
-        it.intervention.text,
-        it.control.text,
-        it.outcome.text,
-        it.context?.text,
+        it.population.toString(),
+        it.intervention.toString(),
+        it.control.toString(),
+        it.outcome.toString(),
+        it.context.toString(),
     )},
 )
 
 fun Protocol.Companion.fromRequestModel(id: UUID, reviewId: UUID, requestModel: ProtocolRequestModel) = write()
     .identifiedBy(ProtocolId(id), ReviewId(reviewId), requestModel.keywords)
-    .researchesFor(Phrase(requestModel.goal)).because(Phrase(requestModel.justification))
+    .researchesFor(requestModel.goal.toPhrase()).because(requestModel.justification.toPhrase())
     .toAnswer(
         requestModel.researchQuestions
-            .map { ResearchQuestion(Phrase(it)) }
+            .map { ResearchQuestion(it.toPhrase()) }
             .toSet()
-    ).searchProcessWillFollow(Phrase(requestModel.searchMethod), requestModel.searchString)
+    ).searchProcessWillFollow(requestModel.searchMethod.toPhrase(), requestModel.searchString)
     .at(
         requestModel.informationSources
             .map { SearchSource(it) }
             .toSet()
-    ).selectedBecause(Phrase(requestModel.sourcesSelectionCriteria))
+    ).selectedBecause(requestModel.sourcesSelectionCriteria.toPhrase())
     .searchStudiesOf(
         requestModel.studiesLanguages
             .map { Language(Language.LangType.valueOf(it)) }
             .toSet(),
-        Phrase(requestModel.studyTypeDefinition)
-    ).selectionProcessWillFollowAs(Phrase(requestModel.selectionProcess))
+        requestModel.studyTypeDefinition.toPhrase()
+    ).selectionProcessWillFollowAs(requestModel.selectionProcess.toPhrase())
     .selectStudiesBy(
         requestModel.selectionCriteria
-            .map { (description, type) -> Criteria(Phrase(description), Criteria.CriteriaType.valueOf(type)) }
+            .map { (description, type) -> Criteria(description.toPhrase(), Criteria.CriteriaType.valueOf(type)) }
             .toSet()
-    ).collectDataBy(Phrase(requestModel.dataCollectionProcess))
-    .analyseDataBy(Phrase(requestModel.analysisAndSynthesisProcess))
+    ).collectDataBy(requestModel.dataCollectionProcess.toPhrase())
+    .analyseDataBy(requestModel.analysisAndSynthesisProcess.toPhrase())
     .withPICOC(requestModel.picoc?.let {
         PICOC(
-            Phrase(it.population),
-            Phrase(it.intervention),
-            Phrase(it.control),
-            Phrase(it.outcome),
-            it.context?.let { context -> Phrase(context) }
+            it.population.toPhrase(),
+            it.intervention.toPhrase(),
+            it.control.toPhrase(),
+            it.outcome.toPhrase(),
+            it.context?.toPhrase(),
         )
     })
     .finish()

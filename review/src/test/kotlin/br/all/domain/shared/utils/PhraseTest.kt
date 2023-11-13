@@ -1,6 +1,5 @@
 package br.all.domain.shared.utils
 
-import br.all.domain.shared.utils.Phrase
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -31,7 +30,7 @@ class PhraseTest {
     fun `Should throw if there are symbols within not quoted words`() {
         val invalidPhrase = "normal words \"quoted words\" @word w@rd h&"
         val exception = assertThrows<IllegalArgumentException> {
-            Phrase(invalidPhrase)
+            invalidPhrase.toPhrase()
         }
         assertEquals("Symbols should not be within not quoted words in a phrase. " +
                 "Provided: $invalidPhrase", exception.message)
