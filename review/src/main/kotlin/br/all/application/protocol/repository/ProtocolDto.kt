@@ -1,7 +1,5 @@
 package br.all.application.protocol.repository
 
-import br.all.domain.model.protocol.Criteria
-import br.all.domain.shared.utils.Language
 import java.util.*
 
 data class ProtocolDto(
@@ -18,11 +16,11 @@ data class ProtocolDto(
     val sourcesSelectionCriteria: String,
 
     val searchMethod: String,
-    val studiesLanguages: Set<Language.LangType>,
+    val studiesLanguages: Set<String>,
     val studyTypeDefinition: String,
 
     val selectionProcess: String,
-    val selectionCriteria: Set<Pair<String, Criteria.CriteriaType>>,
+    val selectionCriteria: Set<Pair<String, String>>,
 
     val dataCollectionProcess: String,
     val analysisAndSynthesisProcess: String,

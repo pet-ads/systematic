@@ -18,12 +18,12 @@ fun Protocol.toDto() = ProtocolDto(
     sourcesSelectionCriteria = sourcesSelectionCriteria.text,
 
     searchMethod = searchMethod.text,
-    studiesLanguages = studiesLanguages.map { it.langType }
+    studiesLanguages = studiesLanguages.map { it.langType.name }
         .toSet(),
     studyTypeDefinition = studyTypeDefinition.text,
 
     selectionProcess = selectionProcess.text,
-    selectionCriteria = selectionCriteria.map { it.description.text to it.type }
+    selectionCriteria = selectionCriteria.map { it.description.text to it.type.name }
         .toSet(),
 
     dataCollectionProcess = dataCollectionProcess.text,
