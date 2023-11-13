@@ -44,9 +44,20 @@ class FindOneProtocolServiceImplTest {
         assertEquals(null, sut.findById(protocolId))
     }
 
-    private fun getDummyProtocolDto(protocolId: UUID = UUID.randomUUID()) = ProtocolDto(
+    @Test
+    fun `Should find a protocol by its systematic study`() {
+        val reviewId = UUID.randomUUID()
+        val dto = getDummyProtocolDto(reviewId = reviewId)
+
+        every { systematicStudyRepository.existsById(reviewId) } returns true
+        every { protocolRepository.findBySystematicStudy(reviewId) } returns dto
+
+        assertEquals(dto, sut.findBySystematicStudy(reviewId))
+    }
+
+    private fun getDummyProtocolDto(protocolId: UUID = UUID.randomUUID(), reviewId: UUID = UUID.randomUUID()) = ProtocolDto(
         id = protocolId,
-        reviewId = UUID.randomUUID(),
+        reviewId = reviewId,
 
         goal = "Some goal",
         justification = "It is important",
