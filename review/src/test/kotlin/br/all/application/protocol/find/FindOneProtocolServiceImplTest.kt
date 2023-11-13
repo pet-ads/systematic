@@ -3,8 +3,6 @@ package br.all.application.protocol.find
 import br.all.application.protocol.repository.ProtocolDto
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.domain.model.protocol.Criteria
-import br.all.domain.shared.utils.Language
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -102,13 +100,13 @@ class FindOneProtocolServiceImplTest {
         sourcesSelectionCriteria = "I want so",
 
         searchMethod = "Reading philosophical articles",
-        studiesLanguages = setOf(Language.LangType.ENGLISH),
+        studiesLanguages = setOf("ENGLISH"),
         studyTypeDefinition = "Primaries",
 
         selectionProcess = "Classify articles by criteria",
         selectionCriteria = setOf(
-            "It has deep reflection about life" to Criteria.CriteriaType.INCLUSION,
-            "It does not talk about life" to Criteria.CriteriaType.EXCLUSION,
+            "It has deep reflection about life" to "INCLUSION",
+            "It does not talk about life" to "EXCLUSION",
         ),
 
         dataCollectionProcess = "Read the articles and reflect about them",
