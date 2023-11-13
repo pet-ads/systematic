@@ -73,4 +73,13 @@ fun Protocol.Companion.fromRequestModel(id: UUID, reviewId: UUID, requestModel: 
             .toSet()
     ).collectDataBy(Phrase(requestModel.dataCollectionProcess))
     .analyseDataBy(Phrase(requestModel.analysisAndSynthesisProcess))
+    .withPICOC(requestModel.picoc?.let {
+        PICOC(
+            Phrase(it.population),
+            Phrase(it.intervention),
+            Phrase(it.control),
+            Phrase(it.outcome),
+            it.context?.let { context -> Phrase(context) }
+        )
+    })
     .finish()
