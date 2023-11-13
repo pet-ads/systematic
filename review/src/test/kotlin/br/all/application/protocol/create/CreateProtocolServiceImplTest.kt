@@ -50,7 +50,6 @@ class CreateProtocolServiceImplTest {
 
     @Test
     fun `Should throw when trying to assign a protocol to a nonexistent systematic study`() {
-        val protocolId = UUID.randomUUID()
         val reviewId = UUID.randomUUID()
         val requestModel = getProtocolRequestModel()
 
