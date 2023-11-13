@@ -7,8 +7,8 @@ import br.all.domain.shared.utils.requireThatExists
 import java.util.*
 
 class FindOneProtocolServiceImpl(
-    val protocolRepository: ProtocolRepository,
-    val systematicStudyRepository: SystematicStudyRepository,
+    private val protocolRepository: ProtocolRepository,
+    private val systematicStudyRepository: SystematicStudyRepository,
 ): FindOneProtocolService {
     override fun findById(id: UUID) = protocolRepository.findById(id)
 
