@@ -36,7 +36,7 @@ class CreateProtocolServiceImplTest {
     fun `Should successfully create a new protocol`() {
         val protocolId = UUID.randomUUID()
         val reviewId = UUID.randomUUID()
-        val requestModel = getProtocolRequestModel(protocolId, reviewId)
+        val requestModel = getProtocolRequestModel()
         val protocolDto = Protocol.fromRequestModel(protocolId, reviewId, requestModel).toDto()
 
         every { uuidGeneratorService.next() } returns protocolId
@@ -52,14 +52,14 @@ class CreateProtocolServiceImplTest {
     fun `Should throw when trying to assign a protocol to a nonexistent systematic study`() {
         val protocolId = UUID.randomUUID()
         val reviewId = UUID.randomUUID()
-        val requestModel = getProtocolRequestModel(protocolId, reviewId)
+        val requestModel = getProtocolRequestModel()
 
         every { systematicStudyRepository.existsById(reviewId) } returns false
-        
+
         assertThrows<NoSuchElementException> { sut.create(reviewId, requestModel) }
     }
 
-    private fun getProtocolRequestModel(protocolId: UUID, reviewId: UUID): ProtocolRequestModel {
+    private fun getProtocolRequestModel(): ProtocolRequestModel {
         return ProtocolRequestModel(
             goal = "Something",
             justification = "It is important",
