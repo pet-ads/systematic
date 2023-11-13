@@ -37,6 +37,13 @@ class FindOneProtocolServiceImplTest {
         assertEquals(dto, sut.findById(protocolId))
     }
 
+    @Test
+    fun `Should not find a protocol by its id if it does not exist`() {
+        val protocolId = UUID.randomUUID()
+        every { protocolRepository.findById(protocolId) } returns null
+        assertEquals(null, sut.findById(protocolId))
+    }
+
     private fun getDummyProtocolDto(protocolId: UUID) = ProtocolDto(
         id = protocolId,
         reviewId = UUID.randomUUID(),
