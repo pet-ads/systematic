@@ -12,6 +12,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 import kotlin.test.assertEquals
@@ -45,6 +46,17 @@ class CreateProtocolServiceImplTest {
 
         val createdDto = protocolRepository.findById(protocolId)
         assertEquals(protocolDto, createdDto)
+    }
+
+    @Test
+    fun `Should throw when trying to assign a protocol to a nonexistent systematic study`() {
+        val protocolId = UUID.randomUUID()
+        val reviewId = UUID.randomUUID()
+        val requestModel = getProtocolRequestModel(protocolId, reviewId)
+
+        every { systematicStudyRepository.existsById(reviewId) } returns false
+        
+        assertThrows<NoSuchElementException> { sut.create(reviewId, requestModel) }
     }
 
     private fun getProtocolRequestModel(protocolId: UUID, reviewId: UUID): ProtocolRequestModel {
