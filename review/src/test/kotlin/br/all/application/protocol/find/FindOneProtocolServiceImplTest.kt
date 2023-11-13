@@ -71,6 +71,16 @@ class FindOneProtocolServiceImplTest {
         assertTrue { sut.existsById(protocolId) }
     }
 
+    @Test
+    fun `Should be true that a systematic study have a protocol if it does`() {
+        val reviewId = UUID.randomUUID()
+
+        every { systematicStudyRepository.existsById(reviewId) } returns true
+        every { protocolRepository.existsBySystematicStudy(reviewId) } returns true
+
+        assertTrue { sut.existsBySystematicStudy(reviewId) }
+    }
+
     private fun getDummyProtocolDto(protocolId: UUID = UUID.randomUUID(), reviewId: UUID = UUID.randomUUID()) = ProtocolDto(
         id = protocolId,
         reviewId = reviewId,
