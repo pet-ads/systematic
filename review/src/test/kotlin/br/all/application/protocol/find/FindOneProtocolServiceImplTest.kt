@@ -10,6 +10,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 import kotlin.test.assertEquals
@@ -53,6 +54,13 @@ class FindOneProtocolServiceImplTest {
         every { protocolRepository.findBySystematicStudy(reviewId) } returns dto
 
         assertEquals(dto, sut.findBySystematicStudy(reviewId))
+    }
+
+    @Test
+    fun `Should throw if trying to find a protocol by a nonexistent systematic study`() {
+        val reviewId = UUID.randomUUID()
+        every { systematicStudyRepository.existsById(reviewId) } returns false
+        assertThrows<NoSuchElementException> { sut.findBySystematicStudy(reviewId) }
     }
 
     private fun getDummyProtocolDto(protocolId: UUID = UUID.randomUUID(), reviewId: UUID = UUID.randomUUID()) = ProtocolDto(
