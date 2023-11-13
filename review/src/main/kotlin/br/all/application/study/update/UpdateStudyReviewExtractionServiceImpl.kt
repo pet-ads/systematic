@@ -3,10 +3,14 @@ package br.all.application.study.update
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromDto
 import br.all.application.study.repository.toDto
+import br.all.application.study.update.UpdateStudyReviewExtractionService.RequestModel
 import br.all.domain.model.study.StudyReview
 
-class UpdateStudyReviewExtractionStatusService (private val repository: StudyReviewRepository) {
-    fun changeStatus(request: UpdateStudyReviewRequestModel){
+class UpdateStudyReviewExtractionServiceImpl (
+    private val repository: StudyReviewRepository
+) : UpdateStudyReviewExtractionService {
+
+    override fun changeStatus(request: RequestModel){
         val studyReviewDto = repository.findById(request.reviewID, request.studyReviewId)
         val studyReview = StudyReview.fromDto(studyReviewDto)
 

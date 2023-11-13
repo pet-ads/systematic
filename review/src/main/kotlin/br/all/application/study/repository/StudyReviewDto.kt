@@ -1,6 +1,5 @@
 package br.all.application.study.repository
 
-import br.all.domain.model.study.StudyType
 import java.util.*
 
 data class StudyReviewDto (

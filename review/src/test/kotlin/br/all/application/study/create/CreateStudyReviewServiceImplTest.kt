@@ -1,5 +1,6 @@
 package br.all.application.study.create
 
+import br.all.application.study.create.CreateStudyReviewService.RequestModel
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromStudyRequestModel
 import br.all.application.study.repository.toDto
@@ -15,22 +16,21 @@ import java.util.*
 import kotlin.test.assertEquals
 
 @ExtendWith(MockKExtension::class)
-class CreateStudyReviewServiceTest {
+class CreateStudyReviewServiceImplTest {
 
-    @MockK
-    private lateinit var repository: StudyReviewRepository
-    @MockK
-    private lateinit var idGenerator: IdGeneratorService
-    private lateinit var sut: CreateStudyReviewService
+    @MockK private lateinit var repository: StudyReviewRepository
+    @MockK private lateinit var idGenerator: IdGeneratorService
+    @MockK private lateinit var presenter: CreateStudyReviewPresenter
+    private lateinit var sut: CreateStudyReviewServiceImpl
 
     @BeforeEach
     fun setUp() {
-        sut = CreateStudyReviewService(repository, idGenerator)
+        sut = CreateStudyReviewServiceImpl(repository, presenter, idGenerator)
     }
 
     @Test
     fun `Should create study`() {
-        val requestModel = StudyReviewRequestModel(
+        val requestModel = RequestModel(
             "ARTICLE",
             "Title",
             2020,
@@ -49,6 +49,6 @@ class CreateStudyReviewServiceTest {
         every { repository.findById(reviewId, studyId) } returns dto
 
         val createdStudy = sut.createFromStudy(reviewId, requestModel)
-        assertEquals(studyId, createdStudy.id)
+        verify { presenter.prepareSuccessView(any())  }
     }
 }

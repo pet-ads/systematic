@@ -1,6 +1,7 @@
 package br.all.application.study.repository
 
-import br.all.application.study.create.StudyReviewRequestModel
+import br.all.application.study.create.CreateStudyReviewService
+import br.all.application.study.create.CreateStudyReviewService.RequestModel
 import br.all.domain.model.review.ReviewId
 import br.all.domain.model.study.*
 import java.util.*
@@ -49,7 +50,8 @@ fun StudyReview.Companion.fromDto(dto: StudyReviewDto ) = StudyReview(
     ExtractionStatus.convertStringToExtractionStatusEnum(dto.extractionStatus)
 )
 
-fun StudyReview.Companion.fromStudyRequestModel(reviewId: UUID, studyId: Long, study: StudyReviewRequestModel) = StudyReview(
+fun StudyReview.Companion.fromStudyRequestModel(reviewId: UUID, studyId: Long, study: RequestModel)
+= StudyReview(
     StudyReviewId(studyId),
     ReviewId(reviewId),
     StudyType.valueOf(study.type.uppercase()),
