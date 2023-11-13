@@ -41,9 +41,8 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
 
     override fun because(justification: Phrase) = apply { this.justification = justification }
 
-    override fun toAnswer(researchQuestions: Set<ResearchQuestion>, picoc: PICOC?) = apply {
+    override fun toAnswer(researchQuestions: Set<ResearchQuestion>) = apply {
         this.researchQuestions = researchQuestions
-        this.picoc = picoc
     }
 
     override fun searchProcessWillFollow(searchMethod: Phrase, searchString: String) = apply {
@@ -89,6 +88,8 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
         this.robQuestions = robQuestions
     }
 
+    override fun withPICOC(picoc: PICOC?) = apply { this.picoc = picoc }
+
     override fun finish() = Protocol(
         protocolId = protocolId as ProtocolId,
         reviewId = reviewId as ReviewId,
@@ -125,7 +126,7 @@ interface JustificationStep {
 }
 
 interface ResearchQuestionsStep {
-    fun toAnswer(researchQuestions: Set<ResearchQuestion>, picoc: PICOC? = null): SearchMethodDefinitionStep
+    fun toAnswer(researchQuestions: Set<ResearchQuestion>): SearchMethodDefinitionStep
 }
 
 interface SearchMethodDefinitionStep {
@@ -164,6 +165,8 @@ interface BuildingStep {
     infix fun extractDataByAnswering(extractionQuestions: Set<QuestionId>): BuildingStep
 
     infix fun qualityFormConsiders(robQuestions: Set<QuestionId>): BuildingStep
+
+    infix fun withPICOC(picoc: PICOC?): BuildingStep
 
     fun finish(): Protocol
 }
