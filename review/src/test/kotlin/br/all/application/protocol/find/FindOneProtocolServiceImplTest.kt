@@ -14,6 +14,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @ExtendWith(MockKExtension::class)
 class FindOneProtocolServiceImplTest {
@@ -61,6 +62,13 @@ class FindOneProtocolServiceImplTest {
         val reviewId = UUID.randomUUID()
         every { systematicStudyRepository.existsById(reviewId) } returns false
         assertThrows<NoSuchElementException> { sut.findBySystematicStudy(reviewId) }
+    }
+
+    @Test
+    fun `Should a existent protocol truly exist`() {
+        val protocolId = UUID.randomUUID()
+        every { protocolRepository.existsById(protocolId) } returns true
+        assertTrue { sut.existsById(protocolId) }
     }
 
     private fun getDummyProtocolDto(protocolId: UUID = UUID.randomUUID(), reviewId: UUID = UUID.randomUUID()) = ProtocolDto(
