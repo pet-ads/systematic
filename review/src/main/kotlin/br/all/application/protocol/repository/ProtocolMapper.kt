@@ -48,38 +48,39 @@ fun Protocol.toDto() = ProtocolDto(
     )},
 )
 
-fun Protocol.Companion.fromRequestModel(id: UUID, reviewId: UUID, requestModel: ProtocolRequestModel) = write()
-    .identifiedBy(ProtocolId(id), ReviewId(reviewId), requestModel.keywords)
-    .researchesFor(requestModel.goal.toPhrase()).because(requestModel.justification.toPhrase())
-    .toAnswer(
-        requestModel.researchQuestions
-            .map { ResearchQuestion(it.toPhrase()) }
-            .toSet()
-    ).searchProcessWillFollow(requestModel.searchMethod.toPhrase(), requestModel.searchString)
-    .at(
-        requestModel.informationSources
-            .map { SearchSource(it) }
-            .toSet()
-    ).selectedBecause(requestModel.sourcesSelectionCriteria.toPhrase())
-    .searchStudiesOf(
-        requestModel.studiesLanguages
-            .map { Language(Language.LangType.valueOf(it)) }
-            .toSet(),
-        requestModel.studyTypeDefinition.toPhrase()
-    ).selectionProcessWillFollowAs(requestModel.selectionProcess.toPhrase())
-    .selectStudiesBy(
-        requestModel.selectionCriteria
-            .map { (description, type) -> Criteria(description.toPhrase(), Criteria.CriteriaType.valueOf(type)) }
-            .toSet()
-    ).collectDataBy(requestModel.dataCollectionProcess.toPhrase())
-    .analyseDataBy(requestModel.analysisAndSynthesisProcess.toPhrase())
-    .withPICOC(requestModel.picoc?.let {
-        PICOC(
-            it.population.toPhrase(),
-            it.intervention.toPhrase(),
-            it.control.toPhrase(),
-            it.outcome.toPhrase(),
-            it.context?.toPhrase(),
-        )
-    })
-    .finish()
+fun Protocol.Companion.fromRequestModel(
+    id: UUID, 
+    reviewId: UUID, 
+    requestModel: ProtocolRequestModel,
+) = with(requestModel) {
+    write().identifiedBy(ProtocolId(id), ReviewId(reviewId), keywords)
+        .researchesFor(goal.toPhrase()).because(justification.toPhrase())
+        .toAnswer(
+            researchQuestions.map { ResearchQuestion(it.toPhrase()) }
+                .toSet()
+        ).searchProcessWillFollow(searchMethod.toPhrase(), searchString)
+        .at(
+            informationSources.map { SearchSource(it) }
+                .toSet()
+        ).selectedBecause(sourcesSelectionCriteria.toPhrase())
+        .searchStudiesOf(
+            studiesLanguages.map { Language(Language.LangType.valueOf(it)) }
+                .toSet(),
+            studyTypeDefinition.toPhrase(),
+        ).selectionProcessWillFollowAs(selectionProcess.toPhrase())
+        .selectStudiesBy(
+            selectionCriteria
+                .map { (description, type) -> Criteria(description.toPhrase(), Criteria.CriteriaType.valueOf(type)) }
+                .toSet()
+        ).collectDataBy(dataCollectionProcess.toPhrase())
+        .analyseDataBy(analysisAndSynthesisProcess.toPhrase())
+        .withPICOC(picoc?.let {
+            PICOC(
+                it.population.toPhrase(),
+                it.intervention.toPhrase(),
+                it.control.toPhrase(),
+                it.outcome.toPhrase(),
+                it.context?.toPhrase(),
+            )
+        }).finish()
+}
