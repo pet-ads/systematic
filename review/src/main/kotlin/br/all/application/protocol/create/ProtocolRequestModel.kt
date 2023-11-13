@@ -1,5 +1,7 @@
 package br.all.application.protocol.create
 
+import br.all.application.protocol.repository.PICOCDto
+
 data class ProtocolRequestModel(
     val goal: String,
     val justification: String,
@@ -20,9 +22,5 @@ data class ProtocolRequestModel(
     val dataCollectionProcess: String,
     val analysisAndSynthesisProcess: String,
 
-    val population: String?,
-    val intervention: String?,
-    val control: String?,
-    val outcome: String?,
-    val context: String?,
+    val picoc: PICOCDto? = null,
 )

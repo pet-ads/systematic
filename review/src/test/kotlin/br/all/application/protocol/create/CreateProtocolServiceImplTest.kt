@@ -94,12 +94,6 @@ class CreateProtocolServiceImplTest {
             ),
             dataCollectionProcess = "Reading the articles and reflecting about them",
             analysisAndSynthesisProcess = "Analyse opinions on each article",
-
-            population = null,
-            control = null,
-            intervention = null,
-            outcome = null,
-            context = null,
         )
     }
 }
