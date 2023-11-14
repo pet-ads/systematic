@@ -3,11 +3,12 @@ package br.all.application.study.update
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromDto
 import br.all.application.study.repository.toDto
+import br.all.application.study.shared.StudyReviewResponseModel
 import br.all.domain.model.study.StudyReview
 import br.all.domain.shared.utils.requireThatExists
 
 class UpdateStudyReviewExtractionStatusService (private val repository: StudyReviewRepository) {
-    fun changeStatus(request: UpdateStudyReviewRequestModel){
+    fun changeStatus(request: UpdateStudyReviewRequestModel) : StudyReviewResponseModel{
         val studyReviewDto = requireThatExists(repository.findById(request.reviewID, request.studyReviewId))
         val studyReview = StudyReview.fromDto(studyReviewDto)
 
@@ -20,5 +21,6 @@ class UpdateStudyReviewExtractionStatusService (private val repository: StudyRev
         }
 
         repository.create(studyReview.toDto())
+        return StudyReviewResponseModel(request.reviewID, request.studyReviewId)
     }
 }
