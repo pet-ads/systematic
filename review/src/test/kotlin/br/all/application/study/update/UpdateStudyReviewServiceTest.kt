@@ -12,7 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 
 @ExtendWith(MockKExtension::class)
-class UpdateStudyReviewSelectionServiceTest {
+class UpdateStudyReviewServiceTest {
 
     private lateinit var repository: StudyReviewRepositoryFake
 
@@ -27,22 +27,20 @@ class UpdateStudyReviewSelectionServiceTest {
     @Test
     @DisplayName("Should change selection status on update: UNCLASSIFIED -> INCLUDED")
     fun shouldChangeSelectionStatusOnUpdate() {
-        //Given
         val uuid = UUID.randomUUID()
         val studyId = 1L
-
         val studyReviewDto = generateStudyReview(uuid, studyId)
-
+        repository.create(studyReviewDto)
         val requestModel = UpdateStudyReviewRequestModel(
             uuid,
             1L,
             "INCLUDED"
         )
 
-        sut.changeStatus(requestModel)
+        val response = sut.changeStatus(requestModel)
+        val updatedStudyReview = repository.findById(response.reviewId, response.id)
 
-        assertNotEquals(studyReviewDto.selectionStatus, )
-
+        assertNotEquals(studyReviewDto.selectionStatus, updatedStudyReview?.selectionStatus)
     }
 
     private fun generateStudyReview(reviewId: UUID, studyId: Long): StudyReviewDto{
@@ -73,7 +71,6 @@ class UpdateStudyReviewSelectionServiceTest {
                 extractionStatus = "UNCLASSIFIED",
                 selectionStatus = "UNCLASSIFIED"
             )
-        }
     }
 
 }
