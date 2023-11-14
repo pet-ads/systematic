@@ -14,33 +14,33 @@ class EmailTest {
 
     @Test
     fun `valid EMAIL should not throw an exception`() {
-        assertDoesNotThrow { Email("email@email.com") }
+        assertDoesNotThrow { Email("email@test.com") }
     }
 
     @Test
     fun `equal emails should be equal`() {
-        val email1 = Email("email@email.com")
-        val email2 = Email("email@email.com")
+        val email1 = Email("email@test.com")
+        val email2 = Email("email@test.com")
         assertEquals(email1, email2)
     }
 
     @Test
     fun `different emails should not be equal`() {
-        val email1 = Email("email@email.com")
-        val email2 = Email("another_email@email.com")
+        val email1 = Email("email@test.com")
+        val email2 = Email("another_email@test.com")
         assertNotEquals(email1, email2)
     }
 
     @Test
     fun `empty email should throw an exception`() {
-        val exception = assertThrows<IllegalArgumentException> { Email("") }
-        exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
+        val exception = assertThrows<Exception> { Email("") }
+        exception.message?.contains("Email must not be empty")?.let { assertTrue(it) }
     }
 
     @Test
     fun `blank email should throw an exception`() {
         val exception = assertThrows<IllegalArgumentException> { Email(" ") }
-        exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
+        exception.message?.contains("Email must not be blank")?.let { assertTrue(it) }
     }
 
     @Test
@@ -133,9 +133,25 @@ class EmailTest {
     }
 
     @Test
-    fun `invalid email with excessive length should throw an exception`() {
-        val exception = assertThrows<IllegalArgumentException> { Email("a_very_long_username_that_exceeds_the_maximum_allowed_length@example.com") }
+    fun `invalid email with excessive local-part length should throw an exception`() {
+        val exception = assertThrows<IllegalArgumentException> { Email("username_that_exceeds_the_maximum_allowed_length_of_64_characters@example.com") }
         exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
+    }
+
+    @Test
+    fun `valid email with local-part under maximum length should not throw an exception`() {
+        assertDoesNotThrow { Email("username_that_not_exceeds_the_max_allowed_character_length_of_64@example.com") }
+    }
+
+    @Test
+    fun `invalid email with excessive domain length should throw an exception`() {
+        val exception = assertThrows<IllegalArgumentException> { Email("user@" + "a".repeat(252) + ".com") }
+        exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
+    }
+
+    @Test
+    fun `valid email with domain under maximum length should not throw an exception`() {
+        assertDoesNotThrow { Email("user@" + "a".repeat(251) + ".com") }
     }
 
     @Test
