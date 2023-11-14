@@ -17,7 +17,7 @@ class BibtexConverterService(val reviewId: ReviewId, private val studyReviewIdGe
         return studies.map { convertToStudyReview(reviewId, bibtex) }
     }
 
-    private fun convertToStudyReview(reviewId: ReviewId, bibtex: String): StudyReview {
+    fun convertToStudyReview(reviewId: ReviewId, bibtex: String): StudyReview {
         require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
 
         val studyReviewId = StudyReviewId(studyReviewIdGeneratorService.next())
@@ -46,10 +46,7 @@ class BibtexConverterService(val reviewId: ReviewId, private val studyReviewIdGe
         )
     }
 
-    //TODO this function must be private, since it is not safe to have a study not owner by a review.
-    // The public methods are those who create StudyReviews. Update test cases to only test the public methods
-    // (this one will be private)
-    fun convertMany(bibtex: String): List<Study> {
+    private fun convertMany(bibtex: String): List<Study> {
         require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
         return bibtex.splitToSequence("@")
             .map { it.trim() }
