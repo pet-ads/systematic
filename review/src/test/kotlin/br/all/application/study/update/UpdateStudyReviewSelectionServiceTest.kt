@@ -1,59 +1,80 @@
 package br.all.application.study.update
 
-import br.all.application.repositoryStub.StudyReviewRepositoryStub
-import br.all.application.study.create.CreateStudyReviewService
-import br.all.application.study.create.StudyReviewRequestModel
+import br.all.application.repositoryStub.StudyReviewRepositoryFake
 import br.all.application.study.repository.StudyReviewDto
-import br.all.application.study.repository.StudyReviewRepository
-import br.all.application.study.repository.fromStudyRequestModel
-import br.all.application.study.repository.toDto
-import br.all.domain.model.study.StudyReview
-import br.all.domain.services.IdGeneratorService
-import io.mockk.every
-import io.mockk.impl.annotations.InjectMockKs
-import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.extension.ExtendWith
-import kotlin.test.asserter
-import org.mockito.Mockito.`when`
 import java.util.*
 
 @ExtendWith(MockKExtension::class)
 class UpdateStudyReviewSelectionServiceTest {
-    @MockK
-    private lateinit var repository: StudyReviewRepositoryStub
-    @InjectMockKs
+
+    private lateinit var repository: StudyReviewRepositoryFake
+
     private lateinit var sut: UpdateStudyReviewSelectionService
 
     @BeforeEach
     fun setUp() {
+        repository = StudyReviewRepositoryFake()
         sut = UpdateStudyReviewSelectionService(repository)
     }
 
-    //TODO FIX THIS TEST AND REMOVE DISABLED ANNOTATION
-    @Disabled
     @Test
     @DisplayName("Should change selection status on update: UNCLASSIFIED -> INCLUDED")
     fun shouldChangeSelectionStatusOnUpdate() {
         //Given
         val uuid = UUID.randomUUID()
-        val studyReviewDto = repository.findById(uuid, 1L)
+        val studyReviewDto = generateStudyReview()
+
         val requestModel = UpdateStudyReviewRequestModel(
             uuid,
             1L,
             "INCLUDED"
         )
-        //When
-        val updatedStudyReviewDto = sut.changeStatus(requestModel)
-        //Then
-        //assertNotEquals(studyReviewDto.selectionStatus, updatedStudyReviewDto.selectionStatus)
 
+        //When
+        sut.changeStatus(requestModel)
+        val updatedStudyReviewDto = repository.findById()
+
+        //Then
+        assertNotEquals()
+
+    }
+
+    private fun generateStudyReview(reviewId: UUID, studyId: Long){
+            return StudyReviewDto(
+                id = studyId,
+                reviewId = reviewId,
+                studyType = "ARTICLE",
+                title = "Título do Estudo",
+                year = 2023,
+                authors = "Autor 1, Autor 2",
+                venue = "Local do Estudo",
+                abstract = "Este é o resumo do estudo.",
+                keywords = setOf("Palavra-chave 1", "Palavra-chave 2"),
+                references = listOf("Referência 1", "Referência 2"),
+                doi = "https://doi.org/10.1109/5.771073",
+                searchSources = setOf("Fonte 1", "Fonte 2"),
+                criteria = setOf("Critério 1", "Critério 2"),
+                formAnswers = mapOf(
+                    UUID.randomUUID() to "Resposta 1",
+                    UUID.randomUUID() to "Resposta 2"
+                ),
+                qualityAnswers = mapOf(
+                    UUID.randomUUID() to "Qualidade 1",
+                    UUID.randomUUID() to "Qualidade 2"
+                ),
+                comments = "Comentários sobre o estudo",
+                readingPriority = "LOW",
+                extractionStatus = "UNCLASSIFIED",
+                selectionStatus = "UNCLASSIFIED"
+            )
+        }
     }
 
 }
