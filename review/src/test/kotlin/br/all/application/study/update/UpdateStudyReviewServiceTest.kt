@@ -63,8 +63,13 @@ class UpdateStudyReviewServiceTest {
         val studyReviewDto = generateStudyReview(uuid, studyId)
         repository.create(studyReviewDto)
     }
-
-    
+    private fun createRequestModel(uuid: UUID, studyId: Long, status: String): UpdateStudyReviewRequestModel{
+        return UpdateStudyReviewRequestModel(
+            uuid,
+            1L,
+            "INCLUDED"
+        )
+    }
 
     private fun generateStudyReview(reviewId: UUID, studyId: Long): StudyReviewDto{
             return StudyReviewDto(
