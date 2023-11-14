@@ -56,12 +56,23 @@ class EmailTest {
     }
 
     @Test
+    fun `should not accept email with a dot and at sign in sequence`() {
+        val exception = assertThrows<IllegalArgumentException> { Email("email.@domain.com") }
+        exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
+    }
+
+
+    @Test
     fun `should not accept email with two equal TLDs`() {
         val exception = assertThrows<IllegalArgumentException> { Email("email@ifsp.com.com") }
         exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
     }
 
-    //TODO Google of GPT for any possible format of invalid e-mail and create a test for it
+    @Test
+    fun `should not accept email with two equal subdomains`() {
+        val exception = assertThrows<IllegalArgumentException> { Email("email@ifsp.ifsp.com") }
+        exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
+    }
 
     @Test
     fun `email with incorrect format should include error message`() {
@@ -83,8 +94,12 @@ class EmailTest {
 
     @Test
     fun `invalid email with spaces should throw an exception`() {
-        val exception = assertThrows<IllegalArgumentException> { Email("user name@example.com") }
-        exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
+        val exception1 = assertThrows<IllegalArgumentException> { Email("user name@example.com") }
+        exception1.message?.contains("Wrong Email format")?.let { assertTrue(it) }
+        val exception2 = assertThrows<IllegalArgumentException> { Email("   username@example.com") }
+        exception2.message?.contains("Wrong Email format")?.let { assertTrue(it) }
+        val exception3 = assertThrows<IllegalArgumentException> { Email("username@example.com   ") }
+        exception3.message?.contains("Wrong Email format")?.let { assertTrue(it) }
     }
 
     @Test
@@ -96,6 +111,12 @@ class EmailTest {
     @Test
     fun `invalid email with consecutive dots in the domain should throw an exception`() {
         val exception = assertThrows<IllegalArgumentException> { Email("user@domain..com") }
+        exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
+    }
+
+    @Test
+    fun `invalid email with consecutive dots in the local part should throw an exception`() {
+        val exception = assertThrows<IllegalArgumentException> { Email("user..email@domain.com") }
         exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
     }
 
@@ -118,7 +139,7 @@ class EmailTest {
     }
 
     @Test
-    fun `invalid email with multiple AT symbols should throw an exception`() {
+    fun `invalid email with multiple at sign symbols should throw an exception`() {
         val exception = assertThrows<IllegalArgumentException> { Email("user@domain@com") }
         exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
     }
