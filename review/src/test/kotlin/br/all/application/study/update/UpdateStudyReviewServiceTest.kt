@@ -43,6 +43,29 @@ class UpdateStudyReviewServiceTest {
         assertNotEquals(studyReviewDto.selectionStatus, updatedStudyReview?.selectionStatus)
     }
 
+    @Test
+    @DisplayName("Should change extraction status on update: UNCLASSIFIED -> INCLUDED")
+    fun shouldChangeExtractionStatusOnUpdate() {
+        val uuid = UUID.randomUUID()
+        val studyId = 1L
+
+        createStudyReviewDto(uuid, studyId)
+        val requestModel = UpdateStudyReviewRequestModel(
+            uuid,
+            1L,
+            "INCLUDED"
+        )
+
+
+    }
+
+    private fun createStudyReviewDto(uuid: UUID, studyId: Long){
+        val studyReviewDto = generateStudyReview(uuid, studyId)
+        repository.create(studyReviewDto)
+    }
+
+    
+
     private fun generateStudyReview(reviewId: UUID, studyId: Long): StudyReviewDto{
             return StudyReviewDto(
                 id = studyId,
