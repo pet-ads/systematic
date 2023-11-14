@@ -13,16 +13,21 @@ data class Email(val email: String) : ValueObject() {
     override fun validate(): Notification {
         val notification = Notification()
 
-        if (email.isEmpty()) notification.addError("Email must not be empty.")
-        if (email.isBlank()) notification.addError("Email must not be blank.")
+        if (email.isEmpty()) {
+            notification.addError("Email must not be empty.")
+            return notification
+        }
+        if (email.isBlank()) {
+            notification.addError("Email must not be blank.")
+            return notification
+        }
         if (!isValidEmailFormat(email)) notification.addError("Wrong Email format.")
-
         return notification
     }
 
     private fun isValidEmailFormat(email: String): Boolean {
-        if (email.length > 64) return false
         if (!validatesSemantics(email)) return false
+        if (!HasLengthBelowMaximum(email)) return false
         if (hasRepeatedSubdomains(email)) return false
         if (email.contains("..")) return false
         if (email.contains("@.")) return false
@@ -49,6 +54,8 @@ data class Email(val email: String) : ValueObject() {
         return false
     }
 
-
-
+    fun HasLengthBelowMaximum(email: String): Boolean {
+        val parts = email.split("@")
+        return !(parts[0].length > 64 || parts[1].length > 255)
+    }
 }
