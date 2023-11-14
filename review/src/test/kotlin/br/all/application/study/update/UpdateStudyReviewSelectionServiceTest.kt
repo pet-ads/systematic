@@ -29,7 +29,9 @@ class UpdateStudyReviewSelectionServiceTest {
     fun shouldChangeSelectionStatusOnUpdate() {
         //Given
         val uuid = UUID.randomUUID()
-        val studyReviewDto = generateStudyReview()
+        val studyId = 1L
+
+        val studyReviewDto = generateStudyReview(uuid, studyId)
 
         val requestModel = UpdateStudyReviewRequestModel(
             uuid,
@@ -37,16 +39,13 @@ class UpdateStudyReviewSelectionServiceTest {
             "INCLUDED"
         )
 
-        //When
         sut.changeStatus(requestModel)
-        val updatedStudyReviewDto = repository.findById()
 
-        //Then
-        assertNotEquals()
+        assertNotEquals(studyReviewDto.selectionStatus, )
 
     }
 
-    private fun generateStudyReview(reviewId: UUID, studyId: Long){
+    private fun generateStudyReview(reviewId: UUID, studyId: Long): StudyReviewDto{
             return StudyReviewDto(
                 id = studyId,
                 reviewId = reviewId,
