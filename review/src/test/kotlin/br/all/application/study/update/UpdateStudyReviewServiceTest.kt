@@ -48,26 +48,29 @@ class UpdateStudyReviewServiceTest {
     fun shouldChangeExtractionStatusOnUpdate() {
         val uuid = UUID.randomUUID()
         val studyId = 1L
+        val status = "included"
 
-        createStudyReviewDto(uuid, studyId)
-        val requestModel = UpdateStudyReviewRequestModel(
-            uuid,
-            1L,
-            "INCLUDED"
-        )
+        val studyReviewDto = createStudyReviewDto(uuid, studyId)
+        val requestModel = createRequestModel(uuid, studyId, status)
 
+        val response = sut.changeStatus(requestModel)
+        val updatedStudyReview = repository.findById(response.reviewId, response.id)
 
+        assertNotEquals(studyReviewDto.extractionStatus, updatedStudyReview?.extractionStatus)
     }
 
-    private fun createStudyReviewDto(uuid: UUID, studyId: Long){
+    private fun createStudyReviewDto(uuid: UUID, studyId: Long): StudyReviewDto{
         val studyReviewDto = generateStudyReview(uuid, studyId)
         repository.create(studyReviewDto)
+
+        return studyReviewDto
     }
+
     private fun createRequestModel(uuid: UUID, studyId: Long, status: String): UpdateStudyReviewRequestModel{
         return UpdateStudyReviewRequestModel(
             uuid,
-            1L,
-            "INCLUDED"
+            studyId,
+            status
         )
     }
 
