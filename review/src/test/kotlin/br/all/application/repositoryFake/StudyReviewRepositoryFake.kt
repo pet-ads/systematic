@@ -1,4 +1,4 @@
-package br.all.application.repositoryStub
+package br.all.application.repositoryFake
 
 import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository

@@ -19,8 +19,8 @@ class UpdateStudyReviewSelectionService(private val repository: StudyReviewRepos
             "EXCLUDED" -> studyReview.excludeInSelection()
             else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
         }
-        repository.create(studyReview.toDto())
 
+        repository.create(studyReview.toDto())
         return StudyReviewResponseModel(request.reviewID, request.studyReviewId)
     }
 }
