@@ -55,6 +55,21 @@ class UpdateStudyReviewExtractionStatusTest {
         Assertions.assertEquals(updatedStudyReview?.selectionStatus, status)
     }
 
-    
+    @Test
+    @DisplayName("Should change extraction status on update: UNCLASSIFIED -> EXCLUDED")
+    fun shouldChangeExtractionStatusToExcludedOnUpdate() {
+        val uuid = UUID.randomUUID()
+        val studyId = 1L
+        val status = "EXCLUDED"
+
+        val studyReviewDto = createStudyReviewDto(uuid, studyId, repository)
+        val requestModel = createRequestModel(uuid, studyId, status)
+
+        val response = sut.changeStatus(requestModel)
+        val updatedStudyReview = repository.findById(response.reviewId, response.id)
+
+        Assertions.assertNotEquals(studyReviewDto.extractionStatus, updatedStudyReview?.extractionStatus)
+        Assertions.assertEquals(updatedStudyReview?.selectionStatus, status)
+    }
 
 }
