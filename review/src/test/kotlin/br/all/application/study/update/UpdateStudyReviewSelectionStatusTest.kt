@@ -24,10 +24,27 @@ class UpdateStudyReviewSelectionStatusTest {
 
     @Test
     @DisplayName("Should change selection status on update: UNCLASSIFIED -> INCLUDED")
-    fun shouldChangeSelectionStatusOnUpdate() {
+    fun shouldChangeSelectionStatusToIncludedOnUpdate() {
         val uuid = UUID.randomUUID()
         val studyId = 1L
         val status = "INCLUDED"
+
+        val studyReviewDto = createStudyReviewDto(uuid, studyId, repository)
+        val requestModel = createRequestModel(uuid, studyId, status)
+
+        val response = sut.changeStatus(requestModel)
+        val updatedStudyReview = repository.findById(response.reviewId, response.id)
+
+        assertNotEquals(studyReviewDto.selectionStatus, updatedStudyReview?.selectionStatus)
+        assertEquals(updatedStudyReview?.selectionStatus, status)
+    }
+
+    @Test
+    @DisplayName("Should change selection status on update: UNCLASSIFIED -> DUPLICATED")
+    fun shouldChangeSelectionStatusToDuplicatedOnUpdate() {
+        val uuid = UUID.randomUUID()
+        val studyId = 1L
+        val status = "DUPLICATED"
 
         val studyReviewDto = createStudyReviewDto(uuid, studyId, repository)
         val requestModel = createRequestModel(uuid, studyId, status)
