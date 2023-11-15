@@ -9,7 +9,9 @@ import br.all.domain.shared.utils.requireThatExists
 
 class UpdateStudyReviewExtractionStatusService (private val repository: StudyReviewRepository) {
     fun changeStatus(request: UpdateStudyReviewRequestModel) : StudyReviewResponseModel{
-        val studyReviewDto = requireThatExists(repository.findById(request.reviewID, request.studyReviewId))
+        val studyReviewDto = requireThatExists(repository.findById(request.reviewID, request.studyReviewId)){
+            "There is not a Study with that reviewId ${request.reviewID} and/or ID ${request.studyReviewId}"
+        }
         val studyReview = StudyReview.fromDto(studyReviewDto)
 
         when(request.status.uppercase()){
