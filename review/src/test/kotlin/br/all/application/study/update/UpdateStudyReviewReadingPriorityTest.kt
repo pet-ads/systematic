@@ -22,10 +22,27 @@ class UpdateStudyReviewReadingPriorityTest {
 
     @Test
     @DisplayName("Should change reading priority on update: LOW -> HIGH")
-    fun shouldChangeReadingStatusOnUpdate() {
+    fun shouldChangeReadingStatusToHighOnUpdate() {
         val uuid = UUID.randomUUID()
         val studyId = 1L
         val priority = "HIGH"
+
+        val studyReviewDto = createStudyReviewDto(uuid, studyId, repository)
+        val requestModel = createRequestModel(uuid, studyId, priority)
+
+        val response = sut.changeStatus(requestModel)
+        val updatedStudyReview = repository.findById(response.reviewId, response.id)
+
+        Assertions.assertNotEquals(studyReviewDto.readingPriority, updatedStudyReview?.readingPriority)
+        Assertions.assertEquals(updatedStudyReview?.readingPriority, priority)
+    }
+
+    @Test
+    @DisplayName("Should change reading priority on update: LOW -> VERY_LOW")
+    fun shouldChangeReadingStatusToVeryLowOnUpdate() {
+        val uuid = UUID.randomUUID()
+        val studyId = 1L
+        val priority = "VERY_LOW"
 
         val studyReviewDto = createStudyReviewDto(uuid, studyId, repository)
         val requestModel = createRequestModel(uuid, studyId, priority)
