@@ -26,7 +26,7 @@ data class Email(val email: String) : ValueObject() {
     }
 
     private fun isValidEmailFormat(email: String): Boolean {
-        if (!validatesSemantics(email)) return false
+        if (!isValidEmailAddress(email)) return false
         if (!HasLengthBelowMaximum(email)) return false
         if (hasRepeatedSubdomains(email)) return false
         if (email.contains("..")) return false
@@ -35,7 +35,7 @@ data class Email(val email: String) : ValueObject() {
         return true
     }
 
-    private fun validatesSemantics(email: String): Boolean {
+    private fun isValidEmailAddress(email: String): Boolean {
         val regex = Regex("^[A-Za-z0-9+_.-]+@[a-z.]+$")
         return regex.matches(email)
     }
