@@ -35,6 +35,7 @@ class UpdateStudyReviewExtractionStatusTest {
         val updatedStudyReview = repository.findById(response.reviewId, response.id)
 
         Assertions.assertNotEquals(studyReviewDto.extractionStatus, updatedStudyReview?.extractionStatus)
+        Assertions.assertEquals(updatedStudyReview?.selectionStatus, status)
     }
 
 }

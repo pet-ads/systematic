@@ -38,6 +38,7 @@ class UpdateStudyReviewSelectionStatusServiceTest {
         val updatedStudyReview = repository.findById(response.reviewId, response.id)
 
         assertNotEquals(studyReviewDto.selectionStatus, updatedStudyReview?.selectionStatus)
+        assertEquals(updatedStudyReview?.selectionStatus, status)
     }
 
 }
