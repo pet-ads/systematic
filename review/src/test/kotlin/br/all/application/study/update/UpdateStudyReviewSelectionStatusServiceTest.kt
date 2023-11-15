@@ -1,7 +1,6 @@
 package br.all.application.study.update
 
 import br.all.application.repositoryFake.StudyReviewRepositoryFake
-import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.shared.createRequestModel
 import br.all.application.study.shared.createStudyReviewDto
 import io.mockk.junit5.MockKExtension
@@ -13,8 +12,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 
-@ExtendWith(MockKExtension::class)
-class UpdateStudyReviewServiceTest {
+class UpdateStudyReviewSelectionStatusServiceTest {
 
     private lateinit var repository: StudyReviewRepositoryFake
 
@@ -41,5 +39,5 @@ class UpdateStudyReviewServiceTest {
 
         assertNotEquals(studyReviewDto.selectionStatus, updatedStudyReview?.selectionStatus)
     }
-    
+
 }
