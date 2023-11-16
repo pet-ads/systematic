@@ -22,7 +22,7 @@ class DomainModuleTest {
     fun `should domain only be accessed by application or itself`(importedClasses: JavaClasses) =
         classes().that().resideInAPackage("..domain..")
             .should().onlyBeAccessed().byAnyPackage("..application..", "..domain..")
-            .check(importedClasses)
+            .check(importedClasses)//
 
     @ArchTest
     fun `should shared classes in domain have not dependencies outside shared package`(importedClasses: JavaClasses) =
