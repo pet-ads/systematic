@@ -8,7 +8,6 @@ data class QuestionId(val id: Int) : Identifier {
 
     init {
         val notification = validate()
-
         require(notification.hasNoErrors()) {notification.message()}
     }
 

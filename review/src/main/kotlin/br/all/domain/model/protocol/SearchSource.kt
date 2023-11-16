@@ -1,5 +1,7 @@
 package br.all.domain.model.protocol
 
+import br.all.application.shared.CouldNotCreateEntityException
+import br.all.application.study.repository.StudyReviewDto
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.ddd.ValueObject
 
