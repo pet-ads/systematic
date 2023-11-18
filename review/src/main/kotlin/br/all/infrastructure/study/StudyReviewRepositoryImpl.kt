@@ -2,6 +2,7 @@ package br.all.infrastructure.study
 
 import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository
+import br.all.domain.model.study.StudyReviewId
 import org.springframework.stereotype.Repository
 import java.util.*
 

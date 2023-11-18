@@ -11,8 +11,11 @@ class UpdateStudyReviewPriorityServiceImpl(
     private val repository: StudyReviewRepository
 ) : UpdateStudyReviewPriorityService {
 
-    override fun changeStatus(request: RequestModel){
+    override fun changeStatus(request: RequestModel) {
         val studyReviewDto = repository.findById(request.reviewID, request.studyReviewId)
+            ?: throw NoSuchElementException("There is no review with reviewId ${request.reviewID} " +
+                    "and/or st ID ${request.studyReviewId}")
+
         val studyReview = StudyReview.fromDto(studyReviewDto).apply {
             readingPriority = ReadingPriority.valueOf(request.status)
         }

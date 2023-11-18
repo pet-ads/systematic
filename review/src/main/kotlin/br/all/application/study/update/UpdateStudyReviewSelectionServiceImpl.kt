@@ -12,6 +12,9 @@ class UpdateStudyReviewSelectionServiceImpl(
 
     override fun changeStatus(request: RequestModel){
         val studyReviewDto = repository.findById(request.reviewID, request.studyReviewId)
+            ?: throw NoSuchElementException("There is no review with reviewId " +
+                    "${request.reviewID} and/or st ID ${request.studyReviewId}")
+
         val studyReview = StudyReview.fromDto(studyReviewDto)
 
         when(request.status.uppercase()){
