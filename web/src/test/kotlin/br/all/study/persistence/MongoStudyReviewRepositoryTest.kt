@@ -1,8 +1,9 @@
-package br.all.persistence
+package br.all.study.persistence
 
 import br.all.infrastructure.study.MongoStudyReviewRepository
-import br.all.infrastructure.study.StudyReviewDocument
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
+import br.all.study.utils.TestDataFactory
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -17,12 +18,20 @@ class MongoStudyReviewRepositoryTest (
     @Autowired private val idService: StudyReviewIdGeneratorService
 ) {
 
+    private lateinit var factory: TestDataFactory
+
     @BeforeEach
-    fun setUp() = sut.deleteAll()
+    fun setUp() {
+        factory = TestDataFactory(idService)
+        sut.deleteAll()
+    }
+
+    @AfterEach
+    fun teardown() = sut.deleteAll()
 
     @Test
     fun `Should insert a study review`(){
-        val study = studyReviewOf(UUID.randomUUID())
+        val study = factory.reviewDocumentOfId(UUID.randomUUID())
         sut.insert(study)
         assertTrue(sut.findById(study.id).isPresent)
     }
@@ -30,9 +39,9 @@ class MongoStudyReviewRepositoryTest (
     @Test
     fun `Should find all study reviews of a review`(){
         val reviewId = UUID.randomUUID()
-        sut.insert(studyReviewOf(reviewId))
-        sut.insert(studyReviewOf(reviewId))
-        sut.insert(studyReviewOf(UUID.randomUUID()))
+        sut.insert(factory.reviewDocumentOfId(reviewId))
+        sut.insert(factory.reviewDocumentOfId(reviewId))
+        sut.insert(factory.reviewDocumentOfId(UUID.randomUUID()))
         val result = sut.findAllByReviewId(reviewId)
         assertTrue(result.size == 2)
     }
@@ -40,7 +49,7 @@ class MongoStudyReviewRepositoryTest (
     @Test
     fun `Should find a study review in a review`(){
         val reviewId = UUID.randomUUID()
-        val studyReview = studyReviewOf(reviewId)
+        val studyReview = factory.reviewDocumentOfId(reviewId)
         sut.insert(studyReview)
         val result = sut.findByReviewIdAndId(reviewId, studyReview.id)
         assertEquals(studyReview.id, result.id)
@@ -52,30 +61,5 @@ class MongoStudyReviewRepositoryTest (
         val id = idService.next()
         val nextId = idService.next()
         assertEquals(id + 1, nextId)
-    }
-
-    fun studyReviewOf(reviewId: UUID) : StudyReviewDocument{
-        val id = idService.next()
-        return StudyReviewDocument(
-            id,
-            reviewId,
-            "Article",
-            "Test title",
-            2023,
-            "Lucas",
-            "JSS",
-            "Mussum Ipsum, cacilds vidis litro abertis. Admodum accumsan disputationi eu sit.",
-            setOf("PET", "IFSP"),
-            emptyList(),
-            "",
-            setOf("Scopus", "Springer"),
-            setOf("Criteria A", "Criteria B"),
-            mapOf(Pair(UUID.randomUUID(), "Form")),
-            mapOf(Pair(UUID.randomUUID(), "Quality")),
-            "",
-            "LOW",
-            "UNCLASSIFIED",
-            "UNCLASSIFIED"
-        )
     }
 }

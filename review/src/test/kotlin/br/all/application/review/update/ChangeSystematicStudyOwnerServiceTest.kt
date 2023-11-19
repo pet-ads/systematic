@@ -1,6 +1,6 @@
 package br.all.application.review.update
 
-import br.all.application.researcher.repository.ResearcherRepository
+import br.all.application.researcher.repository.ReviewerRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.toDto
 import br.all.application.review.util.FakeSystematicStudyRepository
@@ -21,7 +21,7 @@ import kotlin.test.assertEquals
 @ExtendWith(MockKExtension::class)
 class ChangeSystematicStudyOwnerServiceTest {
     @MockK
-    private lateinit var researcherRepository : ResearcherRepository
+    private lateinit var researcherRepository : ReviewerRepository
     private lateinit var systematicStudyRepository : SystematicStudyRepository
     private lateinit var sut : ChangeSystematicStudyOwnerService
 

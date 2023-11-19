@@ -50,10 +50,10 @@ fun StudyReview.Companion.fromDto(dto: StudyReviewDto ) = StudyReview(
     ExtractionStatus.convertStringToExtractionStatusEnum(dto.extractionStatus)
 )
 
-fun StudyReview.Companion.fromStudyRequestModel(reviewId: UUID, studyId: Long, study: RequestModel)
+fun StudyReview.Companion.fromStudyRequestModel(studyId: Long, study: RequestModel)
 = StudyReview(
     StudyReviewId(studyId),
-    ReviewId(reviewId),
+    ReviewId(study.reviewId),
     StudyType.valueOf(study.type.uppercase()),
     study.title,
     study.year,

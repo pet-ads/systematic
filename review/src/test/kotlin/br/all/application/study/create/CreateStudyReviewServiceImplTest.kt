@@ -1,5 +1,7 @@
 package br.all.application.study.create
 
+import br.all.application.researcher.credentials.ResearcherCredentialsService
+import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.create.CreateStudyReviewService.RequestModel
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromStudyRequestModel
@@ -14,42 +16,51 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
-import kotlin.test.assertEquals
 
 @ExtendWith(MockKExtension::class)
 class CreateStudyReviewServiceImplTest {
 
-    @MockK private lateinit var repository: StudyReviewRepository
+    @MockK private lateinit var studyReviewRepository: StudyReviewRepository
+    @MockK private lateinit var systematicStudyRepository: SystematicStudyRepository
     @MockK private lateinit var idGenerator: IdGeneratorService
+    @MockK private lateinit var credentialService: ResearcherCredentialsService
     @MockK private lateinit var presenter: CreateStudyReviewPresenter
     private lateinit var sut: CreateStudyReviewServiceImpl
 
     @BeforeEach
     fun setUp() {
-        sut = CreateStudyReviewServiceImpl(repository, presenter, idGenerator)
-    }
-
-    @Disabled
-    @Test
-    fun `Should create study`() {
-        val requestModel = RequestModel(
-            "ARTICLE",
-            "Title",
-            2020,
-            "Authors",
-            "Journal",
-            "abstract",
-            emptySet(),
-            "source"
+        sut = CreateStudyReviewServiceImpl(
+            systematicStudyRepository,
+            studyReviewRepository,
+            presenter,
+            credentialService,
+            idGenerator
         )
-        val studyId = 1L
-        val reviewId = UUID.randomUUID()
-        val dto = StudyReview.fromStudyRequestModel(reviewId, studyId, requestModel).toDto()
-
-        every { idGenerator.next() } returns studyId
-        every { repository.create(dto) } returns Unit
-        every { repository.findById(reviewId, studyId) } returns dto
-
-        sut.createFromStudy(reviewId, requestModel)
     }
+
+//    @Disabled
+//    @Test
+//    fun `Should create study`() {
+//        val requestModel = RequestModel(
+//            UUID.randomUUID(),
+//            UUID.randomUUID(),
+//            "ARTICLE",
+//            "Title",
+//            2020,
+//            "Authors",
+//            "Journal",
+//            "abstract",
+//            emptySet(),
+//            "source"
+//        )
+//        val studyId = 1L
+//        val reviewId = UUID.randomUUID()
+//        val dto = StudyReview.fromStudyRequestModel(studyId, requestModel).toDto()
+//
+//        every { idGenerator.next() } returns studyId
+//        every { studyReviewRepository.create(dto) } returns Unit
+//        every { studyReviewRepository.findById(reviewId, studyId) } returns dto
+//
+//        sut.createFromStudy(requestModel)
+//    }
 }

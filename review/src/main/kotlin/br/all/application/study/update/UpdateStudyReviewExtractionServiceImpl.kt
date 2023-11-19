@@ -4,7 +4,6 @@ import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromDto
 import br.all.application.study.repository.toDto
 import br.all.application.study.update.UpdateStudyReviewExtractionService.RequestModel
-import br.all.application.study.shared.StudyReviewResponseModel
 import br.all.domain.model.study.StudyReview
 
 class UpdateStudyReviewExtractionServiceImpl (

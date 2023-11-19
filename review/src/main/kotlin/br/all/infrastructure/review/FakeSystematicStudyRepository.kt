@@ -1,12 +1,12 @@
-package br.all.application.review.util
+package br.all.infrastructure.review
 
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import org.springframework.stereotype.Repository
 import java.util.*
 
-
-class FakeSystematicStudyRepository : SystematicStudyRepository {
+@Repository
+open class FakeSystematicStudyRepository : SystematicStudyRepository {
     private val db = mutableMapOf<UUID, SystematicStudyDto>()
 
     override fun create(dto: SystematicStudyDto) = run{ db[dto.id] = dto }
@@ -15,6 +15,6 @@ class FakeSystematicStudyRepository : SystematicStudyRepository {
 
     override fun findAll(): List<SystematicStudyDto> = db.values.toList()
 
-    override fun existsById(id: UUID) = id in db.keys
+    override fun existsById(id: UUID) = true
     override fun hasReviewer(reviewId: UUID, researcherId: UUID) = true
 }

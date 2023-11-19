@@ -6,8 +6,7 @@ import java.util.*
 
 @Document("study_review")
 class StudyReviewDocument (
-    @Id
-    val id: Long,
+    @Id val id: Long,
     val reviewId: UUID,
     val type: String,
     val title: String,

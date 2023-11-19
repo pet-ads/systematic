@@ -4,9 +4,11 @@ import java.util.*
 
 
 interface CreateStudyReviewService {
-    fun createFromStudy(reviewId: UUID, study: RequestModel)
+    fun createFromStudy(request: RequestModel)
 
     data class RequestModel(
+        val researcherId: UUID,
+        val reviewId: UUID,
         val type: String,
         val title: String,
         val year: Int,
@@ -17,5 +19,9 @@ interface CreateStudyReviewService {
         val source: String,
     )
 
-    open class ResponseModel(val reviewId: UUID, val studyId: Long)
+    open class ResponseModel(
+        val reviewerId: UUID,
+        val reviewId: UUID,
+        val studyId: Long
+    )
 }
