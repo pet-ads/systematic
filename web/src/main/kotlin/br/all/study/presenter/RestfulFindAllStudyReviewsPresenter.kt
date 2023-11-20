@@ -1,11 +1,9 @@
 package br.all.study.presenter
 
-import br.all.application.shared.exceptions.EntityNotFoundException
-import br.all.application.shared.exceptions.UnauthenticatedUserException
-import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
 import br.all.application.study.find.service.FindAllStudyReviewsService.ResponseModel
 import br.all.application.study.repository.StudyReviewDto
+import br.all.shared.createErrorResponseFrom
 import br.all.study.controller.StudyReviewController
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
@@ -30,14 +28,8 @@ class RestfulFindAllStudyReviewsPresenter : FindAllStudyReviewsPresenter {
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
-    override fun prepareFailView(throwable: Throwable) {
-        responseEntity = when (throwable){
-            is UnauthenticatedUserException -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("")
-            is UnauthorizedUserException -> ResponseEntity.status(HttpStatus.FORBIDDEN).body("")
-            is EntityNotFoundException -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("")
-            else -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
-        }
-    }
+    override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
+
 
     private data class ViewModel (
         val reviewId : UUID,
