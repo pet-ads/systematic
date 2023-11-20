@@ -1,7 +1,7 @@
 package br.all.study.persistence
 
+import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
-import br.all.infrastructure.study.StudyReviewId
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
 import br.all.study.utils.TestDataFactory
 import org.junit.jupiter.api.AfterEach
@@ -23,7 +23,8 @@ class MongoStudyReviewRepositoryTest (
 
     @BeforeEach
     fun setUp() {
-        factory = TestDataFactory(idService)
+        factory = TestDataFactory()
+        idService.reset()
         sut.deleteAll()
     }
 
@@ -32,31 +33,53 @@ class MongoStudyReviewRepositoryTest (
 
     @Test
     fun `Should insert a study review`(){
-        val study = factory.reviewDocumentOfId(UUID.randomUUID())
+        val study = factory.reviewDocument(UUID.randomUUID(), idService.next())
         sut.insert(study)
-        assertTrue(sut.findById(study.id) != null)
+        assertTrue(sut.findById(study.id).toNullable() != null)
+    }
+
+    @Test
+    fun `Should update a study review`(){
+        val reviewId = UUID.randomUUID()
+        val studyId = idService.next()
+        val study = factory.reviewDocument(reviewId, studyId,"study")
+        sut.insert(study)
+        val updatedTitle = "study review"
+        val updatedStudy = factory.reviewDocument(reviewId, studyId, updatedTitle)
+        sut.save(updatedStudy)
+        assertEquals(updatedTitle, sut.findById(study.id).toNullable()?.title)
     }
 
     @Test
     fun `Should find all study reviews of a review`(){
         val reviewId = UUID.randomUUID()
-        sut.insert(factory.reviewDocumentOfId(reviewId))
-        sut.insert(factory.reviewDocumentOfId(reviewId))
-        sut.insert(factory.reviewDocumentOfId(UUID.randomUUID()))
-        val result = sut.findAllById_ReviewId(reviewId)
+        sut.insert(factory.reviewDocument(reviewId, idService.next()))
+        sut.insert(factory.reviewDocument(reviewId, idService.next()))
+        sut.insert(factory.reviewDocument(UUID.randomUUID(), idService.next()))
+        val result = sut.findAllByIdReviewId(reviewId)
         assertTrue(result.size == 2)
+    }
+
+    @Test fun `Should update study reviews selection status`(){
+        val reviewId = UUID.randomUUID()
+        val studyId = idService.next()
+        val studyReview = factory.reviewDocument(reviewId, studyId)
+        sut.insert(studyReview)
+        val newStatus = "INCLUDED"
+        sut.findAndUpdateAttributeById(studyReview.id, "selectionStatus", newStatus)
+        val result = sut.findById(studyReview.id)
+        assertEquals(newStatus, result.toNullable()?.selectionStatus)
     }
 
     @Test
     fun `Should find a study review in a review`(){
         val reviewId = UUID.randomUUID()
-        val studyReview = factory.reviewDocumentOfId(reviewId)
+        val studyReview = factory.reviewDocument(reviewId, idService.next(),"study")
         sut.insert(studyReview)
         val result = sut.findById(studyReview.id)
-        assertEquals(studyReview.id.studyId, result?.id?.studyId)
-        assertEquals(reviewId, result?.id?.reviewId)
+        assertEquals(studyReview.id.studyId, result.toNullable()?.id?.studyId)
+        assertEquals(reviewId, result.toNullable()?.id?.reviewId)
     }
-
 
     @Test
     fun `Should generate id sequence`(){

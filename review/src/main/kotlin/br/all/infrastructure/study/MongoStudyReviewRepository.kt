@@ -1,10 +1,15 @@
 package br.all.infrastructure.study
 
 import org.springframework.data.mongodb.repository.MongoRepository
-import java.util.UUID
+import org.springframework.data.mongodb.repository.Update
+import java.util.*
 
-interface MongoStudyReviewRepository : MongoRepository<StudyReviewDocument, Long>{
-    fun findAllById_ReviewId(reviewID: UUID): List<StudyReviewDocument>
-    fun findById(id: StudyReviewId): StudyReviewDocument?
+
+interface MongoStudyReviewRepository : MongoRepository<StudyReviewDocument, StudyReviewId> {
+
+    fun findAllByIdReviewId(reviewID: UUID): List<StudyReviewDocument>
+
+    @Update("{ '\$set' : { ?1 : ?2 } }")
+    fun findAndUpdateAttributeById(id: StudyReviewId, attributeName:String, newStatus: Any)
 
 }

@@ -28,7 +28,7 @@ class CreateStudyReviewServiceImpl(
         val studyId = idGenerator.next()
         val studyReview = StudyReview.fromStudyRequestModel(studyId, request)
 
-        studyReviewRepository.save(studyReview.toDto())
+        studyReviewRepository.saveOrUpdate(studyReview.toDto())
         presenter.prepareSuccessView(ResponseModel(request.researcherId, request.reviewId, studyId))
     }
 }

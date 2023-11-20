@@ -34,7 +34,7 @@ class StudyReviewControllerTest(
     fun setUp() {
         repository.deleteAll()
         idService.reset()
-        factory = TestDataFactory(idService)
+        factory = TestDataFactory()
         systematicStudyId = factory.systematicStudyId
         researcherId = factory.researcherId
     }
@@ -60,7 +60,7 @@ class StudyReviewControllerTest(
 
     @Test
     fun `should find the study and return 200`() {
-        val studyReview = factory.reviewDocumentOfId(systematicStudyId)
+        val studyReview = factory.reviewDocument(systematicStudyId, idService.next(),"study")
         repository.insert(studyReview)
 
         val url = "/api/v1/researcher/$researcherId/review/$systematicStudyId/study-review/${studyReview.id.studyId}"
@@ -77,9 +77,9 @@ class StudyReviewControllerTest(
     fun `should find all studies and return 200`() {
         val url = "/api/v1/researcher/$researcherId/review/$systematicStudyId/study-review"
 
-        repository.insert(factory.reviewDocumentOfId(systematicStudyId))
-        repository.insert(factory.reviewDocumentOfId(systematicStudyId))
-        repository.insert(factory.reviewDocumentOfId(UUID.randomUUID()))
+        repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), "study"))
+        repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), "study"))
+        repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), "study"))
 
         mockMvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)

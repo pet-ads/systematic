@@ -2,7 +2,10 @@ package br.all.infrastructure.study
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
+import org.springframework.stereotype.Component
+import java.io.Serializable
 import java.util.*
+import kotlin.Comparator
 
 @Document("study_review")
 class StudyReviewDocument (
@@ -31,4 +34,4 @@ class StudyReviewDocument (
     }
 }
 
-data class StudyReviewId(val reviewId: UUID, val studyId: Long)
+data class StudyReviewId(val reviewId: UUID, val studyId: Long): Serializable

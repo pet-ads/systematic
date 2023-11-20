@@ -27,7 +27,7 @@ class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
-    override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
+    override fun prepareFailView(throwable: Throwable)= run { responseEntity = createErrorResponseFrom(throwable) }
 
     private data class ViewModel(private val content: StudyReviewDto) : RepresentationModel<ViewModel>() {
         val id = content.studyId

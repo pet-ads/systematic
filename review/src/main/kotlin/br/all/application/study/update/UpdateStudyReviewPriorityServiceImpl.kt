@@ -19,6 +19,6 @@ class UpdateStudyReviewPriorityServiceImpl(
         val studyReview = StudyReview.fromDto(studyReviewDto).apply {
             readingPriority = ReadingPriority.valueOf(request.status)
         }
-        repository.save(studyReview.toDto())
+        repository.saveOrUpdate(studyReview.toDto())
     }
 }
