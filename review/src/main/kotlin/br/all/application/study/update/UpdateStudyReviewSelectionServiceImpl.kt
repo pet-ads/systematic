@@ -24,6 +24,6 @@ class UpdateStudyReviewSelectionServiceImpl(
             "EXCLUDED" -> studyReview.excludeInSelection()
             else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
         }
-        repository.create(studyReview.toDto())
+        repository.save(studyReview.toDto())
     }
 }

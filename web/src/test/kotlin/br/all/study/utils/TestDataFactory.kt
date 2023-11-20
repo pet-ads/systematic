@@ -2,6 +2,7 @@ package br.all.study.utils
 
 import br.all.application.study.create.CreateStudyReviewService
 import br.all.infrastructure.study.StudyReviewDocument
+import br.all.infrastructure.study.StudyReviewId
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
 import java.util.*
 
@@ -24,10 +25,10 @@ class TestDataFactory(private val idService: StudyReviewIdGeneratorService) {
     )
 
     fun reviewDocumentOfId(reviewId: UUID) : StudyReviewDocument {
-        val id = idService.next()
+        val studyId = idService.next()
+        val studyReviewId = StudyReviewId(reviewId, studyId)
         return StudyReviewDocument(
-            id,
-            reviewId,
+            studyReviewId,
             "Article",
             "Test title",
             2023,

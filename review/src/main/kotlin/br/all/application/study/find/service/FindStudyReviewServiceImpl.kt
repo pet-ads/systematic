@@ -27,10 +27,11 @@ class FindStudyReviewServiceImpl(
         )
 
         val studyReview = studyReviewRepository.findById(request.systematicStudy, request.studyReviewId)
-        if (studyReview == null) {
+        if (studyReview === null) {
             val message = "There is no review of id ${request.systematicStudy} or study of id ${request.studyReviewId}."
             presenter.prepareFailView(EntityNotFoundException(message))
+            return
         }
-        presenter.prepareSuccessView(ResponseModel(request.researcherId, studyReview!!))
+        presenter.prepareSuccessView(ResponseModel(request.researcherId, studyReview))
     }
 }

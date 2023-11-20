@@ -7,7 +7,7 @@ import java.util.*
 
 fun createStudyReviewDto(uuid: UUID, studyId: Long, repository: StudyReviewRepositoryFake): StudyReviewDto{
     val studyReviewDto = generateStudyReview(uuid, studyId)
-    repository.create(studyReviewDto)
+    repository.save(studyReviewDto)
     return studyReviewDto
 }
 
@@ -21,8 +21,8 @@ fun createRequestModel(uuid: UUID, studyId: Long, status: String): UpdateStudyRe
 
 fun generateStudyReview(reviewId: UUID, studyId: Long): StudyReviewDto{
     return StudyReviewDto(
-        id = studyId,
         reviewId = reviewId,
+        studyId = studyId,
         studyType = "ARTICLE",
         title = "Título do Estudo",
         year = 2023,

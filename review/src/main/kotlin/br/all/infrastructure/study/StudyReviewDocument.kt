@@ -6,8 +6,7 @@ import java.util.*
 
 @Document("study_review")
 class StudyReviewDocument (
-    @Id val id: Long,
-    val reviewId: UUID,
+    @Id val id: StudyReviewId,
     val type: String,
     val title: String,
     val year: Int,
@@ -31,3 +30,5 @@ class StudyReviewDocument (
         val SEQUENCE_NAME = "study_review_sequence";
     }
 }
+
+data class StudyReviewId(val reviewId: UUID, val studyId: Long)

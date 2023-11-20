@@ -7,8 +7,8 @@ import java.util.*
 class StudyReviewRepositoryFake : StudyReviewRepository{
 
     val mapStudyReview = mutableMapOf<Pair<UUID, Long>, StudyReviewDto>()
-    override fun create(studyReviewDto: StudyReviewDto) {
-        mapStudyReview.put(studyReviewDto.reviewId to studyReviewDto.id, studyReviewDto)
+    override fun save(studyReviewDto: StudyReviewDto) {
+        mapStudyReview.put(studyReviewDto.reviewId to studyReviewDto.studyId, studyReviewDto)
     }
 
     override fun findAllFromReview(reviewId: UUID): List<StudyReviewDto> {

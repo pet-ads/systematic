@@ -7,15 +7,15 @@ import java.util.*
 
 @Repository
 open class StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRepository) : StudyReviewRepository {
-    override fun create(studyReviewDto: StudyReviewDto) = repository.save(studyReviewDto.toDocument()).let {}
-
-    override fun findAllFromReview(reviewId: UUID): List<StudyReviewDto> {
-        val findAllByReviewId = repository.findAllByReviewId(reviewId)
-        return findAllByReviewId.map { it.toDto() }
-    }
+    override fun save(studyReviewDto: StudyReviewDto) = repository.save(studyReviewDto.toDocument()).let {}
 
     override fun findById(reviewId: UUID, studyId: Long) =
-        repository.findByReviewIdAndId(reviewId, studyId).toDto()
+        repository.findById(StudyReviewId(reviewId, studyId))?.toDto()
+
+    override fun findAllFromReview(reviewId: UUID): List<StudyReviewDto> {
+        val findAllByReviewId = repository.findAllById_ReviewId(reviewId)
+        return findAllByReviewId.map { it.toDto() }
+    }
 
 }
 

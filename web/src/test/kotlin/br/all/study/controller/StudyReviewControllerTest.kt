@@ -63,11 +63,11 @@ class StudyReviewControllerTest(
         val studyReview = factory.reviewDocumentOfId(systematicStudyId)
         repository.insert(studyReview)
 
-        val url = "/api/v1/researcher/$researcherId/review/$systematicStudyId/study-review/${studyReview.id}"
+        val url = "/api/v1/researcher/$researcherId/review/$systematicStudyId/study-review/${studyReview.id.studyId}"
         mockMvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.studyType").value(studyReview.type))
-            .andExpect(jsonPath("$.reviewId").value(studyReview.reviewId.toString()))
+            .andExpect(jsonPath("$.reviewId").value(studyReview.id.reviewId.toString()))
             .andExpect(jsonPath("$.title").value(studyReview.title))
             .andExpect(jsonPath("$._links").exists())
 

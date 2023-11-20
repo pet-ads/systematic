@@ -1,6 +1,7 @@
 package br.all.study.persistence
 
 import br.all.infrastructure.study.MongoStudyReviewRepository
+import br.all.infrastructure.study.StudyReviewId
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
 import br.all.study.utils.TestDataFactory
 import org.junit.jupiter.api.AfterEach
@@ -33,7 +34,7 @@ class MongoStudyReviewRepositoryTest (
     fun `Should insert a study review`(){
         val study = factory.reviewDocumentOfId(UUID.randomUUID())
         sut.insert(study)
-        assertTrue(sut.findById(study.id).isPresent)
+        assertTrue(sut.findById(study.id) != null)
     }
 
     @Test
@@ -42,7 +43,7 @@ class MongoStudyReviewRepositoryTest (
         sut.insert(factory.reviewDocumentOfId(reviewId))
         sut.insert(factory.reviewDocumentOfId(reviewId))
         sut.insert(factory.reviewDocumentOfId(UUID.randomUUID()))
-        val result = sut.findAllByReviewId(reviewId)
+        val result = sut.findAllById_ReviewId(reviewId)
         assertTrue(result.size == 2)
     }
 
@@ -51,8 +52,9 @@ class MongoStudyReviewRepositoryTest (
         val reviewId = UUID.randomUUID()
         val studyReview = factory.reviewDocumentOfId(reviewId)
         sut.insert(studyReview)
-        val result = sut.findByReviewIdAndId(reviewId, studyReview.id)
-        assertEquals(studyReview.id, result.id)
+        val result = sut.findById(studyReview.id)
+        assertEquals(studyReview.id.studyId, result?.id?.studyId)
+        assertEquals(reviewId, result?.id?.reviewId)
     }
 
 

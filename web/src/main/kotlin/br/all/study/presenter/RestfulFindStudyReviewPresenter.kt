@@ -22,7 +22,7 @@ class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
         val restfulResponse = ViewModel(response.content)
 
         val self = linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId, response.researcherId, response.content.id)
+            findStudyReview(response.researcherId, response.researcherId, response.content.studyId)
         }.withSelfRel()
 
         restfulResponse.add(self)
@@ -39,7 +39,7 @@ class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
     }
 
     private data class ViewModel(private val content: StudyReviewDto) : RepresentationModel<ViewModel>() {
-        val id = content.id
+        val id = content.studyId
         val reviewId = content.reviewId
         val studyType = content.studyType
         val title = content.title

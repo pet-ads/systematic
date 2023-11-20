@@ -39,4 +39,6 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
     }
 
     private data class ViewModel (val reviewId : UUID, val studyId: Long) : RepresentationModel<ViewModel>()
+
+
 }
