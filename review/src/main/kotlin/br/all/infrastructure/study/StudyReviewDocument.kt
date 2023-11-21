@@ -18,7 +18,7 @@ class StudyReviewDocument (
     val abstractText: String,
     val keywords: Set<String>,
     val references: List<String>,
-    val doi: String,
+    val doi: String?,
     val searchSources: Set<String>,
     val criteria: Set<String>,
     val formAnswers: Map<UUID, String>,

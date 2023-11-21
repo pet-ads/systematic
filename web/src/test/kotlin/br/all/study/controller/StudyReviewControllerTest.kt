@@ -1,10 +1,13 @@
 package br.all.study.controller
 
+import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
+import br.all.infrastructure.study.StudyReviewId
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
 import br.all.study.utils.TestDataFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,8 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.util.*
 
@@ -85,6 +87,57 @@ class StudyReviewControllerTest(
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.reviewId").value(systematicStudyId.toString()))
             .andExpect(jsonPath("$.size").value(2))
+    }
+
+    @Test
+    fun `should update the study selection status and return 204`() {
+        val studyId = idService.next()
+        val statusToBeUpdated = "INCLUDED"
+        val requestModel = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
+        val json = objectMapper.writeValueAsString(requestModel)
+        val studyReview = factory.reviewDocument(systematicStudyId, studyId,"study")
+        repository.insert(studyReview)
+
+        val url = "/api/v1/researcher/$researcherId/review/$systematicStudyId/study-review/" +
+                "${studyReview.id.studyId}/selection-status"
+
+        mockMvc.perform(patch(url).contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isNoContent)
+        val updatedStatus = repository.findById(StudyReviewId(systematicStudyId, studyId)).toNullable()?.selectionStatus
+        assertEquals(statusToBeUpdated, updatedStatus)
+    }
+
+    @Test
+    fun `should update the study extraction status and return 204`() {
+        val studyId = idService.next()
+        val statusToBeUpdated = "EXCLUDED"
+        val requestModel = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
+        val json = objectMapper.writeValueAsString(requestModel)
+        val studyReview = factory.reviewDocument(systematicStudyId, studyId,"study")
+        repository.insert(studyReview)
+
+        val url = "/api/v1/researcher/$researcherId/review/$systematicStudyId/study-review/" +
+                "${studyReview.id.studyId}/extraction-status"
+
+        mockMvc.perform(patch(url).contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isNoContent)
+        val updatedStatus = repository.findById(StudyReviewId(systematicStudyId, studyId)).toNullable()?.extractionStatus
+        assertEquals(statusToBeUpdated, updatedStatus)
+    }
+
+    @Test
+    fun `should update the study reading priority and return 204`() {
+        val studyId = idService.next()
+        val statusToBeUpdated = "HIGH"
+        val requestModel = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
+        val json = objectMapper.writeValueAsString(requestModel)
+        val studyReview = factory.reviewDocument(systematicStudyId, studyId,"study")
+        repository.insert(studyReview)
+
+        val url = "/api/v1/researcher/$researcherId/review/$systematicStudyId/study-review/" +
+                "${studyReview.id.studyId}/reading-priority"
+
+        mockMvc.perform(patch(url).contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isNoContent)
+        val updatedStatus = repository.findById(StudyReviewId(systematicStudyId, studyId)).toNullable()?.readingPriority
+        assertEquals(statusToBeUpdated, updatedStatus)
     }
 
 }

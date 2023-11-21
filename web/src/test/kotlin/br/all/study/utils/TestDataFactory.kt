@@ -1,6 +1,7 @@
 package br.all.study.utils
 
 import br.all.application.study.create.CreateStudyReviewService
+import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.infrastructure.study.StudyReviewDocument
 import br.all.infrastructure.study.StudyReviewId
 import java.util.*
@@ -23,6 +24,9 @@ class TestDataFactory() {
         "source"
     )
 
+    fun validStatusUpdatePatchRequest(id: Long, newStatus: String) =
+        UpdateStudyReviewStatusService.RequestModel(researcherId, systematicStudyId, id, newStatus)
+
     fun reviewDocument(
         reviewId: UUID,
         studyId: Long,
@@ -34,7 +38,7 @@ class TestDataFactory() {
         val studyReviewId = StudyReviewId(reviewId, studyId)
         return StudyReviewDocument(
             studyReviewId,
-            "Article",
+            "ARTICLE",
             studyTitle,
             2023,
             "Lucas",
@@ -42,7 +46,7 @@ class TestDataFactory() {
             "Mussum Ipsum, cacilds vidis litro abertis. Admodum accumsan disputationi eu sit.",
             setOf("PET", "IFSP"),
             emptyList(),
-            "",
+            null,
             setOf("Scopus", "Springer"),
             setOf("Criteria A", "Criteria B"),
             mapOf(Pair(UUID.randomUUID(), "Form")),
