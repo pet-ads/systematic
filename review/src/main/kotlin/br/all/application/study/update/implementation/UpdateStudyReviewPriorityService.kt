@@ -19,17 +19,20 @@ import br.all.domain.model.study.StudyReview
 class UpdateStudyReviewPriorityService(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,
-    private val presenter: UpdateStudyReviewStatusPresenter,
     private val credentialsService: ResearcherCredentialsService,
 ) : UpdateStudyReviewStatusService {
 
-    override fun changeStatus(request: RequestModel) {
+    override fun changeStatus(presenter: UpdateStudyReviewStatusPresenter, request: RequestModel) {
+        val researcherId = ResearcherId(request.researcherId)
+        val reviewId = ReviewId(request.reviewId)
         val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolates(presenter, ReviewId(request.reviewId), ResearcherId(request.researcherId))
+        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, reviewId)
+
+        if(presenter.isDone()) return
 
         val studyReviewDto = studyReviewRepository.findById(request.reviewId, request.studyReviewId)
         if(studyReviewDto == null) {
-            presenter.prepareFailView(EntityNotFoundException("Review of id ${request.reviewId} not found."))
+            presenter.prepareFailView(EntityNotFoundException("Study review of id ${request.reviewId} not found."))
             return
         }
 

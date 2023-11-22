@@ -46,7 +46,7 @@ class StudyReviewControllerTest(
 
     @Test
     fun `should create study and return 201`() {
-        val requestModel = factory.validPostRequest
+        val requestModel = factory.validPostRequest()
         val json = objectMapper.writeValueAsString(requestModel)
 
         mockMvc.perform(
@@ -91,10 +91,12 @@ class StudyReviewControllerTest(
 
     @Test
     fun `should update the study selection status and return 204`() {
-        val studyId = idService.next()
+        val studyId = 10L
+
         val statusToBeUpdated = "INCLUDED"
         val requestModel = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
         val json = objectMapper.writeValueAsString(requestModel)
+
         val studyReview = factory.reviewDocument(systematicStudyId, studyId,"study")
         repository.insert(studyReview)
 
@@ -102,33 +104,41 @@ class StudyReviewControllerTest(
                 "${studyReview.id.studyId}/selection-status"
 
         mockMvc.perform(patch(url).contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isNoContent)
-        val updatedStatus = repository.findById(StudyReviewId(systematicStudyId, studyId)).toNullable()?.selectionStatus
+        val studyReviewId = StudyReviewId(systematicStudyId, studyId)
+        val updatedReview = repository.findById(studyReviewId).toNullable()
+        val updatedStatus = updatedReview?.selectionStatus
         assertEquals(statusToBeUpdated, updatedStatus)
     }
 
     @Test
     fun `should update the study extraction status and return 204`() {
-        val studyId = idService.next()
+        val studyId = 20L
+
         val statusToBeUpdated = "EXCLUDED"
         val requestModel = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
         val json = objectMapper.writeValueAsString(requestModel)
+
         val studyReview = factory.reviewDocument(systematicStudyId, studyId,"study")
         repository.insert(studyReview)
 
         val url = "/api/v1/researcher/$researcherId/review/$systematicStudyId/study-review/" +
                 "${studyReview.id.studyId}/extraction-status"
-
         mockMvc.perform(patch(url).contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isNoContent)
-        val updatedStatus = repository.findById(StudyReviewId(systematicStudyId, studyId)).toNullable()?.extractionStatus
+
+        val studyReviewId = StudyReviewId(systematicStudyId, studyId)
+        val updatedReview = repository.findById(studyReviewId).toNullable()
+        val updatedStatus = updatedReview?.extractionStatus
         assertEquals(statusToBeUpdated, updatedStatus)
     }
 
     @Test
     fun `should update the study reading priority and return 204`() {
-        val studyId = idService.next()
+        val studyId = 30L
+
         val statusToBeUpdated = "HIGH"
-        val requestModel = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
+        val requestModel = factory.validStatusUpdatePatchRequest(studyId,statusToBeUpdated)
         val json = objectMapper.writeValueAsString(requestModel)
+
         val studyReview = factory.reviewDocument(systematicStudyId, studyId,"study")
         repository.insert(studyReview)
 
@@ -136,7 +146,9 @@ class StudyReviewControllerTest(
                 "${studyReview.id.studyId}/reading-priority"
 
         mockMvc.perform(patch(url).contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isNoContent)
-        val updatedStatus = repository.findById(StudyReviewId(systematicStudyId, studyId)).toNullable()?.readingPriority
+        val studyReviewId = StudyReviewId(systematicStudyId, studyId)
+        val updatedReview = repository.findById(studyReviewId).toNullable()
+        val updatedStatus = updatedReview?.readingPriority
         assertEquals(statusToBeUpdated, updatedStatus)
     }
 

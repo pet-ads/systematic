@@ -16,14 +16,17 @@ import br.all.domain.services.IdGeneratorService
 class CreateStudyReviewServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,
-    private val presenter: CreateStudyReviewPresenter,
     private val credentialsService: ResearcherCredentialsService,
     private val idGenerator: IdGeneratorService
 ) : CreateStudyReviewService {
 
-    override fun createFromStudy(request: RequestModel) {
+    override fun createFromStudy(presenter: CreateStudyReviewPresenter, request: RequestModel) {
+        val researcherId = ResearcherId(request.researcherId)
+        val reviewId = ReviewId(request.reviewId)
         val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolates(presenter, ReviewId(request.reviewId), ResearcherId(request.researcherId))
+        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, reviewId)
+
+        if(presenter.isDone()) return
 
         val studyId = idGenerator.next()
         val studyReview = StudyReview.fromStudyRequestModel(studyId, request)

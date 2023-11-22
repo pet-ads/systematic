@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 @Component
 class RestfulUpdateStudyReviewStatusPresenter : UpdateStudyReviewStatusPresenter {
 
-    final lateinit var responseEntity: ResponseEntity<*>
+    var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
         responseEntity = ResponseEntity<Void>(HttpStatus.NO_CONTENT)
@@ -18,4 +18,7 @@ class RestfulUpdateStudyReviewStatusPresenter : UpdateStudyReviewStatusPresenter
 
     override fun prepareFailView(throwable: Throwable) =
         run { responseEntity = createErrorResponseFrom(throwable) }
+
+    override fun isDone() = responseEntity != null
+
 }

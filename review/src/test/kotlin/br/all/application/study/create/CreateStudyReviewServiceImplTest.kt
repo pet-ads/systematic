@@ -24,7 +24,6 @@ class CreateStudyReviewServiceImplTest {
     @MockK private lateinit var systematicStudyRepository: SystematicStudyRepository
     @MockK private lateinit var idGenerator: IdGeneratorService
     @MockK private lateinit var credentialService: ResearcherCredentialsService
-    @MockK private lateinit var presenter: CreateStudyReviewPresenter
     private lateinit var sut: CreateStudyReviewServiceImpl
 
     @BeforeEach
@@ -32,7 +31,6 @@ class CreateStudyReviewServiceImplTest {
         sut = CreateStudyReviewServiceImpl(
             systematicStudyRepository,
             studyReviewRepository,
-            presenter,
             credentialService,
             idGenerator
         )
@@ -58,7 +56,7 @@ class CreateStudyReviewServiceImplTest {
 //        val dto = StudyReview.fromStudyRequestModel(studyId, requestModel).toDto()
 //
 //        every { idGenerator.next() } returns studyId
-//        every { studyReviewRepository.create(dto) } returns Unit
+//        every { studyReviewRepository.saveOrUpdate(dto) } returns Unit
 //        every { studyReviewRepository.findById(reviewId, studyId) } returns dto
 //
 //        sut.createFromStudy(requestModel)

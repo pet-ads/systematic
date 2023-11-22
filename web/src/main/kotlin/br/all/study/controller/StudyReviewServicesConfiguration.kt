@@ -24,11 +24,10 @@ class StudyReviewServicesConfiguration {
     fun createStudyReviewService(
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
-        createStudyReviewPresenter: CreateStudyReviewPresenter,
         credentialsService: ResearcherCredentialsService,
         idGenerator: IdGeneratorService
     ) = CreateStudyReviewServiceImpl(
-        systematicStudyRepository, studyReviewRepository, createStudyReviewPresenter, credentialsService, idGenerator
+        systematicStudyRepository, studyReviewRepository, credentialsService, idGenerator
     )
 
     @Bean
@@ -38,7 +37,7 @@ class StudyReviewServicesConfiguration {
         findAllStudyReviewsPresenter: FindAllStudyReviewsPresenter,
         credentialsService: ResearcherCredentialsService
     ) = FindAllStudyReviewsServiceImpl(
-        systematicStudyRepository, studyReviewRepository, findAllStudyReviewsPresenter, credentialsService
+        systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
     @Bean
@@ -48,7 +47,7 @@ class StudyReviewServicesConfiguration {
         findStudyReviewPresenter: FindStudyReviewPresenter,
         credentialsService: ResearcherCredentialsService
     ) = FindStudyReviewServiceImpl(
-        systematicStudyRepository, studyReviewRepository, findStudyReviewPresenter, credentialsService
+        systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
     @Bean
@@ -58,7 +57,7 @@ class StudyReviewServicesConfiguration {
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
         credentialsService: ResearcherCredentialsService
     ) = UpdateStudyReviewSelectionService(
-        systematicStudyRepository, studyReviewRepository, updateStudyReviewStatusPresenter, credentialsService
+        systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
     @Bean
@@ -68,7 +67,7 @@ class StudyReviewServicesConfiguration {
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
         credentialsService: ResearcherCredentialsService
     ) = UpdateStudyReviewExtractionService(
-        systematicStudyRepository, studyReviewRepository, updateStudyReviewStatusPresenter, credentialsService
+        systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
     @Bean
@@ -78,6 +77,6 @@ class StudyReviewServicesConfiguration {
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
         credentialsService: ResearcherCredentialsService
     ) = UpdateStudyReviewPriorityService(
-        systematicStudyRepository, studyReviewRepository, updateStudyReviewStatusPresenter, credentialsService
+        systematicStudyRepository, studyReviewRepository, credentialsService
     )
 }

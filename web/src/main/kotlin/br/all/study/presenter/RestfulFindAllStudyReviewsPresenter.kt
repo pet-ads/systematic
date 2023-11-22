@@ -15,7 +15,7 @@ import java.util.*
 @Component
 class RestfulFindAllStudyReviewsPresenter : FindAllStudyReviewsPresenter {
 
-    final lateinit var responseEntity: ResponseEntity<*>
+    var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.reviewId, response.studyReviews.size, response.studyReviews)
@@ -30,6 +30,7 @@ class RestfulFindAllStudyReviewsPresenter : FindAllStudyReviewsPresenter {
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
 
+    override fun isDone() = responseEntity != null
 
     private data class ViewModel (
         val reviewId : UUID,

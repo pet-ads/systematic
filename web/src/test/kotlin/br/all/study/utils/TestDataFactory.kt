@@ -6,12 +6,12 @@ import br.all.infrastructure.study.StudyReviewDocument
 import br.all.infrastructure.study.StudyReviewId
 import java.util.*
 
-class TestDataFactory() {
+class TestDataFactory {
 
     val researcherId: UUID = UUID.randomUUID()
     val systematicStudyId: UUID = UUID.randomUUID()
 
-    val validPostRequest = CreateStudyReviewService.RequestModel(
+    fun validPostRequest() = CreateStudyReviewService.RequestModel(
         researcherId,
         systematicStudyId,
         "ARTICLE",

@@ -5,4 +5,6 @@ import org.springframework.stereotype.Service
 
 interface ResearcherCredentialsService {
     fun isAuthenticated(researcherId: ResearcherId): Boolean
+    fun hasAuthority(researcherId: ResearcherId): Boolean
+
 }

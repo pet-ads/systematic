@@ -24,7 +24,7 @@
 - [**GET**  *researcher/{researcherId}/review/{reviewId}/protocol/research-question/{code}*]: get a research question of a given protocol by code
 - [**GET**  *researcher/{researcherId}/review/{reviewId}/protocol/research-question*]: get all research questions in the protocol
 
-##### Selection criteria
+##### Eligibility criteria
 - [**POST**  *researcher/{researcherId}/review/{reviewId}/protocol/criteria*]: create a selection criterion in the protocol
 - [**PUT**  *researcher/{researcherId}/review/{reviewId}/protocol/criteria/{code}*]: update an existing selection criterion in the  protocol
 - [**DELETE**  *researcher/{researcherId}/review/{reviewId}/protocol/criteria/{code}*]: delete an existing selection criterion in the  protocol
@@ -44,7 +44,7 @@
 - [**GET**  *researcher/{researcherId}/review/{reviewId}/protocol/extraction-question*]: get all extraction questions in the protocol
 
 
-##### Research Question:
+##### Risk of Bias Question:
 - [**POST**  *researcher/{researcherId}/review/{reviewId}/protocol/rob-question*]: create a risk of bias (rob) question in the protocol
 - [**PUT**  *researcher/{researcherId}/review/{reviewId}/protocol/rob-question/{code}*]: update an existing risk of bias (rob) question in the protocol
 - [**DELETE**  *researcher/{researcherId}/review/{reviewId}/protocol/rob-question/{code}*]: delete an existing risk of bias (rob) question in the protocol
@@ -62,7 +62,7 @@
 - [**POST**  *researcher/{researcherId}/review/{reviewId}/study-review/*]: create a study review in the systematic study
 - [**PUT**  *researcher/{researcherId}/review/{reviewId}/study-review/{studyReviewId}*]: update an existing study review of a systematic study
 - [**DELETE**  *researcher/{researcherId}/review/{reviewId}/study-review/{studyReviewId}*]: delete an existing study review of a systematic study
-- [**PATCH**  *researcher/{researcherId}/review/{reviewId}/study-review/{studyReviewIdtoKeep}/duplicated/{studyReviewIdtoIgnore}*]: mark an existing study as duplicated in the systematic study
+- [**PATCH**  *researcher/{researcherId}/review/{reviewId}/study-review/{studyReviewIdToKeep}/duplicated/{studyReviewIdtoIgnore}*]: mark an existing study as duplicated in the systematic study
 
 - [**GET**  *researcher/{researcherId}/review/{reviewId}/study-review/{studyReviewId}*]: get an existing study review of a systematic study
 - [**GET**  *researcher/{researcherId}/review/{reviewId}/study-review/*]: get all existing studies of a systematic review
@@ -107,7 +107,7 @@ request, the service must return HTTP 403 (forbidden).
 
 ### GET
 
-- 200: the resource is avaliable in the response **OR** a list of resources are available in the response **OR** the request is valid and an empty list is returned in response because no resource matches the query condition. 
+- 200: the resource is available in the response **OR** a list of resources are available in the response **OR** the request is valid and an empty list is returned in response because no resource matches the query condition. 
 - 404: the resource does not exist **OR** it was not possible to find the resource because some resource ID in the path does not exist (e.g., reviewId).
 
 

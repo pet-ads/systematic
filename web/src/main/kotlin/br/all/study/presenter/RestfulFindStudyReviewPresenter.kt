@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 @Component
 class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
 
-    final lateinit var responseEntity: ResponseEntity<*>
+    var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.content)
@@ -28,6 +28,8 @@ class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
     }
 
     override fun prepareFailView(throwable: Throwable)= run { responseEntity = createErrorResponseFrom(throwable) }
+
+    override fun isDone() = responseEntity != null
 
     private data class ViewModel(private val content: StudyReviewDto) : RepresentationModel<ViewModel>() {
         val id = content.studyId

@@ -15,13 +15,13 @@ import java.util.UUID
 @Component
 class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
 
-    final lateinit var responseEntity: ResponseEntity<*>
+    var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
-        val restfulResponse = ViewModel(response.reviewId, response.studyId)
+        val restfulResponse = ViewModel(response.researcherId, response.reviewId, response.studyId)
 
         val self = linkTo<StudyReviewController> {
-            findStudyReview(response.reviewerId, response.reviewId, response.studyId)
+            findStudyReview(response.researcherId, response.reviewId, response.studyId)
         }.withSelfRel()
 
         restfulResponse.add(self)
@@ -30,6 +30,12 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable)}
 
-    private data class ViewModel (val reviewId : UUID, val studyId: Long) : RepresentationModel<ViewModel>()
+    override fun isDone() = responseEntity != null
+
+    private data class ViewModel(
+        val researcherId: UUID,
+        val reviewId: UUID,
+        val studyId: Long
+    ) : RepresentationModel<ViewModel>()
 
 }
