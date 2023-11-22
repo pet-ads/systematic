@@ -8,7 +8,7 @@ import java.util.*
 import kotlin.Comparator
 
 @Document("study_review")
-class StudyReviewDocument (
+data class StudyReviewDocument (
     @Id val id: StudyReviewId,
     val type: String,
     val title: String,

@@ -1,4 +1,4 @@
-package br.all.shared
+package br.all.shared.error
 
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
@@ -15,6 +15,6 @@ fun createErrorResponseFrom(throwable: Throwable): ResponseEntity<ErrorMessage> 
         is UniquenessViolationException -> CONFLICT
         else -> BAD_REQUEST
     }
-    val errorMessage = ErrorMessage(httpStatus, throwable.message)
+    val errorMessage = ErrorMessage(httpStatus, throwable)
     return ResponseEntity.status(httpStatus).body(errorMessage)
 }

@@ -90,19 +90,19 @@ request, the service must return HTTP 403 (forbidden).
 ### PUT
 
 - 201: when applicable, the resource was created if not already available and the response includes a URL to later access it.
-- 204: the update was performed and no content will be returned in response.
+- 200: the updated was performed and the timestamp and the self link will be returned in response.
 - 404: the resource to be updated does not exist **OR** it was not possible to update the resource because some resource ID in the path does not exist (e.g., reviewId)
 - 409: some property of the resource being updated violates the attribute unicity of an existing resource
 
 ### PATCH
 
-- 204: the updated was performed and no content will be returned in response.
+- 200: the updated was performed and the timestamp and the self link will be returned in response.
 - 404: the resource to be patched does not exist **OR** it was not possible to update the resource because some resource ID in the path does not exist (e.g., reviewId).
 - 409: it is not possible to change the resource from the current state to the requested one **OR** some property of the resource being updated violates the attribute unicity of an existing resource.
 
 ### DELETE
 
-- 204: the resource was deleted and no content will be returned in response.
+- 200: the resource was deleted and the timestamp and the link to find all resources will be returned in response.
 - 404: the resource to be removed does not exist **OR** it was not possible to remove the resource because some resource ID in the path does not exist (e.g., reviewId).
 
 ### GET

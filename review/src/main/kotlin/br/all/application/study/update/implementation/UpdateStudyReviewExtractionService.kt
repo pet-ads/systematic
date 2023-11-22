@@ -44,6 +44,6 @@ class UpdateStudyReviewExtractionService (
             else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
         }
         studyReviewRepository.saveOrUpdate(studyReview.toDto())
-        presenter.prepareSuccessView(ResponseModel())
+        presenter.prepareSuccessView(ResponseModel(request.researcherId, request.reviewId, request.studyReviewId))
     }
 }

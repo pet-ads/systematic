@@ -40,6 +40,6 @@ class UpdateStudyReviewPriorityService(
             readingPriority = ReadingPriority.valueOf(request.status)
         }
         studyReviewRepository.saveOrUpdate(studyReview.toDto())
-        presenter.prepareSuccessView(ResponseModel())
+        presenter.prepareSuccessView(ResponseModel(request.researcherId, request.reviewId, request.studyReviewId))
     }
 }

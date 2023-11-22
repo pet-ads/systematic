@@ -2,7 +2,7 @@ package br.all.study.presenter
 
 import br.all.application.study.create.CreateStudyReviewPresenter
 import br.all.application.study.create.CreateStudyReviewService.ResponseModel
-import br.all.shared.createErrorResponseFrom
+import br.all.shared.error.createErrorResponseFrom
 import br.all.study.controller.StudyReviewController
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
@@ -28,7 +28,7 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
         responseEntity = status(HttpStatus.CREATED).body(restfulResponse)
     }
 
-    override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable)}
+    override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
 
     override fun isDone() = responseEntity != null
 
