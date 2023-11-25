@@ -17,4 +17,12 @@ class SequenceGeneratorService (private val mongoOperations: MongoOperations){
         val counter = mongoOperations.findAndModify(query, update, options, DatabaseSequence::class.java)
         return counter?.sequence ?: 1L
     }
+
+    fun reset(sequenceName: String) {
+        val query = query(Criteria.where("_id").`is`(sequenceName))
+        val update = Update().set("sequence", 1)
+        val options = FindAndModifyOptions.options().returnNew(true).upsert(true)
+        mongoOperations.findAndModify(query, update, options, DatabaseSequence::class.java)
+    }
+
 }

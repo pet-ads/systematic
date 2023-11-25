@@ -12,6 +12,6 @@ class DoiTest {
 
     @Test
     fun `Should accept valid doi`() {
-        assertDoesNotThrow { Doi("10.1109/5.771073") }
+        assertDoesNotThrow { Doi("https://doi.org/10.1109/5.771073") }
     }
 }

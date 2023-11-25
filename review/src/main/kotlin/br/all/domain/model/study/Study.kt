@@ -4,6 +4,7 @@ import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.ddd.ValueObject
 
 data class Study(
+    var type: StudyType,
     val title: String,
     val year: Int,
     val authors: String,
@@ -26,6 +27,7 @@ data class Study(
         if (year == 0) notification.addError("Publication year must not be zero.")
         if (venue.isBlank()) notification.addError("Journal field must not be blank.")
         if (abstract.isBlank()) notification.addError("Abstract field must not be blank.")
+        if (type == StudyType.UNKNOWN) notification.addError("Study type must not be UNKNOWN")
         return notification
     }
 }
