@@ -1,8 +1,7 @@
 package br.all.domain.shared.ddd
 
 import br.all.domain.shared.utils.Text
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
@@ -10,13 +9,7 @@ class TextTest {
 
     @Test
     fun `valid TEXT should not throw an exception`() {
-        val textValue = """
-            Mussum Ipsum, cacilds vidis litro abertis.  Nulla id gravida magna, ut semper sapien. Todo mundo vê os 
-            porris que eu tomo, mas ninguém vê os tombis que eu levo! Leite de capivaris, leite de mula manquis sem 
-            cabeça. Admodum accumsan disputationi eu sit. Vide electram sadipscing et per. Si num tem leite então bota
-            uma pinga aí cumpadi! A ordem dos tratores não altera o pão duris. Negão é teu passadis, eu sou faxa pretis.
-             Nullam volutpat risus nec leo commodo, ut interdum diam laoreet. Sed non consequat odio.
-        """.trimIndent()
+        val textValue = "Mussum Ipsum, cacilds vidis litro abertis.  Nulla id gravida magna, ut semper sapien. Todo mundo vê os porris que eu tomo, mas ninguém vê os tombis que eu levo! Leite de capivaris, leite de mula manquis sem cabeça. Admodum accumsan disputationi eu sit. Vide electram sadipscing et per. Si num tem leite então bota uma pinga aí cumpadi! A ordem dos tratores não altera o pão duris. Negão é teu passadis, eu sou faxa pretis. Nullam volutpat risus nec leo commodo, ut interdum diam laoreet. Sed non consequat odio."
         val text = Text(textValue)
     }
 
@@ -43,6 +36,18 @@ class TextTest {
     }
 
     @Test
+    fun `valid text with special characters should stil valid`() {
+        val textValue = "Mussum Ipsum, cacilds vidis litro abertis.  Nulla id gravida magna, ut semper sapien. Todo mundo vê os porris que eu tomo, mas ninguém vê os tombis que eu levo! Leite de capivaris, leite de mula manquis sem cabeça. Admodum accumsan disputationi eu sit. Vide electram sadipscing et per. Si num tem leite então bota uma pinga aí cumpadi! A ordem dos tratores não altera o pão duris. Negão é teu passadis, eu sou faxa pretis. Nullam volutpat risus nec leo commodo, ut interdum diam laoreet. Sed non consequat odio."
+        val text = Text(textValue)
+        val newTextValue = textValue + "(test!@#$%)"
+        assertDoesNotThrow {
+            Text(textValue)
+            Text(newTextValue)
+        }
+
+    }
+
+    @Test
     fun `empty TEXT should throw an exception`() {
         val textValue = ""
         assertThrows<IllegalArgumentException> {
@@ -56,5 +61,114 @@ class TextTest {
         assertThrows<IllegalArgumentException> {
             Text(textValue)
         }
+    }
+
+    @Nested
+    @DisplayName("should NOT be able to accept as TEXT")
+    inner class InvalidTextTest {
+
+
+        @Test
+        fun `@@@`() {
+            val textValue = "@@@"
+            assertThrows<IllegalArgumentException> {
+                Text(textValue)
+            }
+        }
+        @Test
+        @DisplayName(".")
+        fun ShouldNotAcceptDotsAsText() {
+            val textValue = "."
+            assertThrows<IllegalArgumentException> {
+                Text(textValue)
+            }
+        }
+        @Test
+        @DisplayName(",")
+        fun ShouldNotAcceptCommasAsText() {
+            val textValue = "."
+            assertThrows<IllegalArgumentException> {
+                Text(textValue)
+            }
+        }
+        @Test
+        fun `!!!`() {
+            val textValue = "!!!"
+            assertThrows<IllegalArgumentException> {
+                Text(textValue)
+            }
+        }
+        @Test
+        fun `###`() {
+            val textValue = "###"
+            assertThrows<IllegalArgumentException> {
+                Text(textValue)
+            }
+        }
+        @Test
+        fun `$$$`() {
+            val textValue = "$$$"
+            assertThrows<IllegalArgumentException> {
+                Text(textValue)
+            }
+        }
+        @Test
+        fun `%%%`() {
+            val textValue = "%%%"
+            assertThrows<IllegalArgumentException> {
+                Text(textValue)
+            }
+        }
+        @Test
+        @DisplayName(":")
+        fun ShouldNotAcceptColonsAsText() {
+            val textValue = ":"
+            assertThrows<IllegalArgumentException> {
+                Text(textValue)
+            }
+        }
+        @Test
+        @DisplayName(";")
+        fun `ShouldNotAcceptSemicolonsAsText`() {
+            val textValue = ";"
+            assertThrows<IllegalArgumentException> {
+                Text(textValue)
+            }
+        }
+        @Test
+        @DisplayName("[")
+        fun `ShouldNotAcceptBracesText`() {
+            val textValue = "[["
+            assertThrows<IllegalArgumentException> {
+                Text(textValue)
+            }
+        }
+        @Test
+        @DisplayName("]")
+        fun `ShouldNotAcceptCloseBracesText`() {
+            val textValue = "]]"
+            assertThrows<IllegalArgumentException> {
+                Text(textValue)
+            }
+        }
+
+        @Test
+        @DisplayName("#\$%!;")
+        fun `ShouldNotAcceptJustSymbolsText`() {
+            val textValue = "#$%!;"
+            assertThrows<IllegalArgumentException> {
+                Text(textValue)
+            }
+        }
+
+        @Test
+        @DisplayName("[]")
+        fun ShouldNotAcceptBraceText() {
+            val textValue = "[[[]]]"
+            assertThrows<IllegalArgumentException> {
+                Text(textValue)
+            }
+        }
+
     }
 }
