@@ -1,11 +1,12 @@
 package br.all.application.protocol.question.create.numberScale
 
-import br.all.domain.model.protocol.ProtocolId
+import java.util.*
 
-data class NumberScaleRequestModel(
-    val protocolId: ProtocolId,
+data class NumberScaleDTO (
+    val questionId: UUID,
+    val protocolId: UUID,
     val code: String,
     val description: String,
     val higher: Int,
     val lower: Int
-)
+    )

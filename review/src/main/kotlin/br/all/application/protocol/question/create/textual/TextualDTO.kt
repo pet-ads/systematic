@@ -1,9 +1,10 @@
 package br.all.application.protocol.question.create.textual
 
-import br.all.domain.model.protocol.ProtocolId
+import java.util.*
 
-data class TextualRequestModel(
-    val protocolId: ProtocolId,
+data class TextualDTO (
+    val questionId: UUID,
+    val protocolId: UUID,
     val code: String,
     val description: String
 )

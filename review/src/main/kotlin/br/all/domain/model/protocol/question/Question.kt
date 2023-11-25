@@ -5,11 +5,11 @@ import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
 
 abstract class Question<T>(
-    id: QuestionId,
+    val questionId: QuestionId,
     val protocolId: ProtocolId,
     val code: String,
     val description: String,
-) : Entity(id) {
+) : Entity(questionId) {
 
     var answer: T? = null
         set(value) {
