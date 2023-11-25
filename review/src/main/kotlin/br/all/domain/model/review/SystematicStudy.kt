@@ -6,6 +6,7 @@ import br.all.domain.shared.utils.requireThatExists
 
 class SystematicStudy(
     val reviewId: ReviewId,
+
     title: String,
     description: String,
     owner: ResearcherId,
@@ -29,6 +30,7 @@ class SystematicStudy(
             require(value.isNotBlank()) { "Description must not be blank." }
             field = value
         }
+
 
     init {
         this.title = title
