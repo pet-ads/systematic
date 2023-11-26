@@ -1,5 +1,6 @@
 package br.all.domain.model.protocol
 
+import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.ReviewId
 import br.all.domain.shared.utils.Language
 import br.all.domain.shared.utils.Phrase
@@ -272,7 +273,7 @@ class ProtocolTest {
     @Test
     fun `Should add a new extraction question if it is not defined yet`() {
         val sut = generateProtocol()
-        val newExtractionQuestion = QuestionId(10)
+        val newExtractionQuestion = QuestionId(UUID.randomUUID())
 
         sut.addExtractionQuestion(newExtractionQuestion)
 
@@ -284,7 +285,7 @@ class ProtocolTest {
 
     @Test
     fun `Should do nothing when trying to add a extraction question that has already been defined`() {
-        val question = QuestionId(10)
+        val question = QuestionId(UUID.randomUUID())
         val sut = generateProtocol(extractionQuestions = setOf(question))
 
         assertAll(
@@ -295,7 +296,7 @@ class ProtocolTest {
 
     @Test
     fun `Should remove a extraction question if its present`() {
-        val removingQuestion = QuestionId(10)
+        val removingQuestion = QuestionId(UUID.randomUUID())
         val sut = generateProtocol(extractionQuestions = setOf(removingQuestion))
 
         sut.removeExtractionQuestion(removingQuestion)
@@ -306,7 +307,7 @@ class ProtocolTest {
     @Test
     fun `Should throw when trying to remove a question that does not belongs to the protocol`() {
         val sut = generateProtocol()
-        val removingQuestion = QuestionId(10)
+        val removingQuestion = QuestionId(UUID.randomUUID())
 
         assertThrows<NoSuchElementException> { sut.removeExtractionQuestion(removingQuestion) }
     }
@@ -314,7 +315,7 @@ class ProtocolTest {
     @Test
     fun `Should a new rob question successfully if it is not defined`() {
         val sut = generateProtocol()
-        val newRobQuestion = QuestionId(10)
+        val newRobQuestion = QuestionId(UUID.randomUUID())
 
         sut.addRobQuestion(newRobQuestion)
 
@@ -326,7 +327,7 @@ class ProtocolTest {
 
     @Test
     fun `Should do nothing when trying to add repeated rob questions`() {
-        val repeatedQuestion = QuestionId(10)
+        val repeatedQuestion = QuestionId(UUID.randomUUID())
         val sut = generateProtocol(robQuestions = setOf(repeatedQuestion))
 
         assertAll(
@@ -337,7 +338,7 @@ class ProtocolTest {
 
     @Test
     fun `Should existent rob questions be successfully removed`() {
-        val robQuestion = QuestionId(10)
+        val robQuestion = QuestionId(UUID.randomUUID())
         val sut = generateProtocol(robQuestions = setOf(robQuestion))
 
         sut.removeRobQuestion(robQuestion)
@@ -348,7 +349,7 @@ class ProtocolTest {
     @Test
     fun `Should throw when trying to remove nonexistent rob questions`() {
         val sut = generateProtocol()
-        val removingQuestion = QuestionId(10)
+        val removingQuestion = QuestionId(UUID.randomUUID())
 
         assertThrows<NoSuchElementException> { sut.removeRobQuestion(removingQuestion) }
     }

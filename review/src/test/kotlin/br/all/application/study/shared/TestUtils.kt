@@ -2,18 +2,19 @@ package br.all.application.study.shared
 
 import br.all.application.repositoryFake.StudyReviewRepositoryFake
 import br.all.application.study.repository.StudyReviewDto
-import br.all.application.study.update.UpdateStudyReviewRequestModel
+import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.RequestModel
 import java.util.*
 
 fun createStudyReviewDto(uuid: UUID, studyId: Long, repository: StudyReviewRepositoryFake): StudyReviewDto{
     val studyReviewDto = generateStudyReview(uuid, studyId)
-    repository.create(studyReviewDto)
+    repository.saveOrUpdate(studyReviewDto)
     return studyReviewDto
 }
 
-fun createRequestModel(uuid: UUID, studyId: Long, status: String): UpdateStudyReviewRequestModel{
-    return UpdateStudyReviewRequestModel(
-        uuid,
+fun createRequestModel(researcherId: UUID, reviewId: UUID, studyId: Long, status: String): RequestModel {
+    return RequestModel(
+        researcherId,
+        reviewId,
         studyId,
         status
     )
@@ -21,8 +22,8 @@ fun createRequestModel(uuid: UUID, studyId: Long, status: String): UpdateStudyRe
 
 fun generateStudyReview(reviewId: UUID, studyId: Long): StudyReviewDto{
     return StudyReviewDto(
-        id = studyId,
         reviewId = reviewId,
+        studyId = studyId,
         studyType = "ARTICLE",
         title = "Título do Estudo",
         year = 2023,

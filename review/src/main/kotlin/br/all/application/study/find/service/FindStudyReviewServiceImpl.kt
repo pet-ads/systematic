@@ -14,23 +14,23 @@ import br.all.domain.model.review.ReviewId
 class FindStudyReviewServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,
-    private val presenter: FindStudyReviewPresenter,
     private val credentialsService: ResearcherCredentialsService,
 ) : FindStudyReviewService {
 
-    override fun findOne(request: RequestModel) {
+    override fun findOne(presenter: FindStudyReviewPresenter, request: RequestModel) {
+        val researcherId = ResearcherId(request.researcherId)
+        val reviewId = ReviewId(request.reviewId)
         val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolates(
-            presenter,
-            ReviewId(request.systematicStudy),
-            ResearcherId(request.researcherId)
-        )
+        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, reviewId)
 
-        val studyReview = studyReviewRepository.findById(request.systematicStudy, request.studyReviewId)
-        if (studyReview == null) {
-            val message = "There is no review of id ${request.systematicStudy} or study of id ${request.studyReviewId}."
+        if(presenter.isDone()) return
+
+        val studyReview = studyReviewRepository.findById(request.reviewId, request.studyReviewId)
+        if (studyReview === null) {
+            val message = "There is no review of id ${request.reviewId} or study of id ${request.studyReviewId}."
             presenter.prepareFailView(EntityNotFoundException(message))
+            return
         }
-        presenter.prepareSuccessView(ResponseModel(request.researcherId, studyReview!!))
+        presenter.prepareSuccessView(ResponseModel(request.researcherId, studyReview))
     }
 }

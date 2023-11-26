@@ -12,13 +12,13 @@ data class SearchSource(val searchSource: String) : ValueObject() {
 
     override fun validate(): Notification {
         val notification = Notification()
-        val regex = Regex("([A-Z][A-Za-z]+)( [A-Z][A-Za-z]+)*")
+        val regex = Regex("([A-Z][A-Za-z]+)(\\s*[A-Za-z]+)*")
 
         if (searchSource.isBlank())
             notification.addError("A search source must not be blank!")
         if (!(regex matches searchSource))
-            notification.addError("A search source must contain words with only letters and that begin " +
-                    "with a capital one! Provided: $searchSource")
+            notification.addError("A search source must only contain words separated by white spaces. " +
+                    "Provided: $searchSource")
 
         return notification
     }

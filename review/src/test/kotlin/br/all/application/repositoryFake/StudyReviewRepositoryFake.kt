@@ -4,11 +4,11 @@ import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository
 import java.util.*
 
-class StudyReviewRepositoryFake : StudyReviewRepository{
+class StudyReviewRepositoryFake : StudyReviewRepository {
 
     val mapStudyReview = mutableMapOf<Pair<UUID, Long>, StudyReviewDto>()
-    override fun create(studyReviewDto: StudyReviewDto) {
-        mapStudyReview.put(studyReviewDto.reviewId to studyReviewDto.id, studyReviewDto)
+    override fun saveOrUpdate(dto: StudyReviewDto) {
+        mapStudyReview.put(dto.reviewId to dto.studyId, dto)
     }
 
     override fun findAllFromReview(reviewId: UUID): List<StudyReviewDto> {
@@ -19,5 +19,7 @@ class StudyReviewRepositoryFake : StudyReviewRepository{
         return mapStudyReview.get(reviewId to studyId)
     }
 
-
+    override fun updateSelectionStatus(reviewId: UUID, studyId: Long, attributeName: String, newStatus: Any) {
+        TODO("Not yet implemented")
+    }
 }

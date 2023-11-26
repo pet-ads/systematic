@@ -25,8 +25,8 @@ data class ProtocolDto(
     val dataCollectionProcess: String,
     val analysisAndSynthesisProcess: String,
 
-    val extractionQuestions: Set<Int>,
-    val robQuestions: Set<Int>,
+    val extractionQuestions: Set<UUID>,
+    val robQuestions: Set<UUID>,
 
     val picoc: PICOCDto?,
 )

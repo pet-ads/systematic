@@ -1,11 +1,9 @@
 package br.all.study.presenter
 
-import br.all.application.shared.exceptions.EntityNotFoundException
-import br.all.application.shared.exceptions.UnauthenticatedUserException
-import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.study.find.presenter.FindStudyReviewPresenter
 import br.all.application.study.find.service.FindStudyReviewService.ResponseModel
 import br.all.application.study.repository.StudyReviewDto
+import br.all.shared.error.createErrorResponseFrom
 import br.all.study.controller.StudyReviewController
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
@@ -16,30 +14,25 @@ import org.springframework.stereotype.Component
 @Component
 class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
 
-    final lateinit var responseEntity: ResponseEntity<*>
+    var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.content)
 
         val self = linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId, response.researcherId, response.content.id)
+            findStudyReview(response.researcherId, response.researcherId, response.content.studyId)
         }.withSelfRel()
 
         restfulResponse.add(self)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
-    override fun prepareFailView(throwable: Throwable) {
-        responseEntity = when (throwable) {
-            is UnauthenticatedUserException -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("")
-            is UnauthorizedUserException -> ResponseEntity.status(HttpStatus.FORBIDDEN).body("")
-            is EntityNotFoundException -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("")
-            else -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
-        }
-    }
+    override fun prepareFailView(throwable: Throwable)= run { responseEntity = createErrorResponseFrom(throwable) }
+
+    override fun isDone() = responseEntity != null
 
     private data class ViewModel(private val content: StudyReviewDto) : RepresentationModel<ViewModel>() {
-        val id = content.id
+        val id = content.studyId
         val reviewId = content.reviewId
         val studyType = content.studyType
         val title = content.title

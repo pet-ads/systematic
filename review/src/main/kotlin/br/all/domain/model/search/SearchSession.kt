@@ -6,7 +6,7 @@ import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.protocol.SearchSource
 import br.all.domain.shared.ddd.Entity
 import java.time.LocalDateTime
-import java.util.*
+
 
 class SearchSession(
     val searchSessionId: SearchSessionID,
@@ -16,25 +16,6 @@ class SearchSession(
     val timestamp: LocalDateTime = LocalDateTime.now(),
     val source: SearchSource
 ) : Entity(searchSessionId){
-    fun toDto(): SearchSessionResponseModel {
-        return SearchSessionResponseModel(
-            id.toString(),
-            "Search session created successfully."
-        )
-    }
 
-    companion object {
-        fun fromRequestModel(sessionId: SearchSessionID, protocolId: ProtocolId, requestModel: SearchSessionRequestModel): SearchSession {
-            return SearchSession(
-                sessionId,
-                protocolId,
-                requestModel.searchString,
-                requestModel.additionalInfo ?: "",
-                source = requestModel.source
-            )
-        }
-
-
-    }
-
+    companion object
 }

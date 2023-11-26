@@ -34,10 +34,8 @@ fun Protocol.toDto() = ProtocolDto(
     dataCollectionProcess = dataCollectionProcess.toString(),
     analysisAndSynthesisProcess = analysisAndSynthesisProcess.toString(),
 
-    extractionQuestions = extractionQuestions.map { it.id }
-        .toSet(),
-    robQuestions = robQuestions.map { it.id }
-        .toSet(),
+    extractionQuestions = extractionQuestions.map { it.value }.toSet(),
+    robQuestions = robQuestions.map { it.value}.toSet(),
 
     picoc = picoc?.let { PICOCDto(
         it.population.toString(),

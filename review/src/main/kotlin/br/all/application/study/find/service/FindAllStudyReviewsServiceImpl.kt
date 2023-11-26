@@ -13,13 +13,16 @@ import br.all.domain.model.review.ReviewId
 class FindAllStudyReviewsServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,
-    private val presenter: FindAllStudyReviewsPresenter,
     private val credentialsService: ResearcherCredentialsService,
 ) : FindAllStudyReviewsService {
 
-    override fun findAllFromReview(request: RequestModel)  {
+    override fun findAllFromReview(presenter: FindAllStudyReviewsPresenter, request: RequestModel)  {
+        val researcherId = ResearcherId(request.researcherId)
+        val reviewId = ReviewId(request.reviewId)
         val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolates(presenter, ReviewId(request.reviewId), ResearcherId(request.researcherId))
+        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, reviewId)
+
+        if(presenter.isDone()) return
 
         val studyReviews = studyReviewRepository.findAllFromReview(request.reviewId)
         presenter.prepareSuccessView(ResponseModel(request.researcherId, request.reviewId, studyReviews))

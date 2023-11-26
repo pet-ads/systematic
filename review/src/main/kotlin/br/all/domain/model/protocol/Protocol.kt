@@ -1,5 +1,6 @@
 package br.all.domain.model.protocol
 
+import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.ReviewId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification

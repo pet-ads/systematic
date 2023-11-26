@@ -6,7 +6,6 @@ import br.all.domain.shared.utils.requireThatExists
 
 class SystematicStudy(
     val reviewId: ReviewId,
-
     title: String,
     description: String,
     owner: ResearcherId,
@@ -15,22 +14,18 @@ class SystematicStudy(
 
     private val _collaborators = collaborators
     val collaborators get() = _collaborators.toSet()
-
     var owner = owner
         private set
-
     var title: String = ""
         set(value) {
             require(value.isNotBlank()) { "Title must not be blank." }
             field = value
         }
-
     var description = ""
-        set(value){
+        set(value) {
             require(value.isNotBlank()) { "Description must not be blank." }
             field = value
         }
-
 
     init {
         this.title = title
@@ -54,6 +49,8 @@ class SystematicStudy(
         _collaborators.remove(researcherId)
     }
 
-    override fun toString() = "SystematicStudy(reviewId=$reviewId, title='$title', description='$description', " +
-            "owner=$owner, _collaborators=$_collaborators)"
+
+    override fun toString() = "SystematicStudy(reviewId=$reviewId, title='$title', " +
+            "description='$description', owner=$owner, researchers=$_collaborators)"
+
 }

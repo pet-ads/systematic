@@ -1,10 +1,12 @@
 package br.all.application.study.find.service
 
+import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
 import br.all.application.study.repository.StudyReviewDto
 import java.util.*
 
 interface FindAllStudyReviewsService {
-    fun findAllFromReview(request: RequestModel)
+    fun findAllFromReview(presenter: FindAllStudyReviewsPresenter, request: RequestModel)
+
     data class RequestModel(
         val researcherId: UUID,
         val reviewId: UUID

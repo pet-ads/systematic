@@ -4,7 +4,7 @@ import java.util.*
 
 
 interface CreateStudyReviewService {
-    fun createFromStudy(request: RequestModel)
+    fun createFromStudy(presenter: CreateStudyReviewPresenter, request: RequestModel)
 
     data class RequestModel(
         val researcherId: UUID,
@@ -20,7 +20,7 @@ interface CreateStudyReviewService {
     )
 
     open class ResponseModel(
-        val reviewerId: UUID,
+        val researcherId: UUID,
         val reviewId: UUID,
         val studyId: Long
     )
