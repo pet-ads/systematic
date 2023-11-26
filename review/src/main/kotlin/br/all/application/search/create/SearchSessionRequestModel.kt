@@ -1,4 +1,4 @@
-package br.all.application.search
+package br.all.application.search.create
 
 import br.all.domain.model.protocol.SearchSource
 import br.all.domain.model.review.ReviewId
