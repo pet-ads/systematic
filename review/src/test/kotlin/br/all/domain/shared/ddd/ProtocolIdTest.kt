@@ -1,6 +1,6 @@
 package br.all.domain.shared.ddd
 
-import br.all.domain.shared.utils.ProtocolId
+import br.all.domain.model.protocol.ProtocolId
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.assertThrows

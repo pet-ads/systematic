@@ -1,13 +1,13 @@
 package br.all.application.study.repository
 
-import br.all.application.study.create.StudyReviewRequestModel
+import br.all.application.study.create.CreateStudyReviewService.RequestModel
 import br.all.domain.model.review.ReviewId
 import br.all.domain.model.study.*
-import java.util.*
 
 fun StudyReview.toDto() = StudyReviewDto(
-    studyId.value,
     reviewId.value,
+    studyId.value,
+    studyType.toString(),
     title,
     year,
     authors,
@@ -15,7 +15,7 @@ fun StudyReview.toDto() = StudyReviewDto(
     abstract,
     keywords,
     references,
-    doi.toString(),
+    doi?.toString(),
     searchSources,
     criteria,
     formAnswers.mapValues { (_, answer) -> answer.value.toString() }.toMap(),
@@ -27,8 +27,9 @@ fun StudyReview.toDto() = StudyReviewDto(
 )
 
 fun StudyReview.Companion.fromDto(dto: StudyReviewDto ) = StudyReview(
-    StudyReviewId(dto.id),
+    StudyReviewId(dto.studyId),
     ReviewId(dto.reviewId),
+    StudyType.valueOf(dto.studyType),
     dto.title,
     dto.year,
     dto.authors,
@@ -37,7 +38,7 @@ fun StudyReview.Companion.fromDto(dto: StudyReviewDto ) = StudyReview(
     dto.keywords.toMutableSet(),
     dto.searchSources.toMutableSet(),
     dto.references.toMutableList(),
-    Doi(dto.doi),
+    dto.doi?.let { Doi(it)},
     dto.criteria.toMutableSet(),
     dto.formAnswers.mapValues { (questionId, answer) -> Answer(questionId, answer) }.toMutableMap(),
     dto.qualityAnswers.mapValues { (questionId, answer) -> Answer(questionId, answer) }.toMutableMap(),
@@ -47,9 +48,11 @@ fun StudyReview.Companion.fromDto(dto: StudyReviewDto ) = StudyReview(
     ExtractionStatus.convertStringToExtractionStatusEnum(dto.extractionStatus)
 )
 
-fun StudyReview.Companion.fromStudyRequestModel(reviewId: UUID, studyId: Long, study: StudyReviewRequestModel) = StudyReview(
+fun StudyReview.Companion.fromStudyRequestModel(studyId: Long, study: RequestModel)
+= StudyReview(
     StudyReviewId(studyId),
-    ReviewId(reviewId),
+    ReviewId(study.reviewId),
+    StudyType.valueOf(study.type.uppercase()),
     study.title,
     study.year,
     study.authors,

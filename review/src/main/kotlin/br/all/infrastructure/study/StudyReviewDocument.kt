@@ -2,13 +2,15 @@ package br.all.infrastructure.study
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
+import org.springframework.stereotype.Component
+import java.io.Serializable
 import java.util.*
+import kotlin.Comparator
 
 @Document("study_review")
-class StudyReviewDocument (
-    @Id
-    val id: Long,
-    val reviewId: UUID,
+data class StudyReviewDocument (
+    @Id val id: StudyReviewId,
+    val type: String,
     val title: String,
     val year: Int,
     val authors: String,
@@ -16,7 +18,7 @@ class StudyReviewDocument (
     val abstractText: String,
     val keywords: Set<String>,
     val references: List<String>,
-    val doi: String,
+    val doi: String?,
     val searchSources: Set<String>,
     val criteria: Set<String>,
     val formAnswers: Map<UUID, String>,
@@ -31,3 +33,5 @@ class StudyReviewDocument (
         val SEQUENCE_NAME = "study_review_sequence";
     }
 }
+
+data class StudyReviewId(val reviewId: UUID, val studyId: Long): Serializable

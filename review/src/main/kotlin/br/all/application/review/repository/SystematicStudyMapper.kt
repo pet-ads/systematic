@@ -20,8 +20,15 @@ fun SystematicStudy.Companion.fromRequestModel(id: UUID, requestModel: Systemati
         requestModel.title,
         requestModel.description,
         ResearcherId(requestModel.owner),
-        requestModel.collaborators
-            .map { ResearcherId(it) }
-            .toMutableSet(),
     )
 }
+
+fun SystematicStudy.Companion.fromDto(dto: SystematicStudyDto) = SystematicStudy(
+    ReviewId(dto.id),
+    dto.title,
+    dto.description,
+    ResearcherId(dto.owner),
+    dto.collaborators
+        .map { ResearcherId(it) }
+        .toMutableSet(),
+)

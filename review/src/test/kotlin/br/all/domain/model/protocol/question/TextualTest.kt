@@ -1,6 +1,8 @@
 package br.all.domain.model.protocol.question
 
 import br.all.domain.model.protocol.ProtocolId
+import br.all.domain.model.question.QuestionId
+import br.all.domain.model.question.Textual
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.util.*

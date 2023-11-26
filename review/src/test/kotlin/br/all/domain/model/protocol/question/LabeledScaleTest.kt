@@ -1,6 +1,9 @@
 package br.all.domain.model.protocol.question
 
 import br.all.domain.model.protocol.ProtocolId
+import br.all.domain.model.question.Label
+import br.all.domain.model.question.LabeledScale
+import br.all.domain.model.question.QuestionId
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

@@ -7,6 +7,7 @@ import java.util.*
 class StudyReview(
     val studyId: StudyReviewId,
     val reviewId: ReviewId,
+    val studyType: StudyType = StudyType.UNKNOWN,
     val title: String,
     val year: Int,
     val authors: String,
@@ -33,7 +34,7 @@ class StudyReview(
 
     init {
         require(searchSources.size > 0) { "The study must be related to at least one search source." }
-        study = Study(title, year, authors, venue, abstract, keywords, references, doi)
+        study = Study(studyType, title, year, authors, venue, abstract, keywords, references, doi)
     }
 
     companion object
@@ -84,22 +85,6 @@ class StudyReview(
     fun markAsDuplicate(){
         selectionStatus = SelectionStatus.DUPLICATED
         extractionStatus = ExtractionStatus.DUPLICATED
-    }
-
-    fun markAsVeryLowReadingPriority(){
-        readingPriority = ReadingPriority.VERY_LOW
-    }
-
-    fun markAsLowReadingPriority(){
-        readingPriority = ReadingPriority.LOW
-    }
-
-    fun markAsHighReadingPriority(){
-        readingPriority = ReadingPriority.HIGH
-    }
-
-    fun markAsVeryHighReadingPriority(){
-        readingPriority = ReadingPriority.VERY_HIGH
     }
 
     fun unclassifyInExtraction() = apply { extractionStatus = ExtractionStatus.UNCLASSIFIED }
