@@ -29,8 +29,7 @@ class LabeledScaleTest {
         val labeledScale = LabeledScale(questionId, protocolId, code, description, scales)
 
         val answer = Label("Label1", 1)
-        //val result = labeledScale.validateAnswer(answer)
-        //assertEquals(answer, result)
+        assertDoesNotThrow { labeledScale.answer = answer }
     }
 
     @Test
@@ -47,11 +46,11 @@ class LabeledScaleTest {
         val labeledScale = LabeledScale(questionId, protocolId, code, description, scales)
 
         val answer = Label("InvalidLabel", 4)
-       // assertThrows(NoSuchElementException::class.java) { labeledScale.validateAnswer(answer) }
+        assertThrows<NoSuchElementException> { labeledScale.answer = answer }
     }
 
     @Test
-    fun `should validate empty scales`() {
+    fun `should throw IllegalArgumentException for empty scales`() {
         val questionId = QuestionId(UUID.randomUUID())
         val protocolId = ProtocolId(UUID.randomUUID())
         val code = "T1"
@@ -61,20 +60,4 @@ class LabeledScaleTest {
 
     }
 
-    @Test
-    fun `should validate null answer`() {
-        val questionId = QuestionId(UUID.randomUUID())
-        val protocolId = ProtocolId(UUID.randomUUID())
-        val code = "T1"
-        val description = "Sample labeled scale question"
-        val scales = mapOf(
-            "Label1" to 1,
-            "Label2" to 2,
-            "Label3" to 3
-        )
-        val labeledScale = LabeledScale(questionId, protocolId, code, description, scales)
-
-        val answer: Label? = null
-        //assertThrows<NoSuchElementException> { labeledScale.validateAnswer(answer)}
-    }
 }

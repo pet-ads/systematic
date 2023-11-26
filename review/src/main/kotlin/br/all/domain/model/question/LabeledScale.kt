@@ -31,4 +31,7 @@ class LabeledScale(
         "LabeledScale(QuestionId: $id, ProtocolId: $protocolId, Code: $code, " +
                 "Description: $description, Scales: $_scales, Answer: $answer.)"
 
+    fun getScales() : Map<String, Int>{
+        return _scales.associate { it.getName() to it.getValue() }
+    }
 }

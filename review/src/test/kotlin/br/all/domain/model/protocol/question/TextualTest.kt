@@ -5,50 +5,43 @@ import br.all.domain.model.question.QuestionId
 import br.all.domain.model.question.Textual
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 class TextualTest {
 
     @Test
     fun `should validate non-blank answer`() {
-        val questionId = QuestionId(UUID.randomUUID())
-        val protocolId = ProtocolId(UUID.randomUUID())
-
-        val code = "T1"
-        val description = "Sample textual question"
-        val textualQuestion = Textual(questionId, protocolId, code, description)
-
-        val answer = "Valid Answer"
-
-        //TODO validade é um interesse interno, não público. Teste o efeito acoplado da classe. Ou seja, tente criar
-        // e veja se ela se comporta como quer (dar certo ou dar erro)
-        //val result = textualQuestion.validateAnswer(answer)
-
-        //assertEquals(answer, result)
+        val sut = Textual(
+            QuestionId(UUID.randomUUID()),
+            ProtocolId(UUID.randomUUID()),
+            "T1",
+            "SAMPLE",
+        )
+        assertDoesNotThrow{ sut.answer = "abc" }
     }
 
     @Test
     fun `should throw NullPointerException for a null answer`() {
-        val questionId = QuestionId(UUID.randomUUID())
-        val protocolId = ProtocolId(UUID.randomUUID())
-        val code = "T1"
-        val description = "Sample textual question"
-        val textualQuestion = Textual(questionId, protocolId, code, description)
+        val sut = Textual(
+            QuestionId(UUID.randomUUID()),
+            ProtocolId(UUID.randomUUID()),
+            "T1",
+            "SAMPLE",
+        )
 
-        //TODO em kotlin, quando você chama .answer você não se refere a variável, mas property (setter e/ou getter)
-        //assertThrows(NullPointerException::class.java) { textualQuestion.validateAnswer(null) }
-        assertThrows(NullPointerException::class.java) { textualQuestion.answer = null }
+        assertThrows<NullPointerException>{sut.answer = null}
     }
 
     @Test
     fun `should throw IllegalArgumentException for blank answer`() {
-        val questionId = QuestionId(UUID.randomUUID())
-        val protocolId = ProtocolId(UUID.randomUUID())
-        val code = "T1"
-        val description = "Sample textual question"
-        val textualQuestion = Textual(questionId, protocolId, code, description)
-        val answer = ""
-        //todo idem aqui. Além disso, não precisa criar campo se o texto ele puder ser usado direto no construtor
-        //assertThrows(IllegalArgumentException::class.java) { textualQuestion.validateAnswer(answer) }
+        val sut = Textual(
+            QuestionId(UUID.randomUUID()),
+            ProtocolId(UUID.randomUUID()),
+            "T1",
+            "SAMPLE",
+        )
+
+        assertThrows<IllegalArgumentException>{sut.answer = "  "}
     }
 }
