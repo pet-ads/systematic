@@ -14,15 +14,18 @@ class PreconditionChecker(
 ) {
 
     fun prepareIfViolatesPreconditions(presenter: GenericPresenter<*>, researcherId: ResearcherId, reviewId: ReviewId) {
-        if (!credentialsService.isAuthenticated(researcherId))
+        if (!credentialsService.isAuthenticated(researcherId)) {
             presenter.prepareFailView(UnauthenticatedUserException("User of id $researcherId is not authenticated."))
-
-        if (!credentialsService.hasAuthority(researcherId))
-            presenter.prepareFailView(UnauthenticatedUserException("User of id $researcherId is not authorized."))
-
-        if (!reviewRepository.existsById(reviewId.value))
+            return
+        }
+        if (!credentialsService.hasAuthority(researcherId)) {
+            presenter.prepareFailView(UnauthorizedUserException("User of id $researcherId is not authorized."))
+            return
+        }
+        if (!reviewRepository.existsById(reviewId.value)) {
             presenter.prepareFailView(EntityNotFoundException("Review of id $reviewId do not exists."))
-
+            return
+        }
         if (!reviewRepository.hasReviewer(reviewId.value, researcherId.value))
             presenter.prepareFailView(UnauthorizedUserException("User of id $researcherId is not a reviewer."))
     }
