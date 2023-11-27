@@ -11,11 +11,11 @@ class FakeProtocolRepository: ProtocolRepository {
 
     override fun findById(id: UUID) = db[id]
 
-    override fun findBySystematicStudy(systematicStudyId: UUID) = db.values.find { it.reviewId == systematicStudyId }
+    override fun findBySystematicStudy(systematicStudyId: UUID) = db.values.find { it.systematicStudy == systematicStudyId }
 
     override fun findAll() = db.values.toList()
 
     override fun existsById(id: UUID) = id in db
 
-    override fun existsBySystematicStudy(systematicStudyId: UUID) = db.values.any { it.reviewId == systematicStudyId }
+    override fun existsBySystematicStudy(systematicStudyId: UUID) = db.values.any { it.systematicStudy == systematicStudyId }
 }

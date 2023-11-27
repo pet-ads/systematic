@@ -6,14 +6,14 @@ import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.ReviewId
+import br.all.domain.model.review.SystematicStudyId
 
 class PreconditionChecker(
     private val reviewRepository: SystematicStudyRepository,
     private val credentialsService: ResearcherCredentialsService,
 ) {
 
-    fun prepareIfViolatesPreconditions(presenter: GenericPresenter<*>, researcherId: ResearcherId, reviewId: ReviewId) {
+    fun prepareIfViolatesPreconditions(presenter: GenericPresenter<*>, researcherId: ResearcherId, systematicStudyId: SystematicStudyId) {
         if (!credentialsService.isAuthenticated(researcherId)) {
             presenter.prepareFailView(UnauthenticatedUserException("User of id $researcherId is not authenticated."))
             return
@@ -22,11 +22,11 @@ class PreconditionChecker(
             presenter.prepareFailView(UnauthorizedUserException("User of id $researcherId is not authorized."))
             return
         }
-        if (!reviewRepository.existsById(reviewId.value)) {
-            presenter.prepareFailView(EntityNotFoundException("Review of id $reviewId do not exists."))
+        if (!reviewRepository.existsById(systematicStudyId.value)) {
+            presenter.prepareFailView(EntityNotFoundException("Review of id $systematicStudyId do not exists."))
             return
         }
-        if (!reviewRepository.hasReviewer(reviewId.value, researcherId.value))
+        if (!reviewRepository.hasReviewer(systematicStudyId.value, researcherId.value))
             presenter.prepareFailView(UnauthorizedUserException("User of id $researcherId is not a reviewer."))
     }
 }

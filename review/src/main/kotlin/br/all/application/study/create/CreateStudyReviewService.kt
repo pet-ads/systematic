@@ -8,7 +8,7 @@ interface CreateStudyReviewService {
 
     data class RequestModel(
         val researcherId: UUID,
-        val reviewId: UUID,
+        val systematicStudyId: UUID,
         val type: String,
         val title: String,
         val year: Int,
@@ -21,7 +21,7 @@ interface CreateStudyReviewService {
 
     open class ResponseModel(
         val researcherId: UUID,
-        val reviewId: UUID,
-        val studyId: Long
+        val systematicStudyId: UUID,
+        val studyReviewId: Long
     )
 }

@@ -1,15 +1,11 @@
 package br.all.study.controller
 
-import br.all.application.study.create.CreateStudyReviewPresenter
 import br.all.application.study.create.CreateStudyReviewService
-import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
-import br.all.application.study.find.presenter.FindStudyReviewPresenter
 import br.all.application.study.find.service.FindAllStudyReviewsService
 import br.all.application.study.find.service.FindStudyReviewService
 import br.all.application.study.update.implementation.UpdateStudyReviewExtractionService
 import br.all.application.study.update.implementation.UpdateStudyReviewPriorityService
 import br.all.application.study.update.implementation.UpdateStudyReviewSelectionService
-import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresenter
 import br.all.study.presenter.RestfulCreateStudyReviewPresenter
 import br.all.study.presenter.RestfulFindStudyReviewPresenter
 import br.all.study.presenter.RestfulFindAllStudyReviewsPresenter
@@ -24,7 +20,7 @@ import br.all.application.study.find.service.FindStudyReviewService.RequestModel
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.RequestModel as UpdateStatusRequest
 
 @RestController
-@RequestMapping("/api/v1/researcher/{researcher}/review/{review}/study-review")
+@RequestMapping("/api/v1/researcher/{researcher}/review/{systematicStudy}/study-review")
 class StudyReviewController(
     val createService: CreateStudyReviewService,
     val findAllService: FindAllStudyReviewsService,
@@ -37,7 +33,7 @@ class StudyReviewController(
     @PostMapping
     fun createStudyReview(
         @PathVariable researcher: UUID,
-        @PathVariable review: UUID,
+        @PathVariable systematicStudy: UUID,
         @RequestBody request: CreateRequest
     ): ResponseEntity<*> {
         val presenter = RestfulCreateStudyReviewPresenter()
@@ -48,31 +44,31 @@ class StudyReviewController(
     @GetMapping
     fun findAllStudyReviews(
         @PathVariable researcher: UUID,
-        @PathVariable review: UUID,
+        @PathVariable systematicStudy: UUID,
     ): ResponseEntity<*> {
         val presenter =  RestfulFindAllStudyReviewsPresenter()
-        val request = FindAllRequest(researcher, review)
+        val request = FindAllRequest(researcher, systematicStudy)
         findAllService.findAllFromReview(presenter, request)
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping("/{study}")
+    @GetMapping("/{studyReview}")
     fun findStudyReview(
         @PathVariable researcher: UUID,
-        @PathVariable review: UUID,
-        @PathVariable study: Long,
+        @PathVariable systematicStudy: UUID,
+        @PathVariable studyReview: Long,
     ): ResponseEntity<*> {
         val presenter = RestfulFindStudyReviewPresenter()
-        val request = FindOneRequest(researcher, review, study)
+        val request = FindOneRequest(researcher, systematicStudy, studyReview)
         findOneService.findOne(presenter, request)
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PatchMapping("/{study}/selection-status")
+    @PatchMapping("/{studyReview}/selection-status")
     fun updateStudyReviewSelectionStatus(
         @PathVariable researcher: UUID,
-        @PathVariable review: UUID,
-        @PathVariable study: Long,
+        @PathVariable systematicStudy: UUID,
+        @PathVariable studyReview: Long,
         @RequestBody request: UpdateStatusRequest
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter()
@@ -80,11 +76,11 @@ class StudyReviewController(
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PatchMapping("/{study}/extraction-status")
+    @PatchMapping("/{studyReview}/extraction-status")
     fun updateStudyReviewExtractionStatus(
         @PathVariable researcher: UUID,
-        @PathVariable review: UUID,
-        @PathVariable study: Long,
+        @PathVariable systematicStudy: UUID,
+        @PathVariable studyReview: Long,
         @RequestBody request: UpdateStatusRequest
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter()
@@ -92,11 +88,11 @@ class StudyReviewController(
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PatchMapping("/{study}/reading-priority")
+    @PatchMapping("/{studyReview}/reading-priority")
     fun updateStudyReviewReadingPriority(
         @PathVariable researcher: UUID,
-        @PathVariable review: UUID,
-        @PathVariable study: Long,
+        @PathVariable systematicStudy: UUID,
+        @PathVariable studyReview: Long,
         @RequestBody request: UpdateStatusRequest
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter()

@@ -1,12 +1,12 @@
 package br.all.domain.model.study
 
 import br.all.domain.shared.ddd.Entity
-import br.all.domain.model.review.ReviewId
+import br.all.domain.model.review.SystematicStudyId
 import java.util.*
 
 class StudyReview(
     val studyId: StudyReviewId,
-    val reviewId: ReviewId,
+    val systematicStudyId: SystematicStudyId,
     val studyType: StudyType = StudyType.UNKNOWN,
     val title: String,
     val year: Int,
@@ -90,7 +90,7 @@ class StudyReview(
     fun unclassifyInExtraction() = apply { extractionStatus = ExtractionStatus.UNCLASSIFIED }
 
     override fun toString(): String {
-        return "StudyReview(reviewId=$reviewId, searchSources=$searchSources, criteria=$criteria, " +
+        return "StudyReview(reviewId=$systematicStudyId, searchSources=$searchSources, criteria=$criteria, " +
                 "formAnswers=$formAnswers, qualityAnswers=$qualityAnswers, comments='$comments', " +
                 "readingPriority=$readingPriority, extractionStatus=$extractionStatus, " +
                 "selectionStatus=$selectionStatus, study=$study)"

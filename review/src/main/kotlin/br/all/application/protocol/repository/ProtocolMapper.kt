@@ -2,14 +2,14 @@ package br.all.application.protocol.repository
 
 import br.all.application.protocol.create.ProtocolRequestModel
 import br.all.domain.model.protocol.*
-import br.all.domain.model.review.ReviewId
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.utils.Language
 import br.all.domain.shared.utils.toPhrase
 import java.util.*
 
 fun Protocol.toDto() = ProtocolDto(
     id = protocolId.value,
-    reviewId = reviewId.value,
+    systematicStudy = systematicStudyId.value,
 
     goal = goal.toString(),
     justification = justification.toString(),
@@ -37,7 +37,7 @@ fun Protocol.toDto() = ProtocolDto(
     extractionQuestions = extractionQuestions.map { it.value }.toSet(),
     robQuestions = robQuestions.map { it.value}.toSet(),
 
-    picoc = picoc?.let { PICOCDto(
+    picoc = picoc?.let { PicocDto(
         it.population.toString(),
         it.intervention.toString(),
         it.control.toString(),
@@ -51,7 +51,7 @@ fun Protocol.Companion.fromRequestModel(
     reviewId: UUID, 
     requestModel: ProtocolRequestModel,
 ) = with(requestModel) {
-    write().identifiedBy(ProtocolId(id), ReviewId(reviewId), keywords)
+    write().identifiedBy(ProtocolId(id), SystematicStudyId(reviewId), keywords)
         .researchesFor(goal.toPhrase()).because(justification.toPhrase())
         .toAnswer(
             researchQuestions.map { ResearchQuestion(it.toPhrase()) }

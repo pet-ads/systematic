@@ -7,7 +7,7 @@ import java.util.*
 
 interface MongoStudyReviewRepository : MongoRepository<StudyReviewDocument, StudyReviewId> {
 
-    fun findAllByIdReviewId(reviewID: UUID): List<StudyReviewDocument>
+    fun findAllById_SystematicStudyId(reviewID: UUID): List<StudyReviewDocument>
 
     @Update("{ '\$set' : { ?1 : ?2 } }")
     fun findAndUpdateAttributeById(id: StudyReviewId, attributeName:String, newStatus: Any)

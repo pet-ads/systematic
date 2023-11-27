@@ -5,7 +5,7 @@ import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.toDto
 import br.all.application.review.util.FakeSystematicStudyRepository
 import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.ReviewId
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.review.SystematicStudy
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -35,7 +35,7 @@ class ChangeSystematicStudyOwnerServiceTest {
     fun `Should the owner be successfully changed`() {
         val reviewId = UUID.randomUUID()
         val newOwnerId = UUID.randomUUID()
-        val systematicStudy = SystematicStudy(ReviewId(reviewId), "Some title", "Some description",
+        val systematicStudy = SystematicStudy(SystematicStudyId(reviewId), "Some title", "Some description",
             ResearcherId(UUID.randomUUID()))
 
         every { researcherRepository.existsById(newOwnerId) } returns true
@@ -64,7 +64,7 @@ class ChangeSystematicStudyOwnerServiceTest {
     fun `Should throw NoSuchElementException for nonexistent new owner`() {
         val reviewId = UUID.randomUUID()
         val newOwner = UUID.randomUUID()
-        val study = SystematicStudy(ReviewId(reviewId), "Some title", "Some description",
+        val study = SystematicStudy(SystematicStudyId(reviewId), "Some title", "Some description",
             ResearcherId(UUID.randomUUID())).toDto()
 
         every { researcherRepository.existsById(newOwner) } returns false

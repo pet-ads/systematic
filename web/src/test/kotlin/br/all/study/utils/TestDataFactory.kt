@@ -1,7 +1,5 @@
 package br.all.study.utils
 
-import br.all.application.study.create.CreateStudyReviewService
-import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.infrastructure.study.StudyReviewDocument
 import br.all.infrastructure.study.StudyReviewId
 import java.util.*
@@ -11,11 +9,11 @@ class TestDataFactory {
     val researcherId: UUID = UUID.randomUUID()
     val systematicStudyId: UUID = UUID.randomUUID()
 
-    fun validPostRequest(researcher: UUID = researcherId, systematicStudy: UUID = systematicStudyId) =
+    fun validPostRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId) =
         """
         {
             "researcherId": "$researcher",
-            "reviewId": "$systematicStudy",
+            "systematicStudyId": "$systematicStudyId",
             "type": "ARTICLE",
             "title": "Title",
             "year": 2021,
@@ -45,7 +43,7 @@ class TestDataFactory {
         """
         {
           "researcherId": "$researcherId",
-          "reviewId": "$systematicStudyId",
+          "systematicStudyId": "$systematicStudyId",
           "studyReviewId": $id,
           "status": "$newStatus"
         }
@@ -53,8 +51,8 @@ class TestDataFactory {
 
 
     fun reviewDocument(
-        reviewId: UUID,
-        studyId: Long,
+        systematicStudyId: UUID,
+        studyReviewId: Long,
         type: String = "ARTICLE",
         title: String = "study",
         year: Int = 2023,
@@ -73,9 +71,9 @@ class TestDataFactory {
         extractionStatus: String = "UNCLASSIFIED",
         readingPriority: String = "LOW"
     ): StudyReviewDocument {
-        val studyReviewId = StudyReviewId(reviewId, studyId)
+        val studyId = StudyReviewId(systematicStudyId, studyReviewId)
         return StudyReviewDocument(
-            studyReviewId, type, title, year,
+            studyId, type, title, year,
             authors, venue, abstract, keywords, references, doi, sources,
             criteria, formAnswers, robAnswers, comments, readingPriority,
             extractionStatus, selectionStatus

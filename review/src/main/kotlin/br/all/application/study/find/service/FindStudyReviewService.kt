@@ -6,7 +6,13 @@ import java.util.*
 
 interface FindStudyReviewService {
     fun findOne(presenter: FindStudyReviewPresenter, request: RequestModel)
-    data class RequestModel(val researcherId: UUID, val reviewId: UUID, val studyReviewId: Long)
+
+    data class RequestModel(
+        val researcherId: UUID,
+        val systematicStudyId: UUID,
+        val studyReviewId: Long
+    )
+
     data class ResponseModel(
         val researcherId: UUID,
         val content: StudyReviewDto

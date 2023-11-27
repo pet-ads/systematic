@@ -56,8 +56,8 @@ class StudyReviewControllerTest(
         val json = factory.validPostRequest()
         mockMvc.perform(post(postUrl()).contentType(MediaType.APPLICATION_JSON).content(json))
             .andExpect(status().isCreated)
-            .andExpect(jsonPath("$.reviewId").value(systematicStudyId.toString()))
-            .andExpect(jsonPath("$.studyId").exists())
+            .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+            .andExpect(jsonPath("$.studyReviewId").exists())
             .andExpect(jsonPath("$._links").exists())
     }
 
@@ -75,10 +75,10 @@ class StudyReviewControllerTest(
         val studyReview = factory.reviewDocument(systematicStudyId, idService.next())
         repository.insert(studyReview)
 
-        val studyId = "/${studyReview.id.studyId}"
+        val studyId = "/${studyReview.id.studyReviewId}"
         mockMvc.perform(get(findUrl(studyId)).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.reviewId").value(studyReview.id.reviewId.toString()))
+            .andExpect(jsonPath("$.systematicStudyId").value(studyReview.id.systematicStudyId.toString()))
             .andExpect(jsonPath("$._links").exists())
     }
 
@@ -96,7 +96,7 @@ class StudyReviewControllerTest(
 
         mockMvc.perform(get(findUrl()).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.reviewId").value(systematicStudyId.toString()))
+            .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
             .andExpect(jsonPath("$.size").value(2))
     }
 
@@ -105,9 +105,9 @@ class StudyReviewControllerTest(
         mockMvc.perform(get(findUrl()).contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.reviewId").value(systematicStudyId.toString()))
+            .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
             .andExpect(jsonPath("$.size").value(0))
-            .andExpect(jsonPath("$.studies").isEmpty())
+            .andExpect(jsonPath("$.studyReviews").isEmpty())
     }
 
     @Test

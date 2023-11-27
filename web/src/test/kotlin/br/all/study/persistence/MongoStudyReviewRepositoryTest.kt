@@ -56,7 +56,7 @@ class MongoStudyReviewRepositoryTest (
         sut.insert(factory.reviewDocument(reviewId, idService.next()))
         sut.insert(factory.reviewDocument(reviewId, idService.next()))
         sut.insert(factory.reviewDocument(UUID.randomUUID(), idService.next()))
-        val result = sut.findAllByIdReviewId(reviewId)
+        val result = sut.findAllById_SystematicStudyId(reviewId)
         assertTrue(result.size == 2)
     }
 
@@ -77,8 +77,8 @@ class MongoStudyReviewRepositoryTest (
         val studyReview = factory.reviewDocument(reviewId, idService.next(),"study")
         sut.insert(studyReview)
         val result = sut.findById(studyReview.id)
-        assertEquals(studyReview.id.studyId, result.toNullable()?.id?.studyId)
-        assertEquals(reviewId, result.toNullable()?.id?.reviewId)
+        assertEquals(studyReview.id.studyReviewId, result.toNullable()?.id?.studyReviewId)
+        assertEquals(reviewId, result.toNullable()?.id?.systematicStudyId)
     }
 
     @Test

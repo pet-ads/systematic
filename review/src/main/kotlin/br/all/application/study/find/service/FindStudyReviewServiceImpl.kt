@@ -9,7 +9,7 @@ import br.all.application.study.find.service.FindStudyReviewService.RequestModel
 import br.all.application.study.find.service.FindStudyReviewService.ResponseModel
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.ReviewId
+import br.all.domain.model.review.SystematicStudyId
 
 class FindStudyReviewServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
@@ -19,15 +19,15 @@ class FindStudyReviewServiceImpl(
 
     override fun findOne(presenter: FindStudyReviewPresenter, request: RequestModel) {
         val researcherId = ResearcherId(request.researcherId)
-        val reviewId = ReviewId(request.reviewId)
+        val systematicStudyId = SystematicStudyId(request.systematicStudyId)
         val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, reviewId)
+        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
         if(presenter.isDone()) return
 
-        val studyReview = studyReviewRepository.findById(request.reviewId, request.studyReviewId)
+        val studyReview = studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId)
         if (studyReview === null) {
-            val message = "There is no review of id ${request.reviewId} or study of id ${request.studyReviewId}."
+            val message = "There is no review of id ${request.systematicStudyId} or study of id ${request.studyReviewId}."
             presenter.prepareFailView(EntityNotFoundException(message))
             return
         }

@@ -5,7 +5,7 @@ import br.all.domain.shared.ddd.Notification
 import java.util.UUID
 
 @JvmInline
-value class ReviewId(val value: UUID) : Identifier {
+value class SystematicStudyId(val value: UUID) : Identifier {
 
     init {
         val notification = validate()

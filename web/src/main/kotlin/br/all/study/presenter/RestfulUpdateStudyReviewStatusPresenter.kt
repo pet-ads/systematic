@@ -20,7 +20,7 @@ class RestfulUpdateStudyReviewStatusPresenter : UpdateStudyReviewStatusPresenter
         val restfulResponse = ViewModel()
 
         val self = linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId, response.reviewId, response.studyReviewId)
+            findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
         }.withSelfRel()
 
         restfulResponse.add(self)

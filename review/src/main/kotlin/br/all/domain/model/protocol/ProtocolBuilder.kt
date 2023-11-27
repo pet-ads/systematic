@@ -1,7 +1,7 @@
 package br.all.domain.model.protocol
 
 import br.all.domain.model.question.QuestionId
-import br.all.domain.model.review.ReviewId
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.utils.Language
 import br.all.domain.shared.utils.Phrase
 
@@ -9,7 +9,7 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
         SearchMethodDefinitionStep, SourcesDefinitionStep, SourcesCriteriaStep, StudiesDefinitionStep,
         StudiesSelectionStep, SelectionCriteriaStep, DataCollectionStep, DataAnalysisStep, BuildingStep {
     private var protocolId: ProtocolId? = null
-    private var reviewId: ReviewId? = null
+    private var systematicStudyId: SystematicStudyId? = null
     private lateinit var keywords: Set<String>
     private lateinit var goal: Phrase
     private lateinit var justification: Phrase
@@ -32,9 +32,9 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
         fun start(): IdentificationStep = ProtocolBuilder()
     }
 
-    override fun identifiedBy(protocolId: ProtocolId, reviewId: ReviewId, keywords: Set<String>) = apply {
+    override fun identifiedBy(protocolId: ProtocolId, systematicStudyId: SystematicStudyId, keywords: Set<String>) = apply {
         this.protocolId = protocolId
-        this.reviewId = reviewId
+        this.systematicStudyId = systematicStudyId
         this.keywords = keywords
     }
 
@@ -93,7 +93,7 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
 
     override fun finish() = Protocol(
         protocolId = protocolId as ProtocolId,
-        reviewId = reviewId as ReviewId,
+        systematicStudyId = systematicStudyId as SystematicStudyId,
         keywords = keywords,
         goal = goal,
         justification = justification,
@@ -115,7 +115,7 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
 }
 
 interface IdentificationStep {
-    fun identifiedBy(protocolId: ProtocolId, reviewId: ReviewId, keywords: Set<String>): GoalStep
+    fun identifiedBy(protocolId: ProtocolId, systematicStudyId: SystematicStudyId, keywords: Set<String>): GoalStep
 }
 
 interface GoalStep {

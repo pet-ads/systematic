@@ -8,7 +8,7 @@ class StudyReviewRepositoryFake : StudyReviewRepository {
 
     val mapStudyReview = mutableMapOf<Pair<UUID, Long>, StudyReviewDto>()
     override fun saveOrUpdate(dto: StudyReviewDto) {
-        mapStudyReview.put(dto.reviewId to dto.studyId, dto)
+        mapStudyReview.put(dto.systematicStudyId to dto.studyReviewId, dto)
     }
 
     override fun findAllFromReview(reviewId: UUID): List<StudyReviewDto> {

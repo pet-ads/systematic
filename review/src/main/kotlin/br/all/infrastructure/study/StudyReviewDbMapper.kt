@@ -3,8 +3,8 @@ package br.all.infrastructure.study
 import br.all.application.study.repository.StudyReviewDto
 
 fun StudyReviewDocument.toDto() = StudyReviewDto(
-    id.reviewId,
-    id.studyId,
+    id.systematicStudyId,
+    id.studyReviewId,
     type,
     title,
     year,
@@ -25,7 +25,7 @@ fun StudyReviewDocument.toDto() = StudyReviewDto(
 )
 
 fun StudyReviewDto.toDocument() = StudyReviewDocument(
-    StudyReviewId(reviewId, studyId),
+    StudyReviewId(systematicStudyId, studyReviewId),
     studyType,
     title,
     year,

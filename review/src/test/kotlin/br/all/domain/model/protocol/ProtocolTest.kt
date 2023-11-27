@@ -1,7 +1,7 @@
 package br.all.domain.model.protocol
 
 import br.all.domain.model.question.QuestionId
-import br.all.domain.model.review.ReviewId
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.utils.Language
 import br.all.domain.shared.utils.Phrase
 import org.junit.jupiter.api.Test
@@ -367,9 +367,9 @@ class ProtocolTest {
         robQuestions: Set<QuestionId> = emptySet(),
     ): Protocol {
         val protocolId = ProtocolId(UUID.randomUUID())
-        val reviewId = ReviewId(UUID.randomUUID())
+        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
 
-        return Protocol.write().identifiedBy(protocolId, reviewId, keywords)
+        return Protocol.write().identifiedBy(protocolId, systematicStudyId, keywords)
             .researchesFor(Phrase("Something")).because(Phrase("It is important"))
             .toAnswer(setOf(ResearchQuestion(Phrase("What is the question which its answer is 42?"))))
             .searchProcessWillFollow(Phrase("Reading philosophical articles"), searchString)

@@ -18,10 +18,10 @@ class RestfulFindAllStudyReviewsPresenter : FindAllStudyReviewsPresenter {
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
-        val restfulResponse = ViewModel(response.reviewId, response.studyReviews.size, response.studyReviews)
+        val restfulResponse = ViewModel(response.systematicStudyId, response.studyReviews.size, response.studyReviews)
 
         val self = linkTo<StudyReviewController> {
-            findAllStudyReviews(response.researcherId, response.reviewId)
+            findAllStudyReviews(response.researcherId, response.systematicStudyId)
         }.withSelfRel()
 
         restfulResponse.add(self)
@@ -33,8 +33,8 @@ class RestfulFindAllStudyReviewsPresenter : FindAllStudyReviewsPresenter {
     override fun isDone() = responseEntity != null
 
     private data class ViewModel (
-        val reviewId : UUID,
+        val systematicStudyId : UUID,
         val size: Int,
-        val studies: List<StudyReviewDto>,
+        val studyReviews: List<StudyReviewDto>,
     ) : RepresentationModel<ViewModel>()
 }

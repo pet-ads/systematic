@@ -12,7 +12,7 @@ import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.RequestModel
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.ResponseModel
 import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.ReviewId
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.ReadingPriority
 import br.all.domain.model.study.StudyReview
 
@@ -24,15 +24,15 @@ class UpdateStudyReviewPriorityService(
 
     override fun changeStatus(presenter: UpdateStudyReviewStatusPresenter, request: RequestModel) {
         val researcherId = ResearcherId(request.researcherId)
-        val reviewId = ReviewId(request.reviewId)
+        val systematicStudyId = SystematicStudyId(request.systematicStudyId)
         val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, reviewId)
+        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
         if(presenter.isDone()) return
 
-        val studyReviewDto = studyReviewRepository.findById(request.reviewId, request.studyReviewId)
+        val studyReviewDto = studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId)
         if(studyReviewDto == null) {
-            presenter.prepareFailView(EntityNotFoundException("Study review of id ${request.reviewId} not found."))
+            presenter.prepareFailView(EntityNotFoundException("Study review of id ${request.systematicStudyId} not found."))
             return
         }
 
@@ -40,6 +40,6 @@ class UpdateStudyReviewPriorityService(
             readingPriority = ReadingPriority.valueOf(request.status)
         }
         studyReviewRepository.saveOrUpdate(studyReview.toDto())
-        presenter.prepareSuccessView(ResponseModel(request.researcherId, request.reviewId, request.studyReviewId))
+        presenter.prepareSuccessView(ResponseModel(request.researcherId, request.systematicStudyId, request.studyReviewId))
     }
 }

@@ -13,7 +13,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
-import org.mockito.Mockito.verify
 import java.util.*
 import kotlin.test.Ignore
 import kotlin.test.Test
@@ -34,13 +33,13 @@ class CreateSearchSessionServiceTest {
         sut = CreateSearchSessionService(repository, repositoryStudy, idGenerator)
     }
 
-    var reviewId = UUID.randomUUID();
+    var systematicStudy = UUID.randomUUID();
 
     @Ignore
     @Test
     fun `Should create search session`() {
         val requestModel = SearchSessionRequestModel(
-            reviewId,
+            systematicStudy,
             source = SearchSource("Example source"),
             searchString = "Search string",
             additionalInfo = "Additional information"

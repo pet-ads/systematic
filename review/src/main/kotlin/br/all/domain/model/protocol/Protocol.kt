@@ -1,7 +1,7 @@
 package br.all.domain.model.protocol
 
 import br.all.domain.model.question.QuestionId
-import br.all.domain.model.review.ReviewId
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.utils.Language
@@ -11,7 +11,7 @@ import br.all.domain.shared.utils.toNeverEmptyMutableSet
 
 class Protocol internal constructor(
     val protocolId: ProtocolId,
-    val reviewId: ReviewId,
+    val systematicStudyId: SystematicStudyId,
 
     val goal: Phrase,
     val justification: Phrase,

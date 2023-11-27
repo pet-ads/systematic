@@ -19,8 +19,8 @@ class CreateSearchSessionService(
     fun createSession(requestModel: SearchSessionRequestModel): SearchSessionResponseModel {
         require(requestModel.searchString.isNotBlank()) { "Search string must not be blank" }
 
-        val systematicStudy = systematicStudyRepository.findById(requestModel.reviewId)
-            ?: throw NoSuchElementException("Systematic study not found with ID: ${requestModel.reviewId}")
+        val systematicStudy = systematicStudyRepository.findById(requestModel.systematicStudy)
+            ?: throw NoSuchElementException("Systematic study not found with ID: ${requestModel.systematicStudy}")
 
         val protocolId = ProtocolId(systematicStudy.id)
 

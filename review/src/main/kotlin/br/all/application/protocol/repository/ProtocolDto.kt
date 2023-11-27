@@ -4,7 +4,7 @@ import java.util.*
 
 data class ProtocolDto(
     val id: UUID,
-    val reviewId: UUID,
+    val systematicStudy: UUID,
 
     val goal: String,
     val justification: String,
@@ -28,5 +28,5 @@ data class ProtocolDto(
     val extractionQuestions: Set<UUID>,
     val robQuestions: Set<UUID>,
 
-    val picoc: PICOCDto?,
+    val picoc: PicocDto?,
 )

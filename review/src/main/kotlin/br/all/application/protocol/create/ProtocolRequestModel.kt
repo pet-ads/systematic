@@ -1,6 +1,6 @@
 package br.all.application.protocol.create
 
-import br.all.application.protocol.repository.PICOCDto
+import br.all.application.protocol.repository.PicocDto
 
 data class ProtocolRequestModel(
     val goal: String,
@@ -22,5 +22,5 @@ data class ProtocolRequestModel(
     val dataCollectionProcess: String,
     val analysisAndSynthesisProcess: String,
 
-    val picoc: PICOCDto? = null,
+    val picoc: PicocDto? = null,
 )

@@ -4,5 +4,5 @@ import java.util.*
 
 data class ProtocolResponseModel(
     val protocolId: UUID,
-    val reviewId: UUID,
+    val systematicStudy: UUID,
 )

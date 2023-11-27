@@ -1,6 +1,6 @@
 package br.all.application.protocol.repository
 
-data class PICOCDto(
+data class PicocDto(
     val population: String,
     val intervention: String,
     val control: String,

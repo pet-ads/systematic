@@ -5,12 +5,12 @@ import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.utils.requireThatExists
 
 class SystematicStudy(
-    val reviewId: ReviewId,
+    val systematicStudyId: SystematicStudyId,
     title: String,
     description: String,
     owner: ResearcherId,
     collaborators: MutableSet<ResearcherId> = mutableSetOf(),
-) : Entity(reviewId) {
+) : Entity(systematicStudyId) {
 
     private val _collaborators = collaborators
     val collaborators get() = _collaborators.toSet()
@@ -50,7 +50,7 @@ class SystematicStudy(
     }
 
 
-    override fun toString() = "SystematicStudy(reviewId=$reviewId, title='$title', " +
+    override fun toString() = "SystematicStudy(reviewId=$systematicStudyId, title='$title', " +
             "description='$description', owner=$owner, researchers=$_collaborators)"
 
 }

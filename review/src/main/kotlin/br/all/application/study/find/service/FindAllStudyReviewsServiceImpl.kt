@@ -8,7 +8,7 @@ import br.all.application.study.find.service.FindAllStudyReviewsService.RequestM
 import br.all.application.study.find.service.FindAllStudyReviewsService.ResponseModel
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.ReviewId
+import br.all.domain.model.review.SystematicStudyId
 
 class FindAllStudyReviewsServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
@@ -18,13 +18,13 @@ class FindAllStudyReviewsServiceImpl(
 
     override fun findAllFromReview(presenter: FindAllStudyReviewsPresenter, request: RequestModel)  {
         val researcherId = ResearcherId(request.researcherId)
-        val reviewId = ReviewId(request.reviewId)
+        val systematicStudyId = SystematicStudyId(request.systematicStudyId)
         val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, reviewId)
+        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
         if(presenter.isDone()) return
 
-        val studyReviews = studyReviewRepository.findAllFromReview(request.reviewId)
-        presenter.prepareSuccessView(ResponseModel(request.researcherId, request.reviewId, studyReviews))
+        val studyReviews = studyReviewRepository.findAllFromReview(request.systematicStudyId)
+        presenter.prepareSuccessView(ResponseModel(request.researcherId, request.systematicStudyId, studyReviews))
     }
 }

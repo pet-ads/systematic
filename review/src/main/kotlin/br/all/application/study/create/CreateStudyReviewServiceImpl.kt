@@ -9,7 +9,7 @@ import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromStudyRequestModel
 import br.all.application.study.repository.toDto
 import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.ReviewId
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.StudyReview
 import br.all.domain.services.IdGeneratorService
 
@@ -22,9 +22,9 @@ class CreateStudyReviewServiceImpl(
 
     override fun createFromStudy(presenter: CreateStudyReviewPresenter, request: RequestModel) {
         val researcherId = ResearcherId(request.researcherId)
-        val reviewId = ReviewId(request.reviewId)
+        val systematicStudyId = SystematicStudyId(request.systematicStudyId)
         val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, reviewId)
+        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
         if(presenter.isDone()) return
 
@@ -32,7 +32,7 @@ class CreateStudyReviewServiceImpl(
         val studyReview = StudyReview.fromStudyRequestModel(studyId, request)
 
         studyReviewRepository.saveOrUpdate(studyReview.toDto())
-        presenter.prepareSuccessView(ResponseModel(request.researcherId, request.reviewId, studyId))
+        presenter.prepareSuccessView(ResponseModel(request.researcherId, request.systematicStudyId, studyId))
     }
 }
 

@@ -6,7 +6,7 @@ import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.ReviewId
+import br.all.domain.model.review.SystematicStudyId
 
 import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
@@ -31,13 +31,13 @@ class PreconditionCheckerTest {
     @Test
     fun `should not invoke prepareFailView when all preconditions are met`() {
         val researcherId = ResearcherId(UUID.randomUUID())
-        val reviewId = ReviewId(UUID.randomUUID())
+        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         every { credentialsService.isAuthenticated(researcherId) } returns true
         every { credentialsService.hasAuthority(researcherId) } returns true
-        every { repository.existsById(reviewId.value) } returns true
-        every { repository.hasReviewer(reviewId.value, researcherId.value) } returns true
+        every { repository.existsById(systematicStudyId.value) } returns true
+        every { repository.hasReviewer(systematicStudyId.value, researcherId.value) } returns true
 
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, reviewId)
+        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
         verify(exactly = 0) { presenter.prepareFailView(any()) }
     }
@@ -45,10 +45,10 @@ class PreconditionCheckerTest {
     @Test
     fun `should invoke prepareFailView with UnauthenticatedUserException when not authenticated`() {
         val researcherId = ResearcherId(UUID.randomUUID())
-        val reviewId = ReviewId(UUID.randomUUID())
+        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         every { credentialsService.isAuthenticated(researcherId)} returns false
 
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, reviewId)
+        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
         verify { presenter.prepareFailView(match { it is UnauthenticatedUserException }) }
     }
@@ -56,11 +56,11 @@ class PreconditionCheckerTest {
     @Test
     fun `should invoke prepareFailView with UnauthenticatedUserException when not authorized`() {
         val researcherId = ResearcherId(UUID.randomUUID())
-        val reviewId = ReviewId(UUID.randomUUID())
+        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         every { credentialsService.isAuthenticated(researcherId) } returns true
         every { credentialsService.hasAuthority(researcherId) } returns false
 
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, reviewId)
+        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
         verify { presenter.prepareFailView(match { it is UnauthorizedUserException }) }
     }
@@ -68,12 +68,12 @@ class PreconditionCheckerTest {
     @Test
     fun `should invoke prepareFailView with EntityNotFoundException when review does not exist`() {
         val researcherId = ResearcherId(UUID.randomUUID())
-        val reviewId = ReviewId(UUID.randomUUID())
+        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         every { credentialsService.isAuthenticated(researcherId) } returns true
         every { credentialsService.hasAuthority(researcherId) } returns true
-        every { repository.existsById(reviewId.value) } returns false
+        every { repository.existsById(systematicStudyId.value) } returns false
 
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, reviewId)
+        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
         verify { presenter.prepareFailView(match { it is EntityNotFoundException }) }
     }
@@ -81,13 +81,13 @@ class PreconditionCheckerTest {
     @Test
     fun `should invoke prepareFailView with UnauthorizedUserException when user is not a reviewer`() {
         val researcherId = ResearcherId(UUID.randomUUID())
-        val reviewId = ReviewId(UUID.randomUUID())
+        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         every { credentialsService.isAuthenticated(researcherId) } returns true
         every { credentialsService.hasAuthority(researcherId) } returns true
-        every { repository.existsById(reviewId.value) } returns true
-        every { repository.hasReviewer(reviewId.value, researcherId.value) } returns false
+        every { repository.existsById(systematicStudyId.value) } returns true
+        every { repository.hasReviewer(systematicStudyId.value, researcherId.value) } returns false
 
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, reviewId)
+        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
         verify { presenter.prepareFailView(match { it is UnauthorizedUserException }) }
     }

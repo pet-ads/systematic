@@ -88,7 +88,7 @@ class FindOneProtocolServiceImplTest {
 
     private fun getDummyProtocolDto(protocolId: UUID = UUID.randomUUID(), reviewId: UUID = UUID.randomUUID()) = ProtocolDto(
         id = protocolId,
-        reviewId = reviewId,
+        systematicStudy = reviewId,
 
         goal = "Some goal",
         justification = "It is important",

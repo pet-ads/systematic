@@ -1,23 +1,22 @@
 package br.all.domain.services
 
-import br.all.domain.model.review.ReviewId
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.*
-import org.springframework.stereotype.Service
 import java.util.*
 
-class BibtexConverterService(val reviewId: ReviewId, private val studyReviewIdGeneratorService: IdGeneratorService) {
+class BibtexConverterService(val systematicStudyId: SystematicStudyId, private val studyReviewIdGeneratorService: IdGeneratorService) {
 
     private val authorTypes = listOf("author", "authors", "editor")
     private val venueTypes = listOf("journal", "booktitle", "institution",
         "organization", "publisher", "series", "school", "howpublished")
 
-    fun convertManyToStudyReview(reviewId: ReviewId, bibtex: String): List<StudyReview> {
+    fun convertManyToStudyReview(systematicStudyId: SystematicStudyId, bibtex: String): List<StudyReview> {
         require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
         val studies = convertMany(bibtex)
-        return studies.map { convertToStudyReview(reviewId, bibtex) }
+        return studies.map { convertToStudyReview(systematicStudyId, bibtex) }
     }
 
-    fun convertToStudyReview(reviewId: ReviewId, bibtex: String): StudyReview {
+    fun convertToStudyReview(systematicStudyId: SystematicStudyId, bibtex: String): StudyReview {
         require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
 
         val studyReviewId = StudyReviewId(studyReviewIdGeneratorService.next())
@@ -25,7 +24,7 @@ class BibtexConverterService(val reviewId: ReviewId, private val studyReviewIdGe
 
         return StudyReview(
             studyReviewId,
-            reviewId,
+            systematicStudyId,
             study.type,
             study.title,
             study.year,

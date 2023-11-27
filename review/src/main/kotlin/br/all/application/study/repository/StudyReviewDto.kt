@@ -3,8 +3,8 @@ package br.all.application.study.repository
 import java.util.*
 
 data class StudyReviewDto(
-    val reviewId: UUID,
-    val studyId: Long,
+    val systematicStudyId: UUID,
+    val studyReviewId: Long,
     val studyType: String,
     val title: String,
     val year: Int,

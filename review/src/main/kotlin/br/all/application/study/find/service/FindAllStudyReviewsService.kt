@@ -9,11 +9,11 @@ interface FindAllStudyReviewsService {
 
     data class RequestModel(
         val researcherId: UUID,
-        val reviewId: UUID
+        val systematicStudyId: UUID
     )
     data class ResponseModel(
         val researcherId: UUID,
-        val reviewId: UUID,
+        val systematicStudyId: UUID,
         val studyReviews: List<StudyReviewDto>
     )
 }

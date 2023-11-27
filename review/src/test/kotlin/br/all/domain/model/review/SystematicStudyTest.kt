@@ -16,16 +16,16 @@ class SystematicStudyTest {
     
     @BeforeEach
     fun setUp() {
-        val reviewId = ReviewId(UUID.randomUUID())
+        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         val owner = ResearcherId(UUID.randomUUID())
-        sut = SystematicStudy(reviewId, "Some title", "Some description", owner)
+        sut = SystematicStudy(systematicStudyId, "Some title", "Some description", owner)
     }
 
     @ParameterizedTest
     @CsvSource("'',Some description", "Some title,''")
     fun `Should not create systematic study without title or description`(title: String, description: String){
         assertThrows<IllegalArgumentException> {
-            SystematicStudy(ReviewId(UUID.randomUUID()), title, description, ResearcherId(UUID.randomUUID()))
+            SystematicStudy(SystematicStudyId(UUID.randomUUID()), title, description, ResearcherId(UUID.randomUUID()))
         }
     }
 
@@ -44,7 +44,7 @@ class SystematicStudyTest {
     @Test
     fun `Should remove valid collaborator`(){
         val researcherId = ResearcherId(UUID.randomUUID())
-        val localSut = SystematicStudy(sut.reviewId, sut.title, sut.description, sut.owner, mutableSetOf(researcherId))
+        val localSut = SystematicStudy(sut.systematicStudyId, sut.title, sut.description, sut.owner, mutableSetOf(researcherId))
 
         localSut.removeCollaborator(researcherId)
 
