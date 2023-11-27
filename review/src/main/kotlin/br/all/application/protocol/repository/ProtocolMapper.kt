@@ -73,7 +73,7 @@ fun Protocol.Companion.fromRequestModel(
         ).collectDataBy(dataCollectionProcess.toPhrase())
         .analyseDataBy(analysisAndSynthesisProcess.toPhrase())
         .withPICOC(picoc?.let {
-            PICOC(
+            Picoc(
                 it.population.toPhrase(),
                 it.intervention.toPhrase(),
                 it.control.toPhrase(),

@@ -14,7 +14,7 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
     private lateinit var goal: Phrase
     private lateinit var justification: Phrase
     private lateinit var researchQuestions: Set<ResearchQuestion>
-    private var picoc: PICOC? = null
+    private var picoc: Picoc? = null
     private lateinit var searchMethod: Phrase
     private lateinit var searchString: String
     private lateinit var informationSources: Set<SearchSource>
@@ -89,7 +89,7 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
         this.robQuestions = robQuestions
     }
 
-    override fun withPICOC(picoc: PICOC?) = apply { this.picoc = picoc }
+    override fun withPICOC(picoc: Picoc?) = apply { this.picoc = picoc }
 
     override fun finish() = Protocol(
         protocolId = protocolId as ProtocolId,
@@ -167,7 +167,7 @@ interface BuildingStep {
 
     infix fun qualityFormConsiders(robQuestions: Set<QuestionId>): BuildingStep
 
-    infix fun withPICOC(picoc: PICOC?): BuildingStep
+    infix fun withPICOC(picoc: Picoc?): BuildingStep
 
     fun finish(): Protocol
 }

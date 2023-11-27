@@ -34,7 +34,7 @@ class Protocol internal constructor(
 
     extractionQuestions: Set<QuestionId> = emptySet(),
     robQuestions: Set<QuestionId> = emptySet(),
-    val picoc: PICOC? = null,
+    val picoc: Picoc? = null,
 ) : Entity(protocolId) {
     private val _keywords = keywords.toNeverEmptyMutableSet()
     val keywords get() = _keywords.toSet()

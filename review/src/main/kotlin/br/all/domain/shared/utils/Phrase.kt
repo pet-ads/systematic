@@ -19,8 +19,7 @@ data class Phrase(private val text: String) : ValueObject() {
         if (groupingSignsAreNotCorrectlyClose())
             notification.addError("Parenthesis, brackets and/or braces should be closed appropriately!")
         if (textHasSymbolsWithinNotQuotedWords())
-            notification.addError("Symbols should not be within not quoted words in a phrase. " +
-                    "Provided: $text")
+            notification.addError("Symbols should not be within not quoted words in a phrase. Provided: $text")
 
         return notification
     }
