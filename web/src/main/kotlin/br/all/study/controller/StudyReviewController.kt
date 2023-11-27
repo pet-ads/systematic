@@ -20,7 +20,7 @@ import br.all.application.study.find.service.FindStudyReviewService.RequestModel
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.RequestModel as UpdateStatusRequest
 
 @RestController
-@RequestMapping("/api/v1/researcher/{researcher}/review/{systematicStudy}/study-review")
+@RequestMapping("/api/v1/researcher/{researcher}/systematic-study/{systematicStudy}/study-review")
 class StudyReviewController(
     val createService: CreateStudyReviewService,
     val findAllService: FindAllStudyReviewsService,

@@ -32,11 +32,11 @@ class StudyReviewControllerTest(
     private lateinit var systematicStudyId: UUID
     private lateinit var researcherId: UUID
 
-    fun postUrl() = "/api/v1/researcher/$researcherId/review/$systematicStudyId/study-review"
+    fun postUrl() = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review"
     fun findUrl(studyId: String = "") =
-        "/api/v1/researcher/$researcherId/review/$systematicStudyId/study-review${studyId}"
+        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review${studyId}"
     fun patchStatusStatus(attributeName: String, studyId: String) =
-        "/api/v1/researcher/$researcherId/review/$systematicStudyId/study-review/${studyId}/${attributeName}"
+        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyId}/${attributeName}"
 
     @BeforeEach
     fun setUp() {
