@@ -7,14 +7,14 @@ import java.util.*
 class StudyReview(
     val studyId: StudyReviewId,
     val systematicStudyId: SystematicStudyId,
-    val studyType: StudyType = StudyType.UNKNOWN,
+    val studyType: StudyType,
     val title: String,
     val year: Int,
     val authors: String,
     val venue: String,
     val abstract: String,
     val keywords: Set<String> = emptySet(),
-    val searchSources: MutableSet<String> = mutableSetOf(),
+    val searchSources: MutableSet<String>,
     val references: List<String> = emptyList(),
     val doi: Doi? = null,
     val criteria: MutableSet<String> = mutableSetOf(),
@@ -60,9 +60,10 @@ class StudyReview(
         if (shouldNotConsiderForExtraction()) extractionStatus = ExtractionStatus.EXCLUDED
     }
 
-    fun unclassifyInSelection() {
+    fun declassifyInSelection() {
+        if(extractionStatus != ExtractionStatus.UNCLASSIFIED)
+            throw IllegalStateException("A study classified in extraction can not be declassified in selection.")
         selectionStatus = SelectionStatus.UNCLASSIFIED
-        extractionStatus = ExtractionStatus.UNCLASSIFIED
     }
 
     private fun shouldNotConsiderForExtraction() =
@@ -70,7 +71,7 @@ class StudyReview(
 
     fun includeInExtraction() {
         if (selectionStatus == SelectionStatus.EXCLUDED)
-            throw IllegalStateException("A study excluded during selection can not be included during extraction.")
+            throw IllegalStateException("A study excluded in selection can not be included in extraction.")
         if (selectionStatus == SelectionStatus.UNCLASSIFIED)
             selectionStatus = SelectionStatus.INCLUDED
         extractionStatus = ExtractionStatus.INCLUDED
@@ -82,12 +83,12 @@ class StudyReview(
         extractionStatus = ExtractionStatus.EXCLUDED
     }
 
-    fun markAsDuplicate(){
+    fun declassifyInExtraction() = apply { extractionStatus = ExtractionStatus.UNCLASSIFIED }
+
+    fun markAsDuplicated(){
         selectionStatus = SelectionStatus.DUPLICATED
         extractionStatus = ExtractionStatus.DUPLICATED
     }
-
-    fun unclassifyInExtraction() = apply { extractionStatus = ExtractionStatus.UNCLASSIFIED }
 
     override fun toString(): String {
         return "StudyReview(reviewId=$systematicStudyId, searchSources=$searchSources, criteria=$criteria, " +

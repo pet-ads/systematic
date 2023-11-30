@@ -43,9 +43,9 @@ fun StudyReview.Companion.fromDto(dto: StudyReviewDto) = StudyReview(
     dto.formAnswers.mapValues { (questionId, answer) -> Answer(questionId, answer) }.toMutableMap(),
     dto.qualityAnswers.mapValues { (questionId, answer) -> Answer(questionId, answer) }.toMutableMap(),
     dto.comments,
-    ReadingPriority.convertStringToReadingPriorityEnum(dto.readingPriority),
-    SelectionStatus.convertStringToSelectionStatusEnum(dto.selectionStatus),
-    ExtractionStatus.convertStringToExtractionStatusEnum(dto.extractionStatus)
+    ReadingPriority.valueOf(dto.readingPriority),
+    SelectionStatus.valueOf(dto.selectionStatus),
+    ExtractionStatus.valueOf(dto.extractionStatus)
 )
 
 fun StudyReview.Companion.fromStudyRequestModel(studyId: Long, request: RequestModel) = StudyReview(

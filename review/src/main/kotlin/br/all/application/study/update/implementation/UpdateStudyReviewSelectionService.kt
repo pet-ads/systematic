@@ -35,10 +35,16 @@ class UpdateStudyReviewSelectionService(
             return
         }
 
+        val newStatus = request.status.uppercase()
+        if(newStatus == "DUPLICATED" ) {
+            val message = "Duplication request must indicate the duplicate study. Please use the proper feature."
+            presenter.prepareFailView(IllegalArgumentException(message))
+            return
+        }
+
         val studyReview = StudyReview.fromDto(studyReviewDto)
-        when(request.status.uppercase()){
-            "UNCLASSIFIED" -> studyReview.unclassifyInSelection()
-            "DUPLICATED" -> studyReview.markAsDuplicate()
+        when(newStatus){
+            "UNCLASSIFIED" -> studyReview.declassifyInSelection()
             "INCLUDED" -> studyReview.includeInSelection()
             "EXCLUDED" -> studyReview.includeInSelection()
             else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")

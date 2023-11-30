@@ -13,6 +13,7 @@ import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.ResponseModel
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.study.ExtractionStatus
 import br.all.domain.model.study.StudyReview
 
 class UpdateStudyReviewExtractionService (
@@ -35,10 +36,16 @@ class UpdateStudyReviewExtractionService (
             return
         }
 
+        val newStatus = request.status.uppercase()
+        if(newStatus == "DUPLICATED" ) {
+            val message = "Duplication request must indicate the duplicate study. Please use the proper feature."
+            presenter.prepareFailView(IllegalArgumentException(message))
+            return
+        }
+
         val studyReview = StudyReview.fromDto(studyReviewDto)
-        when(request.status.uppercase()){
-            "UNCLASSIFIED" -> studyReview.unclassifyInExtraction()
-            "DUPLICATED" -> studyReview.markAsDuplicate()
+        when(newStatus){
+            "UNCLASSIFIED" -> studyReview.declassifyInExtraction()
             "INCLUDED" -> studyReview.includeInExtraction()
             "EXCLUDED" -> studyReview.excludeInExtraction()
             else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
