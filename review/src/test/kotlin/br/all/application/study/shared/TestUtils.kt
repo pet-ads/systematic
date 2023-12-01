@@ -34,7 +34,7 @@ fun generateStudyReview(reviewId: UUID, studyId: Long): StudyReviewDto{
         references = listOf("Referência 1", "Referência 2"),
         doi = "https://doi.org/10.1109/5.771073",
         searchSources = setOf("Fonte 1", "Fonte 2"),
-        criteria = setOf("Critério 1", "Critério 2"),
+        criteria = mapOf("Critério 1" to "INCLUSION", "Critério 2" to "EXCLUSION"),
         formAnswers = mapOf(
             UUID.randomUUID() to "Resposta 1",
             UUID.randomUUID() to "Resposta 2"

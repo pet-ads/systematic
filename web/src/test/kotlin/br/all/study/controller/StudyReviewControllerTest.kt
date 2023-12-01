@@ -55,6 +55,7 @@ class StudyReviewControllerTest(
     fun `should create study and return 201`() {
         val json = factory.validPostRequest()
         mockMvc.perform(post(postUrl()).contentType(MediaType.APPLICATION_JSON).content(json))
+            .andDo(print())
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
             .andExpect(jsonPath("$.studyReviewId").exists())

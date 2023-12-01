@@ -16,41 +16,47 @@ import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.ExtractionStatus
 import br.all.domain.model.study.StudyReview
 
-class UpdateStudyReviewExtractionService (
+class UpdateStudyReviewExtractionService(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,
     private val credentialsService: ResearcherCredentialsService,
 ) : UpdateStudyReviewStatusService {
 
-    override fun changeStatus(presenter: UpdateStudyReviewStatusPresenter, request: RequestModel){
+    override fun changeStatus(presenter: UpdateStudyReviewStatusPresenter, request: RequestModel) {
         val researcherId = ResearcherId(request.researcherId)
         val systematicStudyId = SystematicStudyId(request.systematicStudyId)
         val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
         preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
-        if(presenter.isDone()) return
+        if (presenter.isDone()) return
 
         val studyReviewDto = studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId)
-        if(studyReviewDto == null) {
+        if (studyReviewDto == null) {
             presenter.prepareFailView(EntityNotFoundException("Study review of id ${request.systematicStudyId} not found."))
             return
         }
 
         val newStatus = request.status.uppercase()
-        if(newStatus == "DUPLICATED" ) {
+        if (newStatus == "DUPLICATED") {
             val message = "Duplication request must indicate the duplicate study. Please use the proper feature."
             presenter.prepareFailView(IllegalArgumentException(message))
             return
         }
 
         val studyReview = StudyReview.fromDto(studyReviewDto)
-        when(newStatus){
+        when (newStatus) {
             "UNCLASSIFIED" -> studyReview.declassifyInExtraction()
             "INCLUDED" -> studyReview.includeInExtraction()
             "EXCLUDED" -> studyReview.excludeInExtraction()
             else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
         }
         studyReviewRepository.saveOrUpdate(studyReview.toDto())
-        presenter.prepareSuccessView(ResponseModel(request.researcherId, request.systematicStudyId, request.studyReviewId))
+        presenter.prepareSuccessView(
+            ResponseModel(
+                request.researcherId,
+                request.systematicStudyId,
+                request.studyReviewId
+            )
+        )
     }
 }

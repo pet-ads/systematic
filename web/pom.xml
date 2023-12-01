@@ -47,11 +47,6 @@
             <artifactId>kotlin-stdlib</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.github.serpro69</groupId>
-            <artifactId>kotlin-faker</artifactId>
-            <version>1.15.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>

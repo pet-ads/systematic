@@ -1,5 +1,6 @@
 package br.all.domain.model.study
 
+import br.all.domain.model.protocol.Criteria
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.model.review.SystematicStudyId
 import java.util.*
@@ -17,7 +18,7 @@ class StudyReview(
     val searchSources: MutableSet<String>,
     val references: List<String> = emptyList(),
     val doi: Doi? = null,
-    val criteria: MutableSet<String> = mutableSetOf(),
+    val criteria: MutableSet<Criteria> = mutableSetOf(),
     val formAnswers: MutableMap<UUID, Answer<*>> = mutableMapOf(),
     val qualityAnswers: MutableMap<UUID, Answer<*>> = mutableMapOf(),
     var comments: String = "",
@@ -37,17 +38,11 @@ class StudyReview(
         study = Study(studyType, title, year, authors, venue, abstract, keywords, references, doi)
     }
 
-    companion object
+    companion object{}
 
-    fun addSearchSource(searchSource: String) = searchSources.add(searchSource)
+    fun addCriterion(criterion: Criteria) = criteria.add(criterion)
 
-    fun removeSearchSource(searchSource: String) =
-        if (searchSource.length > 1) searchSources.remove(searchSource)
-        else throw IllegalStateException("The study must be related to at least one search source.")
-
-    fun addCriterion(criterion: String) = criteria.add(criterion)
-
-    fun removeCriterion(criterion: String) = criteria.remove(criterion)
+    fun removeCriterion(criterion: Criteria) = criteria.remove(criterion)
 
     fun answerQualityQuestionOf(questionId: UUID, answer: Answer<*>) = qualityAnswers.put(questionId, answer)
 
@@ -85,7 +80,9 @@ class StudyReview(
 
     fun declassifyInExtraction() = apply { extractionStatus = ExtractionStatus.UNCLASSIFIED }
 
-    fun markAsDuplicated(){
+    fun markAsDuplicated(duplicate: StudyReview){
+        duplicate.searchSources.addAll(searchSources)
+        searchSources.addAll(duplicate.searchSources)
         selectionStatus = SelectionStatus.DUPLICATED
         extractionStatus = ExtractionStatus.DUPLICATED
     }
