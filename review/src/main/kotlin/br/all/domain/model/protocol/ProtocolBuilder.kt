@@ -3,7 +3,6 @@ package br.all.domain.model.protocol
 import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.utils.Language
-import br.all.domain.shared.utils.Phrase
 
 class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, JustificationStep, ResearchQuestionsStep,
         SearchMethodDefinitionStep, SourcesDefinitionStep, SourcesCriteriaStep, StudiesDefinitionStep,
@@ -11,20 +10,20 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
     private var protocolId: ProtocolId? = null
     private var systematicStudyId: SystematicStudyId? = null
     private lateinit var keywords: Set<String>
-    private lateinit var goal: Phrase
-    private lateinit var justification: Phrase
+    private lateinit var goal: String
+    private lateinit var justification: String
     private lateinit var researchQuestions: Set<ResearchQuestion>
     private var picoc: Picoc? = null
-    private lateinit var searchMethod: Phrase
+    private lateinit var searchMethod: String
     private lateinit var searchString: String
     private lateinit var informationSources: Set<SearchSource>
-    private lateinit var sourcesSelectionCriteria: Phrase
+    private lateinit var sourcesSelectionCriteria: String
     private lateinit var studiesLanguages: Set<Language>
-    private lateinit var studyTypeDefinition: Phrase
-    private lateinit var selectionProcess: Phrase
+    private lateinit var studyTypeDefinition: String
+    private lateinit var selectionProcess: String
     private lateinit var selectionCriteria: Set<Criteria>
-    private lateinit var dataCollectionProcess: Phrase
-    private lateinit var analysisAndSynthesisProcess: Phrase
+    private lateinit var dataCollectionProcess: String
+    private lateinit var analysisAndSynthesisProcess: String
     private var extractionQuestions = emptySet<QuestionId>()
     private var robQuestions = emptySet<QuestionId>()
 
@@ -38,34 +37,34 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
         this.keywords = keywords
     }
 
-    override fun researchesFor(goal: Phrase) = apply { this.goal = goal }
+    override fun researchesFor(goal: String) = apply { this.goal = goal }
 
-    override fun because(justification: Phrase) = apply { this.justification = justification }
+    override fun because(justification: String) = apply { this.justification = justification }
 
     override fun toAnswer(researchQuestions: Set<ResearchQuestion>) = apply {
         this.researchQuestions = researchQuestions
     }
 
-    override fun searchProcessWillFollow(searchMethod: Phrase, searchString: String) = apply {
+    override fun searchProcessWillFollow(searchMethod: String, searchString: String) = apply {
         this.searchMethod = searchMethod
         this.searchString = searchString
     }
 
     override fun at(informationSources: Set<SearchSource>) = apply { this.informationSources = informationSources }
 
-    override fun selectedBecause(sourcesSelectionCriteria: Phrase) = apply {
+    override fun selectedBecause(sourcesSelectionCriteria: String) = apply {
         this.sourcesSelectionCriteria =sourcesSelectionCriteria
     }
 
     override fun searchStudiesOf(
         studiesLanguages: Set<Language>,
-        studyTypeDefinition: Phrase
+        studyTypeDefinition: String
     ) = apply {
         this.studiesLanguages = studiesLanguages
         this.studyTypeDefinition = studyTypeDefinition
     }
 
-    override fun selectionProcessWillFollowAs(selectionProcess: Phrase) = apply {
+    override fun selectionProcessWillFollowAs(selectionProcess: String) = apply {
         this.selectionProcess = selectionProcess
     }
 
@@ -73,11 +72,11 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
         this.selectionCriteria = selectionCriteria
     }
 
-    override fun collectDataBy(dataCollectionProcess: Phrase) = apply {
+    override fun collectDataBy(dataCollectionProcess: String) = apply {
         this.dataCollectionProcess = dataCollectionProcess
     }
 
-    override fun analyseDataBy(analysisAndSynthesisProcess: Phrase) = apply {
+    override fun analyseDataBy(analysisAndSynthesisProcess: String) = apply {
         this.analysisAndSynthesisProcess = analysisAndSynthesisProcess
     }
 
@@ -91,7 +90,7 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
 
     override fun withPICOC(picoc: Picoc?) = apply { this.picoc = picoc }
 
-    override fun finish() = Protocol(
+    override fun build() = Protocol(
         protocolId = protocolId as ProtocolId,
         systematicStudyId = systematicStudyId as SystematicStudyId,
         keywords = keywords,
@@ -119,11 +118,11 @@ interface IdentificationStep {
 }
 
 interface GoalStep {
-    infix fun researchesFor(goal: Phrase): JustificationStep
+    infix fun researchesFor(goal: String): JustificationStep
 }
 
 interface JustificationStep {
-    infix fun because(justification: Phrase): ResearchQuestionsStep
+    infix fun because(justification: String): ResearchQuestionsStep
 }
 
 interface ResearchQuestionsStep {
@@ -131,7 +130,7 @@ interface ResearchQuestionsStep {
 }
 
 interface SearchMethodDefinitionStep {
-    fun searchProcessWillFollow(searchMethod: Phrase, searchString: String): SourcesDefinitionStep
+    fun searchProcessWillFollow(searchMethod: String, searchString: String): SourcesDefinitionStep
 }
 
 interface SourcesDefinitionStep {
@@ -139,15 +138,15 @@ interface SourcesDefinitionStep {
 }
 
 interface SourcesCriteriaStep {
-    infix fun selectedBecause(sourcesSelectionCriteria: Phrase): StudiesDefinitionStep
+    infix fun selectedBecause(sourcesSelectionCriteria: String): StudiesDefinitionStep
 }
 
 interface StudiesDefinitionStep {
-    fun searchStudiesOf(studiesLanguages: Set<Language>, studyTypeDefinition: Phrase): StudiesSelectionStep
+    fun searchStudiesOf(studiesLanguages: Set<Language>, studyTypeDefinition: String): StudiesSelectionStep
 }
 
 interface StudiesSelectionStep {
-    infix fun selectionProcessWillFollowAs(selectionProcess: Phrase): SelectionCriteriaStep
+    infix fun selectionProcessWillFollowAs(selectionProcess: String): SelectionCriteriaStep
 }
 
 interface SelectionCriteriaStep {
@@ -155,11 +154,11 @@ interface SelectionCriteriaStep {
 }
 
 interface DataCollectionStep {
-    infix fun collectDataBy(dataCollectionProcess: Phrase): DataAnalysisStep
+    infix fun collectDataBy(dataCollectionProcess: String): DataAnalysisStep
 }
 
 interface DataAnalysisStep {
-    infix fun analyseDataBy(analysisAndSynthesisProcess: Phrase): BuildingStep
+    infix fun analyseDataBy(analysisAndSynthesisProcess: String): BuildingStep
 }
 
 interface BuildingStep {
@@ -169,5 +168,5 @@ interface BuildingStep {
 
     infix fun withPICOC(picoc: Picoc?): BuildingStep
 
-    fun finish(): Protocol
+    fun build(): Protocol
 }

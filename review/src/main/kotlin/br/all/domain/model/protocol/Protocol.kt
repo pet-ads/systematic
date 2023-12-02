@@ -5,7 +5,6 @@ import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.utils.Language
-import br.all.domain.shared.utils.Phrase
 import br.all.domain.shared.utils.requireThatExists
 import br.all.domain.shared.utils.toNeverEmptyMutableSet
 
@@ -13,29 +12,30 @@ class Protocol internal constructor(
     val protocolId: ProtocolId,
     val systematicStudyId: SystematicStudyId,
 
-    val goal: Phrase,
-    val justification: Phrase,
+    val goal: String,
+    val justification: String,
 
     val researchQuestions: Set<ResearchQuestion>,
     keywords: Set<String>,
     val searchString: String,
     informationSources: Set<SearchSource>,
-    val sourcesSelectionCriteria: Phrase,
+    val sourcesSelectionCriteria: String,
 
-    val searchMethod: Phrase,
+    val searchMethod: String,
     studiesLanguages: Set<Language>,
-    val studyTypeDefinition: Phrase,
+    val studyTypeDefinition: String,
 
-    val selectionProcess: Phrase,
+    val selectionProcess: String,
     selectionCriteria: Set<Criteria>,
 
-    val dataCollectionProcess: Phrase,
-    val analysisAndSynthesisProcess: Phrase,
+    val dataCollectionProcess: String,
+    val analysisAndSynthesisProcess: String,
 
     extractionQuestions: Set<QuestionId> = emptySet(),
     robQuestions: Set<QuestionId> = emptySet(),
     val picoc: Picoc? = null,
 ) : Entity(protocolId) {
+
     private val _keywords = keywords.toNeverEmptyMutableSet()
     val keywords get() = _keywords.toSet()
 
@@ -60,7 +60,7 @@ class Protocol internal constructor(
     }
 
     companion object {
-        fun write() = ProtocolBuilder.start()
+        fun create() = ProtocolBuilder.start()
     }
 
     fun validate(): Notification {

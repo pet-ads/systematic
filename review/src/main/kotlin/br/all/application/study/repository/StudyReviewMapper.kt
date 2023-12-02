@@ -5,7 +5,6 @@ import br.all.domain.model.protocol.Criteria
 import br.all.domain.model.protocol.Criteria.CriteriaType
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.*
-import br.all.domain.shared.utils.Phrase
 
 fun StudyReview.toDto() = StudyReviewDto(
     systematicStudyId.value,
@@ -42,7 +41,7 @@ fun StudyReview.Companion.fromDto(dto: StudyReviewDto) = StudyReview(
     dto.keywords.toMutableSet(),
     dto.searchSources.toMutableSet(),
     dto.references.toMutableList(),
-    dto.criteria.map { (description, type) -> Criteria(Phrase(description), CriteriaType.valueOf(type)) }.toMutableSet(),
+    dto.criteria.map { (description, type) -> Criteria(description, CriteriaType.valueOf(type)) }.toMutableSet(),
     dto.formAnswers.map { (questionId, answer) -> Answer(questionId, answer) }.toMutableSet(),
     dto.robAnswers.map { (questionId, answer) -> Answer(questionId, answer) }.toMutableSet(),
     dto.comments,

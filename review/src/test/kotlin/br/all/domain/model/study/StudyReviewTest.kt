@@ -3,7 +3,6 @@ package br.all.domain.model.study
 import br.all.domain.model.protocol.Criteria
 import br.all.domain.model.protocol.Criteria.CriteriaType
 import br.all.domain.model.review.SystematicStudyId
-import br.all.domain.shared.utils.Phrase
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.assertAll
 import java.util.*
@@ -125,7 +124,7 @@ class StudyReviewTest {
     @Test
     fun `should add eligibility criterion`() {
         val study = createStudy()
-        val criterion = Criteria(Phrase(faker.quote.yoda()), faker.random.nextEnum(CriteriaType::class.java))
+        val criterion = Criteria(faker.quote.yoda(), faker.random.nextEnum(CriteriaType::class.java))
         study.addCriterion(criterion)
         assertTrue { study.criteria.contains(criterion) }
     }
@@ -133,7 +132,7 @@ class StudyReviewTest {
     @Test
     fun `should remove eligibility criterion`() {
         val study = createStudy()
-        val criterion = Criteria(Phrase(faker.quote.yoda()), faker.random.nextEnum(CriteriaType::class.java))
+        val criterion = Criteria(faker.quote.yoda(), faker.random.nextEnum(CriteriaType::class.java))
         study.addCriterion(criterion)
         study.removeCriterion(criterion)
         assertFalse { study.criteria.contains(criterion) }

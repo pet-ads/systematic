@@ -3,7 +3,6 @@ package br.all.domain.model.protocol
 import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.utils.Language
-import br.all.domain.shared.utils.Phrase
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -33,14 +32,14 @@ class ProtocolTest {
     @Test
     fun `Should throw if there is no inclusion criteria`() {
         assertThrows<IllegalArgumentException> {
-            generateProtocol(criteria =  setOf(Criteria.toExclude(Phrase("It does not talk about life!"))))
+            generateProtocol(criteria =  setOf(Criteria.toExclude("It does not talk about life!")))
         }
     }
 
     @Test
     fun `Should throw if there is no exclusion criteria`() {
         assertThrows<IllegalArgumentException> {
-            generateProtocol(criteria =  setOf(Criteria.toInclude(Phrase("It has deep reflexion about life"))))
+            generateProtocol(criteria =  setOf(Criteria.toInclude("It has deep reflexion about life")))
         }
     }
 
@@ -209,7 +208,7 @@ class ProtocolTest {
     @Test
     fun `Should add a new criteria if it is not in the protocol`() {
         val sut = generateProtocol()
-        val newCriteria = Criteria.toInclude(Phrase("Nice thoughts"))
+        val newCriteria = Criteria.toInclude("Nice thoughts")
 
         sut.addSelectionCriteria(newCriteria)
 
@@ -222,7 +221,7 @@ class ProtocolTest {
     @Test
     fun `Should do nothing when trying to add a repeated criteria`() {
         val sut = generateProtocol()
-        val repeatedCriteria = Criteria.toInclude(Phrase("It has deep reflection about life"))
+        val repeatedCriteria = Criteria.toInclude("It has deep reflection about life")
 
         assertAll(
             { assertDoesNotThrow { sut.addSelectionCriteria(repeatedCriteria) } },
@@ -233,14 +232,14 @@ class ProtocolTest {
     @ParameterizedTest
     @CsvSource("Nice thoughts,INCLUSION", "Bad thoughts,EXCLUSION")
     fun `Should successfully remove a criteria if it is not the last of such type`(
-        description: Phrase,
+        description: String,
         type: Criteria.CriteriaType,
     ) {
         val sut = generateProtocol(criteria = setOf(
-            Criteria.toInclude(Phrase("It has deep reflection about life!")),
-            Criteria.toInclude(Phrase("Nice thoughts")),
-            Criteria.toExclude(Phrase("It does not talk about life")),
-            Criteria.toExclude(Phrase("Bad thoughts")),
+            Criteria.toInclude("It has deep reflection about life!"),
+            Criteria.toInclude("Nice thoughts"),
+            Criteria.toExclude("It does not talk about life"),
+            Criteria.toExclude("Bad thoughts"),
         ))
         val removingCriteria = Criteria(description, type)
 
@@ -253,9 +252,8 @@ class ProtocolTest {
     @ParameterizedTest
     @CsvSource("It has deep reflection about life,INCLUSION", "It does not talk about life!,EXCLUSION")
     fun `Should throw when trying to remove the last criteria o a type`(
-        description: Phrase,
-        type: Criteria.CriteriaType
-    ) {
+        description: String, type: Criteria.CriteriaType) {
+
         val sut = generateProtocol()
         val removingCriteria = Criteria(description, type)
 
@@ -265,7 +263,7 @@ class ProtocolTest {
     @Test
     fun `Should throw when trying to remove a criteria that is not defined in the protocol`() {
         val sut = generateProtocol()
-        val nonexistentCriteria = Criteria.toInclude(Phrase("Nice thoughts"))
+        val nonexistentCriteria = Criteria.toInclude("Nice thoughts")
 
         assertThrows<NoSuchElementException> { sut.removeSelectionCriteria(nonexistentCriteria) }
     }
@@ -357,8 +355,8 @@ class ProtocolTest {
     private fun generateProtocol(
         searchString: String = "String",
         criteria: Set<Criteria> = setOf(
-            Criteria.toInclude(Phrase("It has deep reflection about life")),
-            Criteria.toExclude(Phrase("It does not talk about life!")),
+            Criteria.toInclude("It has deep reflection about life"),
+            Criteria.toExclude("It does not talk about life!"),
         ),
         keywords: Set<String> = setOf("Keyword"),
         sources: Set<SearchSource> = setOf(SearchSource("SomeSourceWithManyPhilosophicalArticles")),
@@ -369,19 +367,20 @@ class ProtocolTest {
         val protocolId = ProtocolId(UUID.randomUUID())
         val systematicStudyId = SystematicStudyId(UUID.randomUUID())
 
-        return Protocol.write().identifiedBy(protocolId, systematicStudyId, keywords)
-            .researchesFor(Phrase("Something")).because(Phrase("It is important"))
-            .toAnswer(setOf(ResearchQuestion(Phrase("What is the question which its answer is 42?"))))
-            .searchProcessWillFollow(Phrase("Reading philosophical articles"), searchString)
+        return Protocol.create().identifiedBy(protocolId, systematicStudyId, keywords)
+            .researchesFor("Something")
+            .because("It is important")
+            .toAnswer(setOf(ResearchQuestion("What is the question which its answer is 42?")))
+            .searchProcessWillFollow("Reading philosophical articles", searchString)
             .at(sources)
-            .selectedBecause(Phrase("I want so"))
-            .searchStudiesOf(languages, Phrase("Primaries and secondaries"))
-            .selectionProcessWillFollowAs(Phrase("Classify articles by criteria"))
+            .selectedBecause("I want so")
+            .searchStudiesOf(languages, "Primaries and secondaries")
+            .selectionProcessWillFollowAs("Classify articles by criteria")
             .selectStudiesBy(criteria)
-            .collectDataBy(Phrase("Reading the articles and reflect about them"))
-            .analyseDataBy(Phrase("Analyse opinions on each article"))
+            .collectDataBy("Reading the articles and reflect about them")
+            .analyseDataBy("Analyse opinions on each article")
             .extractDataByAnswering(extractionQuestions)
             .qualityFormConsiders(robQuestions)
-            .finish()
+            .build()
     }
 }
