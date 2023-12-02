@@ -39,7 +39,7 @@ fun generateStudyReview(reviewId: UUID, studyId: Long): StudyReviewDto{
             UUID.randomUUID() to "Resposta 1",
             UUID.randomUUID() to "Resposta 2"
         ),
-        qualityAnswers = mapOf(
+        robAnswers = mapOf(
             UUID.randomUUID() to "Qualidade 1",
             UUID.randomUUID() to "Qualidade 2"
         ),

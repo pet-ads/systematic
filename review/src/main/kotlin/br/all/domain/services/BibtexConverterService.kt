@@ -4,7 +4,10 @@ import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.*
 import java.util.*
 
-class BibtexConverterService(val systematicStudyId: SystematicStudyId, private val studyReviewIdGeneratorService: IdGeneratorService) {
+class BibtexConverterService(
+    val systematicStudyId: SystematicStudyId,
+    private val studyReviewIdGeneratorService: IdGeneratorService
+) {
 
     private val authorTypes = listOf("author", "authors", "editor")
     private val venueTypes = listOf("journal", "booktitle", "institution",
@@ -31,13 +34,13 @@ class BibtexConverterService(val systematicStudyId: SystematicStudyId, private v
             study.authors,
             study.venue,
             study.abstract,
+            study.doi,
             study.keywords,
             mutableSetOf("insert SearchSources"),
             study.references,
-            study.doi,
             mutableSetOf(),
-            mutableMapOf(),
-            mutableMapOf(),
+            mutableSetOf(),
+            mutableSetOf(),
             "",
             ReadingPriority.LOW,
             SelectionStatus.UNCLASSIFIED,

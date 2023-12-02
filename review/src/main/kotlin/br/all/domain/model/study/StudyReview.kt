@@ -3,7 +3,6 @@ package br.all.domain.model.study
 import br.all.domain.model.protocol.Criteria
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.model.review.SystematicStudyId
-import java.util.*
 
 class StudyReview(
     val studyId: StudyReviewId,
@@ -14,13 +13,13 @@ class StudyReview(
     val authors: String,
     val venue: String,
     val abstract: String,
-    val keywords: Set<String> = emptySet(),
-    val searchSources: MutableSet<String>,
-    val references: List<String> = emptyList(),
     val doi: Doi? = null,
-    val criteria: MutableSet<Criteria> = mutableSetOf(),
-    val formAnswers: MutableMap<UUID, Answer<*>> = mutableMapOf(),
-    val qualityAnswers: MutableMap<UUID, Answer<*>> = mutableMapOf(),
+    keywords: Set<String> = mutableSetOf(),
+    searchSources: MutableSet<String>,
+    references: List<String> = mutableListOf(),
+    criteria: MutableSet<Criteria> = mutableSetOf(),
+    formAnswers: MutableSet<Answer<*>> = mutableSetOf(),
+    robAnswers: MutableSet<Answer<*>> = mutableSetOf(),
     var comments: String = "",
     var readingPriority: ReadingPriority = ReadingPriority.LOW,
     selectionStatus: SelectionStatus = SelectionStatus.UNCLASSIFIED,
@@ -28,6 +27,25 @@ class StudyReview(
 ) : Entity(studyId) {
 
     private val study: Study
+
+    private val _keywords: Set<String> = keywords
+    val keywords get() = _keywords.toSet()
+
+    private val _searchSources = searchSources
+    val searchSources get() = _searchSources.toSet()
+
+    private val _references = references
+    val references get() = _references.toList()
+
+    private val _criteria = criteria
+    val criteria get() = _criteria.toSet()
+
+    private val _formAnswers = formAnswers
+    val formAnswers get() = _formAnswers.toSet()
+
+    private val _qualityAnswers = robAnswers
+    val robAnswers get() = _qualityAnswers.toSet()
+
     var selectionStatus: SelectionStatus = selectionStatus
         private set
     var extractionStatus: ExtractionStatus = extractionStatus
@@ -40,13 +58,13 @@ class StudyReview(
 
     companion object{}
 
-    fun addCriterion(criterion: Criteria) = criteria.add(criterion)
+    fun addCriterion(criterion: Criteria) = _criteria.add(criterion)
 
-    fun removeCriterion(criterion: Criteria) = criteria.remove(criterion)
+    fun removeCriterion(criterion: Criteria) = _criteria.remove(criterion)
 
-    fun answerQualityQuestionOf(questionId: UUID, answer: Answer<*>) = qualityAnswers.put(questionId, answer)
+    fun answerQualityQuestionOf( answer: Answer<*>) = _qualityAnswers.add(answer)
 
-    fun answerFormQuestionOf(questionId: UUID, answer: Answer<*>) = formAnswers.put(questionId, answer)
+    fun answerFormQuestionOf(answer: Answer<*>) = _formAnswers.add(answer)
 
     fun includeInSelection() = apply { selectionStatus = SelectionStatus.INCLUDED }
 
@@ -81,15 +99,15 @@ class StudyReview(
     fun declassifyInExtraction() = apply { extractionStatus = ExtractionStatus.UNCLASSIFIED }
 
     fun markAsDuplicated(duplicate: StudyReview){
-        duplicate.searchSources.addAll(searchSources)
-        searchSources.addAll(duplicate.searchSources)
+        duplicate._searchSources.addAll(searchSources)
+        _searchSources.addAll(duplicate.searchSources)
         selectionStatus = SelectionStatus.DUPLICATED
         extractionStatus = ExtractionStatus.DUPLICATED
     }
 
     override fun toString(): String {
         return "StudyReview(reviewId=$systematicStudyId, searchSources=$searchSources, criteria=$criteria, " +
-                "formAnswers=$formAnswers, qualityAnswers=$qualityAnswers, comments='$comments', " +
+                "formAnswers=$formAnswers, qualityAnswers=$robAnswers, comments='$comments', " +
                 "readingPriority=$readingPriority, extractionStatus=$extractionStatus, " +
                 "selectionStatus=$selectionStatus, study=$study)"
     }

@@ -1,16 +1,13 @@
 package br.all.domain.model.study
 
 import br.all.domain.model.protocol.Criteria
+import br.all.domain.model.protocol.Criteria.CriteriaType
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.utils.Phrase
 import io.github.serpro69.kfaker.Faker
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertAll
 import java.util.*
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class StudyReviewTest {
 
@@ -126,11 +123,36 @@ class StudyReviewTest {
     }
 
     @Test
-    fun `should add eligibility criterion`(){
+    fun `should add eligibility criterion`() {
         val study = createStudy()
-        val criterion = Criteria(Phrase(faker.quote.yoda()), Criteria.CriteriaType.INCLUSION)
+        val criterion = Criteria(Phrase(faker.quote.yoda()), faker.random.nextEnum(CriteriaType::class.java))
         study.addCriterion(criterion)
-        assertTrue {  study.criteria.contains(criterion) }
+        assertTrue { study.criteria.contains(criterion) }
+    }
+
+    @Test
+    fun `should remove eligibility criterion`() {
+        val study = createStudy()
+        val criterion = Criteria(Phrase(faker.quote.yoda()), faker.random.nextEnum(CriteriaType::class.java))
+        study.addCriterion(criterion)
+        study.removeCriterion(criterion)
+        assertFalse { study.criteria.contains(criterion) }
+    }
+
+    @Test
+    fun `should answer form question`() {
+        val study = createStudy()
+        val answer = Answer(UUID.randomUUID(), faker.yoda.quotes())
+        study.answerFormQuestionOf(answer)
+        assertTrue { study.formAnswers.contains(answer) }
+    }
+
+    @Test
+    fun `should answer rob question`() {
+        val study = createStudy()
+        val answer = Answer(UUID.randomUUID(), faker.yoda.quotes())
+        study.answerQualityQuestionOf(answer)
+        assertTrue { study.robAnswers.contains(answer) }
     }
 
     private fun createStudy(
@@ -138,13 +160,13 @@ class StudyReviewTest {
         systematicStudyId: UUID = UUID.randomUUID(),
         studyType: StudyType = StudyType.INBOOK,
         title: String = faker.book.title(),
-        abstract: String = List(faker.random.nextInt(0,20)) { Faker().lorem.words() }.joinToString(" "),
-        year: Int = faker.random.nextInt(1900,2030),
+        abstract: String = List(faker.random.nextInt(1, 20)) { Faker().lorem.words() }.joinToString(" "),
+        year: Int = faker.random.nextInt(1900, 2030),
         venue: String = faker.book.publisher(),
         authors: String = faker.book.author(),
         searchSources: MutableSet<String> = mutableSetOf(faker.book.publisher())
     ) = StudyReview(
         StudyReviewId(studyReviewId), SystematicStudyId(systematicStudyId),
-        studyType, title, year, abstract, venue, authors, searchSources = searchSources
+        studyType, title, year, venue, authors, abstract, searchSources = searchSources
     )
 }

@@ -17,7 +17,7 @@ data class StudyReviewDto(
     val searchSources: Set<String>,
     val criteria: Map<String, String>,
     val formAnswers: Map<UUID, String>,
-    val qualityAnswers: Map<UUID, String>,
+    val robAnswers: Map<UUID, String>,
     val comments: String,
     val readingPriority: String,
     val extractionStatus: String,

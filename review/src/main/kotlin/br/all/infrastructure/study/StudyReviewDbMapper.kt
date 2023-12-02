@@ -38,7 +38,7 @@ fun StudyReviewDto.toDocument() = StudyReviewDocument(
     searchSources,
     criteria,
     formAnswers,
-    qualityAnswers,
+    robAnswers,
     comments,
     readingPriority,
     extractionStatus,
