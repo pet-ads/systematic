@@ -3,13 +3,14 @@ package br.all.domain.model.question
 import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
+import java.util.UUID
 
 abstract class Question<T>(
-    val questionId: QuestionId,
+    questionId: QuestionId,
     val protocolId: ProtocolId,
     val code: String,
     val description: String,
-) : Entity(questionId) {
+) : Entity<UUID>(questionId) {
 
     var answer: T? = null
         set(value) {

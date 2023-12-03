@@ -1,4 +1,4 @@
-package br.all.application.protocol.question.repository
+package br.all.application.question.repository
 
 import br.all.application.protocol.question.create.textual.TextualDTO
 import br.all.domain.model.question.QuestionId

@@ -6,12 +6,13 @@ import org.junit.jupiter.api.Test
 class EntityTest{
 
     @JvmInline
-   private value class EntityId(val value: Long) : Identifier {
+   private value class EntityId(val value: Long) : Identifier <Long>{
         override fun validate() = Notification ()
+        override fun value() = value
     }
 
-    private class EntityA(id: EntityId) : Entity (id)
-    private class EntityB(id: EntityId) : Entity (id)
+    private class EntityA(id: EntityId) : Entity<Long> (id)
+    private class EntityB(id: EntityId) : Entity<Long> (id)
 
     @Test
     fun `Should two entities of same class and id be equal`(){

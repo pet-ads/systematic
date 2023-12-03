@@ -13,7 +13,7 @@ import java.util.*
 
 class SystematicStudyTest {
     private lateinit var sut : SystematicStudy
-    
+
     @BeforeEach
     fun setUp() {
         val systematicStudyId = SystematicStudyId(UUID.randomUUID())
@@ -44,7 +44,14 @@ class SystematicStudyTest {
     @Test
     fun `Should remove valid collaborator`(){
         val researcherId = ResearcherId(UUID.randomUUID())
-        val localSut = SystematicStudy(sut.systematicStudyId, sut.title, sut.description, sut.owner, mutableSetOf(researcherId))
+        val id = sut.id.value()
+        val localSut = SystematicStudy(
+            SystematicStudyId(id),
+            sut.title,
+            sut.description,
+            sut.owner,
+            mutableSetOf(researcherId)
+        )
 
         localSut.removeCollaborator(researcherId)
 

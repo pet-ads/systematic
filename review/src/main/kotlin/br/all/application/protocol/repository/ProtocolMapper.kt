@@ -8,40 +8,37 @@ import br.all.domain.shared.utils.Language
 import java.util.*
 
 fun Protocol.toDto() = ProtocolDto(
-    id = protocolId.value,
+    id = id.value(),
     systematicStudy = systematicStudyId.value,
 
-    goal = goal.toString(),
-    justification = justification.toString(),
+    goal = goal,
+    justification = justification,
 
-    researchQuestions = researchQuestions.map { it.description.toString() }
-        .toSet(),
+    researchQuestions = researchQuestions.map { it.description }.toSet(),
     keywords = keywords,
     searchString = searchString,
-    informationSources = informationSources.map { it.searchSource }
-        .toSet(),
-    sourcesSelectionCriteria = sourcesSelectionCriteria.toString(),
+    informationSources = informationSources.map { it.searchSource }.toSet(),
+    sourcesSelectionCriteria = sourcesSelectionCriteria,
 
-    searchMethod = searchMethod.toString(),
-    studiesLanguages = studiesLanguages.map { it.langType.name }
-        .toSet(),
-    studyTypeDefinition = studyTypeDefinition.toString(),
+    searchMethod = searchMethod,
+    studiesLanguages = studiesLanguages.map { it.langType.name }.toSet(),
+    studyTypeDefinition = studyTypeDefinition,
 
-    selectionProcess = selectionProcess.toString(),
-    selectionCriteria = selectionCriteria.map { it.description.toString() to it.type.name }
+    selectionProcess = selectionProcess,
+    selectionCriteria = selectionCriteria.map { it.description to it.type.name }
         .toSet(),
 
-    dataCollectionProcess = dataCollectionProcess.toString(),
-    analysisAndSynthesisProcess = analysisAndSynthesisProcess.toString(),
+    dataCollectionProcess = dataCollectionProcess,
+    analysisAndSynthesisProcess = analysisAndSynthesisProcess,
 
     extractionQuestions = extractionQuestions.map { it.value }.toSet(),
     robQuestions = robQuestions.map { it.value}.toSet(),
 
     picoc = picoc?.let { PicocDto(
-        it.population.toString(),
-        it.intervention.toString(),
-        it.control.toString(),
-        it.outcome.toString(),
+        it.population,
+        it.intervention,
+        it.control,
+        it.outcome,
         it.context.toString(),
     )},
 )

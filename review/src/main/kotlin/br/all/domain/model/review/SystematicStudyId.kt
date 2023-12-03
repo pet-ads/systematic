@@ -5,7 +5,7 @@ import br.all.domain.shared.ddd.Notification
 import java.util.UUID
 
 @JvmInline
-value class SystematicStudyId(val value: UUID) : Identifier {
+value class SystematicStudyId(val value: UUID) : Identifier <UUID>{
 
     init {
         val notification = validate()
@@ -13,7 +13,7 @@ value class SystematicStudyId(val value: UUID) : Identifier {
     }
 
     override fun validate(): Notification = Notification()
-
+    override fun value(): UUID = value
     override fun toString() = value.toString()
 }
 

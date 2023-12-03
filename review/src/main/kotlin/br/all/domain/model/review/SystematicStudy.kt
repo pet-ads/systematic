@@ -3,14 +3,15 @@ package br.all.domain.model.review
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.utils.requireThatExists
+import java.util.UUID
 
 class SystematicStudy(
-    val systematicStudyId: SystematicStudyId,
+    systematicStudyId: SystematicStudyId,
     title: String,
     description: String,
     owner: ResearcherId,
     collaborators: MutableSet<ResearcherId> = mutableSetOf(),
-) : Entity(systematicStudyId) {
+) : Entity<UUID>(systematicStudyId) {
 
     private val _collaborators = collaborators
     val collaborators get() = _collaborators.toSet()
@@ -50,7 +51,7 @@ class SystematicStudy(
     }
 
 
-    override fun toString() = "SystematicStudy(reviewId=$systematicStudyId, title='$title', " +
+    override fun toString() = "SystematicStudy(reviewId=$id, title='$title', " +
             "description='$description', owner=$owner, researchers=$_collaborators)"
 
 }

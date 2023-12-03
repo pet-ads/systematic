@@ -22,8 +22,8 @@ fun createRequestModel(researcherId: UUID, reviewId: UUID, studyId: Long, status
 
 fun generateStudyReview(reviewId: UUID, studyId: Long): StudyReviewDto{
     return StudyReviewDto(
-        systematicStudyId = reviewId,
         studyReviewId = studyId,
+        systematicStudyId = reviewId,
         studyType = "ARTICLE",
         title = "Título do Estudo",
         year = 2023,

@@ -5,15 +5,14 @@ import br.all.domain.shared.ddd.Notification
 import java.util.UUID
 
 @JvmInline
-value class SearchSessionID(val value: UUID) : Identifier {
+value class SearchSessionID(val value: UUID) : Identifier <UUID>{
 
     init {
         val notification = validate()
         require(notification.hasNoErrors()) { notification.message() }
     }
 
-    //TODO you don't need a body if a function has online one line
     override fun validate() = Notification()
-
+    override fun value(): UUID = value
     override fun toString(): String = value.toString()
 }

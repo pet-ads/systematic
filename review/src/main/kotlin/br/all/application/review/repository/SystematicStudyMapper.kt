@@ -7,7 +7,7 @@ import br.all.domain.model.review.SystematicStudy
 import java.util.*
 
 fun SystematicStudy.toDto() = SystematicStudyDto(
-    systematicStudyId.value,
+    id.value(),
     title,
     description,
     owner.value,

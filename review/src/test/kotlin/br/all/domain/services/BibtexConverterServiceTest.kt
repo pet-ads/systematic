@@ -38,7 +38,7 @@ class BibtexConverterServiceTest {
 
             assertAll(
                 "bibtex",
-                { assertEquals("1", studyReview.studyId.toString()) },
+                { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.ARTICLE, studyReview.studyType) },
                 { assertEquals("Non-cooperative Games", studyReview.title) },
                 { assertEquals(1951, studyReview.year) },
@@ -65,7 +65,7 @@ class BibtexConverterServiceTest {
             val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
             assertAll(
                 "bibtex",
-                { assertEquals("1", studyReview.studyId.toString()) },
+                { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.INPROCEEDINGS, studyReview.studyType) },
                 { assertEquals("Onofre {Trindade Júnior}", studyReview.authors) },
                 { assertEquals("{Using SOA in Critical-Embedded Systems}", studyReview.title) },
@@ -93,7 +93,7 @@ class BibtexConverterServiceTest {
 
             assertAll(
                 "bibtex",
-                { assertEquals("1", studyReview.studyId.toString()) },
+                { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.TECHREPORT, studyReview.studyType) },
                 { assertEquals("Rafael Serapilha Durelli", studyReview.authors) },
                 { assertEquals(expected, studyReview.title) },
@@ -117,7 +117,7 @@ class BibtexConverterServiceTest {
 
             assertAll(
                 "bibtex",
-                { assertEquals("1", studyReview.studyId.toString()) },
+                { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.BOOK, studyReview.studyType) },
                 { assertEquals("Len Bass and Paul Clements and Rick Kazman", studyReview.authors) },
                 { assertEquals("Software Architecture in Practice", studyReview.title) },
@@ -144,7 +144,7 @@ class BibtexConverterServiceTest {
 
             assertAll(
                 "bibtex",
-                { assertEquals("1", studyReview.studyId.toString()) },
+                { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.PROCEEDINGS, studyReview.studyType) },
                 { assertEquals("Susan Stepney and Sergey Verlan", studyReview.authors) },
                 { assertEquals(expected, studyReview.title) },
@@ -168,7 +168,7 @@ class BibtexConverterServiceTest {
 
             assertAll(
                 "bibtex",
-                { assertEquals("1", studyReview.studyId.toString()) },
+                { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.PHDTHESIS, studyReview.studyType) },
                 { assertEquals("Rempel, Robert Charles", studyReview.authors) },
                 { assertEquals("Relaxation Effects for Coupled Nuclear Spins", studyReview.title) },
@@ -192,7 +192,7 @@ class BibtexConverterServiceTest {
 
             assertAll(
                 "bibtex",
-                { assertEquals("1", studyReview.studyId.toString()) },
+                { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.MASTERSTHESIS, studyReview.studyType) },
                 { assertEquals("Jian Tang", studyReview.authors) },
                 { assertEquals("Spin structure of the nucleon in the asymptotic limit", studyReview.title) },
@@ -219,7 +219,7 @@ class BibtexConverterServiceTest {
 
             assertAll(
                 "bibtex",
-                { assertEquals("1", studyReview.studyId.toString()) },
+                { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.INBOOK, studyReview.studyType) },
                 { assertEquals(expected, studyReview.authors ) },
                 { assertEquals("Photosynthesis", studyReview.title) },
@@ -243,7 +243,7 @@ class BibtexConverterServiceTest {
 
             assertAll(
                 "bibtex",
-                { assertEquals("1", studyReview.studyId.toString()) },
+                { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.BOOKLET, studyReview.studyType) },
                 { assertEquals("Maria Swetla", studyReview.authors) },
                 { assertEquals("Canoe tours in {S}weden", studyReview.title) },
@@ -267,7 +267,7 @@ class BibtexConverterServiceTest {
 
             assertAll(
                 "bibtex",
-                { assertEquals("1", studyReview.studyId.toString()) },
+                { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.MANUAL, studyReview.studyType) },
                 { assertEquals("{R Core Team}", studyReview.authors) },
                 { assertEquals("{R}: A Language and Environment for Statistical Computing", studyReview.title) },
@@ -291,7 +291,7 @@ class BibtexConverterServiceTest {
 
             assertAll(
                 "bibtex",
-                { assertEquals("1", studyReview.studyId.toString()) },
+                { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.MISC, studyReview.studyType) },
                 { assertEquals("{NASA}", studyReview.authors) },
                 { assertEquals("Pluto: The 'Other' Red Planet", studyReview.title) },
@@ -315,7 +315,7 @@ class BibtexConverterServiceTest {
 
             assertAll(
                 "bibtex",
-                { assertEquals("1", studyReview.studyId.toString()) },
+                { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.UNPUBLISHED, studyReview.studyType) },
                 { assertEquals("Mohinder Suresh", studyReview.authors) },
                 { assertEquals("Evolution: a revised theory", studyReview.title) },

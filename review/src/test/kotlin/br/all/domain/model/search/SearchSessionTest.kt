@@ -29,7 +29,7 @@ class SearchSessionTest {
             source
         )
 
-        assertEquals(searchSessionId, searchSession.searchSessionId)
+        assertEquals(searchSessionId, searchSession.id)
     }
 
     @Test

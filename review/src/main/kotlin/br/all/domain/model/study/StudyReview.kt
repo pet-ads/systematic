@@ -5,7 +5,7 @@ import br.all.domain.shared.ddd.Entity
 import br.all.domain.model.review.SystematicStudyId
 
 class StudyReview(
-    val studyId: StudyReviewId,
+    studyId: StudyReviewId,
     val systematicStudyId: SystematicStudyId,
     val studyType: StudyType,
     val title: String,
@@ -24,7 +24,7 @@ class StudyReview(
     var readingPriority: ReadingPriority = ReadingPriority.LOW,
     selectionStatus: SelectionStatus = SelectionStatus.UNCLASSIFIED,
     extractionStatus: ExtractionStatus = ExtractionStatus.UNCLASSIFIED,
-) : Entity(studyId) {
+) : Entity<Long>(studyId) {
 
     private val study: Study
 

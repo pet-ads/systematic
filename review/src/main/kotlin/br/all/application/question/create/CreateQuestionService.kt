@@ -8,7 +8,7 @@ import br.all.application.question.create.pickList.PickListDTO
 import br.all.application.question.create.pickList.PickListRequestModel
 import br.all.application.protocol.question.create.textual.TextualDTO
 import br.all.application.question.create.textual.TextualRequestModel
-import br.all.application.protocol.question.repository.*
+import br.all.application.question.repository.*
 import br.all.domain.model.question.QuestionBuilder
 import br.all.domain.model.question.QuestionId
 import br.all.domain.services.UuidGeneratorService

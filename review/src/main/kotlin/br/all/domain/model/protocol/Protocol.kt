@@ -7,9 +7,10 @@ import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.utils.Language
 import br.all.domain.shared.utils.requireThatExists
 import br.all.domain.shared.utils.toNeverEmptyMutableSet
+import java.util.UUID
 
 class Protocol internal constructor(
-    val protocolId: ProtocolId,
+    protocolId: ProtocolId,
     val systematicStudyId: SystematicStudyId,
 
     val goal: String,
@@ -34,7 +35,7 @@ class Protocol internal constructor(
     extractionQuestions: Set<QuestionId> = emptySet(),
     robQuestions: Set<QuestionId> = emptySet(),
     val picoc: Picoc? = null,
-) : Entity(protocolId) {
+) : Entity<UUID>(protocolId) {
 
     private val _keywords = keywords.toNeverEmptyMutableSet()
     val keywords get() = _keywords.toSet()
