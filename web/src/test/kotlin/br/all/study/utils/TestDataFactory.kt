@@ -1,6 +1,7 @@
 package br.all.study.utils
 
 import br.all.domain.model.study.StudyType
+import br.all.domain.shared.utils.*
 import br.all.infrastructure.study.StudyReviewDocument
 import br.all.infrastructure.study.StudyReviewId
 import io.github.serpro69.kfaker.Faker
@@ -19,11 +20,11 @@ class TestDataFactory {
             "systematicStudyId": "$systematicStudyId",
             "type": "${faker.random.nextEnum(StudyType::class.java)}",
             "title": "${faker.book.title()}",
-            "year": ${faker.random.nextInt(1900, 2030)},
+            "year": ${faker.year()},
             "authors": "${faker.science.scientist()}",
             "venue": "${faker.book.publisher()}",
-            "abstract": "${List(faker.random.nextInt(0,30)) { Faker().lorem.words() }.joinToString(" ")}",
-            "keywords": ${List(faker.random.nextInt(0,5)){ "\"${faker.lorem.words()}\"" }.joinToString(",", "[", "]")},
+            "abstract": "${faker.paragraph(30)}",
+            "keywords": ${faker.jsonWordsArray(5)},
             "source": "${faker.lorem.words()}"
         }
         """
@@ -33,11 +34,11 @@ class TestDataFactory {
         {
             "researcherId": "your_researcher_id",
             "systematicStudyId": "your_systematic_study_id",
-            "studyType": "ARTICLE",
-            "title": "Title",
-            "publicationYear": 2021,
-            "keywords": [],
-            "source": "Source"
+            "studyType": "${faker.random.nextEnum(StudyType::class.java)}E",
+            "title": "${faker.book.title()}",
+            "publicationYear": ${faker.year()},
+            "keywords": ${faker.jsonWordsArray(0)},
+            "source": "${faker.lorem.words()}"
         }
         """
 
@@ -58,18 +59,18 @@ class TestDataFactory {
         studyReviewId: Long,
         type: String = faker.random.nextEnum(StudyType::class.java).toString(),
         title: String = faker.book.title(),
-        year: Int = faker.random.nextInt(1900, 2030),
+        year: Int = faker.year(),
         authors: String = faker.science.scientist(),
         venue: String = faker.book.publisher(),
-        abstract: String = List(faker.random.nextInt(0,20)) { Faker().lorem.words() }.joinToString(" "),
-        keywords: Set<String> = Array(faker.random.nextInt(0,5)){ faker.lorem.words()}.toSet(),
-        references: List<String> = List(faker.random.nextInt(0,15)){ faker.lorem.words()},
+        abstract: String = faker.paragraph(20),
+        keywords: Set<String> = faker.wordsList(5).toSet(),
+        references: List<String> = faker.paragraphList(4, 5),
         doi: String? = null,
-        sources: Set<String> = Array(faker.random.nextInt(0,5)){ faker.book.publisher()}.toSet(),
+        sources: Set<String> = faker.wordsList(5).toSet(),
         criteria: Map<String,String> = mapOf("Criteria A" to "INCLUSION", "Criteria B" to "EXCLUSION"),
         formAnswers: Map<UUID, String> = mapOf(Pair(UUID.randomUUID(), "Form")),
         robAnswers: Map<UUID, String> = mapOf(Pair(UUID.randomUUID(), "Form")),
-        comments: String = List(faker.random.nextInt(0,10)) { Faker().lorem.words() }.joinToString(" "),
+        comments: String = faker.paragraph(15),
         selectionStatus: String = "UNCLASSIFIED",
         extractionStatus: String = "UNCLASSIFIED",
         readingPriority: String = "LOW"

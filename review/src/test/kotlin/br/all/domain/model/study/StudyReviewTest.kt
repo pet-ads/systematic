@@ -3,6 +3,8 @@ package br.all.domain.model.study
 import br.all.domain.model.protocol.Criteria
 import br.all.domain.model.protocol.Criteria.CriteriaType
 import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.shared.utils.paragraph
+import br.all.domain.shared.utils.year
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.assertAll
 import java.util.*
@@ -159,8 +161,8 @@ class StudyReviewTest {
         systematicStudyId: UUID = UUID.randomUUID(),
         studyType: StudyType = StudyType.INBOOK,
         title: String = faker.book.title(),
-        abstract: String = List(faker.random.nextInt(1, 20)) { Faker().lorem.words() }.joinToString(" "),
-        year: Int = faker.random.nextInt(1900, 2030),
+        abstract: String = faker.paragraph(20),
+        year: Int = faker.year(),
         venue: String = faker.book.publisher(),
         authors: String = faker.book.author(),
         searchSources: MutableSet<String> = mutableSetOf(faker.book.publisher())
