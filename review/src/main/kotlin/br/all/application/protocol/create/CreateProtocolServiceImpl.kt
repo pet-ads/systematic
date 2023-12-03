@@ -14,19 +14,18 @@ import java.util.*
 class CreateProtocolServiceImpl(
     private val protocolRepository: ProtocolRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
-    private val uuidGeneratorService: UuidGeneratorService,
 ): CreateProtocolService {
     override fun create(reviewId: UUID, requestModel: ProtocolRequestModel): ProtocolResponseModel {
         requireThatExists(systematicStudyRepository.existsById(reviewId))
             { "Unable to create a protocol for a nonexistent SystematicStudy! Provided study id: $reviewId" }
+
         if (protocolRepository.existsBySystematicStudy(reviewId))
             throw DuplicateElementException("There already is a protocol for this systematic study id: $reviewId")
 
-        val protocolId = uuidGeneratorService.next()
-        val protocol = Protocol.fromRequestModel(protocolId, reviewId, requestModel)
+        val protocol = Protocol.fromRequestModel(reviewId, requestModel)
 
         protocolRepository.create(protocol.toDto())
 
-        return ProtocolResponseModel(protocolId, reviewId)
+        return ProtocolResponseModel(reviewId, reviewId)
     }
 }

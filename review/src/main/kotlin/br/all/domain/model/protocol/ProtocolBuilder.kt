@@ -4,9 +4,20 @@ import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.utils.Language
 
-class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, JustificationStep, ResearchQuestionsStep,
-        SearchMethodDefinitionStep, SourcesDefinitionStep, SourcesCriteriaStep, StudiesDefinitionStep,
-        StudiesSelectionStep, SelectionCriteriaStep, DataCollectionStep, DataAnalysisStep, BuildingStep {
+class ProtocolBuilder private constructor() :
+    IdentificationStep,
+    GoalStep,
+    JustificationStep,
+    ResearchQuestionsStep,
+    SearchMethodDefinitionStep,
+    SourcesDefinitionStep,
+    SourcesCriteriaStep,
+    StudiesDefinitionStep,
+    StudiesSelectionStep,
+    SelectionCriteriaStep,
+    DataCollectionStep,
+    DataAnalysisStep,
+    BuildingStep {
     private var protocolId: ProtocolId? = null
     private var systematicStudyId: SystematicStudyId? = null
     private lateinit var keywords: Set<String>
@@ -28,14 +39,16 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
     private var robQuestions = emptySet<QuestionId>()
 
     companion object {
-        fun start(): IdentificationStep = ProtocolBuilder()
+        fun with(systematicStudyId: SystematicStudyId, keywords: Set<String>) =
+            ProtocolBuilder().identifiedBy(systematicStudyId, keywords)
     }
 
-    override fun identifiedBy(protocolId: ProtocolId, systematicStudyId: SystematicStudyId, keywords: Set<String>) = apply {
-        this.protocolId = protocolId
-        this.systematicStudyId = systematicStudyId
-        this.keywords = keywords
-    }
+    override fun identifiedBy(systematicStudyId: SystematicStudyId, keywords: Set<String>) =
+        apply {
+            this.protocolId = ProtocolId(systematicStudyId.value)
+            this.systematicStudyId = systematicStudyId
+            this.keywords = keywords
+        }
 
     override fun researchesFor(goal: String) = apply { this.goal = goal }
 
@@ -45,18 +58,18 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
         this.researchQuestions = researchQuestions
     }
 
-    override fun searchProcessWillFollow(searchMethod: String, searchString: String) = apply {
+    override fun followingSearchProcess(searchMethod: String, searchString: String) = apply {
         this.searchMethod = searchMethod
         this.searchString = searchString
     }
 
-    override fun at(informationSources: Set<SearchSource>) = apply { this.informationSources = informationSources }
+    override fun inSearchSources(informationSources: Set<SearchSource>) = apply { this.informationSources = informationSources }
 
     override fun selectedBecause(sourcesSelectionCriteria: String) = apply {
-        this.sourcesSelectionCriteria =sourcesSelectionCriteria
+        this.sourcesSelectionCriteria = sourcesSelectionCriteria
     }
 
-    override fun searchStudiesOf(
+    override fun searchingStudiesIn(
         studiesLanguages: Set<Language>,
         studyTypeDefinition: String
     ) = apply {
@@ -64,19 +77,19 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
         this.studyTypeDefinition = studyTypeDefinition
     }
 
-    override fun selectionProcessWillFollowAs(selectionProcess: String) = apply {
+    override fun followingSelectionProcess(selectionProcess: String) = apply {
         this.selectionProcess = selectionProcess
     }
 
-    override fun selectStudiesBy(selectionCriteria: Set<Criteria>) = apply {
+    override fun withElegibilityCriteria(selectionCriteria: Set<Criteria>) = apply {
         this.selectionCriteria = selectionCriteria
     }
 
-    override fun collectDataBy(dataCollectionProcess: String) = apply {
+    override fun followingDataCollectionProcess(dataCollectionProcess: String) = apply {
         this.dataCollectionProcess = dataCollectionProcess
     }
 
-    override fun analyseDataBy(analysisAndSynthesisProcess: String) = apply {
+    override fun followingSynthesisProcess(analysisAndSynthesisProcess: String) = apply {
         this.analysisAndSynthesisProcess = analysisAndSynthesisProcess
     }
 
@@ -114,7 +127,7 @@ class ProtocolBuilder private constructor(): IdentificationStep, GoalStep, Justi
 }
 
 interface IdentificationStep {
-    fun identifiedBy(protocolId: ProtocolId, systematicStudyId: SystematicStudyId, keywords: Set<String>): GoalStep
+    fun identifiedBy(systematicStudyId: SystematicStudyId, keywords: Set<String>): GoalStep
 }
 
 interface GoalStep {
@@ -130,11 +143,11 @@ interface ResearchQuestionsStep {
 }
 
 interface SearchMethodDefinitionStep {
-    fun searchProcessWillFollow(searchMethod: String, searchString: String): SourcesDefinitionStep
+    fun followingSearchProcess(searchMethod: String, searchString: String): SourcesDefinitionStep
 }
 
 interface SourcesDefinitionStep {
-    infix fun at(informationSources: Set<SearchSource>): SourcesCriteriaStep
+    infix fun inSearchSources(informationSources: Set<SearchSource>): SourcesCriteriaStep
 }
 
 interface SourcesCriteriaStep {
@@ -142,23 +155,23 @@ interface SourcesCriteriaStep {
 }
 
 interface StudiesDefinitionStep {
-    fun searchStudiesOf(studiesLanguages: Set<Language>, studyTypeDefinition: String): StudiesSelectionStep
+    fun searchingStudiesIn(studiesLanguages: Set<Language>, studyTypeDefinition: String): StudiesSelectionStep
 }
 
 interface StudiesSelectionStep {
-    infix fun selectionProcessWillFollowAs(selectionProcess: String): SelectionCriteriaStep
+    infix fun followingSelectionProcess(selectionProcess: String): SelectionCriteriaStep
 }
 
 interface SelectionCriteriaStep {
-    infix fun selectStudiesBy(selectionCriteria: Set<Criteria>): DataCollectionStep
+    infix fun withElegibilityCriteria(selectionCriteria: Set<Criteria>): DataCollectionStep
 }
 
 interface DataCollectionStep {
-    infix fun collectDataBy(dataCollectionProcess: String): DataAnalysisStep
+    infix fun followingDataCollectionProcess(dataCollectionProcess: String): DataAnalysisStep
 }
 
 interface DataAnalysisStep {
-    infix fun analyseDataBy(analysisAndSynthesisProcess: String): BuildingStep
+    infix fun followingSynthesisProcess(analysisAndSynthesisProcess: String): BuildingStep
 }
 
 interface BuildingStep {

@@ -20,32 +20,27 @@ import kotlin.test.assertEquals
 
 @ExtendWith(MockKExtension::class)
 class CreateProtocolServiceImplTest {
-    @MockK
-    private lateinit var systematicStudyRepository: SystematicStudyRepository
-    @MockK
-    private lateinit var uuidGeneratorService: UuidGeneratorService
-    private lateinit var protocolRepository: ProtocolRepository
+    @MockK private lateinit var systematicStudyRepository: SystematicStudyRepository
+    @MockK private lateinit var protocolRepository: ProtocolRepository
     private lateinit var sut: CreateProtocolServiceImpl
 
     @BeforeEach
     fun setUp() {
         protocolRepository = FakeProtocolRepository()
-        sut = CreateProtocolServiceImpl(protocolRepository, systematicStudyRepository, uuidGeneratorService)
+        sut = CreateProtocolServiceImpl(protocolRepository, systematicStudyRepository)
     }
 
     @Test
     fun `Should successfully create a new protocol`() {
-        val protocolId = UUID.randomUUID()
         val reviewId = UUID.randomUUID()
         val requestModel = getProtocolRequestModel()
-        val protocolDto = Protocol.fromRequestModel(protocolId, reviewId, requestModel).toDto()
+        val protocolDto = Protocol.fromRequestModel(reviewId, requestModel).toDto()
 
-        every { uuidGeneratorService.next() } returns protocolId
         every { systematicStudyRepository.existsById(reviewId) } returns true
 
         sut.create(reviewId, requestModel)
 
-        val createdDto = protocolRepository.findById(protocolId)
+        val createdDto = protocolRepository.findById(reviewId)
         assertEquals(protocolDto, createdDto)
     }
 
@@ -61,10 +56,9 @@ class CreateProtocolServiceImplTest {
 
     @Test
     fun `Should throw when to create a protocol to a systematic study that already has one`() {
-        val protocolId = UUID.randomUUID()
         val reviewId = UUID.randomUUID()
         val requestModel = getProtocolRequestModel()
-        val dto = Protocol.fromRequestModel(protocolId, reviewId, requestModel).toDto()
+        val dto = Protocol.fromRequestModel(reviewId, requestModel).toDto()
 
         every { systematicStudyRepository.existsById(reviewId) } returns true
         protocolRepository.create(dto)

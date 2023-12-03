@@ -60,7 +60,8 @@ class Protocol internal constructor(
     }
 
     companion object {
-        fun create() = ProtocolBuilder.start()
+        fun with(systematicStudyId: SystematicStudyId, keywords: Set<String>) =
+            ProtocolBuilder.with(systematicStudyId, keywords)
     }
 
     fun validate(): Notification {

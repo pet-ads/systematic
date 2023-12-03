@@ -2,6 +2,7 @@ package br.all.application.protocol.repository
 
 import br.all.application.protocol.create.ProtocolRequestModel
 import br.all.domain.model.protocol.*
+import br.all.domain.model.protocol.Criteria.CriteriaType
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.utils.Language
 import java.util.*
@@ -46,32 +47,23 @@ fun Protocol.toDto() = ProtocolDto(
 )
 
 fun Protocol.Companion.fromRequestModel(
-    id: UUID, 
-    reviewId: UUID, 
+    reviewId: UUID,
     requestModel: ProtocolRequestModel,
 ) = with(requestModel) {
-    create().identifiedBy(ProtocolId(id), SystematicStudyId(reviewId), keywords)
-        .researchesFor(goal).because(justification)
-        .toAnswer(
-            researchQuestions.map { ResearchQuestion(it) }
-                .toSet()
-        ).searchProcessWillFollow(searchMethod, searchString)
-        .at(
-            informationSources.map { SearchSource(it) }
-                .toSet()
-        ).selectedBecause(sourcesSelectionCriteria)
-        .searchStudiesOf(
-            studiesLanguages.map { Language(Language.LangType.valueOf(it)) }
-                .toSet(),
-            studyTypeDefinition,
-        ).selectionProcessWillFollowAs(selectionProcess)
-        .selectStudiesBy(
+    with(SystematicStudyId(reviewId), keywords)
+        .researchesFor(goal)
+        .because(justification)
+        .toAnswer(researchQuestions.map { ResearchQuestion(it) }.toSet())
+        .followingSearchProcess(searchMethod, searchString)
+        .inSearchSources( informationSources.map { SearchSource(it) }.toSet()).selectedBecause(sourcesSelectionCriteria)
+        .searchingStudiesIn( studiesLanguages.map { Language(Language.LangType.valueOf(it)) }.toSet(),studyTypeDefinition)
+        .followingSelectionProcess(selectionProcess)
+        .withElegibilityCriteria(
             selectionCriteria
-                .map { (description, type) -> Criteria(description, Criteria.CriteriaType.valueOf(type)) }
-                .toSet()
-        ).collectDataBy(dataCollectionProcess)
-        .analyseDataBy(analysisAndSynthesisProcess)
-        .withPICOC(picoc?.let {
-            Picoc(it.population, it.intervention, it.control, it.outcome, it.context)
-        }).build()
+            .map { (description, type) -> Criteria(description, CriteriaType.valueOf(type)) }
+            .toSet())
+        .followingDataCollectionProcess(dataCollectionProcess)
+        .followingSynthesisProcess(analysisAndSynthesisProcess)
+        .withPICOC(picoc?.let { Picoc(it.population, it.intervention, it.control, it.outcome, it.context) })
+        .build()
 }
