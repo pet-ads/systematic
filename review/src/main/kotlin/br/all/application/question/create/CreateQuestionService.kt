@@ -15,10 +15,10 @@ import br.all.domain.services.UuidGeneratorService
 
 class CreateQuestionService(
     private val uuidGenerator: UuidGeneratorService,
-    private val labeledScaleRepository: LabeledScaleRepository,
-    private val pickListRepository: PickListRepository,
-    private val numberScaleRepository: NumberScaleRepository,
-    private val textualRepository: TextualRepository
+    private val labeledScaleRepository: QuestionRepository<LabeledScaledDTO, QuestionId>,
+    private val pickListRepository: QuestionRepository<PickListDTO, QuestionId>,
+    private val numberScaleRepository: QuestionRepository<NumberScaleDTO, QuestionId>,
+    private val textualRepository: QuestionRepository<TextualDTO, QuestionId>
 ) {
     fun createLabeledScale(data: LabeledScaleRequestModel): LabeledScaledDTO {
         val questionId = QuestionId(uuidGenerator.next())

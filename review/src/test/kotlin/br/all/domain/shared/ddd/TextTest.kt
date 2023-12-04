@@ -1,6 +1,6 @@
 package br.all.domain.shared.ddd
 
-import br.all.domain.shared.utils.Text
+import br.all.domain.shared.valueobject.Text
 import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals

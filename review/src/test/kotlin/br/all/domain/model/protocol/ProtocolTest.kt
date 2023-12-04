@@ -2,7 +2,7 @@ package br.all.domain.model.protocol
 
 import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.SystematicStudyId
-import br.all.domain.shared.utils.Language
+import br.all.domain.shared.valueobject.Language
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertDoesNotThrow

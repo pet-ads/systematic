@@ -15,7 +15,12 @@ class DomainModuleTest {
     fun `should domain have no dependencies`(importedClasses: JavaClasses) =
         noClasses().that()
             .resideInAPackage("..domain..")
-            .should().dependOnClassesThat().resideOutsideOfPackages("..domain..", "java..", "kotlin..", "org.jetbrains..")
+            .should().dependOnClassesThat().resideOutsideOfPackages(
+                "..domain..",
+                "java..",
+                "kotlin..",
+                "org.jetbrains..",
+                "..kfaker..")
             .check(importedClasses)
 
     @ArchTest
@@ -27,7 +32,11 @@ class DomainModuleTest {
     @ArchTest
     fun `should shared classes in domain have not dependencies outside shared package`(importedClasses: JavaClasses) =
         noClasses().that().resideInAPackage("br.all.domain.shared..")
-            .should().dependOnClassesThat().resideOutsideOfPackages("br.all.domain.shared..", "java..", "kotlin..", "org.jetbrains..")
+            .should().dependOnClassesThat().resideOutsideOfPackages(
+                "br.all.domain.shared..",
+                "java..", "kotlin..",
+                "org.jetbrains..",
+                "..kfaker..")
             .check(importedClasses)
 
     @ArchTest

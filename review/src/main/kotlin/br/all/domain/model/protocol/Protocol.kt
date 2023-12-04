@@ -4,7 +4,7 @@ import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
-import br.all.domain.shared.utils.Language
+import br.all.domain.shared.valueobject.Language
 import br.all.domain.shared.utils.requireThatExists
 import br.all.domain.shared.utils.toNeverEmptyMutableSet
 import java.util.UUID

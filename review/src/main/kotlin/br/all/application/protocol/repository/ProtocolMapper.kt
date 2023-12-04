@@ -4,7 +4,7 @@ import br.all.application.protocol.create.ProtocolRequestModel
 import br.all.domain.model.protocol.*
 import br.all.domain.model.protocol.Criteria.CriteriaType
 import br.all.domain.model.review.SystematicStudyId
-import br.all.domain.shared.utils.Language
+import br.all.domain.shared.valueobject.Language
 import java.util.*
 
 fun Protocol.toDto() = ProtocolDto(

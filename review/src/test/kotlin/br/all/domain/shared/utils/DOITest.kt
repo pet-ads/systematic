@@ -1,6 +1,7 @@
 package br.all.domain.shared.utils
 
 
+import br.all.domain.shared.valueobject.DOI
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows

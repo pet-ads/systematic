@@ -1,6 +1,6 @@
 package br.all.domain.shared.ddd
 
-import br.all.domain.shared.utils.Email
+import br.all.domain.shared.valueobject.Email
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
