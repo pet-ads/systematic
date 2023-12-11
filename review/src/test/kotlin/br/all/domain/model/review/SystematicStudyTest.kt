@@ -84,7 +84,19 @@ class SystematicStudyTest {
         @Tag("InvalidClasses")
         @DisplayName("And being unable to add")
         inner class AndBeingUnableToAdd {
-
+            @Test
+            fun `Should not add duplicated researchers`() {
+                val duplicatedResearcher = ResearcherId(UUID.randomUUID())
+                val localSut = SystematicStudy(
+                    SystematicStudyId(UUID.randomUUID()),
+                    "Title",
+                    "Description",
+                    ResearcherId(UUID.randomUUID()),
+                    mutableSetOf(duplicatedResearcher),
+                )
+                localSut.addCollaborator(duplicatedResearcher)
+                assertEquals(1, localSut.collaborators.count { it == duplicatedResearcher })
+            }
         }
     }
 
