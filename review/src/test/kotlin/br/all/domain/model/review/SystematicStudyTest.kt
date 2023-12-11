@@ -28,6 +28,19 @@ class SystematicStudyTest {
         @DisplayName("And being succeed")
         inner class AndBeingSucceed {
             @Test
+            fun `Should successfully create an Systematic Study`() {
+                assertDoesNotThrow {
+                    SystematicStudy(
+                        SystematicStudyId(UUID.randomUUID()),
+                        "Title",
+                        "Description",
+                        ResearcherId(UUID.randomUUID()),
+                        mutableSetOf(ResearcherId(UUID.randomUUID())),
+                    )
+                }
+            }
+
+            @Test
             fun `Should owner be a collaborator`(){
                 val ownerId = sut.owner
                 assertTrue(ownerId in sut.collaborators)
