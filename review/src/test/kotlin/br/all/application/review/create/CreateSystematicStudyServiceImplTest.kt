@@ -6,6 +6,7 @@ import br.all.application.review.create.CreateSystematicStudyService.ResponseMod
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
+import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.services.UuidGeneratorService
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -70,6 +72,29 @@ class CreateSystematicStudyServiceImplTest {
             assertAll(
                 { assertEquals(response, createSystematicStudyPresenter.responseModel) },
                 { assertNull(createSystematicStudyPresenter.throwable) },
+            )
+        }
+    }
+
+    @Nested
+    @DisplayName("When unable to create a new Systematic Study")
+    inner class WhenUnableToCreateANewSystematicStudy {
+        @Test
+        fun `Should not the researcher be allowed to create a new study when unauthenticated`() {
+            val researcherId = ResearcherId(UUID.randomUUID())
+            val request = RequestModel("Title", "Description", emptySet())
+
+            every { credentialsService.isAuthenticated(researcherId) } returns false
+            every { credentialsService.hasAuthority(researcherId) } returns true
+
+            sut.create(createSystematicStudyPresenter, researcherId.value, request)
+
+            verify { credentialsService.isAuthenticated(researcherId) }
+            verify(exactly = 0) { credentialsService.hasAuthority(researcherId) }
+
+            assertAll(
+                { assertNull(createSystematicStudyPresenter.responseModel) },
+                { assertTrue { createSystematicStudyPresenter.throwable is UnauthenticatedUserException } }
             )
         }
     }
