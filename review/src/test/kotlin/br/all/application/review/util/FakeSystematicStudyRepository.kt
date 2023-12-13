@@ -9,7 +9,7 @@ import java.util.*
 class FakeSystematicStudyRepository : SystematicStudyRepository {
     private val db = mutableMapOf<UUID, SystematicStudyDto>()
 
-    override fun create(dto: SystematicStudyDto) = run{ db[dto.id] = dto }
+    override fun saveOrUpdate(dto: SystematicStudyDto) = run{ db[dto.id] = dto }
 
     override fun findById(id: UUID): SystematicStudyDto? = db[id]
 

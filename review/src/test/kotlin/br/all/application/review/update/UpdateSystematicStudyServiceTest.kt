@@ -77,7 +77,7 @@ class UpdateSystematicStudyServiceTest{
     }
 
     private fun executeUpdateInSunnyDay(requestModel: UpdateSystematicStudyRequestModel): SystematicStudyDto? {
-        systematicStudyRepository.create(systematicStudyDto)
+        systematicStudyRepository.saveOrUpdate(systematicStudyDto)
         sut.update(systematicStudyDto.id, requestModel)
         return systematicStudyRepository.findById(systematicStudyDto.id)
     }

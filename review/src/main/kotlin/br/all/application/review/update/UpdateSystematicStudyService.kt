@@ -19,7 +19,7 @@ class UpdateSystematicStudyService(private val systematicStudyRepository: System
         }
         val newDto = systematicStudy.toDto()
         
-        if (dto != newDto) systematicStudyRepository.create(newDto)
+        if (dto != newDto) systematicStudyRepository.saveOrUpdate(newDto)
         
         return SystematicStudyResponseModel(systematicStudyId)
     }

@@ -3,7 +3,7 @@ package br.all.application.review.repository
 import java.util.*
 
 interface SystematicStudyRepository {
-    fun create(dto: SystematicStudyDto)
+    fun saveOrUpdate(dto: SystematicStudyDto)
 
     fun findById(id : UUID) : SystematicStudyDto?
 

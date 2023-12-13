@@ -39,7 +39,7 @@ class ChangeSystematicStudyOwnerServiceTest {
             ResearcherId(UUID.randomUUID()))
 
         every { researcherRepository.existsById(newOwnerId) } returns true
-        systematicStudyRepository.create(systematicStudy.toDto())
+        systematicStudyRepository.saveOrUpdate(systematicStudy.toDto())
         systematicStudy.changeOwner(ResearcherId(newOwnerId))
         sut.changeOwner(reviewId, newOwnerId)
 
@@ -68,7 +68,7 @@ class ChangeSystematicStudyOwnerServiceTest {
             ResearcherId(UUID.randomUUID())).toDto()
 
         every { researcherRepository.existsById(newOwner) } returns false
-        systematicStudyRepository.create(study)
+        systematicStudyRepository.saveOrUpdate(study)
 
         val exception = assertThrows<NoSuchElementException> { sut.changeOwner(reviewId, newOwner) }
         assertEquals("The id $newOwner does not belong to any existent researcher!", exception.message)
