@@ -7,6 +7,7 @@ import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
 import br.all.application.shared.exceptions.UnauthenticatedUserException
+import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.services.UuidGeneratorService
@@ -95,6 +96,27 @@ class CreateSystematicStudyServiceImplTest {
             assertAll(
                 { assertNull(createSystematicStudyPresenter.responseModel) },
                 { assertTrue { createSystematicStudyPresenter.throwable is UnauthenticatedUserException } }
+            )
+        }
+
+        @Test
+        fun `Should not the researcher be allowed to create a study when unauthorized`() {
+            val researcherId = ResearcherId(UUID.randomUUID())
+            val request = RequestModel("Title", "Description", emptySet())
+
+            every { credentialsService.isAuthenticated(researcherId) } returns true
+            every { credentialsService.hasAuthority(researcherId) } returns false
+
+            sut.create(createSystematicStudyPresenter, researcherId.value, request)
+
+            verify {
+                credentialsService.isAuthenticated(researcherId)
+                credentialsService.hasAuthority(researcherId)
+            }
+
+            assertAll(
+                { assertNull(createSystematicStudyPresenter.responseModel) },
+                { assertTrue { createSystematicStudyPresenter.throwable is UnauthorizedUserException } },
             )
         }
     }
