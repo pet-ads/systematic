@@ -24,10 +24,15 @@ class CreateSystematicStudyServiceImpl(
 
         if (presenter.isDone()) return
 
-        val id = uuidGeneratorService.next()
-        val systematicStudy = SystematicStudy.fromRequestModel(id, researcherId, request)
-        systematicStudyRepository.saveOrUpdate(systematicStudy.toDto())
+        try {
+            val id = uuidGeneratorService.next()
+            val systematicStudy = SystematicStudy.fromRequestModel(id, researcherId, request)
+            systematicStudyRepository.saveOrUpdate(systematicStudy.toDto())
 
-        presenter.prepareSuccessView(ResponseModel(researcherId, id))
+            presenter.prepareSuccessView(ResponseModel(researcherId, id))
+        }
+        catch (e: Throwable) {
+            presenter.prepareFailView(e)
+        }
     }
 }
