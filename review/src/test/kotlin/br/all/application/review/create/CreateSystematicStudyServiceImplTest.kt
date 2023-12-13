@@ -1,12 +1,12 @@
 package br.all.application.review.create
 
-import br.all.application.researcher.credentials.FakeResearcherCredentialsService
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel
 import br.all.application.review.create.CreateSystematicStudyService.ResponseModel
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
+import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.services.UuidGeneratorService
 import io.mockk.Runs
@@ -29,13 +29,13 @@ class CreateSystematicStudyServiceImplTest {
     private lateinit var systematicStudyRepository: SystematicStudyRepository
     @MockK
     private lateinit var uuidGeneratorService: UuidGeneratorService
-    private lateinit var createSystematicStudyPresenter: FakeCreateSystematicStudyPresenter
+    @MockK
     private lateinit var credentialsService: ResearcherCredentialsService
+    private lateinit var createSystematicStudyPresenter: FakeCreateSystematicStudyPresenter
     private lateinit var sut: CreateSystematicStudyServiceImpl
 
     @BeforeEach
     fun setUp() {
-        credentialsService = FakeResearcherCredentialsService()
         createSystematicStudyPresenter = FakeCreateSystematicStudyPresenter()
         sut = CreateSystematicStudyServiceImpl(systematicStudyRepository, uuidGeneratorService, credentialsService)
     }
@@ -46,18 +46,23 @@ class CreateSystematicStudyServiceImplTest {
     inner class WhenSuccessfullyCreatingASystematicStudy {
         @Test
         fun `Should successfully create a systematic study`() {
-            val researcherId = UUID.randomUUID()
+            val researcherUuid = UUID.randomUUID()
+            val researcherId = ResearcherId(researcherUuid)
             val systematicStudyId = UUID.randomUUID()
             val request = RequestModel("Title", "Description", emptySet())
-            val dto = SystematicStudy.fromRequestModel(systematicStudyId, researcherId, request).toDto()
-            val response = ResponseModel(researcherId, systematicStudyId)
+            val dto = SystematicStudy.fromRequestModel(systematicStudyId, researcherUuid, request).toDto()
+            val response = ResponseModel(researcherUuid, systematicStudyId)
 
+            every { credentialsService.isAuthenticated(researcherId) } returns true
+            every { credentialsService.hasAuthority(researcherId) } returns true
             every { uuidGeneratorService.next() } returns systematicStudyId
             every { systematicStudyRepository.saveOrUpdate(dto) } just Runs
 
-            sut.create(createSystematicStudyPresenter, researcherId, request)
+            sut.create(createSystematicStudyPresenter, researcherUuid, request)
 
             verify {
+                credentialsService.isAuthenticated(researcherId)
+                credentialsService.hasAuthority(researcherId)
                 uuidGeneratorService.next()
                 systematicStudyRepository.saveOrUpdate(dto)
             }
