@@ -19,6 +19,8 @@ import io.mockk.just
 import io.mockk.verify
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -117,6 +119,30 @@ class CreateSystematicStudyServiceImplTest {
             assertAll(
                 { assertNull(createSystematicStudyPresenter.responseModel) },
                 { assertTrue { createSystematicStudyPresenter.throwable is UnauthorizedUserException } },
+            )
+        }
+
+        @ParameterizedTest
+        @CsvSource("'',Description", "Title,''")
+        fun `Should invalid data be not accepted`(title: String, description: String) {
+            val researcherId = ResearcherId(UUID.randomUUID())
+            val request = RequestModel(title, description, emptySet())
+
+            every { credentialsService.isAuthenticated(researcherId) } returns true
+            every { credentialsService.hasAuthority(researcherId) } returns true
+            every { uuidGeneratorService.next() } returns UUID.randomUUID()
+
+            sut.create(createSystematicStudyPresenter, researcherId.value, request)
+
+            verify {
+                credentialsService.isAuthenticated(researcherId)
+                credentialsService.hasAuthority(researcherId)
+                uuidGeneratorService.next()
+            }
+            
+            assertAll(
+                { assertNull(createSystematicStudyPresenter.responseModel) },
+                { assertTrue { createSystematicStudyPresenter.throwable is IllegalArgumentException } }
             )
         }
     }
