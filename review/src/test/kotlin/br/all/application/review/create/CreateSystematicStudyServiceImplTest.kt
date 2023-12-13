@@ -51,23 +51,20 @@ class CreateSystematicStudyServiceImplTest {
     inner class WhenSuccessfullyCreatingASystematicStudy {
         @Test
         fun `Should successfully create a systematic study`() {
-            val researcherUuid = UUID.randomUUID()
-            val researcherId = ResearcherId(researcherUuid)
+            val researcherId = ResearcherId(UUID.randomUUID())
             val systematicStudyId = UUID.randomUUID()
             val request = RequestModel("Title", "Description", emptySet())
-            val dto = SystematicStudy.fromRequestModel(systematicStudyId, researcherUuid, request).toDto()
-            val response = ResponseModel(researcherUuid, systematicStudyId)
+            val dto = SystematicStudy.fromRequestModel(systematicStudyId, researcherId.value, request).toDto()
+            val response = ResponseModel(researcherId.value, systematicStudyId)
 
-            every { credentialsService.isAuthenticated(researcherId) } returns true
-            every { credentialsService.hasAuthority(researcherId) } returns true
+            mockkResearcherToBeAllowed(researcherId)
             every { uuidGeneratorService.next() } returns systematicStudyId
             every { systematicStudyRepository.saveOrUpdate(dto) } just Runs
 
-            sut.create(createSystematicStudyPresenter, researcherUuid, request)
+            sut.create(createSystematicStudyPresenter, researcherId.value, request)
 
+            verifyCredentialService(researcherId)
             verify {
-                credentialsService.isAuthenticated(researcherId)
-                credentialsService.hasAuthority(researcherId)
                 uuidGeneratorService.next()
                 systematicStudyRepository.saveOrUpdate(dto)
             }
@@ -110,11 +107,7 @@ class CreateSystematicStudyServiceImplTest {
             every { credentialsService.hasAuthority(researcherId) } returns false
 
             sut.create(createSystematicStudyPresenter, researcherId.value, request)
-
-            verify {
-                credentialsService.isAuthenticated(researcherId)
-                credentialsService.hasAuthority(researcherId)
-            }
+            verifyCredentialService(researcherId)
 
             assertAll(
                 { assertNull(createSystematicStudyPresenter.responseModel) },
@@ -128,22 +121,30 @@ class CreateSystematicStudyServiceImplTest {
             val researcherId = ResearcherId(UUID.randomUUID())
             val request = RequestModel(title, description, emptySet())
 
-            every { credentialsService.isAuthenticated(researcherId) } returns true
-            every { credentialsService.hasAuthority(researcherId) } returns true
+            mockkResearcherToBeAllowed(researcherId)
             every { uuidGeneratorService.next() } returns UUID.randomUUID()
 
             sut.create(createSystematicStudyPresenter, researcherId.value, request)
 
-            verify {
-                credentialsService.isAuthenticated(researcherId)
-                credentialsService.hasAuthority(researcherId)
-                uuidGeneratorService.next()
-            }
-            
+            verifyCredentialService(researcherId)
+            verify { uuidGeneratorService.next() }
+
             assertAll(
                 { assertNull(createSystematicStudyPresenter.responseModel) },
                 { assertTrue { createSystematicStudyPresenter.throwable is IllegalArgumentException } }
             )
+        }
+    }
+
+    private fun mockkResearcherToBeAllowed(researcherId: ResearcherId) {
+        every { credentialsService.isAuthenticated(researcherId) } returns true
+        every { credentialsService.hasAuthority(researcherId) } returns true
+    }
+
+    private fun verifyCredentialService(researcherId: ResearcherId) {
+        verify {
+            credentialsService.isAuthenticated(researcherId)
+            credentialsService.hasAuthority(researcherId)
         }
     }
 }
