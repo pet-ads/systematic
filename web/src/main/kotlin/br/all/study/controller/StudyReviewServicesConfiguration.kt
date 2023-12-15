@@ -2,13 +2,13 @@ package br.all.study.controller
 
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.study.create.CreateStudyReviewPresenter
 import br.all.application.study.create.CreateStudyReviewServiceImpl
 import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
 import br.all.application.study.find.service.FindAllStudyReviewsServiceImpl
 import br.all.application.study.find.presenter.FindStudyReviewPresenter
 import br.all.application.study.find.service.FindStudyReviewServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
+import br.all.application.study.update.implementation.MarkAsDuplicatedServiceImpl
 import br.all.application.study.update.implementation.UpdateStudyReviewExtractionService
 import br.all.application.study.update.implementation.UpdateStudyReviewPriorityService
 import br.all.application.study.update.implementation.UpdateStudyReviewSelectionService
@@ -51,7 +51,7 @@ class StudyReviewServicesConfiguration {
     )
 
     @Bean
-    fun updateReviewServiceSelection(
+    fun updateReviewSelectionService(
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
@@ -61,7 +61,7 @@ class StudyReviewServicesConfiguration {
     )
 
     @Bean
-    fun updateReviewServiceExtraction(
+    fun updateReviewExtractionService(
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
@@ -71,12 +71,22 @@ class StudyReviewServicesConfiguration {
     )
 
     @Bean
-    fun updateReviewServicePriority(
+    fun updateReviewPriorityService(
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
         credentialsService: ResearcherCredentialsService
     ) = UpdateStudyReviewPriorityService(
+        systematicStudyRepository, studyReviewRepository, credentialsService
+    )
+
+    @Bean
+    fun markAsDuplicatedService(
+        systematicStudyRepository: SystematicStudyRepository,
+        studyReviewRepository: StudyReviewRepository,
+        updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
+        credentialsService: ResearcherCredentialsService
+    ) = MarkAsDuplicatedServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
 }

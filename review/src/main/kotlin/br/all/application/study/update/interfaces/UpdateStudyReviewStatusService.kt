@@ -4,6 +4,7 @@ import java.util.*
 
 interface UpdateStudyReviewStatusService {
     fun changeStatus(presenter: UpdateStudyReviewStatusPresenter, request: RequestModel)
+
     data class RequestModel (
         val researcherId: UUID,
         val systematicStudyId: UUID,

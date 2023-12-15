@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -35,8 +36,11 @@ class StudyReviewControllerTest(
     fun postUrl() = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review"
     fun findUrl(studyId: String = "") =
         "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review${studyId}"
-    fun patchStatusStatus(attributeName: String, studyId: String) =
+    fun updateStatusStatus(attributeName: String, studyId: String) =
         "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyId}/${attributeName}"
+
+    fun markAsDuplicated(studyIdToKeep: Long, studyIdDuplicate: Long) =
+        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyIdToKeep}/duplicated/${studyIdDuplicate}"
 
     @BeforeEach
     fun setUp() {
@@ -121,7 +125,7 @@ class StudyReviewControllerTest(
         val studyReview = factory.reviewDocument(systematicStudyId, studyId)
         repository.insert(studyReview)
 
-        mockMvc.perform(patch(patchStatusStatus("selection-status", studyId.toString()))
+        mockMvc.perform(patch(updateStatusStatus("selection-status", studyId.toString()))
             .contentType(MediaType.APPLICATION_JSON).content(json))
             .andExpect(status().isOk)
 
@@ -141,7 +145,7 @@ class StudyReviewControllerTest(
         val studyReview = factory.reviewDocument(systematicStudyId, studyId)
         repository.insert(studyReview)
 
-        mockMvc.perform(patch(patchStatusStatus("selection-status", studyId.toString()))
+        mockMvc.perform(patch(updateStatusStatus("selection-status", studyId.toString()))
             .contentType(MediaType.APPLICATION_JSON).content(json))
             .andExpect(status().isBadRequest)
 
@@ -160,7 +164,7 @@ class StudyReviewControllerTest(
         val studyReview = factory.reviewDocument(systematicStudyId, studyId)
         repository.insert(studyReview)
 
-        val patchStatusStatus = patchStatusStatus("extraction-status", studyId.toString())
+        val patchStatusStatus = updateStatusStatus("extraction-status", studyId.toString())
         mockMvc.perform(patch(patchStatusStatus)
             .contentType(MediaType.APPLICATION_JSON).content(json))
             .andExpect(status().isOk)
@@ -181,7 +185,7 @@ class StudyReviewControllerTest(
         val studyReview = factory.reviewDocument(systematicStudyId, studyId)
         repository.insert(studyReview)
 
-        val patchStatusStatus = patchStatusStatus("extraction-status", studyId.toString())
+        val patchStatusStatus = updateStatusStatus("extraction-status", studyId.toString())
         mockMvc.perform(patch(patchStatusStatus)
             .contentType(MediaType.APPLICATION_JSON).content(json))
             .andExpect(status().isBadRequest)
@@ -201,7 +205,7 @@ class StudyReviewControllerTest(
         val studyReview = factory.reviewDocument(systematicStudyId, studyId)
         repository.insert(studyReview)
 
-        mockMvc.perform(patch(patchStatusStatus("reading-priority", studyId.toString()))
+        mockMvc.perform(patch(updateStatusStatus("reading-priority", studyId.toString()))
             .contentType(MediaType.APPLICATION_JSON).content(json))
             .andExpect(status().isOk)
 
@@ -212,21 +216,30 @@ class StudyReviewControllerTest(
     }
 
     @Test
-    fun `should not update the study reading priority if the value is invalid and return 400`() {
-        val studyId = idService.next()
+    fun `should mark as duplicated and return 200`() {
+        val studyToUpdateId = idService.next()
+        val studyToDuplicateId = idService.next()
 
-        val statusToBeUpdated = "MEDIUM"
-        val json = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
+        val studyReviewToUpdate = factory.reviewDocument(systematicStudyId, studyToUpdateId)
+        repository.insert(studyReviewToUpdate)
+        val studyReviewToDuplicate = factory.reviewDocument(systematicStudyId, studyToDuplicateId)
+        repository.insert(studyReviewToDuplicate)
 
-        val studyReview = factory.reviewDocument(systematicStudyId, studyId)
-        repository.insert(studyReview)
+        mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId)))
+            .andExpect(status().isOk)
 
-        mockMvc.perform(patch(patchStatusStatus("reading-priority", studyId.toString()))
-            .contentType(MediaType.APPLICATION_JSON).content(json))
-            .andExpect(status().isBadRequest)
+        val updatedStudyId = StudyReviewId(systematicStudyId, studyToUpdateId)
+        val updatedStudy = repository.findById(updatedStudyId).toNullable()
 
-        val studyReviewId = StudyReviewId(systematicStudyId, studyId)
-        val updatedReview = repository.findById(studyReviewId).toNullable()
-        assertEquals(studyReview, updatedReview)
+        val repeatedStudyId = StudyReviewId(systematicStudyId, studyToDuplicateId)
+        val repeatedStudy = repository.findById(repeatedStudyId).toNullable()
+
+        val sources = repeatedStudy?.searchSources?.toMutableSet() ?: mutableSetOf()
+        updatedStudy?.searchSources?.forEach { sources.add(it) }
+
+        assertAll(
+            { assertEquals(repeatedStudy?.selectionStatus, "DUPLICATED") },
+            { assertEquals(updatedStudy?.searchSources?.toMutableSet(), sources) },
+        )
     }
 }

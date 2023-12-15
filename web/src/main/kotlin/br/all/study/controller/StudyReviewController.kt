@@ -6,14 +6,13 @@ import br.all.application.study.find.service.FindStudyReviewService
 import br.all.application.study.update.implementation.UpdateStudyReviewExtractionService
 import br.all.application.study.update.implementation.UpdateStudyReviewPriorityService
 import br.all.application.study.update.implementation.UpdateStudyReviewSelectionService
-import br.all.study.presenter.RestfulCreateStudyReviewPresenter
-import br.all.study.presenter.RestfulFindStudyReviewPresenter
-import br.all.study.presenter.RestfulFindAllStudyReviewsPresenter
-import br.all.study.presenter.RestfulUpdateStudyReviewStatusPresenter
+import br.all.application.study.update.interfaces.MarkAsDuplicatedService
+import br.all.study.presenter.*
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import br.all.application.study.update.interfaces.MarkAsDuplicatedService.RequestModel as DuplicatedRequest
 import br.all.application.study.create.CreateStudyReviewService.RequestModel as CreateRequest
 import br.all.application.study.find.service.FindAllStudyReviewsService.RequestModel as FindAllRequest
 import br.all.application.study.find.service.FindStudyReviewService.RequestModel as FindOneRequest
@@ -28,6 +27,7 @@ class StudyReviewController(
     val updateSelectionService: UpdateStudyReviewSelectionService,
     val updateExtractionService: UpdateStudyReviewExtractionService,
     val updateReadingPriorityService: UpdateStudyReviewPriorityService,
+    val markAsDuplicatedService: MarkAsDuplicatedService
 ) {
 
     @PostMapping
@@ -97,6 +97,21 @@ class StudyReviewController(
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter()
         updateReadingPriorityService.changeStatus(presenter, request)
+        return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    //- [**PATCH**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewIdToKeep}/duplicated/{studyReviewIdtoIgnore}*]: mark an existing study as duplicated in the systematic study
+
+    @PatchMapping("{studyReviewIdToKeep}/duplicated/{studyReviewToMarkAsDuplicated}")
+    fun markAsDuplicated(
+        @PathVariable researcher: UUID,
+        @PathVariable systematicStudy: UUID,
+        @PathVariable studyReviewIdToKeep: Long,
+        @PathVariable studyReviewToMarkAsDuplicated: Long,
+    ): ResponseEntity<*> {
+        val presenter = RestfulMarkAsDuplicatedPresenter()
+        val request = DuplicatedRequest(researcher, systematicStudy, studyReviewIdToKeep, studyReviewToMarkAsDuplicated)
+        markAsDuplicatedService.markAsDuplicated(presenter, request)
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

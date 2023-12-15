@@ -1,6 +1,6 @@
 package br.all.application.review.update
 
-import br.all.application.researcher.repository.ReviewerRepository
+import br.all.application.researcher.repository.ResearcherRepository
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
@@ -14,7 +14,7 @@ import java.util.*
 
 class ChangeSystematicStudyOwnerService(
     private val systematicStudyRepository: SystematicStudyRepository,
-    private val researcherRepository: ReviewerRepository,
+    private val researcherRepository: ResearcherRepository,
 ) {
     fun changeOwner(reviewId: UUID, newOwner: UUID): SystematicStudyResponseModel {
         val notification = Notification()

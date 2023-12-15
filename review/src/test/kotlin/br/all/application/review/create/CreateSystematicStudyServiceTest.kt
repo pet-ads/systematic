@@ -1,6 +1,6 @@
 package br.all.application.review.create
 
-import br.all.application.researcher.repository.ReviewerRepository
+import br.all.application.researcher.repository.ResearcherRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
@@ -23,7 +23,7 @@ class CreateSystematicStudyServiceTest {
     @MockK
     private lateinit var uuidGeneratorService: UuidGeneratorService
     @MockK
-    private lateinit var researcherRepository: ReviewerRepository
+    private lateinit var researcherRepository: ResearcherRepository
     private lateinit var sut: CreateSystematicStudyService
 
     @BeforeEach
