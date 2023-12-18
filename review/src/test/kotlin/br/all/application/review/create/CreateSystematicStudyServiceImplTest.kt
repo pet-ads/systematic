@@ -20,9 +20,6 @@ import io.mockk.verify
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -34,12 +31,12 @@ class CreateSystematicStudyServiceImplTest {
     private lateinit var uuidGeneratorService: UuidGeneratorService
     @MockK
     private lateinit var credentialsService: ResearcherCredentialsService
-    private lateinit var createSystematicStudyPresenter: FakeCreateSystematicStudyPresenter
+    @MockK
+    private lateinit var createSystematicStudyPresenter: CreateSystematicStudyPresenter
     private lateinit var sut: CreateSystematicStudyServiceImpl
 
     @BeforeEach
     fun setUp() {
-        createSystematicStudyPresenter = FakeCreateSystematicStudyPresenter()
         sut = CreateSystematicStudyServiceImpl(systematicStudyRepository, uuidGeneratorService, credentialsService)
     }
 
@@ -56,21 +53,19 @@ class CreateSystematicStudyServiceImplTest {
             val response = ResponseModel(researcherId.value, systematicStudyId)
 
             mockkResearcherToBeAllowed(researcherId)
+            every { createSystematicStudyPresenter.isDone() } returns false
             every { uuidGeneratorService.next() } returns systematicStudyId
             every { systematicStudyRepository.saveOrUpdate(dto) } just Runs
+            every { createSystematicStudyPresenter.prepareSuccessView(response) } just Runs
 
             sut.create(createSystematicStudyPresenter, researcherId.value, request)
 
             verifyCredentialService(researcherId)
-            verify {
+            verify(exactly = 1) {
                 uuidGeneratorService.next()
                 systematicStudyRepository.saveOrUpdate(dto)
+                createSystematicStudyPresenter.prepareSuccessView(response)
             }
-
-            assertAll(
-                { assertEquals(response, createSystematicStudyPresenter.responseModel) },
-                { assertNull(createSystematicStudyPresenter.throwable) },
-            )
         }
     }
 
@@ -85,16 +80,17 @@ class CreateSystematicStudyServiceImplTest {
 
             every { credentialsService.isAuthenticated(researcherId) } returns false
             every { credentialsService.hasAuthority(researcherId) } returns true
+            every { createSystematicStudyPresenter.prepareFailView(any<UnauthenticatedUserException>()) } just Runs
+            every { createSystematicStudyPresenter.isDone() } returns true
 
             sut.create(createSystematicStudyPresenter, researcherId.value, request)
 
-            verify { credentialsService.isAuthenticated(researcherId) }
             verify(exactly = 0) { credentialsService.hasAuthority(researcherId) }
-
-            assertAll(
-                { assertNull(createSystematicStudyPresenter.responseModel) },
-                { assertTrue { createSystematicStudyPresenter.throwable is UnauthenticatedUserException } }
-            )
+            verify(exactly = 1) {
+                credentialsService.isAuthenticated(researcherId)
+                createSystematicStudyPresenter.prepareFailView(any<UnauthenticatedUserException>())
+                createSystematicStudyPresenter.isDone()
+            }
         }
 
         @Test
@@ -104,14 +100,15 @@ class CreateSystematicStudyServiceImplTest {
 
             every { credentialsService.isAuthenticated(researcherId) } returns true
             every { credentialsService.hasAuthority(researcherId) } returns false
+            every { createSystematicStudyPresenter.prepareFailView(any<UnauthorizedUserException>()) } just Runs
+            every { createSystematicStudyPresenter.isDone() } returns true
 
             sut.create(createSystematicStudyPresenter, researcherId.value, request)
             verifyCredentialService(researcherId)
-
-            assertAll(
-                { assertNull(createSystematicStudyPresenter.responseModel) },
-                { assertTrue { createSystematicStudyPresenter.throwable is UnauthorizedUserException } },
-            )
+            verify(exactly = 1) {
+                createSystematicStudyPresenter.prepareFailView(any<UnauthorizedUserException>())
+                createSystematicStudyPresenter.isDone()
+            }
         }
     }
 
