@@ -77,6 +77,7 @@ class CreateSystematicStudyServiceImplTest {
     }
 
     @Nested
+    @Tag("InvalidClasses")
     @DisplayName("When unable to create a new Systematic Study")
     inner class WhenUnableToCreateANewSystematicStudy {
         @Test
