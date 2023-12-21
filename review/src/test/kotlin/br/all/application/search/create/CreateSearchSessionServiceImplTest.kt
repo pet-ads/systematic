@@ -1,5 +1,5 @@
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.search.CreateSearchSessionService
+import br.all.application.search.CreateSearchSessionServiceImpl
 import br.all.application.search.create.SearchSessionRequestModel
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.search.repository.fromRequestModel
@@ -17,23 +17,23 @@ import java.util.*
 import kotlin.test.Ignore
 import kotlin.test.Test
 
-class CreateSearchSessionServiceTest {
+class CreateSearchSessionServiceImplTest {
 
     @MockK private lateinit var repository: SearchSessionRepository
     @MockK private lateinit var repositoryStudy: SystematicStudyRepository
     @MockK private lateinit var idGenerator: UuidGeneratorService
 
-    private lateinit var sut: CreateSearchSessionService
+    private lateinit var sut: CreateSearchSessionServiceImpl
 
     @BeforeEach
     fun setUp() {
         repository = mockk()
         repositoryStudy = mockk()
         idGenerator = mockk()
-        sut = CreateSearchSessionService(repository, repositoryStudy, idGenerator)
+        sut = CreateSearchSessionServiceImpl(repository, repositoryStudy, idGenerator)
     }
 
-    var systematicStudy = UUID.randomUUID();
+    /*var systematicStudy = UUID.randomUUID();
 
     @Ignore
     @Test
@@ -53,5 +53,5 @@ class CreateSearchSessionServiceTest {
         sut.createSession(requestModel)
 
         verify(exactly = 1) { repository.create(SearchSession.fromRequestModel(SearchSessionID(sessionId), ProtocolId(protocolId), requestModel)) }
-    }
+    }*/
 }
