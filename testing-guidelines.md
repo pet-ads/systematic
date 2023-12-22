@@ -8,6 +8,21 @@ General guidelines:
 - Avoid repeated code along the tests, create supporting test methods.
 - Create test data factory methods to avoid repeatedly creating big objects inside tests
 
+### Tagging classes and tests:
+
+Tag all test classes and nested classes using @Tag as well as the tests that make sense to. The intention is to prepare
+the project to create test suites in the future. Use the following convention:
+
+- **@Tag("UnitTest")** for all classes that contains unit tests (e.g. SystematicStudyTest, StudyReviewTest, DoiTest)
+- **@Tag("ServiceTest")** for all application services tests (e.g. CreateSystematicStudyServiceImplTest, 
+CreateStudyReviewServiceImplTest)
+- **@Tag("IntegrationTest")** for all controllers test and repositories implementation tests as well as other kinds of
+integration tests (e.g. StudyReviewControllerTest, MongoStudyReviewRepositoryTest)
+- **@Tag("ValidClasses")** for all nested classes that contains tests for the valid input values
+- **@Tag("InvalidClasses")** for all nested classes that contains tests for the invalid input values
+
+Notice that application services are unit tests as well as service test, so they receive both tags.
+
 ### Unit testing
 
 **Value Objects**:  
@@ -31,7 +46,7 @@ fail view.
 - Cover all additional sad paths to check if the presenter prepared a fail view
 
 Guideline: **Do not implement or use fake classes**, use only mocks (@Mockk). Configure the mocks using *every{}* 
-and check method invocation using *verify{}*."
+and check method invocation using *verify{}*.
 Example: check the PreconditionCheckerTest class.
 
 ### Integration testing
