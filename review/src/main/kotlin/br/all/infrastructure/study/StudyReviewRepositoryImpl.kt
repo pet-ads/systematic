@@ -20,5 +20,16 @@ open class StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRep
         repository.findAndUpdateAttributeById(StudyReviewId(reviewId, studyId), attributeName, newStatus)
     }
 
+    override fun saveOrUpdateBatch(dtos: List<StudyReviewDto>): List<StudyReviewDto> {
+        val savedDtos = mutableListOf<StudyReviewDto>()
+
+        for (dto in dtos) {
+            val savedDto = repository.save(dto.toDocument()).toDto()
+            savedDtos.add(savedDto)
+        }
+
+        return savedDtos
+    }
+
 }
 

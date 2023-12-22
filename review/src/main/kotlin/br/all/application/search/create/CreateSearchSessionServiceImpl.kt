@@ -5,12 +5,15 @@ import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.create.CreateSearchSessionPresenter
 import br.all.application.search.create.CreateSearchSessionService
 import br.all.application.search.create.CreateSearchSessionService.RequestModel
+import br.all.application.study.repository.StudyReviewRepository
+import br.all.application.study.repository.toDto
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.services.UuidGeneratorService
 import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.services.BibtexConverterService
+import br.all.infrastructure.study.StudyReviewRepositoryImpl
 import java.util.*
 import kotlin.NoSuchElementException
 
@@ -18,7 +21,8 @@ class CreateSearchSessionServiceImpl(
     private val searchSessionRepository: SearchSessionRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val uuidGeneratorService: UuidGeneratorService,
-    private val bibtexConverterService: BibtexConverterService
+    private val bibtexConverterService: BibtexConverterService,
+    private val studyReviewRepository: StudyReviewRepository
 ) : CreateSearchSessionService {
     override fun createSession(presenter: CreateSearchSessionPresenter, request: RequestModel) {
         require(request.searchString.isNotBlank()) { "Search string must not be blank" }
@@ -35,7 +39,7 @@ class CreateSearchSessionServiceImpl(
         val sessionId = SearchSessionID(uuidGeneratorService.next())
         val searchSession = SearchSession(
             sessionId,
-            protocolId = ProtocolId(UUID.randomUUID()),
+            systematicStudyId = SystematicStudyId(UUID.randomUUID()),
             request.searchString,
             request.additionalInfo ?: "",
             source = request.source
@@ -43,7 +47,11 @@ class CreateSearchSessionServiceImpl(
 
         val bibFileContent = String(request.bibFile.bytes)
 
-        val studyReviews = bibtexConverterService.convertManyToStudyReview(SystematicStudyId(systematicStudy.id), bibFileContent)
+        val systematicStudyId = SystematicStudyId(systematicStudy.id)
+
+        val studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudyId, bibFileContent)
+
+        studyReviewRepository.saveOrUpdateBatch(studyReviews.map { it.toDto() })
 
         searchSessionRepository.create(searchSession)
     }
