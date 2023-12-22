@@ -6,8 +6,7 @@ import br.all.domain.model.question.QuestionId
 import java.util.UUID
 
 interface QuestionRepository {
-    fun create(dto: QuestionDTO)
+    fun createOrUpdate(dto: QuestionDTO): Any
     fun findById(systematicStudyId: UUID, id: QuestionId): QuestionDTO?
     fun findAllByProtocol(systematicStudyId: UUID, protocolId: ProtocolId): List<QuestionDTO>
-    fun update(dto: QuestionDTO)
 }

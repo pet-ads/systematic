@@ -1,11 +1,11 @@
 package br.all.application.question.create
 
-import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.question.QuestionId
 import java.util.*
 
 data class QuestionDTO(
     val systematicStudyId: UUID,
-    val questionId: UUID,
+    val questionId: QuestionId,
     val protocolId: UUID,
     val code: String,
     val description: String,

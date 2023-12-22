@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-open class StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRepository) : StudyReviewRepository {
+open class  StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRepository) : StudyReviewRepository {
     override fun saveOrUpdate(dto: StudyReviewDto): StudyReviewDocument = repository.save(dto.toDocument())
 
     override fun findById(reviewId: UUID, studyId: Long) =
