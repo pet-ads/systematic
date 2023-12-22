@@ -4,7 +4,6 @@ import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.CreateSearchSessionServiceImpl
 import br.all.application.search.repository.SearchSessionRepository
-import br.all.application.study.create.CreateStudyReviewServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.domain.services.BibtexConverterService
 import br.all.domain.services.IdGeneratorService
@@ -20,8 +19,13 @@ class SearchSessionServicesConfiguration {
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
         uuidGeneratorService: UuidGeneratorService,
-        bibtexConverterService: BibtexConverterService
+        bibtexConverterService: BibtexConverterService,
+        studyReviewRepository: StudyReviewRepository
     ) = CreateSearchSessionServiceImpl(
-        searchSessionRepository, systematicStudyRepository, uuidGeneratorService, bibtexConverterService
+        searchSessionRepository,
+        systematicStudyRepository,
+        uuidGeneratorService,
+        bibtexConverterService,
+        studyReviewRepository
     )
 }
