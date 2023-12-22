@@ -20,16 +20,14 @@ class SearchSessionController(
     fun createSearchSession(
         @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
-        @RequestParam searchString: String,
-        @RequestParam additionalInfo: String?,
-        @RequestParam source: SearchSource,
+        @RequestBody request : CreateRequest,
         @RequestPart("bibFile") bibFile: MultipartFile
 
     ) : ResponseEntity<*> {
         val presenter = RestfulCreateSearchSessionPresenter()
         createService.createSession(
             presenter,
-            CreateRequest(systematicStudy, source, searchString, additionalInfo, bibFile))
+            request)
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
