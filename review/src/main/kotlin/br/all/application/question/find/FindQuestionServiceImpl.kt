@@ -13,6 +13,8 @@ import br.all.domain.model.review.SystematicStudyId
 class FindQuestionServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val questionRepository: QuestionRepository,
+    private val protocolRepository: ProtocolRepository,
+
     private val credentialsService: ResearcherCredentialsService
 ) : FindQuestionService {
 

@@ -1,6 +1,7 @@
 package br.all.application.question.create
 
 import br.all.domain.model.question.QuestionId
+import br.all.domain.model.review.SystematicStudyId
 import java.util.*
 
 data class QuestionDTO(
