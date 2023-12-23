@@ -10,7 +10,8 @@ interface CreateSearchSessionService {
     fun createSession(presenter: CreateSearchSessionPresenter, request: RequestModel)
 
     data class RequestModel(
-        val systematicStudy: UUID,
+        val researcherId: UUID,
+        val systematicStudyId: UUID,
         val source: SearchSource,
         val searchString: String,
         val additionalInfo: String?,

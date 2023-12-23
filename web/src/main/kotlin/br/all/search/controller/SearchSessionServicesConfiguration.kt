@@ -20,12 +20,14 @@ class SearchSessionServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         uuidGeneratorService: UuidGeneratorService,
         bibtexConverterService: BibtexConverterService,
-        studyReviewRepository: StudyReviewRepository
+        studyReviewRepository: StudyReviewRepository,
+        credentialsService: ResearcherCredentialsService
     ) = CreateSearchSessionServiceImpl(
         searchSessionRepository,
         systematicStudyRepository,
         uuidGeneratorService,
         bibtexConverterService,
-        studyReviewRepository
+        studyReviewRepository,
+        credentialsService
     )
 }
