@@ -1,6 +1,8 @@
 package br.all.application.search.create
 
 import br.all.domain.model.protocol.SearchSource
+import br.all.domain.model.researcher.ResearcherId
+import br.all.domain.model.review.SystematicStudyId
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
@@ -17,6 +19,7 @@ interface CreateSearchSessionService {
 
     open class ResponseModel(
         val sessionId: String,
-        val message: String
+        val systematicStudyId: SystematicStudyId,
+        val researcherId: ResearcherId
     )
 }
