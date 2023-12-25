@@ -3,8 +3,8 @@ package br.all.question.controller
 import br.all.application.question.create.CreateQuestionService
 import br.all.application.question.find.FindQuestionService
 import br.all.domain.model.question.QuestionId
-import br.all.question.presenter.RestfulCreateQuestionPresenter
-import br.all.question.presenter.RestfulFindQuestionPresenter
+import br.all.question.presenter.riskOfBias.RestfulCreateQuestionPresenter
+import br.all.question.presenter.riskOfBias.RestfulFindQuestionPresenter
 import org.springframework.http.HttpStatus
 import br.all.application.question.create.CreateQuestionService.RequestModel as CreateRequest
 import org.springframework.http.ResponseEntity
@@ -15,9 +15,9 @@ import java.util.*
 class RiskOfBiasQuestionController(
     val createService: CreateQuestionService,
     val findOneService: FindQuestionService
-): QuestionController {
+) {
     @PostMapping
-    override fun createQuestion(
+     fun createQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @RequestBody request: CreateRequest
@@ -28,7 +28,7 @@ class RiskOfBiasQuestionController(
     }
 
     @GetMapping("/{code}")
-    override fun findQuestion(
+     fun findQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @PathVariable questionId: QuestionId,

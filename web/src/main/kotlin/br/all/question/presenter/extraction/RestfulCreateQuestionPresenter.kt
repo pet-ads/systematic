@@ -1,11 +1,10 @@
-package br.all.question.presenter
+package br.all.question.presenter.extraction
 
 import br.all.application.question.create.CreateQuestionPresenter
-import br.all.application.question.create.CreateQuestionService
 import br.all.application.question.create.CreateQuestionService.*
 import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.question.QuestionId
-import br.all.question.controller.QuestionController
+import br.all.question.controller.ExtractionQuestionController
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
@@ -21,7 +20,7 @@ class RestfulCreateQuestionPresenter() : CreateQuestionPresenter {
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, response.protocolId, response.questionId)
 
-        val self = linkTo<QuestionController> {
+        val self = linkTo<ExtractionQuestionController> {
             findQuestion(response.researcherId, response.systematicStudyId, response.questionId)
         }.withSelfRel()
 

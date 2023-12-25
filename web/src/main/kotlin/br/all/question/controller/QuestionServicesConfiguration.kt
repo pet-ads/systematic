@@ -24,7 +24,7 @@ class QuestionServicesConfiguration {
     )
 
     @Bean
-    fun findReviewService(
+    fun findQuestionService(
         systematicStudyRepository: SystematicStudyRepository,
         questionRepository: QuestionRepository,
         credentialsService: ResearcherCredentialsService

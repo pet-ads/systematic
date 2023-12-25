@@ -4,8 +4,8 @@ import br.all.application.question.create.CreateQuestionService
 import br.all.application.question.find.FindQuestionService
 import br.all.domain.model.question.QuestionId
 import br.all.application.question.create.CreateQuestionService.RequestModel as CreateRequest
-import br.all.question.presenter.RestfulCreateQuestionPresenter
-import br.all.question.presenter.RestfulFindQuestionPresenter
+import br.all.question.presenter.riskOfBias.RestfulCreateQuestionPresenter
+import br.all.question.presenter.riskOfBias.RestfulFindQuestionPresenter
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -16,9 +16,9 @@ import java.util.*
 class ExtractionQuestionController(
     val createService: CreateQuestionService,
     val findOneService: FindQuestionService
-) : QuestionController {
+){
     @PostMapping
-    override fun createQuestion(
+     fun createQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @RequestBody request: CreateRequest
@@ -30,7 +30,7 @@ class ExtractionQuestionController(
     }
 
     @GetMapping("/{code}")
-    override fun findQuestion(
+     fun findQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @PathVariable questionId: QuestionId,
