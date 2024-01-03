@@ -5,8 +5,7 @@ import br.all.infrastructure.review.SystematicStudyDocument
 import br.all.infrastructure.shared.toNullable
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.*
@@ -81,6 +80,16 @@ class MongoSystematicStudyRepositoryTest(
 
             sut.deleteById(systematicStudyId)
             assertEquals(null, sut.findById(systematicStudyId).toNullable())
+        }
+    }
+
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("When being unable to retrieve data from the repository")
+    inner class WhenBeingUnableToRetrieveDataFromTheRepository {
+        @Test
+        fun `Should not find a systematic study that does not exist`() {
+            assertNull(sut.findById(UUID.randomUUID()).toNullable())
         }
     }
 
