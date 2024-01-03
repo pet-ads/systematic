@@ -12,6 +12,7 @@ import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.services.UuidGeneratorService
+import io.github.serpro69.kfaker.Faker
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -34,6 +35,7 @@ class CreateSystematicStudyServiceImplTest {
     private lateinit var credentialsService: ResearcherCredentialsService
     @MockK
     private lateinit var createSystematicStudyPresenter: CreateSystematicStudyPresenter
+    private val faker = Faker()
     private lateinit var sut: CreateSystematicStudyServiceImpl
 
     @BeforeEach
@@ -49,9 +51,9 @@ class CreateSystematicStudyServiceImplTest {
         fun `Should successfully create a systematic study`() {
             val researcherId = ResearcherId(UUID.randomUUID())
             val systematicStudyId = UUID.randomUUID()
-            val request = RequestModel("Title", "Description", emptySet())
-            val dto = SystematicStudy.fromRequestModel(systematicStudyId, researcherId.value, request).toDto()
-            val response = ResponseModel(researcherId.value, systematicStudyId)
+            val request = generateRequestModel()
+            val dto = generateDto(systematicStudyId, researcherId, request)
+            val response = generateResponseModel(researcherId, systematicStudyId)
 
             mockkResearcherToBeAllowed(researcherId)
             mockkSystematicStudyToBeCreated(systematicStudyId, dto, response)
@@ -64,6 +66,17 @@ class CreateSystematicStudyServiceImplTest {
                 createSystematicStudyPresenter.prepareSuccessView(response)
             }
         }
+
+        private fun generateDto(
+            systematicStudyId: UUID,
+            researcherId: ResearcherId,
+            request: RequestModel
+        ) = SystematicStudy.fromRequestModel(systematicStudyId, researcherId.value, request).toDto()
+
+        private fun generateResponseModel(
+            researcherId: ResearcherId,
+            systematicStudyId: UUID
+        ) = ResponseModel(researcherId.value, systematicStudyId)
 
         private fun mockkResearcherToBeAllowed(researcherId: ResearcherId) {
             every { credentialsService.isAuthenticated(researcherId) } returns true
@@ -89,7 +102,7 @@ class CreateSystematicStudyServiceImplTest {
         @Test
         fun `Should not the researcher be allowed to create a new study when unauthenticated`() {
             val researcherId = ResearcherId(UUID.randomUUID())
-            val request = RequestModel("Title", "Description", emptySet())
+            val request = generateRequestModel()
 
             mockkResearcherToBeUnauthenticated(researcherId)
             sut.create(createSystematicStudyPresenter, researcherId.value, request)
@@ -110,7 +123,7 @@ class CreateSystematicStudyServiceImplTest {
         @Test
         fun `Should not the researcher be allowed to create a study when unauthorized`() {
             val researcherId = ResearcherId(UUID.randomUUID())
-            val request = RequestModel("Title", "Description", emptySet())
+            val request = generateRequestModel()
 
             mockkResearcherToBeUnauthorized(researcherId)
             sut.create(createSystematicStudyPresenter, researcherId.value, request)
@@ -128,4 +141,10 @@ class CreateSystematicStudyServiceImplTest {
             every { createSystematicStudyPresenter.isDone() } returns true
         }
     }
+
+    private fun generateRequestModel(
+        title: String = faker.book.title(),
+        description: String = faker.lorem.words(),
+        collaborators: Set<UUID> = emptySet()
+    ) = RequestModel(title, description, collaborators)
 }
