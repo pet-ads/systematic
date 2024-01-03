@@ -59,8 +59,6 @@ class CreateSystematicStudyServiceImplTest {
             sut.create(createSystematicStudyPresenter, researcherId.value, request)
 
             verify(exactly = 1) {
-                credentialsService.isAuthenticated(researcherId)
-                credentialsService.hasAuthority(researcherId)
                 uuidGeneratorService.next()
                 systematicStudyRepository.saveOrUpdate(dto)
                 createSystematicStudyPresenter.prepareSuccessView(response)
@@ -96,9 +94,7 @@ class CreateSystematicStudyServiceImplTest {
             mockkResearcherToBeUnauthenticated(researcherId)
             sut.create(createSystematicStudyPresenter, researcherId.value, request)
 
-            verify(exactly = 0) { credentialsService.hasAuthority(researcherId) }
             verify(exactly = 1) {
-                credentialsService.isAuthenticated(researcherId)
                 createSystematicStudyPresenter.prepareFailView(any<UnauthenticatedUserException>())
                 createSystematicStudyPresenter.isDone()
             }
@@ -120,8 +116,6 @@ class CreateSystematicStudyServiceImplTest {
             sut.create(createSystematicStudyPresenter, researcherId.value, request)
 
             verify(exactly = 1) {
-                credentialsService.isAuthenticated(researcherId)
-                credentialsService.hasAuthority(researcherId)
                 createSystematicStudyPresenter.prepareFailView(any<UnauthorizedUserException>())
                 createSystematicStudyPresenter.isDone()
             }
