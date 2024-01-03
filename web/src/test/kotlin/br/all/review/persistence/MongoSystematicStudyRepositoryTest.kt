@@ -33,6 +33,25 @@ class MongoSystematicStudyRepositoryTest(
             sut.save(document)
             assertEquals(document, sut.findById(systematicStudyId).toNullable())
         }
+
+        @Test
+        fun `Should update an existent systematic study`() {
+            val systematicStudyId = UUID.randomUUID()
+            val ownerId = UUID.randomUUID()
+            val oldDocument = generateDocument(id = systematicStudyId, owner = ownerId)
+
+            sut.save(oldDocument)
+
+            val newDocument = generateDocument(
+                id = systematicStudyId,
+                owner = ownerId,
+                collaborators = mutableSetOf(UUID.randomUUID())
+            )
+
+            sut.save(newDocument)
+            val updatedSystematicStudy = sut.findById(systematicStudyId).toNullable()
+            assertEquals(2, updatedSystematicStudy?.collaborators?.size)
+        }
     }
 
     private fun generateDocument(
@@ -40,6 +59,6 @@ class MongoSystematicStudyRepositoryTest(
         title: String = faker.book.title(),
         description: String = faker.lorem.words(),
         owner: UUID = UUID.randomUUID(),
-        collaborators: Set<UUID> = emptySet(),
-    ) = SystematicStudyDocument(id, title, description, owner, collaborators)
+        collaborators: MutableSet<UUID> = mutableSetOf(),
+    ) = SystematicStudyDocument(id, title, description, owner, collaborators.also { it.add(owner) }.toSet())
 }
