@@ -25,5 +25,5 @@ open class SystematicStudyRepositoryImpl(
 
     override fun hasReviewer(reviewId: UUID, researcherId: UUID) = innerRepository.findById(reviewId)
         .toNullable()
-        ?.let { it.owner == reviewId } ?: false
+        ?.let { researcherId in it.collaborators } ?: false
 }

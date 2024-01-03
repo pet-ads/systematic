@@ -1,9 +1,11 @@
 package br.all.study.controller
 
+import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
 import br.all.infrastructure.study.StudyReviewId
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
+import br.all.review.shared.DummyFactory
 import br.all.study.utils.TestDataFactory
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -22,6 +24,7 @@ import java.util.*
 @AutoConfigureMockMvc
 class StudyReviewControllerTest(
     @Autowired val repository: MongoStudyReviewRepository,
+    @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
     @Autowired val idService: StudyReviewIdGeneratorService,
     @Autowired val mockMvc: MockMvc,
 ) {
@@ -44,9 +47,16 @@ class StudyReviewControllerTest(
     fun setUp() {
         repository.deleteAll()
         idService.reset()
+
         factory = TestDataFactory()
         systematicStudyId = factory.systematicStudyId
         researcherId = factory.researcherId
+
+        systematicStudyRepository.deleteAll()
+        systematicStudyRepository.save(DummyFactory().createSystematicStudyDocument(
+            id = systematicStudyId,
+            owner = researcherId,
+        ))
     }
 
     @AfterEach
