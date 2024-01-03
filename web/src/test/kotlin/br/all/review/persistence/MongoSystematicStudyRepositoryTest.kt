@@ -91,6 +91,11 @@ class MongoSystematicStudyRepositoryTest(
         fun `Should not find a systematic study that does not exist`() {
             assertNull(sut.findById(UUID.randomUUID()).toNullable())
         }
+
+        @Test
+        fun `Should not find any systematic study`() {
+            assertEquals(0, sut.findAll().size)
+        }
     }
 
     private fun generateDocument(
