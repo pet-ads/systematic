@@ -62,6 +62,15 @@ class MongoSystematicStudyRepositoryTest(
             sut.save(document)
             assertNotEquals(null, sut.findById(systematicStudyId).toNullable())
         }
+
+        @Test
+        fun `Should find all existent systematic study`() {
+            sut.save(generateDocument())
+            sut.save(generateDocument())
+            sut.save(generateDocument())
+            
+            assertEquals(3, sut.findAll().size)
+        }
     }
 
     private fun generateDocument(
