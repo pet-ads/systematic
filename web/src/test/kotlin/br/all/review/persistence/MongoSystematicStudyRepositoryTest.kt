@@ -68,8 +68,19 @@ class MongoSystematicStudyRepositoryTest(
             sut.save(generateDocument())
             sut.save(generateDocument())
             sut.save(generateDocument())
-            
+
             assertEquals(3, sut.findAll().size)
+        }
+
+        @Test
+        fun `Should delete a systematic study`() {
+            val systematicStudyId = UUID.randomUUID()
+            val document = generateDocument(systematicStudyId)
+
+            sut.save(document)
+
+            sut.deleteById(systematicStudyId)
+            assertEquals(null, sut.findById(systematicStudyId).toNullable())
         }
     }
 
