@@ -6,6 +6,7 @@ import br.all.infrastructure.shared.toNullable
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.*
@@ -51,6 +52,15 @@ class MongoSystematicStudyRepositoryTest(
             sut.save(newDocument)
             val updatedSystematicStudy = sut.findById(systematicStudyId).toNullable()
             assertEquals(2, updatedSystematicStudy?.collaborators?.size)
+        }
+
+        @Test
+        fun `Should find a existent systematic study`() {
+            val systematicStudyId = UUID.randomUUID()
+            val document = generateDocument(systematicStudyId)
+
+            sut.save(document)
+            assertNotEquals(null, sut.findById(systematicStudyId).toNullable())
         }
     }
 
