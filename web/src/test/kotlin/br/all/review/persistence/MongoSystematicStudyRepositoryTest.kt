@@ -21,22 +21,17 @@ class MongoSystematicStudyRepositoryTest(
     fun setUp() {
         sut.deleteAll()
     }
-
     @Nested
-    @DisplayName("When saving a new Systematic Study")
-    inner class WhenSavingANewSystematicStudy {
-        @Nested
-        @Tag("ValidClasses")
-        @DisplayName("And being succeed")
-        inner class AndBeingSucceed {
-            @Test
-            fun `Should save a new systematic study`() {
-                val systematicStudyId = UUID.randomUUID()
-                val document = generateDocument(systematicStudyId)
+    @Tag("ValidClasses")
+    @DisplayName("When the CRUD is succeed")
+    inner class WhenTheCrudIsSucceed {
+        @Test
+        fun `Should save a new systematic study`() {
+            val systematicStudyId = UUID.randomUUID()
+            val document = generateDocument(systematicStudyId)
 
-                sut.save(document)
-                assertEquals(document, sut.findById(systematicStudyId).toNullable())
-            }
+            sut.save(document)
+            assertEquals(document, sut.findById(systematicStudyId).toNullable())
         }
     }
 
