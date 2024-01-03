@@ -9,7 +9,7 @@ import java.util.*
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel as CreateRequestModel
 
 @RestController
-@RequestMapping("/researcher/{researcherId}/systematic-study")
+@RequestMapping("/api/v1/researcher/{researcherId}/systematic-study")
 class SystematicStudyController(
     private val createSystematicStudyService: CreateSystematicStudyService,
 ) {

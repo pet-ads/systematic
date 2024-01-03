@@ -6,6 +6,7 @@ import java.util.*
 
 class DummyFactory {
     private val faker = Faker()
+    val researcherId = UUID.randomUUID()
 
     fun createSystematicStudyDocument(
         id: UUID = UUID.randomUUID(),
@@ -14,4 +15,16 @@ class DummyFactory {
         owner: UUID = UUID.randomUUID(),
         collaborators: MutableSet<UUID> = mutableSetOf(),
     ) = SystematicStudyDocument(id, title, description, owner, collaborators.also { it.add(owner) }.toSet())
+
+    fun createValidPostRequest(
+        title: String = faker.book.title(),
+        description: String = faker.lorem.words(),
+        collaborators: Set<UUID> = emptySet()
+    ) = """
+        {
+            "title": "$title",
+            "description": "$description",
+            "collaborators": $collaborators
+        }
+    """.trimIndent()
 }
