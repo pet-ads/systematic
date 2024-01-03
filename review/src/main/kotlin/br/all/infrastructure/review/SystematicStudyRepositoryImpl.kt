@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-class SystematicStudyRepositoryImpl(
+open class SystematicStudyRepositoryImpl(
     private val innerRepository: MongoSystematicStudyRepository,
 ) : SystematicStudyRepository {
     override fun saveOrUpdate(dto: SystematicStudyDto) {
