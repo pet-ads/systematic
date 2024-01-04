@@ -35,30 +35,22 @@ class SystematicStudyControllerTest(
     @Nested
     @DisplayName("When posting a new Systematic Study")
     inner class WhenPostingANewSystematicStudy {
-        @Nested
+        @Test
         @Tag("ValidClasses")
-        @DisplayName("And being able to create it")
-        inner class AndBeingAbleToCreateIt {
-            @Test
-            fun `Should create a valid systematic study`() {
-                val json = factory.createValidPostRequest()
-                mockMvc.perform(post(postUrl()).contentType(MediaType.APPLICATION_JSON).content(json))
-                    .andExpect(status().isCreated)
-                    .andExpect(jsonPath("$.researcherId").value(factory.researcherId.toString()))
-                    .andExpect(jsonPath("$.systematicStudyId").isString)
-            }
+        fun `Should create a valid systematic study`() {
+            val json = factory.createValidPostRequest()
+            mockMvc.perform(post(postUrl()).contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isCreated)
+                .andExpect(jsonPath("$.researcherId").value(factory.researcherId.toString()))
+                .andExpect(jsonPath("$.systematicStudyId").isString)
         }
-
-        @Nested
+        
+        @Test
         @Tag("InvalidClasses")
-        @DisplayName("And provided invalid data")
-        inner class AndProvidedInvalidData {
-            @Test
-            fun `Should not create a invalid systematic study`() {
-                val json = factory.createInvalidPostRequest()
-                mockMvc.perform(post(postUrl()).contentType(MediaType.APPLICATION_JSON).content(json))
-                    .andExpect(status().isBadRequest)
-            }
+        fun `Should not create a invalid systematic study`() {
+            val json = factory.createInvalidPostRequest()
+            mockMvc.perform(post(postUrl()).contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isBadRequest)
         }
     }
 }
