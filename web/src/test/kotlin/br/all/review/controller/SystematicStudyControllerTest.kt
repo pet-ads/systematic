@@ -48,5 +48,17 @@ class SystematicStudyControllerTest(
                     .andExpect(jsonPath("$.systematicStudyId").isString)
             }
         }
+
+        @Nested
+        @Tag("InvalidClasses")
+        @DisplayName("And provided invalid data")
+        inner class AndProvidedInvalidData {
+            @Test
+            fun `Should not create a invalid systematic study`() {
+                val json = factory.createInvalidPostRequest()
+                mockMvc.perform(post(postUrl()).contentType(MediaType.APPLICATION_JSON).content(json))
+                    .andExpect(status().isBadRequest)
+            }
+        }
     }
 }

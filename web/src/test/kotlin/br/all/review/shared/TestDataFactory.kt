@@ -27,4 +27,12 @@ class TestDataFactory {
             "collaborators": $collaborators
         }
     """.trimIndent()
+
+    fun createInvalidPostRequest() = """
+        {
+            "title": "",
+            "description": "",
+            "collaborators": [],
+        }
+    """.trimIndent()
 }
