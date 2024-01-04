@@ -7,8 +7,9 @@ import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
-
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -24,7 +25,7 @@ class PreconditionCheckerTest {
     fun setUp() {
         presenter = mockk(relaxed = true)
         credentialsService = mockk()
-        repository = mockk()
+        repository = mockk(relaxed = true)
         preconditionChecker = PreconditionChecker(repository, credentialsService)
     }
 
