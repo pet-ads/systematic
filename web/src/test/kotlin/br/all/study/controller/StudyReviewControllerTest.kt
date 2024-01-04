@@ -5,7 +5,6 @@ import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
 import br.all.infrastructure.study.StudyReviewId
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
-import br.all.review.shared.DummyFactory
 import br.all.study.utils.TestDataFactory
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -19,6 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.*
+import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -53,7 +53,7 @@ class StudyReviewControllerTest(
         researcherId = factory.researcherId
 
         systematicStudyRepository.deleteAll()
-        systematicStudyRepository.save(DummyFactory().createSystematicStudyDocument(
+        systematicStudyRepository.save(SystematicStudyTestDataFactory().createSystematicStudyDocument(
             id = systematicStudyId,
             owner = researcherId,
         ))

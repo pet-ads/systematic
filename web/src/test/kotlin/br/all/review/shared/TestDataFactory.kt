@@ -4,7 +4,7 @@ import br.all.infrastructure.review.SystematicStudyDocument
 import io.github.serpro69.kfaker.Faker
 import java.util.*
 
-class DummyFactory {
+class TestDataFactory {
     private val faker = Faker()
     val researcherId = UUID.randomUUID()
 
