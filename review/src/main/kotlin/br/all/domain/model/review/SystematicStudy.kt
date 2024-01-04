@@ -3,15 +3,15 @@ package br.all.domain.model.review
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.utils.requireThatExists
-import java.util.UUID
+import java.util.*
 
 class SystematicStudy(
-    systematicStudyId: SystematicStudyId,
+    id: SystematicStudyId,
     title: String,
     description: String,
     owner: ResearcherId,
     collaborators: MutableSet<ResearcherId> = mutableSetOf(),
-) : Entity<UUID>(systematicStudyId) {
+) : Entity<UUID>(id) {
 
     private val _collaborators = collaborators
     val collaborators get() = _collaborators.toSet()
