@@ -30,5 +30,5 @@ class RestfulFindOneSystematicStudyPresenter: FindOneSystematicStudyPresenter {
 
     override fun isDone() = responseEntity != null
 
-    private data class ViewModel(private val content: SystematicStudyDto) : RepresentationModel<ViewModel>()
+    private data class ViewModel(val content: SystematicStudyDto) : RepresentationModel<ViewModel>()
 }
