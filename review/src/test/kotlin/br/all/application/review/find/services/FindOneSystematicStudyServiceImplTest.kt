@@ -2,10 +2,10 @@ package br.all.application.review.find.services
 
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.find.presenter.FindOneSystematicStudyPresenter
-import br.all.application.review.find.services.FindOneSystematicStudyService.ResponseModel
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeAllowed
+import br.all.application.review.util.TestDataFactory.findOneResponseModel
 import br.all.application.review.util.TestDataFactory.generateDto
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -42,7 +42,7 @@ class FindOneSystematicStudyServiceImplTest {
             val researcherId = UUID.randomUUID()
             val systematicStudyId = UUID.randomUUID()
             val dto = generateDto(systematicStudyId = systematicStudyId, ownerId = researcherId)
-            val response = ResponseModel(researcherId, systematicStudyId, dto)
+            val response = findOneResponseModel(researcherId, systematicStudyId, dto)
 
             makeResearcherToBeAllowed(credentialsService, presenter, researcherId)
             makeSystematicStudyExist(systematicStudyId, researcherId, dto)

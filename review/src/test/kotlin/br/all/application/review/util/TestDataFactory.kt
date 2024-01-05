@@ -9,6 +9,7 @@ import io.github.serpro69.kfaker.Faker
 import java.util.*
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel as CreateRequestModel
 import br.all.application.review.create.CreateSystematicStudyService.ResponseModel as CreateResponseModel
+import br.all.application.review.find.services.FindOneSystematicStudyService.ResponseModel as FindOneResponseModel
 
 object TestDataFactory {
     private val faker = Faker()
@@ -43,4 +44,10 @@ object TestDataFactory {
         researcherId: ResearcherId,
         request: CreateRequestModel,
     ) = SystematicStudy.fromRequestModel(systematicStudyId, researcherId.value, request).toDto()
+
+    fun findOneResponseModel(
+        researcherId: UUID = UUID.randomUUID(),
+        systematicStudyId: UUID = UUID.randomUUID(),
+        dto: SystematicStudyDto = generateDto(),
+    ) = FindOneResponseModel(researcherId, systematicStudyId, dto)
 }
