@@ -6,9 +6,11 @@ import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeAllowed
 import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeUnauthenticated
+import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeUnauthorized
 import br.all.application.review.util.TestDataFactory
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
+import br.all.application.shared.exceptions.UnauthorizedUserException
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -79,6 +81,16 @@ class FindOneSystematicStudyServiceImplTest {
             verify {
                 presenter.isDone()
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
+            }
+        }
+
+        @Test
+        fun `should a unauthorized researcher be unable to find any systematic study`() {
+            makeResearcherToBeUnauthorized(credentialsService, presenter, factory.researcherId)
+            sut.findById(presenter, factory.researcherId, factory.systematicStudyId)
+            verify {
+                presenter.isDone()
+                presenter.prepareFailView(any<UnauthorizedUserException>())
             }
         }
     }
