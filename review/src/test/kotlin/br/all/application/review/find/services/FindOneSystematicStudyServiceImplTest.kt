@@ -5,7 +5,7 @@ import br.all.application.review.find.presenter.FindOneSystematicStudyPresenter
 import br.all.application.review.find.services.FindOneSystematicStudyService.ResponseModel
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.domain.model.researcher.ResearcherId
+import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeAllowed
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -50,12 +50,10 @@ class FindOneSystematicStudyServiceImplTest {
             )
             val response = ResponseModel(researcherId, systematicStudyId, dto)
 
-            every { credentialsService.isAuthenticated(ResearcherId(researcherId)) } returns true
-            every { credentialsService.hasAuthority(ResearcherId(researcherId)) } returns true
+            makeResearcherToBeAllowed(credentialsService, presenter, researcherId)
             every { systematicStudyRepository.existsById(systematicStudyId) } returns true
             every { systematicStudyRepository.hasReviewer(systematicStudyId, researcherId) } returns true
             every { systematicStudyRepository.findById(systematicStudyId) } returns dto
-            every { presenter.isDone() } returns false
             every { presenter.prepareSuccessView(response) } just Runs
 
             sut.findById(presenter, researcherId, systematicStudyId)

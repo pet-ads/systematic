@@ -7,6 +7,9 @@ import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
+import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeAllowed
+import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeUnauthenticated
+import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeUnauthorized
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.domain.model.researcher.ResearcherId
@@ -55,7 +58,7 @@ class CreateSystematicStudyServiceImplTest {
             val dto = generateDto(systematicStudyId, researcherId, request)
             val response = generateResponseModel(researcherId, systematicStudyId)
 
-            mockkResearcherToBeAllowed(researcherId)
+            makeResearcherToBeAllowed(credentialsService, createSystematicStudyPresenter, researcherId.value)
             mockkSystematicStudyToBeCreated(systematicStudyId, dto, response)
 
             sut.create(createSystematicStudyPresenter, researcherId.value, request)
@@ -78,12 +81,6 @@ class CreateSystematicStudyServiceImplTest {
             systematicStudyId: UUID
         ) = ResponseModel(researcherId.value, systematicStudyId)
 
-        private fun mockkResearcherToBeAllowed(researcherId: ResearcherId) {
-            every { credentialsService.isAuthenticated(researcherId) } returns true
-            every { credentialsService.hasAuthority(researcherId) } returns true
-            every { createSystematicStudyPresenter.isDone() } returns false
-        }
-
         private fun mockkSystematicStudyToBeCreated(
             systematicStudyId: UUID,
             dto: SystematicStudyDto,
@@ -104,7 +101,7 @@ class CreateSystematicStudyServiceImplTest {
             val researcherId = ResearcherId(UUID.randomUUID())
             val request = generateRequestModel()
 
-            mockkResearcherToBeUnauthenticated(researcherId)
+            makeResearcherToBeUnauthenticated(credentialsService, createSystematicStudyPresenter, researcherId.value)
             sut.create(createSystematicStudyPresenter, researcherId.value, request)
 
             verify(exactly = 1) {
@@ -113,32 +110,18 @@ class CreateSystematicStudyServiceImplTest {
             }
         }
 
-        private fun mockkResearcherToBeUnauthenticated(researcherId: ResearcherId) {
-            every { credentialsService.isAuthenticated(researcherId) } returns false
-            every { credentialsService.hasAuthority(researcherId) } returns true
-            every { createSystematicStudyPresenter.prepareFailView(any<UnauthenticatedUserException>()) } just Runs
-            every { createSystematicStudyPresenter.isDone() } returns true
-        }
-
         @Test
         fun `Should not the researcher be allowed to create a study when unauthorized`() {
             val researcherId = ResearcherId(UUID.randomUUID())
             val request = generateRequestModel()
 
-            mockkResearcherToBeUnauthorized(researcherId)
+            makeResearcherToBeUnauthorized(credentialsService, createSystematicStudyPresenter, researcherId.value)
             sut.create(createSystematicStudyPresenter, researcherId.value, request)
 
             verify(exactly = 1) {
                 createSystematicStudyPresenter.prepareFailView(any<UnauthorizedUserException>())
                 createSystematicStudyPresenter.isDone()
             }
-        }
-
-        private fun mockkResearcherToBeUnauthorized(researcherId: ResearcherId) {
-            every { credentialsService.isAuthenticated(researcherId) } returns true
-            every { credentialsService.hasAuthority(researcherId) } returns false
-            every { createSystematicStudyPresenter.prepareFailView(any<UnauthorizedUserException>()) } just Runs
-            every { createSystematicStudyPresenter.isDone() } returns true
         }
     }
 
