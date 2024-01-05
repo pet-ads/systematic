@@ -5,8 +5,10 @@ import br.all.application.review.find.presenter.FindAllSystematicStudyPresenter
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeAllowed
 import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeUnauthenticated
+import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeUnauthorized
 import br.all.application.review.util.TestDataFactory
 import br.all.application.shared.exceptions.UnauthenticatedUserException
+import br.all.application.shared.exceptions.UnauthorizedUserException
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -91,6 +93,16 @@ class FindAllSystematicStudyServiceImplTest {
             verify {
                 presenter.isDone()
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
+            }
+        }
+
+        @Test
+        fun `should prepare fail view when the researcher is unauthorized`() {
+            makeResearcherToBeUnauthorized(credentialsService, presenter, factory.researcherId)
+            sut.findAll(presenter, factory.researcherId)
+            verify {
+                presenter.isDone()
+                presenter.prepareFailView(any<UnauthorizedUserException>())
             }
         }
     }
