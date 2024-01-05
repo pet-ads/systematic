@@ -85,6 +85,20 @@ class FindOneSystematicStudyServiceImplTest {
         }
 
         @Test
+        fun `should prepare a fail view if the researcher is not a collaborator`() {
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
+            every { systematicStudyRepository.existsById(factory.systematicStudyId) } returns true
+            every { systematicStudyRepository.hasReviewer(factory.systematicStudyId, factory.researcherId) } returns false
+            every { presenter.isDone() } returns false andThen true
+
+            sut.findById(presenter, factory.researcherId, factory.systematicStudyId)
+            verify {
+                presenter.prepareFailView(any<UnauthorizedUserException>())
+                presenter.isDone()
+            }
+        }
+
+        @Test
         fun `should a unauthenticated researcher be unable to find any systematic study`() {
             makeResearcherToBeUnauthenticated(credentialsService, presenter, factory.researcherId)
             sut.findById(presenter, factory.researcherId, factory.systematicStudyId)
