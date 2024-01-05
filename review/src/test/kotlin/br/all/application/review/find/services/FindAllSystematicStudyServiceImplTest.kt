@@ -34,6 +34,7 @@ class FindAllSystematicStudyServiceImplTest {
     }
 
     @Nested
+    @Tag("ValidClasses")
     @DisplayName("When successfully finding systematic studies")
     inner class WhenSuccessfullyFindingSystematicStudies {
         @Test
