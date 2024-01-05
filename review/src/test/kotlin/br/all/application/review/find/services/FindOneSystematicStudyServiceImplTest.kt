@@ -55,6 +55,16 @@ class FindOneSystematicStudyServiceImplTest {
             sut.findById(presenter, researcherId, systematicStudyId)
             verify { presenter.prepareSuccessView(response) }
         }
+
+        private fun makeSystematicStudyExist(
+            systematicStudyId: UUID,
+            researcherId: UUID,
+            dto: SystematicStudyDto
+        ) {
+            every { systematicStudyRepository.existsById(systematicStudyId) } returns true
+            every { systematicStudyRepository.hasReviewer(systematicStudyId, researcherId) } returns true
+            every { systematicStudyRepository.findById(systematicStudyId) } returns dto
+        }
     }
 
     @Nested
@@ -93,15 +103,5 @@ class FindOneSystematicStudyServiceImplTest {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
             }
         }
-    }
-
-    private fun makeSystematicStudyExist(
-        systematicStudyId: UUID,
-        researcherId: UUID,
-        dto: SystematicStudyDto
-    ) {
-        every { systematicStudyRepository.existsById(systematicStudyId) } returns true
-        every { systematicStudyRepository.hasReviewer(systematicStudyId, researcherId) } returns true
-        every { systematicStudyRepository.findById(systematicStudyId) } returns dto
     }
 }
