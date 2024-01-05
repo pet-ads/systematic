@@ -88,6 +88,14 @@ class SystematicStudyControllerTest(
                 mockMvc.perform(get(getOneUrl()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound)
             }
+
+            @Test
+            fun `should a researcher is not a collaborator be unauthorized and return 403`() {
+                repository.save(factory.createSystematicStudyDocument())
+                val notAllowed = UUID.randomUUID()
+                mockMvc.perform(get(getOneUrl(researcherId = notAllowed)).contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isForbidden)
+            }
         }
     }
 }
