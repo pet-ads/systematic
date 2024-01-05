@@ -93,6 +93,18 @@ class SystematicStudyControllerTest(
                     .andExpect(jsonPath("$.size").value(1))
                     .andExpect(jsonPath("$._links").exists())
             }
+
+            @Test
+            fun `should get all systematic studies and return 200`() {
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
+
+                mockMvc.perform(get(getAllUrl()).contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.size").value(3))
+                    .andExpect(jsonPath("$._links").exists())
+            }
         }
 
         @Nested
