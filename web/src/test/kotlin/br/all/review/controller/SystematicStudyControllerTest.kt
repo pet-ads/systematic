@@ -43,6 +43,7 @@ class SystematicStudyControllerTest(
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.researcherId").value(factory.researcherId.toString()))
                 .andExpect(jsonPath("$.systematicStudyId").isString)
+                .andExpect(jsonPath("$._links").exists())
         }
         
         @Test
