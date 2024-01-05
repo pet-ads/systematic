@@ -58,4 +58,6 @@ class TestDataFactory {
         vararg systematicStudies: SystematicStudyDto,
         researcherId: UUID = this.researcherId,
     ) = FindAllResponseModel(researcherId, systematicStudies.toList())
+
+    fun emptyFindAllResponseModel(researcherId: UUID = this.researcherId) = FindAllResponseModel(researcherId, emptyList())
 }

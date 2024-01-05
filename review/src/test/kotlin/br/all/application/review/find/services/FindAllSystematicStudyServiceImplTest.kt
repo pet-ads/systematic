@@ -67,4 +67,19 @@ class FindAllSystematicStudyServiceImplTest {
             verify { presenter.prepareSuccessView(response) }
         }
     }
+
+    @Nested
+    @DisplayName("When being unable to find systematic studies")
+    inner class WhenBeingUnableToFindSystematicStudies {
+        @Test
+        fun `should not find systematic studies when no one exists`() {
+            val response = factory.emptyFindAllResponseModel()
+
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
+            every { systematicStudyRepository.findSomeByCollaborator(factory.researcherId) } returns emptyList()
+
+            sut.findAll(presenter, factory.researcherId)
+            verify { presenter.prepareSuccessView(response) }
+        }
+    }
 }
