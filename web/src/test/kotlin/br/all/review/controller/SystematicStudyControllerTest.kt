@@ -78,5 +78,16 @@ class SystematicStudyControllerTest(
                     .andExpect(jsonPath("$._links").exists())
             }
         }
+
+        @Nested
+        @Tag("InvalidClasses")
+        @DisplayName("And being unable to find any one")
+        inner class AndBeingUnableToFindAnyOne {
+            @Test
+            fun `should return 404 when trying to find a nonexistent systematic study`() {
+                mockMvc.perform(get(getOneUrl()).contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound)
+            }
+        }
     }
 }
