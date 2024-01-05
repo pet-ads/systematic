@@ -4,7 +4,7 @@ import br.all.application.review.find.presenter.FindAllSystematicStudyPresenter
 import br.all.application.review.repository.SystematicStudyDto
 import java.util.*
 
-interface FindAllSystematicStudyService {
+interface FindAllSystematicStudiesService {
     fun findAll(presenter: FindAllSystematicStudyPresenter, researcherId: UUID)
 
     data class ResponseModel(

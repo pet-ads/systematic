@@ -21,20 +21,20 @@ import java.util.*
 @Tag("UnitTest")
 @Tag("IntegrationTest")
 @ExtendWith(MockKExtension::class)
-class FindAllSystematicStudyServiceImplTest {
+class FindAllSystematicStudiesServiceImplTest {
     @MockK
     private lateinit var systematicStudyRepository: SystematicStudyRepository
     @MockK
     private lateinit var credentialsService: ResearcherCredentialsService
     private lateinit var presenter: FindAllSystematicStudyPresenter
     private lateinit var factory: TestDataFactory
-    private lateinit var sut: FindAllSystematicStudyServiceImpl
+    private lateinit var sut: FindAllSystematicStudiesServiceImpl
 
     @BeforeEach
     fun setUp() {
         presenter = mockk(relaxed = true)
         factory = TestDataFactory()
-        sut = FindAllSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
+        sut = FindAllSystematicStudiesServiceImpl(systematicStudyRepository, credentialsService)
     }
 
     @Nested

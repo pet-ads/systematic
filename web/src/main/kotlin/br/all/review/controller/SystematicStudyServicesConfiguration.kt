@@ -2,7 +2,7 @@ package br.all.review.controller
 
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.create.CreateSystematicStudyServiceImpl
-import br.all.application.review.find.services.FindAllSystematicStudyServiceImpl
+import br.all.application.review.find.services.FindAllSystematicStudiesServiceImpl
 import br.all.application.review.find.services.FindOneSystematicStudyServiceImpl
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.domain.services.UuidGeneratorService
@@ -28,5 +28,5 @@ class SystematicStudyServicesConfiguration {
     fun findAllSystematicStudiesService(
         systematicStudyRepository: SystematicStudyRepository,
         credentialsService: ResearcherCredentialsService,
-    ) = FindAllSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
+    ) = FindAllSystematicStudiesServiceImpl(systematicStudyRepository, credentialsService)
 }

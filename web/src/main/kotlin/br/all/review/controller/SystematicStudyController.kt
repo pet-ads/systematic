@@ -1,7 +1,7 @@
 package br.all.review.controller
 
 import br.all.application.review.create.CreateSystematicStudyService
-import br.all.application.review.find.services.FindAllSystematicStudyService
+import br.all.application.review.find.services.FindAllSystematicStudiesService
 import br.all.application.review.find.services.FindOneSystematicStudyService
 import br.all.review.presenter.RestfulCreateSystematicStudyPresenter
 import br.all.review.presenter.RestfulFindAllSystematicStudiesPresenter
@@ -17,7 +17,7 @@ import br.all.application.review.create.CreateSystematicStudyService.RequestMode
 class SystematicStudyController(
     private val createSystematicStudyService: CreateSystematicStudyService,
     private val findOneSystematicStudyServiceImpl: FindOneSystematicStudyService,
-    private val findAllSystematicStudyService: FindAllSystematicStudyService,
+    private val findAllSystematicStudiesService: FindAllSystematicStudiesService,
 ) {
     @PostMapping
     fun postSystematicStudy(
@@ -42,7 +42,7 @@ class SystematicStudyController(
     @GetMapping
     fun findAllSystematicStudies(@PathVariable researcherId: UUID): ResponseEntity<*> {
         val presenter = RestfulFindAllSystematicStudiesPresenter()
-        findAllSystematicStudyService.findAll(presenter, researcherId)
+        findAllSystematicStudiesService.findAll(presenter, researcherId)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
