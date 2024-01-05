@@ -6,7 +6,6 @@ import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeAllowed
 import br.all.application.review.util.TestDataFactory
-import br.all.application.review.util.TestDataFactory.findOneResponseModel
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -25,11 +24,13 @@ class FindOneSystematicStudyServiceImplTest {
     @MockK
     private lateinit var credentialsService: ResearcherCredentialsService
     private lateinit var presenter: FindOneSystematicStudyPresenter
+    private lateinit var factory: TestDataFactory
     private lateinit var sut: FindOneSystematicStudyServiceImpl
 
     @BeforeEach
     fun setUp() {
         presenter = mockk(relaxed = true)
+        factory = TestDataFactory()
         sut = FindOneSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
     }
 
@@ -39,9 +40,9 @@ class FindOneSystematicStudyServiceImplTest {
     inner class WhenSuccessfullyFindingOneExistentSystematicStudy {
         @Test
         fun `should correctly find a systematic study and prepare a success view`() {
-            val researcherId = TestDataFactory.researcherId
-            val systematicStudyId = TestDataFactory.systematicStudyId
-            val response = findOneResponseModel()
+            val researcherId = factory.researcherId
+            val systematicStudyId = factory.systematicStudyId
+            val response = factory.findOneResponseModel()
 
             makeResearcherToBeAllowed(credentialsService, presenter, researcherId)
             makeSystematicStudyExist(systematicStudyId, researcherId, response.systematicStudy)

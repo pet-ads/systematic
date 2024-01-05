@@ -11,7 +11,7 @@ import br.all.application.review.create.CreateSystematicStudyService.RequestMode
 import br.all.application.review.create.CreateSystematicStudyService.ResponseModel as CreateResponseModel
 import br.all.application.review.find.services.FindOneSystematicStudyService.ResponseModel as FindOneResponseModel
 
-object TestDataFactory {
+class TestDataFactory {
     private val faker = Faker()
     val researcherId = UUID.randomUUID()
     val systematicStudyId = UUID.randomUUID()
