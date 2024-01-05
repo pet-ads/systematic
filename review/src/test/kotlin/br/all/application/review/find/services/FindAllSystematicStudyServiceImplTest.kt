@@ -13,6 +13,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.*
 
 @Tag("UnitTest")
 @Tag("IntegrationTest")
@@ -40,6 +41,23 @@ class FindAllSystematicStudyServiceImplTest {
         @Test
         fun `should find the only existent systematic study`() {
             val response = ResponseModel(factory.researcherId, listOf(factory.generateDto()))
+
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
+            every {
+                systematicStudyRepository.findSomeByCollaborator(factory.researcherId)
+            } returns response.systematicStudies
+
+            sut.findAll(presenter, factory.researcherId)
+            verify { presenter.prepareSuccessView(response) }
+        }
+
+        @Test
+        fun `should find all the several systematic studies`() {
+            val response = ResponseModel(factory.researcherId, listOf(
+                factory.generateDto(systematicStudyId = UUID.randomUUID()),
+                factory.generateDto(systematicStudyId = UUID.randomUUID()),
+                factory.generateDto(systematicStudyId = UUID.randomUUID()),
+            ))
 
             makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
             every {
