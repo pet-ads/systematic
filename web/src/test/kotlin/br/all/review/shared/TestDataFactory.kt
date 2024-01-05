@@ -7,12 +7,13 @@ import java.util.*
 class TestDataFactory {
     private val faker = Faker()
     val researcherId = UUID.randomUUID()
+    val systematicStudyId = UUID.randomUUID()
 
     fun createSystematicStudyDocument(
-        id: UUID = UUID.randomUUID(),
+        id: UUID = this.systematicStudyId,
         title: String = faker.book.title(),
         description: String = faker.lorem.words(),
-        owner: UUID = UUID.randomUUID(),
+        owner: UUID = this.researcherId,
         collaborators: MutableSet<UUID> = mutableSetOf(),
     ) = SystematicStudyDocument(id, title, description, owner, collaborators.also { it.add(owner) }.toSet())
 
