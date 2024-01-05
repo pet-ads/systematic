@@ -5,8 +5,8 @@ import br.all.application.review.find.presenter.FindOneSystematicStudyPresenter
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeAllowed
+import br.all.application.review.util.TestDataFactory
 import br.all.application.review.util.TestDataFactory.findOneResponseModel
-import br.all.application.review.util.TestDataFactory.generateDto
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -39,13 +39,12 @@ class FindOneSystematicStudyServiceImplTest {
     inner class WhenSuccessfullyFindingOneExistentSystematicStudy {
         @Test
         fun `should correctly find a systematic study and prepare a success view`() {
-            val researcherId = UUID.randomUUID()
-            val systematicStudyId = UUID.randomUUID()
-            val dto = generateDto(systematicStudyId = systematicStudyId, ownerId = researcherId)
-            val response = findOneResponseModel(researcherId, systematicStudyId, dto)
+            val researcherId = TestDataFactory.researcherId
+            val systematicStudyId = TestDataFactory.systematicStudyId
+            val response = findOneResponseModel()
 
             makeResearcherToBeAllowed(credentialsService, presenter, researcherId)
-            makeSystematicStudyExist(systematicStudyId, researcherId, dto)
+            makeSystematicStudyExist(systematicStudyId, researcherId, response.systematicStudy)
 
             sut.findById(presenter, researcherId, systematicStudyId)
             verify { presenter.prepareSuccessView(response) }

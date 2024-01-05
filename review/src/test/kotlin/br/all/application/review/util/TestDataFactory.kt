@@ -13,12 +13,14 @@ import br.all.application.review.find.services.FindOneSystematicStudyService.Res
 
 object TestDataFactory {
     private val faker = Faker()
+    val researcherId = UUID.randomUUID()
+    val systematicStudyId = UUID.randomUUID()
 
     fun generateDto(
-        systematicStudyId: UUID = UUID.randomUUID(),
+        systematicStudyId: UUID = this.systematicStudyId,
         title: String = faker.book.title(),
         description: String = faker.lorem.words(),
-        ownerId: UUID = UUID.randomUUID(),
+        ownerId: UUID = this.researcherId,
         collaborators: Set<UUID> = emptySet(),
     ) = SystematicStudyDto(
         systematicStudyId,
@@ -46,8 +48,8 @@ object TestDataFactory {
     ) = SystematicStudy.fromRequestModel(systematicStudyId, researcherId.value, request).toDto()
 
     fun findOneResponseModel(
-        researcherId: UUID = UUID.randomUUID(),
-        systematicStudyId: UUID = UUID.randomUUID(),
+        researcherId: UUID = this.researcherId,
+        systematicStudyId: UUID = this.systematicStudyId,
         dto: SystematicStudyDto = generateDto(),
     ) = FindOneResponseModel(researcherId, systematicStudyId, dto)
 }
