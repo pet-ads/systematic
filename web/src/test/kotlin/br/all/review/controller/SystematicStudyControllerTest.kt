@@ -37,7 +37,7 @@ class SystematicStudyControllerTest(
     inner class WhenPostingANewSystematicStudy {
         @Test
         @Tag("ValidClasses")
-        fun `Should create a valid systematic study`() {
+        fun `should create a valid systematic study`() {
             val json = factory.createValidPostRequest()
             mockMvc.perform(post(postUrl()).contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isCreated)
@@ -48,7 +48,7 @@ class SystematicStudyControllerTest(
         
         @Test
         @Tag("InvalidClasses")
-        fun `Should not create a invalid systematic study`() {
+        fun `should not create a invalid systematic study`() {
             val json = factory.createInvalidPostRequest()
             mockMvc.perform(post(postUrl()).contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isBadRequest)
