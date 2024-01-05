@@ -6,6 +6,7 @@ import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeAllowed
 import br.all.application.review.util.TestDataFactory
+import br.all.application.shared.exceptions.EntityNotFoundException
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -49,6 +50,24 @@ class FindOneSystematicStudyServiceImplTest {
 
             sut.findById(presenter, researcherId, systematicStudyId)
             verify { presenter.prepareSuccessView(response) }
+        }
+    }
+
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("When being unable to find a systematic study")
+    inner class WhenBeingUnableToFindASystematicStudy {
+        @Test
+        fun `should prepare a fail view when trying to find a nonexistent systematic study`() {
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
+            every { systematicStudyRepository.existsById(factory.systematicStudyId) } returns false
+            every { presenter.isDone() } returns false andThen true
+
+            sut.findById(presenter, factory.researcherId, factory.systematicStudyId)
+            verify {
+                presenter.prepareFailView(any<EntityNotFoundException>())
+                presenter.isDone()
+            }
         }
     }
 
