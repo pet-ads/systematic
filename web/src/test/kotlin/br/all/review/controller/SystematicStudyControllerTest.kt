@@ -66,6 +66,7 @@ class SystematicStudyControllerTest(
     @DisplayName("When getting systematic studies")
     inner class WhenGettingSystematicStudies {
         @Nested
+        @Tag("ValidClasses")
         @DisplayName("And successfully finding them")
         inner class AndSuccessfullyFindingThem {
             @Test
