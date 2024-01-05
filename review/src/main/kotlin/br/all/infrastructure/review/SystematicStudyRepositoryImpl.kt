@@ -18,6 +18,10 @@ open class SystematicStudyRepositoryImpl(
         .toNullable()
         ?.toDto()
 
+    override fun findSomeByCollaborator(researcherId: UUID): List<SystematicStudyDto> {
+        TODO("Not yet implemented")
+    }
+
     override fun findAll() = innerRepository.findAll()
         .map { it.toDto() }
 
