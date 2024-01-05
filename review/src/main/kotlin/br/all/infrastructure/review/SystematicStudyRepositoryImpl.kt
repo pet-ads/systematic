@@ -18,9 +18,9 @@ open class SystematicStudyRepositoryImpl(
         .toNullable()
         ?.toDto()
 
-    override fun findSomeByCollaborator(researcherId: UUID): List<SystematicStudyDto> {
-        TODO("Not yet implemented")
-    }
+    override fun findSomeByCollaborator(researcherId: UUID) = innerRepository.findAll()
+        .filter { researcherId in it.collaborators }
+        .map { it.toDto() }
 
     override fun findAll() = innerRepository.findAll()
         .map { it.toDto() }
