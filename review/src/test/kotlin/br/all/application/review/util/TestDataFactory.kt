@@ -9,6 +9,7 @@ import io.github.serpro69.kfaker.Faker
 import java.util.*
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel as CreateRequestModel
 import br.all.application.review.create.CreateSystematicStudyService.ResponseModel as CreateResponseModel
+import br.all.application.review.find.services.FindAllSystematicStudyService.ResponseModel as FindAllResponseModel
 import br.all.application.review.find.services.FindOneSystematicStudyService.ResponseModel as FindOneResponseModel
 
 class TestDataFactory {
@@ -52,4 +53,9 @@ class TestDataFactory {
         systematicStudyId: UUID = this.systematicStudyId,
         dto: SystematicStudyDto = generateDto(),
     ) = FindOneResponseModel(researcherId, systematicStudyId, dto)
+
+    fun findAllResponseModel(
+        vararg systematicStudies: SystematicStudyDto,
+        researcherId: UUID = this.researcherId,
+    ) = FindAllResponseModel(researcherId, systematicStudies.toList())
 }

@@ -2,7 +2,6 @@ package br.all.application.review.find.services
 
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.find.presenter.FindAllSystematicStudyPresenter
-import br.all.application.review.find.services.FindAllSystematicStudyService.ResponseModel
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeAllowed
 import br.all.application.review.util.TestDataFactory
@@ -40,7 +39,7 @@ class FindAllSystematicStudyServiceImplTest {
     inner class WhenSuccessfullyFindingSystematicStudies {
         @Test
         fun `should find the only existent systematic study`() {
-            val response = ResponseModel(factory.researcherId, listOf(factory.generateDto()))
+            val response = factory.findAllResponseModel(factory.generateDto())
 
             makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
             every {
@@ -53,11 +52,11 @@ class FindAllSystematicStudyServiceImplTest {
 
         @Test
         fun `should find all the several systematic studies`() {
-            val response = ResponseModel(factory.researcherId, listOf(
+            val response = factory.findAllResponseModel(
                 factory.generateDto(systematicStudyId = UUID.randomUUID()),
                 factory.generateDto(systematicStudyId = UUID.randomUUID()),
                 factory.generateDto(systematicStudyId = UUID.randomUUID()),
-            ))
+            )
 
             makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
             every {
