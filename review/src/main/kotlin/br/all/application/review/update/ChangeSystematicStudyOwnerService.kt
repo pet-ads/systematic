@@ -35,7 +35,7 @@ class ChangeSystematicStudyOwnerService(
                 .fromDto(dto)
                 .also { it.changeOwner(ResearcherId(newOwner)) }
 
-        systematicStudyRepository.create(systematicStudy.toDto())
+        systematicStudyRepository.saveOrUpdate(systematicStudy.toDto())
 
         return SystematicStudyResponseModel(reviewId)
     }

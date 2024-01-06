@@ -1,5 +1,6 @@
 package br.all.study.controller
 
+import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
 import br.all.infrastructure.study.StudyReviewId
@@ -17,11 +18,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.*
+import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class StudyReviewControllerTest(
     @Autowired val repository: MongoStudyReviewRepository,
+    @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
     @Autowired val idService: StudyReviewIdGeneratorService,
     @Autowired val mockMvc: MockMvc,
 ) {
@@ -44,9 +47,16 @@ class StudyReviewControllerTest(
     fun setUp() {
         repository.deleteAll()
         idService.reset()
+
         factory = TestDataFactory()
         systematicStudyId = factory.systematicStudyId
         researcherId = factory.researcherId
+
+        systematicStudyRepository.deleteAll()
+        systematicStudyRepository.save(SystematicStudyTestDataFactory().createSystematicStudyDocument(
+            id = systematicStudyId,
+            owner = researcherId,
+        ))
     }
 
     @AfterEach
