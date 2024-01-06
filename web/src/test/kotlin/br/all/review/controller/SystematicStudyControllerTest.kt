@@ -105,6 +105,20 @@ class SystematicStudyControllerTest(
                     .andExpect(jsonPath("$.size").value(3))
                     .andExpect(jsonPath("$._links").exists())
             }
+
+            @Test
+            fun `should get only the systematic studies that belongs to the researcher`() {
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
+                
+                mockMvc.perform(get(getAllUrl()).contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.size").value(3))
+                    .andExpect(jsonPath("$._links").exists())
+            }
         }
 
         @Nested
