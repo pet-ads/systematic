@@ -113,7 +113,7 @@ class SystematicStudyControllerTest(
                 repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
                 repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
                 repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
-                
+
                 mockMvc.perform(get(getAllUrl()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk)
                     .andExpect(jsonPath("$.size").value(3))
@@ -137,6 +137,18 @@ class SystematicStudyControllerTest(
                 val notAllowed = UUID.randomUUID()
                 mockMvc.perform(get(getOneUrl(researcherId = notAllowed)).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isForbidden)
+            }
+
+            @Test
+            fun `should not get any systematic studies and return 200`() {
+                repository.save(factory.createSystematicStudyDocument())
+                repository.save(factory.createSystematicStudyDocument())
+                repository.save(factory.createSystematicStudyDocument())
+
+                mockMvc.perform(get(getAllUrl(UUID.randomUUID())).contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.size").value(0))
+                    .andExpect(jsonPath("$._links").exists())
             }
         }
     }
