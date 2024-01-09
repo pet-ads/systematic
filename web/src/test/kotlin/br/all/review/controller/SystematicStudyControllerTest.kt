@@ -145,6 +145,20 @@ class SystematicStudyControllerTest(
                     collaborators = mutableSetOf(factory.researcherId),
                 )
             )
+
+            @Test
+            fun `should get only systematic studies of the owner`() {
+                repeat(3) {
+                    saveOwnerStudy()
+                    repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = factory.researcherId))
+                }
+
+                mockMvc.perform(get(getAllByOwnerUrl()).contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.size").value(3))
+                    .andExpect(jsonPath("$.ownerId").value(factory.ownerId.toString()))
+                    .andExpect(jsonPath("$._links").exists())
+            }
         }
 
         @Nested
