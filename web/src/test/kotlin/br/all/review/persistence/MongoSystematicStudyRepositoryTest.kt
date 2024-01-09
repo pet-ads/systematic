@@ -64,9 +64,9 @@ class MongoSystematicStudyRepositoryTest(
 
         @Test
         fun `Should find all existent systematic study`() {
-            sut.save(testDataFactory.createSystematicStudyDocument())
-            sut.save(testDataFactory.createSystematicStudyDocument())
-            sut.save(testDataFactory.createSystematicStudyDocument())
+            sut.save(testDataFactory.createSystematicStudyDocument(id = UUID.randomUUID()))
+            sut.save(testDataFactory.createSystematicStudyDocument(id = UUID.randomUUID()))
+            sut.save(testDataFactory.createSystematicStudyDocument(id = UUID.randomUUID()))
 
             assertEquals(3, sut.findAll().size)
         }

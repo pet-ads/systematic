@@ -191,9 +191,9 @@ class SystematicStudyControllerTest(
 
             @Test
             fun `should not get any systematic studies and return 200`() {
-                repository.save(factory.createSystematicStudyDocument())
-                repository.save(factory.createSystematicStudyDocument())
-                repository.save(factory.createSystematicStudyDocument())
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
 
                 mockMvc.perform(get(getAllUrl(UUID.randomUUID())).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk)
