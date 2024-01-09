@@ -19,15 +19,23 @@ class RestfulFindAllSystematicStudiesPresenter: FindAllSystematicStudyPresenter 
             response.researcherId,
             response.systematicStudies.size,
             response.systematicStudies,
+            response.ownerId,
         )
 
-        val self = linkTo<SystematicStudyController> {
-            findAllSystematicStudies(response.researcherId)
-        }.withSelfRel()
+        val self = response.ownerId?.let { linkToFindAllByOwner(response.researcherId, it) } ?:
+            linkToFindAll(response.researcherId)
 
         restfulResponse.add(self)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
+
+    private fun linkToFindAllByOwner(researcherId: UUID, ownerId: UUID) = linkTo<SystematicStudyController> {
+        findAllSystematicStudiesByOwner(researcherId, ownerId)
+    }.withSelfRel()
+
+    private fun linkToFindAll(researcherId: UUID) = linkTo<SystematicStudyController> {
+        findAllSystematicStudies(researcherId)
+    }.withSelfRel()
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 
@@ -37,5 +45,6 @@ class RestfulFindAllSystematicStudiesPresenter: FindAllSystematicStudyPresenter 
         val researcherId: UUID,
         val size: Int,
         val content: List<SystematicStudyDto>,
+        val ownerId: UUID?,
     ): RepresentationModel<ViewModel>()
 }
