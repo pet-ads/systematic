@@ -8,6 +8,7 @@ class TestDataFactory {
     private val faker = Faker()
     val researcherId = UUID.randomUUID()
     val systematicStudyId = UUID.randomUUID()
+    val ownerId = UUID.randomUUID()
 
     fun createSystematicStudyDocument(
         id: UUID = this.systematicStudyId,

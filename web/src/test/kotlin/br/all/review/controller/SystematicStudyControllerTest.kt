@@ -43,6 +43,11 @@ class SystematicStudyControllerTest(
         researcherId: UUID = factory.researcherId,
     ) =  "/api/v1/researcher/$researcherId/systematic-study"
 
+    private fun getAllByOwnerUrl(
+        researcherId: UUID = factory.researcherId,
+        ownerId: UUID = factory.ownerId,
+    ) = "${getAllUrl(researcherId)}/owner/$ownerId"
+
     @Nested
     @DisplayName("When posting a new Systematic Study")
     inner class WhenPostingANewSystematicStudy {
@@ -117,6 +122,25 @@ class SystematicStudyControllerTest(
                 mockMvc.perform(get(getAllUrl()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk)
                     .andExpect(jsonPath("$.size").value(3))
+                    .andExpect(jsonPath("$._links").exists())
+            }
+
+            @Test
+            fun `should get the only systematic study of a owner and return 200`() {
+                repository.save(
+                    factory.createSystematicStudyDocument(
+                        id = UUID.randomUUID(),
+                        owner = factory.ownerId,
+                        collaborators = mutableSetOf(factory.researcherId),
+                    )
+                )
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = factory.researcherId))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = factory.researcherId))
+
+                mockMvc.perform(get(getAllByOwnerUrl()).contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.size").value(1))
+                    .andExpect(jsonPath("$.ownerId").value(factory.ownerId.toString()))
                     .andExpect(jsonPath("$._links").exists())
             }
         }
