@@ -127,13 +127,7 @@ class SystematicStudyControllerTest(
 
             @Test
             fun `should get the only systematic study of a owner and return 200`() {
-                repository.save(
-                    factory.createSystematicStudyDocument(
-                        id = UUID.randomUUID(),
-                        owner = factory.ownerId,
-                        collaborators = mutableSetOf(factory.researcherId),
-                    )
-                )
+                saveOwnerStudy()
                 repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = factory.researcherId))
                 repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = factory.researcherId))
 
@@ -143,6 +137,14 @@ class SystematicStudyControllerTest(
                     .andExpect(jsonPath("$.ownerId").value(factory.ownerId.toString()))
                     .andExpect(jsonPath("$._links").exists())
             }
+
+            private fun saveOwnerStudy() = repository.save(
+                factory.createSystematicStudyDocument(
+                    id = UUID.randomUUID(),
+                    owner = factory.ownerId,
+                    collaborators = mutableSetOf(factory.researcherId),
+                )
+            )
         }
 
         @Nested
