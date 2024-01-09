@@ -60,4 +60,14 @@ class TestDataFactory {
     ) = FindAllResponseModel(researcherId, systematicStudies.toList())
 
     fun emptyFindAllResponseModel(researcherId: UUID = this.researcherId) = FindAllResponseModel(researcherId, emptyList())
+
+    fun findAllByOwnerResponseModel(
+        owner: UUID,
+        vararg systematicStudies: SystematicStudyDto,
+        researcherId: UUID = this.researcherId,
+    ) = FindAllResponseModel(
+        researcherId = researcherId,
+        ownerId = owner,
+        systematicStudies = systematicStudies.toList(),
+    )
 }

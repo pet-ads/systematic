@@ -70,6 +70,25 @@ class FindAllSystematicStudiesServiceImplTest {
             sut.findAll(presenter, factory.researcherId)
             verify { presenter.prepareSuccessView(response) }
         }
+
+        @Test
+        fun `should find all the systematic studies of a owner`() {
+            val owner = UUID.randomUUID()
+            val response = factory.findAllByOwnerResponseModel(
+                owner,
+                factory.generateDto(systematicStudyId = UUID.randomUUID(), ownerId = owner),
+                factory.generateDto(systematicStudyId = UUID.randomUUID(), ownerId = owner),
+                factory.generateDto(systematicStudyId = UUID.randomUUID(), ownerId = owner)
+            )
+
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
+            every {
+                systematicStudyRepository.findSomeByCollaboratorAndOwner(factory.researcherId, owner)
+            } returns response.systematicStudies
+
+            sut.findAllByOwner(presenter, factory.researcherId, owner)
+            verify { presenter.prepareSuccessView(response) }
+        }
     }
 
     @Nested
