@@ -45,4 +45,14 @@ class SystematicStudyController(
         findAllSystematicStudiesService.findAll(presenter, researcherId)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
+    
+    @GetMapping("/owner/{ownerId}")
+    fun findAllSystematicStudiesByOwner(
+        @PathVariable researcherId: UUID,
+        @PathVariable ownerId: UUID,
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindAllSystematicStudiesPresenter()
+        findAllSystematicStudiesService.findAllByOwner(presenter, researcherId, ownerId)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
 }
