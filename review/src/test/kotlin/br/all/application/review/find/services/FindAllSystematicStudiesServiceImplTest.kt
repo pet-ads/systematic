@@ -108,6 +108,18 @@ class FindAllSystematicStudiesServiceImplTest {
         }
 
         @Test
+        fun `should not find any systematic study when a owner has no one`() {
+            val owner = UUID.randomUUID()
+            val response = factory.emptyFindAllResponseModel(owner = owner)
+
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
+            every { systematicStudyRepository.findSomeByCollaboratorAndOwner(factory.researcherId, owner) } returns emptyList()
+
+            sut.findAllByOwner(presenter, factory.researcherId, owner)
+            verify { presenter.prepareSuccessView(response) }
+        }
+
+        @Test
         fun `should prepare fail view when the researcher is unauthenticated`() {
             makeResearcherToBeUnauthenticated(credentialsService, presenter, factory.researcherId)
             sut.findAll(presenter, factory.researcherId)
