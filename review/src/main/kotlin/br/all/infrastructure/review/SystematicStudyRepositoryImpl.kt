@@ -22,6 +22,9 @@ open class SystematicStudyRepositoryImpl(
         .filter { researcherId in it.collaborators }
         .map { it.toDto() }
 
+    override fun findSomeByCollaboratorAndOwner(collaborator: UUID, owner: UUID) = findSomeByCollaborator(collaborator)
+        .filter { it.owner == owner }
+
     override fun findAll() = innerRepository.findAll()
         .map { it.toDto() }
 

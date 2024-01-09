@@ -13,13 +13,31 @@ class FindAllSystematicStudiesServiceImpl(
     private val credentialsService: ResearcherCredentialsService,
 ): FindAllSystematicStudiesService {
     override fun findAll(presenter: FindAllSystematicStudyPresenter, researcherId: UUID) {
-        PreconditionChecker(systematicStudyRepository, credentialsService).also {
-            it.prepareIfUnauthenticatedOrUnauthorized(presenter, ResearcherId(researcherId))
-        }
-        if (presenter.isDone()) return
+        if (researcherNotAllowed(presenter, researcherId)) return
 
         systematicStudyRepository.findSomeByCollaborator(researcherId).let {
             presenter.prepareSuccessView(ResponseModel(researcherId, it))
         }
+    }
+
+    override fun findAllByOwner(presenter: FindAllSystematicStudyPresenter, researcherId: UUID, ownerId: UUID) {
+        if (researcherNotAllowed(presenter, researcherId)) return
+
+        systematicStudyRepository.findSomeByCollaboratorAndOwner(researcherId, ownerId).let {
+            val response = ResponseModel(
+                researcherId = researcherId,
+                ownerId = ownerId,
+                systematicStudies = it
+            )
+            presenter.prepareSuccessView(response)
+        }
+    }
+
+    private fun researcherNotAllowed(
+        presenter: FindAllSystematicStudyPresenter,
+        researcherId: UUID,
+    ) = PreconditionChecker(systematicStudyRepository, credentialsService).run {
+            prepareIfUnauthenticatedOrUnauthorized(presenter, ResearcherId(researcherId))
+            presenter.isDone()
     }
 }

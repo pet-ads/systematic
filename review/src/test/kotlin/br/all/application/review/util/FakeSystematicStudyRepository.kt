@@ -16,6 +16,10 @@ class FakeSystematicStudyRepository : SystematicStudyRepository {
         TODO("Not yet implemented")
     }
 
+    override fun findSomeByCollaboratorAndOwner(collaborator: UUID, owner: UUID): List<SystematicStudyDto> {
+        TODO("Not yet implemented")
+    }
+
     override fun findAll(): List<SystematicStudyDto> = db.values.toList()
 
     override fun existsById(id: UUID) = id in db.keys

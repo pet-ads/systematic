@@ -7,8 +7,11 @@ import java.util.*
 interface FindAllSystematicStudiesService {
     fun findAll(presenter: FindAllSystematicStudyPresenter, researcherId: UUID)
 
+    fun findAllByOwner(presenter: FindAllSystematicStudyPresenter, researcherId: UUID, ownerId: UUID)
+
     data class ResponseModel(
         val researcherId: UUID,
         val systematicStudies: List<SystematicStudyDto>,
+        val ownerId: UUID? = null,
     )
 }
