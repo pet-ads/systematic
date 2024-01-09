@@ -159,6 +159,16 @@ class SystematicStudyControllerTest(
                     .andExpect(jsonPath("$.ownerId").value(factory.ownerId.toString()))
                     .andExpect(jsonPath("$._links").exists())
             }
+
+            @Test
+            fun `should get all systematic studies when they all belongs to the owner`() {
+                repeat(6) { saveOwnerStudy() }
+                mockMvc.perform(get(getAllByOwnerUrl()).contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.size").value(6))
+                    .andExpect(jsonPath("$.ownerId").value(factory.ownerId.toString()))
+                    .andExpect(jsonPath("$._links").exists())
+            }
         }
 
         @Nested
