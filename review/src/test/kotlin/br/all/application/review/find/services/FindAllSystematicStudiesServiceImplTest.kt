@@ -41,11 +41,15 @@ class FindAllSystematicStudiesServiceImplTest {
     @Tag("ValidClasses")
     @DisplayName("When successfully finding systematic studies")
     inner class WhenSuccessfullyFindingSystematicStudies {
+        @BeforeEach
+        fun setUp() {
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
+        }
+
         @Test
         fun `should find the only existent systematic study`() {
             val response = factory.findAllResponseModel(factory.generateDto())
 
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
             every {
                 systematicStudyRepository.findSomeByCollaborator(factory.researcherId)
             } returns response.systematicStudies
@@ -62,7 +66,6 @@ class FindAllSystematicStudiesServiceImplTest {
                 factory.generateDto(systematicStudyId = UUID.randomUUID()),
             )
 
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
             every {
                 systematicStudyRepository.findSomeByCollaborator(factory.researcherId)
             } returns response.systematicStudies
@@ -81,7 +84,6 @@ class FindAllSystematicStudiesServiceImplTest {
                 factory.generateDto(systematicStudyId = UUID.randomUUID(), ownerId = owner)
             )
 
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
             every {
                 systematicStudyRepository.findSomeByCollaboratorAndOwner(factory.researcherId, owner)
             } returns response.systematicStudies
