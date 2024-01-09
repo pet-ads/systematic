@@ -200,6 +200,19 @@ class SystematicStudyControllerTest(
                     .andExpect(jsonPath("$.size").value(0))
                     .andExpect(jsonPath("$._links").exists())
             }
+
+            @Test
+            fun `should not get any systematic study if the given owner does not have any study`() {
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
+
+                mockMvc.perform(get(getAllByOwnerUrl()).contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.size").value(0))
+                    .andExpect(jsonPath("$.ownerId").value(factory.ownerId.toString()))
+                    .andExpect(jsonPath("$._links").exists())
+            }
         }
     }
 }
