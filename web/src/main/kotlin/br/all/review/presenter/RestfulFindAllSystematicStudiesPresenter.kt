@@ -22,8 +22,9 @@ class RestfulFindAllSystematicStudiesPresenter: FindAllSystematicStudyPresenter 
             response.ownerId,
         )
 
-        val self = response.ownerId?.let { linkToFindAllByOwner(response.researcherId, it) } ?:
-            linkToFindAll(response.researcherId)
+        val self = with(response) {
+            ownerId?.let { linkToFindAllByOwner(researcherId, it) } ?: linkToFindAll(researcherId)
+        }
 
         restfulResponse.add(self)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
