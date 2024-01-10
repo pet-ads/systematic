@@ -38,13 +38,17 @@ class UpdateSystematicStudyServiceImplTest {
     @Tag("ValidClasses")
     @DisplayName("When the systematic study is updated")
     inner class WhenTheSystematicStudyIsUpdated {
+        @BeforeEach
+        fun setUp() {
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
+        }
+
         @Test
         fun `should only the title be updated`() {
             val dto = factory.generateDto(title = "Old title")
             val updatedDto = dto.copy(title = "New title")
             val response = factory.updateResponseModel()
 
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
             makeStudyToBeUpdated(dto, updatedDto, response)
 
             val request = factory.updateRequestModel("New title")
@@ -74,7 +78,6 @@ class UpdateSystematicStudyServiceImplTest {
             val updatedDto = dto.copy(description = "New description")
             val response = factory.updateResponseModel()
 
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
             makeStudyToBeUpdated(dto, updatedDto, response)
 
             val request = factory.updateRequestModel(description = "New description")
