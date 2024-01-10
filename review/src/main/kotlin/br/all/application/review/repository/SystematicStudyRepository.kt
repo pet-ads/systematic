@@ -7,6 +7,10 @@ interface SystematicStudyRepository {
 
     fun findById(id : UUID) : SystematicStudyDto?
 
+    fun findSomeByCollaborator(researcherId: UUID): List<SystematicStudyDto>
+
+    fun findSomeByCollaboratorAndOwner(collaborator: UUID, owner: UUID): List<SystematicStudyDto>
+
     fun findAll() : List<SystematicStudyDto>
 
     fun existsById(id: UUID) : Boolean
