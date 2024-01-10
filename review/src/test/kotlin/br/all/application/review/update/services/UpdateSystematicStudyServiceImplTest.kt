@@ -88,5 +88,22 @@ class UpdateSystematicStudyServiceImplTest {
                 presenter.prepareSuccessView(response)
             }
         }
+
+        @Test
+        fun `should both title and description be updated`() {
+            val dto = factory.generateDto(title = "Old title", description = "Old description")
+            val updatedDto = dto.copy(title = "New title", description = "New description")
+            val response = factory.updateResponseModel()
+
+            makeStudyToBeUpdated(dto, updatedDto, response)
+
+            val request = factory.updateRequestModel("New title", "New description")
+            sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
+
+            verify {
+                repository.saveOrUpdate(updatedDto)
+                presenter.prepareSuccessView(response)
+            }
+        }
     }
 }
