@@ -49,7 +49,7 @@ class UpdateSystematicStudyServiceImplTest {
 
             val request = factory.updateRequestModel("New title")
             sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
-            
+
             verify {
                 repository.saveOrUpdate(updatedDto)
                 presenter.prepareSuccessView(response)
@@ -66,6 +66,24 @@ class UpdateSystematicStudyServiceImplTest {
             every { repository.findById(factory.systematicStudyId) } returns dto
             every { repository.saveOrUpdate(updatedDto) } just Runs
             every { presenter.prepareSuccessView(response) } just Runs
+        }
+
+        @Test
+        fun `should only the description be updated`() {
+            val dto = factory.generateDto(description = "Old description")
+            val updatedDto = dto.copy(description = "New description")
+            val response = factory.updateResponseModel()
+
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
+            makeStudyToBeUpdated(dto, updatedDto, response)
+
+            val request = factory.updateRequestModel(description = "New description")
+            sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
+
+            verify {
+                repository.saveOrUpdate(updatedDto)
+                presenter.prepareSuccessView(response)
+            }
         }
     }
 }
