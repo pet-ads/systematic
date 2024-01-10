@@ -3,6 +3,7 @@ package br.all.application.review.util
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
+import br.all.application.review.update.services.UpdateSystematicStudyService.ResponseModel
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudy
 import io.github.serpro69.kfaker.Faker
@@ -11,6 +12,7 @@ import br.all.application.review.create.CreateSystematicStudyService.RequestMode
 import br.all.application.review.create.CreateSystematicStudyService.ResponseModel as CreateResponseModel
 import br.all.application.review.find.services.FindAllSystematicStudiesService.ResponseModel as FindAllResponseModel
 import br.all.application.review.find.services.FindOneSystematicStudyService.ResponseModel as FindOneResponseModel
+import br.all.application.review.update.services.UpdateSystematicStudyService.RequestModel as UpdateRequestModel
 
 class TestDataFactory {
     private val faker = Faker()
@@ -77,4 +79,14 @@ class TestDataFactory {
         ownerId = owner,
         systematicStudies = systematicStudies.toList(),
     )
+
+    fun updateRequestModel(
+        title: String? = null,
+        description: String? = null,
+    ) = UpdateRequestModel(title, description)
+
+    fun updateResponseModel(
+        researcherId: UUID = this.researcherId,
+        systematicStudyId: UUID = this.systematicStudyId,
+    ) = ResponseModel(researcherId, systematicStudyId)
 }
