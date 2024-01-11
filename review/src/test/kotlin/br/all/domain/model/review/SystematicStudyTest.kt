@@ -72,15 +72,11 @@ class SystematicStudyTest {
         @Tag("InvalidClasses")
         fun `should not add duplicated researchers`() {
             val duplicatedResearcher = ResearcherId(UUID.randomUUID())
-            val localSut = SystematicStudy(
-                SystematicStudyId(UUID.randomUUID()),
-                "Title",
-                "Description",
-                ResearcherId(UUID.randomUUID()),
-                mutableSetOf(duplicatedResearcher),
-            )
-            localSut.addCollaborator(duplicatedResearcher)
-            assertEquals(1, localSut.collaborators.count { it == duplicatedResearcher })
+            
+            sut.addCollaborator(duplicatedResearcher)
+            sut.addCollaborator(duplicatedResearcher)
+
+            assertEquals(1, sut.collaborators.count { it == duplicatedResearcher })
         }
     }
 
