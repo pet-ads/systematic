@@ -69,23 +69,16 @@ class SystematicStudyTest {
     @Nested
     @DisplayName("When adding new collaborators")
     inner class WhenAddingNewCollaborators {
-        @Nested
+        @Test
         @Tag("ValidClasses")
-        @DisplayName("And being succeed")
-        inner class AndBeingSucceed {
-            @Test
-            fun `Should add new collaborator`(){
+        fun `Should add new collaborator`(){
                 sut.addCollaborator(ResearcherId(UUID.randomUUID()))
                 assertEquals(2, sut.collaborators.size)
             }
-        }
 
-        @Nested
+        @Test
         @Tag("InvalidClasses")
-        @DisplayName("And being unable to add")
-        inner class AndBeingUnableToAdd {
-            @Test
-            fun `Should not add duplicated researchers`() {
+        fun `Should not add duplicated researchers`() {
                 val duplicatedResearcher = ResearcherId(UUID.randomUUID())
                 val localSut = SystematicStudy(
                     SystematicStudyId(UUID.randomUUID()),
@@ -97,7 +90,6 @@ class SystematicStudyTest {
                 localSut.addCollaborator(duplicatedResearcher)
                 assertEquals(1, localSut.collaborators.count { it == duplicatedResearcher })
             }
-        }
     }
 
     @Nested
@@ -146,73 +138,53 @@ class SystematicStudyTest {
     @Nested
     @DisplayName("When changing the owner")
     inner class WhenChangingTheOwner {
-        @Nested
+        @Test
         @Tag("ValidClasses")
-        @DisplayName("And being succeed")
-        inner class AndBeingSucceed {
-            @Test
-            fun `Should add new owner to collaborators if not present yet`(){
-                val newOwner = ResearcherId(UUID.randomUUID())
+        fun `Should add new owner to collaborators if not present yet`(){
+            val newOwner = ResearcherId(UUID.randomUUID())
 
-                sut.changeOwner(newOwner)
+            sut.changeOwner(newOwner)
 
-                Assertions.assertAll("change owner",
-                    { assertTrue(newOwner in sut.collaborators) },
-                    { assertEquals(sut.owner, newOwner) }
-                )
-            }
+            Assertions.assertAll("change owner",
+                { assertTrue(newOwner in sut.collaborators) },
+                { assertEquals(sut.owner, newOwner) }
+            )
         }
     }
 
     @Nested
     @DisplayName("When changing the title")
     inner class WhenChangingTheTitle {
-        @Nested
+        @ParameterizedTest
         @Tag("ValidClasses")
-        @DisplayName("And being succeed")
-        inner class AndBeingSucceed {
-            @ParameterizedTest
-            @ValueSource(strings = ["New title", "T"])
-            fun `Should successfully change the title`(title: String) {
-                assertDoesNotThrow { sut.title = "New title" }
-            }
+        @ValueSource(strings = ["New title", "T"])
+        fun `Should successfully change the title`(title: String) {
+            assertDoesNotThrow { sut.title = "New title" }
         }
 
-        @Nested
+        @ParameterizedTest(name = "[{index}]: title = \"{0}\"")
         @Tag("InvalidClasses")
-        @DisplayName("And providing invalid titles")
-        inner class AndProvidingInvalidTitles {
-            @ParameterizedTest(name = "[{index}]: title = \"{0}\"")
-            @ValueSource(strings = ["", " "])
-            fun `Should throw IllegalArgumentException when trying to assign any kind of empty title`(title: String) {
-                assertThrows<IllegalArgumentException> { sut.title = title }
-            }
+        @ValueSource(strings = ["", " "])
+        fun `Should throw IllegalArgumentException when trying to assign any kind of empty title`(title: String) {
+            assertThrows<IllegalArgumentException> { sut.title = title }
         }
     }
 
     @Nested
     @DisplayName("When changing the description")
     inner class WhenChangingTheDescription {
-        @Nested
-        @Tag("ValidClasses")
-        @DisplayName("And being succeed")
-        inner class AndBeingSucceed {
-            @ParameterizedTest
-            @ValueSource(strings = ["New description", "D"])
-            fun `Should successfully change the description`(description: String) {
+        @ParameterizedTest
+        @Tag("InvalidClasses")
+        @ValueSource(strings = ["New description", "D"])
+        fun `Should successfully change the description`(description: String) {
                 assertDoesNotThrow { sut.description = description }
             }
-        }
 
-        @Nested
+        @ParameterizedTest(name = "[{index}]: description = \"{0}\"")
         @Tag("InvalidClasses")
-        @DisplayName("And providing invalid descriptions")
-        inner class AndProvidingInvalidDescriptions {
-            @ParameterizedTest(name = "[{index}]: description = \"{0}\"")
-            @ValueSource(strings = ["", " "])
-            fun `Should throw IllegalArgumentException when trying to assign invalid descriptions`(description: String) {
-                assertThrows<IllegalArgumentException> { sut.description = description }
-            }
+        @ValueSource(strings = ["", " "])
+        fun `Should throw IllegalArgumentException when trying to assign invalid descriptions`(description: String) {
+            assertThrows<IllegalArgumentException> { sut.description = description }
         }
     }
 }
