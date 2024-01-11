@@ -18,15 +18,15 @@ class CreateSystematicStudyServiceImpl(
     private val credentialsService: ResearcherCredentialsService,
 ): CreateSystematicStudyService {
     override fun create(presenter: CreateSystematicStudyPresenter, researcher: UUID, request: RequestModel) {
-        val ownerId = ResearcherId(researcher)
-        val preconditionChecker = PreconditionChecker(repository, credentialsService)
-        preconditionChecker.prepareIfUnauthenticatedOrUnauthorized(presenter, ownerId)
-
+        PreconditionChecker(repository, credentialsService).also {
+            it.prepareIfUnauthenticatedOrUnauthorized(presenter, ResearcherId(researcher))
+        }
         if (presenter.isDone()) return
 
         val id = uuidGeneratorService.next()
-        val systematicStudy = SystematicStudy.fromRequestModel(id, researcher, request)
-        repository.saveOrUpdate(systematicStudy.toDto())
+        SystematicStudy.fromRequestModel(id, researcher, request).also {
+            repository.saveOrUpdate(it.toDto())
+        }
 
         presenter.prepareSuccessView(ResponseModel(researcher, id))
     }
