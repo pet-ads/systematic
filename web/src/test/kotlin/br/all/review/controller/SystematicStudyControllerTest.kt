@@ -228,45 +228,52 @@ class SystematicStudyControllerTest(
     @Nested
     @DisplayName("When updating systematic studies")
     inner class WhenUpdatingSystematicStudies {
-        @ParameterizedTest
+        @Nested
         @Tag("ValidClasses")
-        @CsvSource("New title,", ",New description", "New title,New description")
-        fun `should update the systematic study and return 200`(title: String?, description: String?) {
-            val original = factory.createSystematicStudyDocument(title="Old title", description = "Old description")
-            repository.save(original)
+        @DisplayName("And being succeed")
+        inner class AndBeingSucceed {
+            @ParameterizedTest
+            @CsvSource("New title,", ",New description", "New title,New description")
+            fun `should update the systematic study and return 200`(title: String?, description: String?) {
+                val original = factory.createSystematicStudyDocument(title="Old title", description = "Old description")
+                repository.save(original)
 
-            val request = factory.createValidPutRequest(title, description)
-            mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
-                .andExpect(status().isOk)
-                .andExpect(jsonPath("$.researcherId").value(factory.researcherId.toString()))
-                .andExpect(jsonPath("$.systematicStudyId").value(factory.systematicStudyId.toString()))
-                .andExpect(jsonPath("$._links").exists())
+                val request = factory.createValidPutRequest(title, description)
+                mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.researcherId").value(factory.researcherId.toString()))
+                    .andExpect(jsonPath("$.systematicStudyId").value(factory.systematicStudyId.toString()))
+                    .andExpect(jsonPath("$._links").exists())
 
-            assertNotEquals(original, repository.findById(factory.systematicStudyId).toNullable())
+                assertNotEquals(original, repository.findById(factory.systematicStudyId).toNullable())
+            }
         }
 
-        @Test
+        @Nested
         @Tag("InvalidClasses")
-        fun `should nothing be updated if nothing is provided`() {
-            val document = factory.createSystematicStudyDocument()
-            repository.save(document)
+        @DisplayName("But failing to update")
+        inner class ButFailingToUpdate {
+            @Test
+            fun `should nothing be updated if nothing is provided`() {
+                val document = factory.createSystematicStudyDocument()
+                repository.save(document)
 
-            val request = "{}"
-            mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
-                .andExpect(status().isOk)
-                .andExpect(jsonPath("$.researcherId").value(factory.researcherId.toString()))
-                .andExpect(jsonPath("$.systematicStudyId").value(factory.systematicStudyId.toString()))
-                .andExpect(jsonPath("$._links").exists())
+                val request = "{}"
+                mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.researcherId").value(factory.researcherId.toString()))
+                    .andExpect(jsonPath("$.systematicStudyId").value(factory.systematicStudyId.toString()))
+                    .andExpect(jsonPath("$._links").exists())
 
-            assertEquals(document, repository.findById(factory.systematicStudyId).toNullable())
-        }
+                assertEquals(document, repository.findById(factory.systematicStudyId).toNullable())
+            }
 
-        @Test
-        @Tag("InvalidClasses")
-        fun `should not update a systematic study if it does not exist and return 404`() {
-            val request = factory.createValidPutRequest("New title", "New description")
-            mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
-                .andExpect(status().isNotFound)
+            @Test
+            fun `should not update a systematic study if it does not exist and return 404`() {
+                val request = factory.createValidPutRequest("New title", "New description")
+                mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
+                    .andExpect(status().isNotFound)
+            }
         }
     }
 }
