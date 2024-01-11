@@ -50,7 +50,7 @@ class FindOneSystematicStudyServiceImplTest {
             val response = factory.findOneResponseModel()
 
             makeResearcherToBeAllowed(credentialsService, presenter, researcherId)
-            makeSystematicStudyExist(systematicStudyId, researcherId, response.systematicStudy)
+            makeSystematicStudyExist(systematicStudyId, researcherId, response.content)
 
             sut.findById(presenter, researcherId, systematicStudyId)
             verify { presenter.prepareSuccessView(response) }
