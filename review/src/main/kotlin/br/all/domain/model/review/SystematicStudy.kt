@@ -53,5 +53,4 @@ class SystematicStudy(
 
     override fun toString() = "SystematicStudy(reviewId=$id, title='$title', " +
             "description='$description', owner=$owner, researchers=$_collaborators)"
-
 }
