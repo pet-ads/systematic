@@ -140,7 +140,10 @@ class SystematicStudyTest {
         @Tag("ValidClasses")
         @ValueSource(strings = ["New title", "T"])
         fun `should successfully change the title`(title: String) {
-            assertDoesNotThrow { sut.title = "New title" }
+            assertAll(
+                { assertDoesNotThrow { sut.title = title } },
+                { assertEquals(title, sut.title) }
+            )
         }
 
         @ParameterizedTest(name = "[{index}]: title = \"{0}\"")
