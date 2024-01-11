@@ -4,6 +4,7 @@ import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.review.shared.TestDataFactory
 import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -242,6 +243,22 @@ class SystematicStudyControllerTest(
                 .andExpect(jsonPath("$._links").exists())
 
             assertNotEquals(original, repository.findById(factory.systematicStudyId).toNullable())
+        }
+
+        @Test
+        @Tag("InvalidClasses")
+        fun `should nothing be updated if nothing is provided`() {
+            val document = factory.createSystematicStudyDocument()
+            repository.save(document)
+
+            val request = "{}"
+            mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.researcherId").value(factory.researcherId.toString()))
+                .andExpect(jsonPath("$.systematicStudyId").value(factory.systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
+
+            assertEquals(document, repository.findById(factory.systematicStudyId).toNullable())
         }
     }
 }
