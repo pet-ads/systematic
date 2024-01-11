@@ -65,8 +65,7 @@ class UpdateSystematicStudyServiceImplTest {
             updatedDto: SystematicStudyDto,
             response: UpdateSystematicStudyService.ResponseModel
         ) {
-            every { repository.existsById(factory.systematicStudyId) } returns true
-            every { repository.hasReviewer(factory.systematicStudyId, factory.researcherId) } returns true
+            makeSystematicStudyExist()
             every { repository.findById(factory.systematicStudyId) } returns dto
             every { repository.saveOrUpdate(updatedDto) } just Runs
             every { presenter.prepareSuccessView(response) } just Runs
@@ -104,6 +103,31 @@ class UpdateSystematicStudyServiceImplTest {
                 repository.saveOrUpdate(updatedDto)
                 presenter.prepareSuccessView(response)
             }
+        }
+    }
+
+    private fun makeSystematicStudyExist() {
+        every { repository.existsById(factory.systematicStudyId) } returns true
+        every { repository.hasReviewer(factory.systematicStudyId, factory.researcherId) } returns true
+    }
+
+    @Nested
+    @DisplayName("When the being unable to perform updates")
+    inner class WhenTheBeingUnableToPerformUpdates {
+        @Test
+        fun `should nothing happen when title and description are not given`() {
+            val dto = factory.generateDto()
+            val response = factory.updateResponseModel()
+
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
+            makeSystematicStudyExist()
+            every { repository.findById(factory.systematicStudyId) } returns dto
+
+            val request = factory.updateRequestModel()
+            sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
+
+            verify(exactly = 0) { repository.saveOrUpdate(any<SystematicStudyDto>()) }
+            verify { presenter.prepareSuccessView(response) }
         }
     }
 }
