@@ -2,6 +2,7 @@ package br.all.domain.model.review
 
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.shared.ddd.Entity
+import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.utils.requireThatExists
 import java.util.*
 
@@ -17,21 +18,32 @@ class SystematicStudy(
     val collaborators get() = _collaborators.toSet()
     var owner = owner
         private set
-    var title: String = ""
+    var title: String = title
         set(value) {
             require(value.isNotBlank()) { "Title must not be blank." }
             field = value
         }
-    var description = ""
+    var description = description
         set(value) {
             require(value.isNotBlank()) { "Description must not be blank." }
             field = value
         }
 
     init {
-        this.title = title
-        this.description = description
+        val notification = validate()
+        require(notification.hasNoErrors()) { notification.message() }
         collaborators.add(owner)
+    }
+
+    private fun validate(): Notification {
+        val notification = Notification()
+
+        if (title.isBlank())
+            notification.addError("Systematic Study title must not be blank!")
+        if (description.isBlank())
+            notification.addError("Systematic Study description must not be blank!")
+
+        return notification
     }
 
     companion object
