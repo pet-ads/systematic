@@ -51,7 +51,7 @@ class FindAllSystematicStudiesServiceImplTest {
             val response = factory.findAllResponseModel(factory.generateDto())
 
             every {
-                systematicStudyRepository.findSomeByCollaborator(factory.researcherId)
+                systematicStudyRepository.findAllByCollaborator(factory.researcherId)
             } returns response.systematicStudies
 
             sut.findAll(presenter, factory.researcherId)
@@ -67,7 +67,7 @@ class FindAllSystematicStudiesServiceImplTest {
             )
 
             every {
-                systematicStudyRepository.findSomeByCollaborator(factory.researcherId)
+                systematicStudyRepository.findAllByCollaborator(factory.researcherId)
             } returns response.systematicStudies
 
             sut.findAll(presenter, factory.researcherId)
@@ -85,7 +85,7 @@ class FindAllSystematicStudiesServiceImplTest {
             )
 
             every {
-                systematicStudyRepository.findSomeByCollaboratorAndOwner(factory.researcherId, owner)
+                systematicStudyRepository.findAllByCollaboratorAndOwner(factory.researcherId, owner)
             } returns response.systematicStudies
 
             sut.findAllByOwner(presenter, factory.researcherId, owner)
@@ -101,7 +101,7 @@ class FindAllSystematicStudiesServiceImplTest {
             val response = factory.emptyFindAllResponseModel()
 
             makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
-            every { systematicStudyRepository.findSomeByCollaborator(factory.researcherId) } returns emptyList()
+            every { systematicStudyRepository.findAllByCollaborator(factory.researcherId) } returns emptyList()
 
             sut.findAll(presenter, factory.researcherId)
             verify { presenter.prepareSuccessView(response) }
@@ -113,7 +113,7 @@ class FindAllSystematicStudiesServiceImplTest {
             val response = factory.emptyFindAllResponseModel(owner = owner)
 
             makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
-            every { systematicStudyRepository.findSomeByCollaboratorAndOwner(factory.researcherId, owner) } returns emptyList()
+            every { systematicStudyRepository.findAllByCollaboratorAndOwner(factory.researcherId, owner) } returns emptyList()
 
             sut.findAllByOwner(presenter, factory.researcherId, owner)
             verify { presenter.prepareSuccessView(response) }

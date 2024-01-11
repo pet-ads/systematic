@@ -15,7 +15,7 @@ class FindAllSystematicStudiesServiceImpl(
     override fun findAll(presenter: FindAllSystematicStudyPresenter, researcher: UUID) {
         if (researcherNotAllowed(presenter, researcher)) return
 
-        repository.findSomeByCollaborator(researcher).let {
+        repository.findAllByCollaborator(researcher).let {
             presenter.prepareSuccessView(ResponseModel(researcher, it))
         }
     }
@@ -23,7 +23,7 @@ class FindAllSystematicStudiesServiceImpl(
     override fun findAllByOwner(presenter: FindAllSystematicStudyPresenter, researcher: UUID, owner: UUID) {
         if (researcherNotAllowed(presenter, researcher)) return
 
-        repository.findSomeByCollaboratorAndOwner(researcher, owner).let {
+        repository.findAllByCollaboratorAndOwner(researcher, owner).let {
             val response = ResponseModel(
                 researcherId = researcher,
                 ownerId = owner,

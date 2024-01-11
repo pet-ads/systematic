@@ -12,11 +12,11 @@ class FakeSystematicStudyRepository : SystematicStudyRepository {
 
     override fun findById(id: UUID): SystematicStudyDto? = db[id]
 
-    override fun findSomeByCollaborator(researcherId: UUID): List<SystematicStudyDto> {
+    override fun findAllByCollaborator(researcherId: UUID): List<SystematicStudyDto> {
         TODO("Not yet implemented")
     }
 
-    override fun findSomeByCollaboratorAndOwner(collaborator: UUID, owner: UUID): List<SystematicStudyDto> {
+    override fun findAllByCollaboratorAndOwner(collaborator: UUID, owner: UUID): List<SystematicStudyDto> {
         TODO("Not yet implemented")
     }
 
