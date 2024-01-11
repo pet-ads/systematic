@@ -47,8 +47,8 @@ class SystematicStudyTest {
         @Tag("InvalidClasses")
         @DisplayName("And providing invalid states")
         inner class AndProvidingInvalidStates {
-            @ParameterizedTest
-            @CsvSource("'',Some description", "Some title,''")
+            @ParameterizedTest(name = "[{index}]: title=\"{0}\", description=\"{1}\"")
+            @CsvSource("'',Some description", "Some title,''", "'',''")
             fun `should not create systematic study without title or description`(title: String, description: String){
                 val id = SystematicStudyId(UUID.randomUUID())
                 val owner = ResearcherId(UUID.randomUUID())
