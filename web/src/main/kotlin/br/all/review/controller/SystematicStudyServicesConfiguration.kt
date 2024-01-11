@@ -5,6 +5,7 @@ import br.all.application.review.create.CreateSystematicStudyServiceImpl
 import br.all.application.review.find.services.FindAllSystematicStudiesServiceImpl
 import br.all.application.review.find.services.FindOneSystematicStudyServiceImpl
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.review.update.services.UpdateSystematicStudyServiceImpl
 import br.all.domain.services.UuidGeneratorService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -29,4 +30,10 @@ class SystematicStudyServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         credentialsService: ResearcherCredentialsService,
     ) = FindAllSystematicStudiesServiceImpl(systematicStudyRepository, credentialsService)
+
+    @Bean
+    fun updateSystematicStudyService(
+        systematicStudyRepository: SystematicStudyRepository,
+        credentialsService: ResearcherCredentialsService,
+    ) = UpdateSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
 }
