@@ -28,7 +28,7 @@ class SystematicStudyTest {
         @DisplayName("And being succeed")
         inner class AndBeingSucceed {
             @Test
-            fun `Should successfully create an Systematic Study`() {
+            fun `should successfully create an systematic study`() {
                 assertDoesNotThrow {
                     SystematicStudy(
                         SystematicStudyId(UUID.randomUUID()),
@@ -41,7 +41,7 @@ class SystematicStudyTest {
             }
 
             @Test
-            fun `Should owner be a collaborator`(){
+            fun `should owner be a collaborator`(){
                 val ownerId = sut.owner
                 assertTrue(ownerId in sut.collaborators)
             }
@@ -53,7 +53,7 @@ class SystematicStudyTest {
         inner class AndProvidingInvalidStates {
             @ParameterizedTest
             @CsvSource("'',Some description", "Some title,''")
-            fun `Should not create systematic study without title or description`(title: String, description: String){
+            fun `should not create systematic study without title or description`(title: String, description: String){
                 assertThrows<IllegalArgumentException> {
                     SystematicStudy(
                         SystematicStudyId(UUID.randomUUID()),
@@ -71,25 +71,25 @@ class SystematicStudyTest {
     inner class WhenAddingNewCollaborators {
         @Test
         @Tag("ValidClasses")
-        fun `Should add new collaborator`(){
-                sut.addCollaborator(ResearcherId(UUID.randomUUID()))
-                assertEquals(2, sut.collaborators.size)
-            }
+        fun `should add new collaborator`() {
+            sut.addCollaborator(ResearcherId(UUID.randomUUID()))
+            assertEquals(2, sut.collaborators.size)
+        }
 
         @Test
         @Tag("InvalidClasses")
-        fun `Should not add duplicated researchers`() {
-                val duplicatedResearcher = ResearcherId(UUID.randomUUID())
-                val localSut = SystematicStudy(
-                    SystematicStudyId(UUID.randomUUID()),
-                    "Title",
-                    "Description",
-                    ResearcherId(UUID.randomUUID()),
-                    mutableSetOf(duplicatedResearcher),
-                )
-                localSut.addCollaborator(duplicatedResearcher)
-                assertEquals(1, localSut.collaborators.count { it == duplicatedResearcher })
-            }
+        fun `should not add duplicated researchers`() {
+            val duplicatedResearcher = ResearcherId(UUID.randomUUID())
+            val localSut = SystematicStudy(
+                SystematicStudyId(UUID.randomUUID()),
+                "Title",
+                "Description",
+                ResearcherId(UUID.randomUUID()),
+                mutableSetOf(duplicatedResearcher),
+            )
+            localSut.addCollaborator(duplicatedResearcher)
+            assertEquals(1, localSut.collaborators.count { it == duplicatedResearcher })
+        }
     }
 
     @Nested
@@ -100,7 +100,7 @@ class SystematicStudyTest {
         @DisplayName("And being succeed")
         inner class AndBeingSucceed {
             @Test
-            fun `Should remove valid collaborator`(){
+            fun `should remove valid collaborator`(){
                 val researcherId = ResearcherId(UUID.randomUUID())
                 val id = sut.id.value()
                 val localSut = SystematicStudy(
@@ -122,13 +122,13 @@ class SystematicStudyTest {
         @DisplayName("And being unable to remove")
         inner class AndBeingUnableToRemove {
             @Test
-            fun `Should not allow removing owner from collaborators`(){
+            fun `should not allow removing owner from collaborators`(){
                 val ownerId = sut.owner
                 assertThrows<IllegalStateException> {  sut.removeCollaborator(ownerId) }
             }
 
             @Test
-            fun `Should throw if try to remove absent collaborator`(){
+            fun `should throw if try to remove absent collaborator`(){
                 val absentResearcher = ResearcherId(UUID.randomUUID())
                 assertThrows<NoSuchElementException> { sut.removeCollaborator(absentResearcher) }
             }
@@ -140,7 +140,7 @@ class SystematicStudyTest {
     inner class WhenChangingTheOwner {
         @Test
         @Tag("ValidClasses")
-        fun `Should add new owner to collaborators if not present yet`(){
+        fun `should add new owner to collaborators if not present yet`(){
             val newOwner = ResearcherId(UUID.randomUUID())
 
             sut.changeOwner(newOwner)
@@ -158,14 +158,14 @@ class SystematicStudyTest {
         @ParameterizedTest
         @Tag("ValidClasses")
         @ValueSource(strings = ["New title", "T"])
-        fun `Should successfully change the title`(title: String) {
+        fun `should successfully change the title`(title: String) {
             assertDoesNotThrow { sut.title = "New title" }
         }
 
         @ParameterizedTest(name = "[{index}]: title = \"{0}\"")
         @Tag("InvalidClasses")
         @ValueSource(strings = ["", " "])
-        fun `Should throw IllegalArgumentException when trying to assign any kind of empty title`(title: String) {
+        fun `should throw IllegalArgumentException when trying to assign any kind of empty title`(title: String) {
             assertThrows<IllegalArgumentException> { sut.title = title }
         }
     }
@@ -176,14 +176,14 @@ class SystematicStudyTest {
         @ParameterizedTest
         @Tag("InvalidClasses")
         @ValueSource(strings = ["New description", "D"])
-        fun `Should successfully change the description`(description: String) {
-                assertDoesNotThrow { sut.description = description }
-            }
+        fun `should successfully change the description`(description: String) {
+            assertDoesNotThrow { sut.description = description }
+        }
 
         @ParameterizedTest(name = "[{index}]: description = \"{0}\"")
         @Tag("InvalidClasses")
         @ValueSource(strings = ["", " "])
-        fun `Should throw IllegalArgumentException when trying to assign invalid descriptions`(description: String) {
+        fun `should throw IllegalArgumentException when trying to assign invalid descriptions`(description: String) {
             assertThrows<IllegalArgumentException> { sut.description = description }
         }
     }
