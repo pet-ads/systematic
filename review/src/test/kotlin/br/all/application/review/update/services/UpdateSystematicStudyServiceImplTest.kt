@@ -6,6 +6,7 @@ import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter
 import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeAllowed
 import br.all.application.review.util.TestDataFactory
+import br.all.application.shared.exceptions.EntityNotFoundException
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -128,6 +129,22 @@ class UpdateSystematicStudyServiceImplTest {
 
             verify(exactly = 0) { repository.saveOrUpdate(any<SystematicStudyDto>()) }
             verify { presenter.prepareSuccessView(response) }
+        }
+
+        @Test
+        fun `should prepare fail view with EntityNotFoundException when the study does not exist`() {
+            val request = factory.updateRequestModel()
+
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
+            every { repository.existsById(factory.systematicStudyId) } returns false
+            every { presenter.isDone() } returns false andThen true
+
+            sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
+            verify(exactly = 2) { presenter.isDone() }
+            verify {
+                repository.existsById(factory.systematicStudyId)
+                presenter.prepareFailView(any<EntityNotFoundException>())
+            }
         }
     }
 }
