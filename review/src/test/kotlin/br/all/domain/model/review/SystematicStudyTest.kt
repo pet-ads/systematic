@@ -88,20 +88,14 @@ class SystematicStudyTest {
         @DisplayName("And being succeed")
         inner class AndBeingSucceed {
             @Test
-            fun `should remove valid collaborator`(){
+            fun `should remove valid collaborator`() {
                 val researcherId = ResearcherId(UUID.randomUUID())
-                val id = sut.id.value()
-                val localSut = SystematicStudy(
-                    SystematicStudyId(id),
-                    sut.title,
-                    sut.description,
-                    sut.owner,
-                    mutableSetOf(researcherId)
-                )
 
-                localSut.removeCollaborator(researcherId)
+                sut.addCollaborator(researcherId)
+                assertTrue(researcherId in sut.collaborators, "researcher was not even added" )
 
-                assertFalse(researcherId in localSut.collaborators)
+                sut.removeCollaborator(researcherId)
+                assertFalse(researcherId in sut.collaborators, "researcher was not removed")
             }
         }
 
