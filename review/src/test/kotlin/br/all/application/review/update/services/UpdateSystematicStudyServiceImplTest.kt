@@ -117,6 +117,7 @@ class UpdateSystematicStudyServiceImplTest {
     }
 
     @Nested
+    @Tag("InvalidClasses")
     @DisplayName("When the being unable to perform updates")
     inner class WhenTheBeingUnableToPerformUpdates {
         @Test
