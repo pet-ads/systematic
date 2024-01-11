@@ -6,6 +6,7 @@ import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter
 import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeAllowed
 import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeUnauthenticated
+import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeUnauthorized
 import br.all.application.review.util.TestDataFactory
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
@@ -175,6 +176,18 @@ class UpdateSystematicStudyServiceImplTest {
             sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
             verify {
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
+                presenter.isDone()
+            }
+        }
+
+        @Test
+        fun `should prepare fail view if the researcher is unauthorized`() {
+            val request = factory.updateRequestModel()
+            makeResearcherToBeUnauthorized(credentialsService, presenter, factory.researcherId)
+
+            sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
+            verify {
+                presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()
             }
         }
