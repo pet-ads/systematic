@@ -5,9 +5,9 @@ import br.all.application.review.repository.SystematicStudyDto
 import java.util.*
 
 interface FindAllSystematicStudiesService {
-    fun findAll(presenter: FindAllSystematicStudyPresenter, researcherId: UUID)
+    fun findAll(presenter: FindAllSystematicStudyPresenter, researcher: UUID)
 
-    fun findAllByOwner(presenter: FindAllSystematicStudyPresenter, researcherId: UUID, ownerId: UUID)
+    fun findAllByOwner(presenter: FindAllSystematicStudyPresenter, researcher: UUID, owner: UUID)
 
     data class ResponseModel(
         val researcherId: UUID,
