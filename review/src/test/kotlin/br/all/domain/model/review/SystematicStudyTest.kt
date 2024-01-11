@@ -161,7 +161,10 @@ class SystematicStudyTest {
         @Tag("InvalidClasses")
         @ValueSource(strings = ["New description", "D"])
         fun `should successfully change the description`(description: String) {
-            assertDoesNotThrow { sut.description = description }
+            assertAll(
+                { assertDoesNotThrow { sut.description = description } },
+                { assertEquals(description, sut.description) },
+            )
         }
 
         @ParameterizedTest(name = "[{index}]: description = \"{0}\"")
