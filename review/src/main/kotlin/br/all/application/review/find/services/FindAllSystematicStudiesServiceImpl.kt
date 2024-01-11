@@ -37,7 +37,7 @@ class FindAllSystematicStudiesServiceImpl(
         presenter: FindAllSystematicStudyPresenter,
         researcher: UUID,
     ) = PreconditionChecker(repository, credentialsService).run {
-            prepareIfUnauthenticatedOrUnauthorized(presenter, ResearcherId(researcher))
-            presenter.isDone()
+        prepareIfUnauthenticatedOrUnauthorized(presenter, ResearcherId(researcher))
+        presenter.isDone()
     }
 }
