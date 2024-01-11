@@ -5,7 +5,7 @@ import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.valueobject.Language
-import br.all.domain.shared.utils.requireThatExists
+import br.all.domain.shared.utils.exists
 import br.all.domain.shared.utils.toNeverEmptyMutableSet
 import java.util.UUID
 
@@ -81,7 +81,7 @@ class Protocol internal constructor(
     fun addKeyword(keyword: String) = _keywords.add(keyword)
 
     fun removeKeyword(keyword: String) {
-        requireThatExists(keyword in _keywords)
+        exists(keyword in _keywords)
             { "Unable to remove a keyword that are in the protocol! Provided: $keyword" }
         _keywords.remove(keyword)
     }
@@ -89,7 +89,7 @@ class Protocol internal constructor(
     fun addInformationSource(searchSource: SearchSource) = _informationSources.add(searchSource)
 
     fun removeInformationSource(informationSource: SearchSource) {
-        requireThatExists(informationSource in _informationSources)
+        exists(informationSource in _informationSources)
             { "Unable to remove a information source that is not in the protocol! Provided: $informationSource" }
         _informationSources.remove(informationSource)
     }
@@ -97,7 +97,7 @@ class Protocol internal constructor(
     fun addLanguage(language: Language) = _studiesLanguages.add(language)
 
     fun removeLanguage(language: Language) {
-        requireThatExists(language in _studiesLanguages)
+        exists(language in _studiesLanguages)
             { "Unable to remove a language that is not in the protocol! Provided: $language" }
         _studiesLanguages.remove(language)
     }
@@ -105,7 +105,7 @@ class Protocol internal constructor(
     fun addSelectionCriteria(criteria: Criteria) = _selectionCriteria.add(criteria)
 
     fun removeSelectionCriteria(criteria: Criteria) {
-        requireThatExists(criteria in _selectionCriteria)
+        exists(criteria in _selectionCriteria)
             { "Unable to remove a criteria that has never been  defined in the protocol! Provided: $criteria" }
         check(isAbleToRemoveCriteriaWithSameTypeOf(criteria))
             { "Cannot remove $criteria because it would cause in no criteria of its type!" }
@@ -119,7 +119,7 @@ class Protocol internal constructor(
     fun addExtractionQuestion(questionId: QuestionId) = _extractionQuestions.add(questionId)
 
     fun removeExtractionQuestion(questionId: QuestionId) {
-        requireThatExists(questionId in _extractionQuestions)
+        exists(questionId in _extractionQuestions)
             { "Unable to remove a question that does not belongs to this protocol! Provided: $questionId" }
         _extractionQuestions.remove(questionId)
     }
@@ -127,7 +127,7 @@ class Protocol internal constructor(
     fun addRobQuestion(questionId: QuestionId) = _robQuestions.add(questionId)
 
     fun removeRobQuestion(questionId: QuestionId) {
-        requireThatExists(questionId in _robQuestions)
+        exists(questionId in _robQuestions)
             { "Unable to remove a question that does not belongs to this protocol! Provided: $questionId" }
         _robQuestions.remove(questionId)
     }

@@ -7,8 +7,7 @@ import br.all.application.protocol.shared.ProtocolResponseModel
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.DuplicateElementException
 import br.all.domain.model.protocol.Protocol
-import br.all.domain.services.UuidGeneratorService
-import br.all.domain.shared.utils.requireThatExists
+import br.all.domain.shared.utils.exists
 import java.util.*
 
 class CreateProtocolServiceImpl(
@@ -16,7 +15,7 @@ class CreateProtocolServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
 ): CreateProtocolService {
     override fun create(reviewId: UUID, requestModel: ProtocolRequestModel): ProtocolResponseModel {
-        requireThatExists(systematicStudyRepository.existsById(reviewId))
+        exists(systematicStudyRepository.existsById(reviewId))
             { "Unable to create a protocol for a nonexistent SystematicStudy! Provided study id: $reviewId" }
 
         if (protocolRepository.existsBySystematicStudy(reviewId))

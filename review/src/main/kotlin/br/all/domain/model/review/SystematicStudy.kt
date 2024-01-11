@@ -3,7 +3,7 @@ package br.all.domain.model.review
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
-import br.all.domain.shared.utils.requireThatExists
+import br.all.domain.shared.utils.exists
 import java.util.*
 
 class SystematicStudy(
@@ -57,8 +57,9 @@ class SystematicStudy(
 
     fun removeCollaborator(researcherId: ResearcherId) {
         check(researcherId != owner) { "Cannot remove the Systematic Study owner: $owner" }
-        requireThatExists(researcherId in _collaborators)
-            { "Cannot remove member that is not part of the collaboration: $researcherId" }
+        exists(researcherId in _collaborators) {
+            "Cannot remove member that is not part of the collaboration: $researcherId"
+        }
         _collaborators.remove(researcherId)
     }
 
