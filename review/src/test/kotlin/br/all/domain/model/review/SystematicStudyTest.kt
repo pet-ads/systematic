@@ -29,19 +29,15 @@ class SystematicStudyTest {
         inner class AndBeingSucceed {
             @Test
             fun `should successfully create an systematic study`() {
-                assertDoesNotThrow {
-                    SystematicStudy(
-                        SystematicStudyId(UUID.randomUUID()),
-                        "Title",
-                        "Description",
-                        ResearcherId(UUID.randomUUID()),
-                        mutableSetOf(ResearcherId(UUID.randomUUID())),
-                    )
-                }
+                val id = SystematicStudyId(UUID.randomUUID())
+                val owner = ResearcherId(UUID.randomUUID())
+                val collaborators = mutableSetOf(ResearcherId(UUID.randomUUID()))
+
+                assertDoesNotThrow { SystematicStudy(id, "Title", "Description", owner, collaborators) }
             }
 
             @Test
-            fun `should owner be a collaborator`(){
+            fun `should owner be a collaborator`() {
                 val ownerId = sut.owner
                 assertTrue(ownerId in sut.collaborators)
             }
@@ -54,14 +50,10 @@ class SystematicStudyTest {
             @ParameterizedTest
             @CsvSource("'',Some description", "Some title,''")
             fun `should not create systematic study without title or description`(title: String, description: String){
-                assertThrows<IllegalArgumentException> {
-                    SystematicStudy(
-                        SystematicStudyId(UUID.randomUUID()),
-                        title,
-                        description,
-                        ResearcherId(UUID.randomUUID())
-                    )
-                }
+                val id = SystematicStudyId(UUID.randomUUID())
+                val owner = ResearcherId(UUID.randomUUID())
+
+                assertThrows<IllegalArgumentException> { SystematicStudy(id, title, description, owner) }
             }
         }
     }
@@ -142,7 +134,6 @@ class SystematicStudyTest {
         @Tag("ValidClasses")
         fun `should add new owner to collaborators if not present yet`(){
             val newOwner = ResearcherId(UUID.randomUUID())
-
             sut.changeOwner(newOwner)
 
             Assertions.assertAll("change owner",
