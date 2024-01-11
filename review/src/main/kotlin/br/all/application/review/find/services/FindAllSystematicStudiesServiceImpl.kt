@@ -24,12 +24,9 @@ class FindAllSystematicStudiesServiceImpl(
         if (researcherNotAllowed(presenter, researcher)) return
 
         repository.findAllByCollaboratorAndOwner(researcher, owner).let {
-            val response = ResponseModel(
-                researcherId = researcher,
-                ownerId = owner,
-                systematicStudies = it
-            )
-            presenter.prepareSuccessView(response)
+            ResponseModel(researcherId = researcher, ownerId = owner, systematicStudies = it).also { response ->
+                presenter.prepareSuccessView(response)
+            }
         }
     }
 
