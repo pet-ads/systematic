@@ -7,6 +7,7 @@ import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter
 import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeAllowed
 import br.all.application.review.util.TestDataFactory
 import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.application.shared.exceptions.UnauthorizedUserException
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -144,6 +145,23 @@ class UpdateSystematicStudyServiceImplTest {
             verify {
                 repository.existsById(factory.systematicStudyId)
                 presenter.prepareFailView(any<EntityNotFoundException>())
+            }
+        }
+
+        @Test
+        fun `should the researcher be unauthorized if they are not a collaborator`() {
+            val request = factory.updateRequestModel()
+
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
+            every { repository.existsById(factory.systematicStudyId) } returns true
+            every { repository.hasReviewer(factory.systematicStudyId, factory.researcherId) } returns false
+            every { presenter.isDone() } returns false andThen true
+
+            sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
+            verify {
+                repository.hasReviewer(factory.systematicStudyId, factory.researcherId)
+                presenter.prepareFailView(any<UnauthorizedUserException>())
+                presenter.isDone()
             }
         }
     }
