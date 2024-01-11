@@ -28,6 +28,11 @@ class UpdateSystematicStudyServiceImpl(
         }
         if (presenter.isDone()) return
 
+        if (request.title == null && request.description == null) {
+            presenter.prepareSuccessView(ResponseModel(researcher, systematicStudy))
+            return
+        }
+
         val study = repository.findById(systematicStudy)?.let { SystematicStudy.fromDto(it) }
         study?.let {
             it.title = request.title ?: it.title
