@@ -260,5 +260,13 @@ class SystematicStudyControllerTest(
 
             assertEquals(document, repository.findById(factory.systematicStudyId).toNullable())
         }
+
+        @Test
+        @Tag("InvalidClasses")
+        fun `should not update a systematic study if it does not exist and return 404`() {
+            val request = factory.createValidPutRequest("New title", "New description")
+            mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
+                .andExpect(status().isNotFound)
+        }
     }
 }
