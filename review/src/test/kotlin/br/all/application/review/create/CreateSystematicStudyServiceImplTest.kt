@@ -27,20 +27,20 @@ import java.util.*
 @ExtendWith(MockKExtension::class)
 class CreateSystematicStudyServiceImplTest {
     @MockK
-    private lateinit var systematicStudyRepository: SystematicStudyRepository
+    private lateinit var repository: SystematicStudyRepository
     @MockK
     private lateinit var uuidGeneratorService: UuidGeneratorService
     @MockK
     private lateinit var credentialsService: ResearcherCredentialsService
     @MockK
-    private lateinit var createSystematicStudyPresenter: CreateSystematicStudyPresenter
+    private lateinit var presenter: CreateSystematicStudyPresenter
     private lateinit var factory: TestDataFactory
     private lateinit var sut: CreateSystematicStudyServiceImpl
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
-        sut = CreateSystematicStudyServiceImpl(systematicStudyRepository, uuidGeneratorService, credentialsService)
+        sut = CreateSystematicStudyServiceImpl(repository, uuidGeneratorService, credentialsService)
     }
 
     @Nested
@@ -48,22 +48,22 @@ class CreateSystematicStudyServiceImplTest {
     @DisplayName("When successfully creating a Systematic Study")
     inner class WhenSuccessfullyCreatingASystematicStudy {
         @Test
-        fun `Should successfully create a systematic study`() {
+        fun `should successfully create a systematic study`() {
             val researcherId = ResearcherId(UUID.randomUUID())
             val systematicStudyId = UUID.randomUUID()
             val request = factory.createRequestModel()
             val dto = factory.createDtoFromCreateRequestModel(systematicStudyId, researcherId, request)
             val response = factory.createResponseModel(researcherId, systematicStudyId)
 
-            makeResearcherToBeAllowed(credentialsService, createSystematicStudyPresenter, researcherId.value)
+            makeResearcherToBeAllowed(credentialsService, presenter, researcherId.value)
             mockkSystematicStudyToBeCreated(systematicStudyId, dto, response)
 
-            sut.create(createSystematicStudyPresenter, researcherId.value, request)
+            sut.create(presenter, researcherId.value, request)
 
             verify(exactly = 1) {
                 uuidGeneratorService.next()
-                systematicStudyRepository.saveOrUpdate(dto)
-                createSystematicStudyPresenter.prepareSuccessView(response)
+                repository.saveOrUpdate(dto)
+                presenter.prepareSuccessView(response)
             }
         }
 
@@ -73,8 +73,8 @@ class CreateSystematicStudyServiceImplTest {
             response: ResponseModel
         ) {
             every { uuidGeneratorService.next() } returns systematicStudyId
-            every { systematicStudyRepository.saveOrUpdate(dto) } just Runs
-            every { createSystematicStudyPresenter.prepareSuccessView(response) } just Runs
+            every { repository.saveOrUpdate(dto) } just Runs
+            every { presenter.prepareSuccessView(response) } just Runs
         }
     }
 
@@ -83,30 +83,30 @@ class CreateSystematicStudyServiceImplTest {
     @DisplayName("When unable to create a new Systematic Study")
     inner class WhenUnableToCreateANewSystematicStudy {
         @Test
-        fun `Should not the researcher be allowed to create a new study when unauthenticated`() {
+        fun `should not the researcher be allowed to create a new study when unauthenticated`() {
             val researcherId = ResearcherId(UUID.randomUUID())
             val request = factory.createRequestModel()
 
-            makeResearcherToBeUnauthenticated(credentialsService, createSystematicStudyPresenter, researcherId.value)
-            sut.create(createSystematicStudyPresenter, researcherId.value, request)
+            makeResearcherToBeUnauthenticated(credentialsService, presenter, researcherId.value)
+            sut.create(presenter, researcherId.value, request)
 
             verify(exactly = 1) {
-                createSystematicStudyPresenter.prepareFailView(any<UnauthenticatedUserException>())
-                createSystematicStudyPresenter.isDone()
+                presenter.prepareFailView(any<UnauthenticatedUserException>())
+                presenter.isDone()
             }
         }
 
         @Test
-        fun `Should not the researcher be allowed to create a study when unauthorized`() {
+        fun `should not the researcher be allowed to create a study when unauthorized`() {
             val researcherId = ResearcherId(UUID.randomUUID())
             val request = factory.createRequestModel()
 
-            makeResearcherToBeUnauthorized(credentialsService, createSystematicStudyPresenter, researcherId.value)
-            sut.create(createSystematicStudyPresenter, researcherId.value, request)
+            makeResearcherToBeUnauthorized(credentialsService, presenter, researcherId.value)
+            sut.create(presenter, researcherId.value, request)
 
             verify(exactly = 1) {
-                createSystematicStudyPresenter.prepareFailView(any<UnauthorizedUserException>())
-                createSystematicStudyPresenter.isDone()
+                presenter.prepareFailView(any<UnauthorizedUserException>())
+                presenter.isDone()
             }
         }
     }

@@ -23,7 +23,7 @@ import java.util.*
 @ExtendWith(MockKExtension::class)
 class FindAllSystematicStudiesServiceImplTest {
     @MockK
-    private lateinit var systematicStudyRepository: SystematicStudyRepository
+    private lateinit var repository: SystematicStudyRepository
     @MockK
     private lateinit var credentialsService: ResearcherCredentialsService
     private lateinit var presenter: FindAllSystematicStudyPresenter
@@ -34,7 +34,7 @@ class FindAllSystematicStudiesServiceImplTest {
     fun setUp() {
         presenter = mockk(relaxed = true)
         factory = TestDataFactory()
-        sut = FindAllSystematicStudiesServiceImpl(systematicStudyRepository, credentialsService)
+        sut = FindAllSystematicStudiesServiceImpl(repository, credentialsService)
     }
 
     @Nested
@@ -51,7 +51,7 @@ class FindAllSystematicStudiesServiceImplTest {
             val response = factory.findAllResponseModel(factory.generateDto())
 
             every {
-                systematicStudyRepository.findAllByCollaborator(factory.researcherId)
+                repository.findAllByCollaborator(factory.researcherId)
             } returns response.systematicStudies
 
             sut.findAll(presenter, factory.researcherId)
@@ -67,7 +67,7 @@ class FindAllSystematicStudiesServiceImplTest {
             )
 
             every {
-                systematicStudyRepository.findAllByCollaborator(factory.researcherId)
+                repository.findAllByCollaborator(factory.researcherId)
             } returns response.systematicStudies
 
             sut.findAll(presenter, factory.researcherId)
@@ -85,7 +85,7 @@ class FindAllSystematicStudiesServiceImplTest {
             )
 
             every {
-                systematicStudyRepository.findAllByCollaboratorAndOwner(factory.researcherId, owner)
+                repository.findAllByCollaboratorAndOwner(factory.researcherId, owner)
             } returns response.systematicStudies
 
             sut.findAllByOwner(presenter, factory.researcherId, owner)
@@ -101,7 +101,7 @@ class FindAllSystematicStudiesServiceImplTest {
             val response = factory.emptyFindAllResponseModel()
 
             makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
-            every { systematicStudyRepository.findAllByCollaborator(factory.researcherId) } returns emptyList()
+            every { repository.findAllByCollaborator(factory.researcherId) } returns emptyList()
 
             sut.findAll(presenter, factory.researcherId)
             verify { presenter.prepareSuccessView(response) }
@@ -113,7 +113,7 @@ class FindAllSystematicStudiesServiceImplTest {
             val response = factory.emptyFindAllResponseModel(owner = owner)
 
             makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
-            every { systematicStudyRepository.findAllByCollaboratorAndOwner(factory.researcherId, owner) } returns emptyList()
+            every { repository.findAllByCollaboratorAndOwner(factory.researcherId, owner) } returns emptyList()
 
             sut.findAllByOwner(presenter, factory.researcherId, owner)
             verify { presenter.prepareSuccessView(response) }

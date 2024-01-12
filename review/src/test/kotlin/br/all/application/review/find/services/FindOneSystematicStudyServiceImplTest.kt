@@ -25,7 +25,7 @@ import java.util.*
 @ExtendWith(MockKExtension::class)
 class FindOneSystematicStudyServiceImplTest {
     @MockK
-    private lateinit var systematicStudyRepository: SystematicStudyRepository
+    private lateinit var repository: SystematicStudyRepository
     @MockK
     private lateinit var credentialsService: ResearcherCredentialsService
     private lateinit var presenter: FindOneSystematicStudyPresenter
@@ -36,7 +36,7 @@ class FindOneSystematicStudyServiceImplTest {
     fun setUp() {
         presenter = mockk(relaxed = true)
         factory = TestDataFactory()
-        sut = FindOneSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
+        sut = FindOneSystematicStudyServiceImpl(repository, credentialsService)
     }
 
     @Nested
@@ -61,9 +61,9 @@ class FindOneSystematicStudyServiceImplTest {
             researcherId: UUID,
             dto: SystematicStudyDto
         ) {
-            every { systematicStudyRepository.existsById(systematicStudyId) } returns true
-            every { systematicStudyRepository.hasReviewer(systematicStudyId, researcherId) } returns true
-            every { systematicStudyRepository.findById(systematicStudyId) } returns dto
+            every { repository.existsById(systematicStudyId) } returns true
+            every { repository.hasReviewer(systematicStudyId, researcherId) } returns true
+            every { repository.findById(systematicStudyId) } returns dto
         }
     }
 
@@ -74,7 +74,7 @@ class FindOneSystematicStudyServiceImplTest {
         @Test
         fun `should prepare a fail view when trying to find a nonexistent systematic study`() {
             makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
-            every { systematicStudyRepository.existsById(factory.systematicStudyId) } returns false
+            every { repository.existsById(factory.systematicStudyId) } returns false
             every { presenter.isDone() } returns false andThen true
 
             sut.findById(presenter, factory.researcherId, factory.systematicStudyId)
@@ -87,8 +87,8 @@ class FindOneSystematicStudyServiceImplTest {
         @Test
         fun `should prepare a fail view if the researcher is not a collaborator`() {
             makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
-            every { systematicStudyRepository.existsById(factory.systematicStudyId) } returns true
-            every { systematicStudyRepository.hasReviewer(factory.systematicStudyId, factory.researcherId) } returns false
+            every { repository.existsById(factory.systematicStudyId) } returns true
+            every { repository.hasReviewer(factory.systematicStudyId, factory.researcherId) } returns false
             every { presenter.isDone() } returns false andThen true
 
             sut.findById(presenter, factory.researcherId, factory.systematicStudyId)
