@@ -19,7 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 
 @Tag("UnitTest")
-@Tag("IntegrationTest")
+@Tag("ServiceTest")
 @ExtendWith(MockKExtension::class)
 class FindAllSystematicStudiesServiceImplTest {
     @MockK
