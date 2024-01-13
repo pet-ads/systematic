@@ -49,34 +49,33 @@ class FindAllSystematicStudiesServiceImplTest {
 
         @Test
         fun `should find the only existent systematic study`() {
+            val (researcher) = factory
             val response = factory.findAllResponseModel(factory.generateDto())
 
-            every {
-                repository.findAllByCollaborator(factory.researcher)
-            } returns response.systematicStudies
+            every { repository.findAllByCollaborator(researcher) } returns response.systematicStudies
 
-            sut.findAll(presenter, factory.researcher)
-            verify { presenter.prepareSuccessView(response) }
+            sut.findAll(presenter, researcher)
+            verify(exactly = 1) { presenter.prepareSuccessView(response) }
         }
 
         @Test
         fun `should find all the several systematic studies`() {
+            val (researcher) = factory
             val response = factory.findAllResponseModel(
                 factory.generateDto(systematicStudyId = UUID.randomUUID()),
                 factory.generateDto(systematicStudyId = UUID.randomUUID()),
                 factory.generateDto(systematicStudyId = UUID.randomUUID()),
             )
 
-            every {
-                repository.findAllByCollaborator(factory.researcher)
-            } returns response.systematicStudies
+            every { repository.findAllByCollaborator(researcher) } returns response.systematicStudies
 
-            sut.findAll(presenter, factory.researcher)
+            sut.findAll(presenter, researcher)
             verify { presenter.prepareSuccessView(response) }
         }
 
         @Test
         fun `should find all the systematic studies of a owner`() {
+            val (researcher) = factory
             val owner = UUID.randomUUID()
             val response = factory.findAllByOwnerResponseModel(
                 owner,
@@ -85,11 +84,9 @@ class FindAllSystematicStudiesServiceImplTest {
                 factory.generateDto(systematicStudyId = UUID.randomUUID(), ownerId = owner)
             )
 
-            every {
-                repository.findAllByCollaboratorAndOwner(factory.researcher, owner)
-            } returns response.systematicStudies
+            every { repository.findAllByCollaboratorAndOwner(researcher, owner) } returns response.systematicStudies
 
-            sut.findAllByOwner(presenter, factory.researcher, owner)
+            sut.findAllByOwner(presenter, researcher, owner)
             verify { presenter.prepareSuccessView(response) }
         }
     }
@@ -99,31 +96,36 @@ class FindAllSystematicStudiesServiceImplTest {
     inner class WhenBeingUnableToFindSystematicStudies {
         @Test
         fun `should not find systematic studies when no one exists`() {
+            val (researcher) = factory
             val response = factory.emptyFindAllResponseModel()
 
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcher)
-            every { repository.findAllByCollaborator(factory.researcher) } returns emptyList()
+            makeResearcherToBeAllowed(credentialsService, presenter, researcher)
+            every { repository.findAllByCollaborator(researcher) } returns emptyList()
 
-            sut.findAll(presenter, factory.researcher)
+            sut.findAll(presenter, researcher)
             verify { presenter.prepareSuccessView(response) }
         }
 
         @Test
         fun `should not find any systematic study when a owner has no one`() {
+            val (researcher) = factory
             val owner = UUID.randomUUID()
             val response = factory.emptyFindAllResponseModel(owner = owner)
 
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcher)
-            every { repository.findAllByCollaboratorAndOwner(factory.researcher, owner) } returns emptyList()
+            makeResearcherToBeAllowed(credentialsService, presenter, researcher)
+            every { repository.findAllByCollaboratorAndOwner(researcher, owner) } returns emptyList()
 
-            sut.findAllByOwner(presenter, factory.researcher, owner)
+            sut.findAllByOwner(presenter, researcher, owner)
             verify { presenter.prepareSuccessView(response) }
         }
 
         @Test
         fun `should prepare fail view when the researcher is unauthenticated`() {
-            makeResearcherToBeUnauthenticated(credentialsService, presenter, factory.researcher)
-            sut.findAll(presenter, factory.researcher)
+            val (researcher) = factory
+
+            makeResearcherToBeUnauthenticated(credentialsService, presenter, researcher)
+
+            sut.findAll(presenter, researcher)
             verify {
                 presenter.isDone()
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
@@ -132,8 +134,11 @@ class FindAllSystematicStudiesServiceImplTest {
 
         @Test
         fun `should prepare fail view when the researcher is unauthorized`() {
-            makeResearcherToBeUnauthorized(credentialsService, presenter, factory.researcher)
-            sut.findAll(presenter, factory.researcher)
+            val (researcher) = factory
+
+            makeResearcherToBeUnauthorized(credentialsService, presenter, researcher)
+
+            sut.findAll(presenter, researcher)
             verify {
                 presenter.isDone()
                 presenter.prepareFailView(any<UnauthorizedUserException>())
