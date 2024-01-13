@@ -8,7 +8,6 @@ import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearch
 import br.all.application.review.util.TestDataFactory
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
-import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.services.UuidGeneratorService
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -17,7 +16,6 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.*
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -68,11 +66,11 @@ class CreateSystematicStudyServiceImplTest {
     inner class WhenUnableToCreateANewSystematicStudy {
         @Test
         fun `should not the researcher be allowed to create a new study when unauthenticated`() {
-            val researcherId = ResearcherId(UUID.randomUUID())
+            val (researcher) = factory
             val request = factory.createRequestModel()
 
-            makeResearcherToBeUnauthenticated(credentialsService, presenter, researcherId.value)
-            sut.create(presenter, researcherId.value, request)
+            makeResearcherToBeUnauthenticated(credentialsService, presenter, researcher)
+            sut.create(presenter, researcher, request)
 
             verify(exactly = 1) {
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
@@ -82,11 +80,11 @@ class CreateSystematicStudyServiceImplTest {
 
         @Test
         fun `should not the researcher be allowed to create a study when unauthorized`() {
-            val researcherId = ResearcherId(UUID.randomUUID())
+            val (researcher) = factory
             val request = factory.createRequestModel()
 
-            makeResearcherToBeUnauthorized(credentialsService, presenter, researcherId.value)
-            sut.create(presenter, researcherId.value, request)
+            makeResearcherToBeUnauthorized(credentialsService, presenter, researcher)
+            sut.create(presenter, researcher, request)
 
             verify(exactly = 1) {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
