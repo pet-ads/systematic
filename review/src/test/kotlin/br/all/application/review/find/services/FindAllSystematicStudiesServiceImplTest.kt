@@ -75,8 +75,7 @@ class FindAllSystematicStudiesServiceImplTest {
 
         @Test
         fun `should find all the systematic studies of a owner`() {
-            val (researcher) = factory
-            val owner = UUID.randomUUID()
+            val (researcher, owner) = factory
             val response = factory.findAllByOwnerResponseModel(
                 owner,
                 factory.generateDto(systematicStudyId = UUID.randomUUID(), ownerId = owner),
@@ -108,8 +107,7 @@ class FindAllSystematicStudiesServiceImplTest {
 
         @Test
         fun `should not find any systematic study when a owner has no one`() {
-            val (researcher) = factory
-            val owner = UUID.randomUUID()
+            val (researcher, owner) = factory
             val response = factory.emptyFindAllResponseModel(owner = owner)
 
             makeResearcherToBeAllowed(credentialsService, presenter, researcher)

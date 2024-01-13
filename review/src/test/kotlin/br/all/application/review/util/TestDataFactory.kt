@@ -17,6 +17,7 @@ class TestDataFactory {
     private val faker = Faker()
     val researcher: UUID = UUID.randomUUID()
     val systematicStudy: UUID = UUID.randomUUID()
+    val owner: UUID by lazy { UUID.randomUUID() }
 
     fun generateDto(
         systematicStudyId: UUID = systematicStudy,
@@ -92,4 +93,6 @@ class TestDataFactory {
     operator fun component1() = researcher
 
     operator fun component2() = systematicStudy
+
+    operator fun component3() = owner
 }
