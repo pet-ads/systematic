@@ -16,14 +16,14 @@ import br.all.application.review.update.services.UpdateSystematicStudyService.Re
 
 class TestDataFactory {
     private val faker = Faker()
-    val researcherId = UUID.randomUUID()
-    val systematicStudyId = UUID.randomUUID()
+    val researcher: UUID = UUID.randomUUID()
+    val systematicStudy: UUID = UUID.randomUUID()
 
     fun generateDto(
-        systematicStudyId: UUID = this.systematicStudyId,
+        systematicStudyId: UUID = this.systematicStudy,
         title: String = faker.book.title(),
         description: String = faker.lorem.words(),
-        ownerId: UUID = this.researcherId,
+        ownerId: UUID = this.researcher,
         collaborators: Set<UUID> = emptySet(),
     ) = SystematicStudyDto(
         systematicStudyId,
@@ -51,18 +51,18 @@ class TestDataFactory {
     ) = SystematicStudy.fromRequestModel(systematicStudyId, researcherId.value, request).toDto()
 
     fun findOneResponseModel(
-        researcherId: UUID = this.researcherId,
-        systematicStudyId: UUID = this.systematicStudyId,
+        researcherId: UUID = this.researcher,
+        systematicStudyId: UUID = this.systematicStudy,
         dto: SystematicStudyDto = generateDto(),
     ) = FindOneResponseModel(researcherId, systematicStudyId, dto)
 
     fun findAllResponseModel(
         vararg systematicStudies: SystematicStudyDto,
-        researcherId: UUID = this.researcherId,
+        researcherId: UUID = this.researcher,
     ) = FindAllResponseModel(researcherId, systematicStudies.toList())
 
     fun emptyFindAllResponseModel(
-        researcherId: UUID = this.researcherId,
+        researcherId: UUID = this.researcher,
         owner: UUID? = null,
     ) = FindAllResponseModel(
         researcherId = researcherId,
@@ -73,7 +73,7 @@ class TestDataFactory {
     fun findAllByOwnerResponseModel(
         owner: UUID,
         vararg systematicStudies: SystematicStudyDto,
-        researcherId: UUID = this.researcherId,
+        researcherId: UUID = this.researcher,
     ) = FindAllResponseModel(
         researcherId = researcherId,
         ownerId = owner,
@@ -86,7 +86,11 @@ class TestDataFactory {
     ) = UpdateRequestModel(title, description)
 
     fun updateResponseModel(
-        researcherId: UUID = this.researcherId,
-        systematicStudyId: UUID = this.systematicStudyId,
+        researcherId: UUID = this.researcher,
+        systematicStudyId: UUID = this.systematicStudy,
     ) = ResponseModel(researcherId, systematicStudyId)
+
+    operator fun component1() = researcher
+    
+    operator fun component2() = systematicStudy
 }

@@ -45,8 +45,8 @@ class FindOneSystematicStudyServiceImplTest {
     inner class WhenSuccessfullyFindingOneExistentSystematicStudy {
         @Test
         fun `should correctly find a systematic study and prepare a success view`() {
-            val researcherId = factory.researcherId
-            val systematicStudyId = factory.systematicStudyId
+            val researcherId = factory.researcher
+            val systematicStudyId = factory.systematicStudy
             val response = factory.findOneResponseModel()
 
             makeResearcherToBeAllowed(credentialsService, presenter, researcherId)
@@ -73,11 +73,11 @@ class FindOneSystematicStudyServiceImplTest {
     inner class WhenBeingUnableToFindASystematicStudy {
         @Test
         fun `should prepare a fail view when trying to find a nonexistent systematic study`() {
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
-            every { repository.existsById(factory.systematicStudyId) } returns false
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcher)
+            every { repository.existsById(factory.systematicStudy) } returns false
             every { presenter.isDone() } returns false andThen true
 
-            sut.findById(presenter, factory.researcherId, factory.systematicStudyId)
+            sut.findById(presenter, factory.researcher, factory.systematicStudy)
             verify {
                 presenter.prepareFailView(any<EntityNotFoundException>())
                 presenter.isDone()
@@ -86,12 +86,12 @@ class FindOneSystematicStudyServiceImplTest {
 
         @Test
         fun `should prepare a fail view if the researcher is not a collaborator`() {
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
-            every { repository.existsById(factory.systematicStudyId) } returns true
-            every { repository.hasReviewer(factory.systematicStudyId, factory.researcherId) } returns false
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcher)
+            every { repository.existsById(factory.systematicStudy) } returns true
+            every { repository.hasReviewer(factory.systematicStudy, factory.researcher) } returns false
             every { presenter.isDone() } returns false andThen true
 
-            sut.findById(presenter, factory.researcherId, factory.systematicStudyId)
+            sut.findById(presenter, factory.researcher, factory.systematicStudy)
             verify {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()
@@ -100,8 +100,8 @@ class FindOneSystematicStudyServiceImplTest {
 
         @Test
         fun `should a unauthenticated researcher be unable to find any systematic study`() {
-            makeResearcherToBeUnauthenticated(credentialsService, presenter, factory.researcherId)
-            sut.findById(presenter, factory.researcherId, factory.systematicStudyId)
+            makeResearcherToBeUnauthenticated(credentialsService, presenter, factory.researcher)
+            sut.findById(presenter, factory.researcher, factory.systematicStudy)
             verify {
                 presenter.isDone()
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
@@ -110,8 +110,8 @@ class FindOneSystematicStudyServiceImplTest {
 
         @Test
         fun `should a unauthorized researcher be unable to find any systematic study`() {
-            makeResearcherToBeUnauthorized(credentialsService, presenter, factory.researcherId)
-            sut.findById(presenter, factory.researcherId, factory.systematicStudyId)
+            makeResearcherToBeUnauthorized(credentialsService, presenter, factory.researcher)
+            sut.findById(presenter, factory.researcher, factory.systematicStudy)
             verify {
                 presenter.isDone()
                 presenter.prepareFailView(any<UnauthorizedUserException>())

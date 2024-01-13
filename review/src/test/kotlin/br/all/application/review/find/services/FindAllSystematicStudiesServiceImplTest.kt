@@ -43,7 +43,7 @@ class FindAllSystematicStudiesServiceImplTest {
     inner class WhenSuccessfullyFindingSystematicStudies {
         @BeforeEach
         fun setUp() {
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcher)
         }
 
         @Test
@@ -51,10 +51,10 @@ class FindAllSystematicStudiesServiceImplTest {
             val response = factory.findAllResponseModel(factory.generateDto())
 
             every {
-                repository.findAllByCollaborator(factory.researcherId)
+                repository.findAllByCollaborator(factory.researcher)
             } returns response.systematicStudies
 
-            sut.findAll(presenter, factory.researcherId)
+            sut.findAll(presenter, factory.researcher)
             verify { presenter.prepareSuccessView(response) }
         }
 
@@ -67,10 +67,10 @@ class FindAllSystematicStudiesServiceImplTest {
             )
 
             every {
-                repository.findAllByCollaborator(factory.researcherId)
+                repository.findAllByCollaborator(factory.researcher)
             } returns response.systematicStudies
 
-            sut.findAll(presenter, factory.researcherId)
+            sut.findAll(presenter, factory.researcher)
             verify { presenter.prepareSuccessView(response) }
         }
 
@@ -85,10 +85,10 @@ class FindAllSystematicStudiesServiceImplTest {
             )
 
             every {
-                repository.findAllByCollaboratorAndOwner(factory.researcherId, owner)
+                repository.findAllByCollaboratorAndOwner(factory.researcher, owner)
             } returns response.systematicStudies
 
-            sut.findAllByOwner(presenter, factory.researcherId, owner)
+            sut.findAllByOwner(presenter, factory.researcher, owner)
             verify { presenter.prepareSuccessView(response) }
         }
     }
@@ -100,10 +100,10 @@ class FindAllSystematicStudiesServiceImplTest {
         fun `should not find systematic studies when no one exists`() {
             val response = factory.emptyFindAllResponseModel()
 
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
-            every { repository.findAllByCollaborator(factory.researcherId) } returns emptyList()
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcher)
+            every { repository.findAllByCollaborator(factory.researcher) } returns emptyList()
 
-            sut.findAll(presenter, factory.researcherId)
+            sut.findAll(presenter, factory.researcher)
             verify { presenter.prepareSuccessView(response) }
         }
 
@@ -112,17 +112,17 @@ class FindAllSystematicStudiesServiceImplTest {
             val owner = UUID.randomUUID()
             val response = factory.emptyFindAllResponseModel(owner = owner)
 
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
-            every { repository.findAllByCollaboratorAndOwner(factory.researcherId, owner) } returns emptyList()
+            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcher)
+            every { repository.findAllByCollaboratorAndOwner(factory.researcher, owner) } returns emptyList()
 
-            sut.findAllByOwner(presenter, factory.researcherId, owner)
+            sut.findAllByOwner(presenter, factory.researcher, owner)
             verify { presenter.prepareSuccessView(response) }
         }
 
         @Test
         fun `should prepare fail view when the researcher is unauthenticated`() {
-            makeResearcherToBeUnauthenticated(credentialsService, presenter, factory.researcherId)
-            sut.findAll(presenter, factory.researcherId)
+            makeResearcherToBeUnauthenticated(credentialsService, presenter, factory.researcher)
+            sut.findAll(presenter, factory.researcher)
             verify {
                 presenter.isDone()
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
@@ -131,8 +131,8 @@ class FindAllSystematicStudiesServiceImplTest {
 
         @Test
         fun `should prepare fail view when the researcher is unauthorized`() {
-            makeResearcherToBeUnauthorized(credentialsService, presenter, factory.researcherId)
-            sut.findAll(presenter, factory.researcherId)
+            makeResearcherToBeUnauthorized(credentialsService, presenter, factory.researcher)
+            sut.findAll(presenter, factory.researcher)
             verify {
                 presenter.isDone()
                 presenter.prepareFailView(any<UnauthorizedUserException>())
