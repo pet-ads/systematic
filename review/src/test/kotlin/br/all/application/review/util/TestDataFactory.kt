@@ -4,7 +4,6 @@ import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
 import br.all.application.review.update.services.UpdateSystematicStudyService.ResponseModel
-import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudy
 import io.github.serpro69.kfaker.Faker
 import java.util.*
@@ -20,10 +19,10 @@ class TestDataFactory {
     val systematicStudy: UUID = UUID.randomUUID()
 
     fun generateDto(
-        systematicStudyId: UUID = this.systematicStudy,
+        systematicStudyId: UUID = systematicStudy,
         title: String = faker.book.title(),
         description: String = faker.lorem.words(),
-        ownerId: UUID = this.researcher,
+        ownerId: UUID = researcher,
         collaborators: Set<UUID> = emptySet(),
     ) = SystematicStudyDto(
         systematicStudyId,
@@ -40,15 +39,15 @@ class TestDataFactory {
     ) = CreateRequestModel(title, description, collaborators)
 
     fun createResponseModel(
-        researcherId: ResearcherId,
-        systematicStudyId: UUID,
-    ) = CreateResponseModel(researcherId.value, systematicStudyId)
+        researcherId: UUID = researcher,
+        systematicStudyId: UUID = systematicStudy,
+    ) = CreateResponseModel(researcherId, systematicStudyId)
 
-    fun createDtoFromCreateRequestModel(
-        systematicStudyId: UUID,
-        researcherId: ResearcherId,
+    fun dtoFromCreateRequest(
         request: CreateRequestModel,
-    ) = SystematicStudy.fromRequestModel(systematicStudyId, researcherId.value, request).toDto()
+        researcherId: UUID = researcher,
+        systematicStudyId: UUID = systematicStudy,
+    ) = SystematicStudy.fromRequestModel(systematicStudyId, researcherId, request).toDto()
 
     fun findOneResponseModel(
         researcherId: UUID = this.researcher,
@@ -91,6 +90,6 @@ class TestDataFactory {
     ) = ResponseModel(researcherId, systematicStudyId)
 
     operator fun component1() = researcher
-    
+
     operator fun component2() = systematicStudy
 }

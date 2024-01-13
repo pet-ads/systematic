@@ -45,16 +45,15 @@ class CreateSystematicStudyServiceImplTest {
     inner class WhenSuccessfullyCreatingASystematicStudy {
         @Test
         fun `should successfully create a systematic study`() {
-            val researcherId = ResearcherId(UUID.randomUUID())
-            val systematicStudyId = UUID.randomUUID()
+            val (researcher, systematicStudy) = factory
             val request = factory.createRequestModel()
-            val dto = factory.createDtoFromCreateRequestModel(systematicStudyId, researcherId, request)
-            val response = factory.createResponseModel(researcherId, systematicStudyId)
+            val response = factory.createResponseModel()
+            val dto = factory.dtoFromCreateRequest(request)
 
-            makeResearcherToBeAllowed(credentialsService, presenter, researcherId.value)
-            every { uuidGeneratorService.next() } returns systematicStudyId
+            makeResearcherToBeAllowed(credentialsService, presenter, researcher)
+            every { uuidGeneratorService.next() } returns systematicStudy
 
-            sut.create(presenter, researcherId.value, request)
+            sut.create(presenter, researcher, request)
             verify(exactly = 1) {
                 uuidGeneratorService.next()
                 repository.saveOrUpdate(dto)
