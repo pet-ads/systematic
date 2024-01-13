@@ -10,9 +10,9 @@ import br.all.application.review.util.TestDataFactory
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
@@ -26,15 +26,16 @@ class FindAllSystematicStudiesServiceImplTest {
     private lateinit var repository: SystematicStudyRepository
     @MockK
     private lateinit var credentialsService: ResearcherCredentialsService
+    @MockK(relaxed = true)
     private lateinit var presenter: FindAllSystematicStudyPresenter
-    private lateinit var factory: TestDataFactory
+    @InjectMockKs
     private lateinit var sut: FindAllSystematicStudiesServiceImpl
+
+    private lateinit var factory: TestDataFactory
 
     @BeforeEach
     fun setUp() {
-        presenter = mockk(relaxed = true)
         factory = TestDataFactory()
-        sut = FindAllSystematicStudiesServiceImpl(repository, credentialsService)
     }
 
     @Nested
