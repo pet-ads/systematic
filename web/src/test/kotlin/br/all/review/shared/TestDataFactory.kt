@@ -37,4 +37,14 @@ class TestDataFactory {
             "collaborators": [],
         }
     """.trimIndent()
+
+    fun createValidPutRequest(
+        title: String?,
+        description: String?
+    ) = """
+        {
+            ${if (title == null) "" else "\"title\": \"$title\""}${if (title != null && description != null) "," else ""}
+            ${if (description == null) "" else "\"description\": \"$description\""}
+        }
+    """.trimIndent()
 }

@@ -1,15 +1,19 @@
 package br.all.review.controller
 
 import br.all.infrastructure.review.MongoSystematicStudyRepository
+import br.all.infrastructure.shared.toNullable
 import br.all.review.shared.TestDataFactory
 import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.*
@@ -47,6 +51,11 @@ class SystematicStudyControllerTest(
         researcherId: UUID = factory.researcherId,
         ownerId: UUID = factory.ownerId,
     ) = "${getAllUrl(researcherId)}/owner/$ownerId"
+
+    private fun putUrl(
+        researcherId: UUID = factory.researcherId,
+        systematicStudyId: UUID = factory.systematicStudyId
+    ) = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId"
 
     @Nested
     @DisplayName("When posting a new Systematic Study")
@@ -212,6 +221,58 @@ class SystematicStudyControllerTest(
                     .andExpect(jsonPath("$.size").value(0))
                     .andExpect(jsonPath("$.ownerId").value(factory.ownerId.toString()))
                     .andExpect(jsonPath("$._links").exists())
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("When updating systematic studies")
+    inner class WhenUpdatingSystematicStudies {
+        @Nested
+        @Tag("ValidClasses")
+        @DisplayName("And being succeed")
+        inner class AndBeingSucceed {
+            @ParameterizedTest
+            @CsvSource("New title,", ",New description", "New title,New description")
+            fun `should update the systematic study and return 200`(title: String?, description: String?) {
+                val original = factory.createSystematicStudyDocument(title="Old title", description = "Old description")
+                repository.save(original)
+
+                val request = factory.createValidPutRequest(title, description)
+                mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.researcherId").value(factory.researcherId.toString()))
+                    .andExpect(jsonPath("$.systematicStudyId").value(factory.systematicStudyId.toString()))
+                    .andExpect(jsonPath("$._links").exists())
+
+                assertNotEquals(original, repository.findById(factory.systematicStudyId).toNullable())
+            }
+        }
+
+        @Nested
+        @Tag("InvalidClasses")
+        @DisplayName("But failing to update")
+        inner class ButFailingToUpdate {
+            @Test
+            fun `should nothing be updated if nothing is provided`() {
+                val document = factory.createSystematicStudyDocument()
+                repository.save(document)
+
+                val request = "{}"
+                mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.researcherId").value(factory.researcherId.toString()))
+                    .andExpect(jsonPath("$.systematicStudyId").value(factory.systematicStudyId.toString()))
+                    .andExpect(jsonPath("$._links").exists())
+
+                assertEquals(document, repository.findById(factory.systematicStudyId).toNullable())
+            }
+
+            @Test
+            fun `should not update a systematic study if it does not exist and return 404`() {
+                val request = factory.createValidPutRequest("New title", "New description")
+                mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
+                    .andExpect(status().isNotFound)
             }
         }
     }
