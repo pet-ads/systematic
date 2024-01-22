@@ -33,18 +33,14 @@ class FindAllSystematicStudiesServiceImplTest {
     private lateinit var factory: TestDataFactory
 
     @BeforeEach
-    fun setUp() {
-        factory = TestDataFactory()
-    }
+    fun setUp() = run { factory = TestDataFactory() }
 
     @Nested
     @Tag("ValidClasses")
     @DisplayName("When successfully finding systematic studies")
     inner class WhenSuccessfullyFindingSystematicStudies {
         @BeforeEach
-        fun setUp() {
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcher)
-        }
+        fun setUp() = run { makeResearcherToBeAllowed(credentialsService, presenter, factory.researcher) }
 
         @Test
         fun `should find the only existent systematic study`() {
