@@ -12,9 +12,9 @@ import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
@@ -28,16 +28,15 @@ class FindOneSystematicStudyServiceImplTest {
     private lateinit var repository: SystematicStudyRepository
     @MockK
     private lateinit var credentialsService: ResearcherCredentialsService
+    @MockK(relaxed = true)
     private lateinit var presenter: FindOneSystematicStudyPresenter
-    private lateinit var factory: TestDataFactory
+    @InjectMockKs
     private lateinit var sut: FindOneSystematicStudyServiceImpl
 
+    private lateinit var factory: TestDataFactory
+
     @BeforeEach
-    fun setUp() {
-        presenter = mockk(relaxed = true)
-        factory = TestDataFactory()
-        sut = FindOneSystematicStudyServiceImpl(repository, credentialsService)
-    }
+    fun setUp() = run { factory = TestDataFactory() }
 
     @Nested
     @Tag("ValidClasses")
