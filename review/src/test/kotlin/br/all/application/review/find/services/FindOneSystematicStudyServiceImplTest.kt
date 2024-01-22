@@ -44,14 +44,13 @@ class FindOneSystematicStudyServiceImplTest {
     inner class WhenSuccessfullyFindingOneExistentSystematicStudy {
         @Test
         fun `should correctly find a systematic study and prepare a success view`() {
-            val researcherId = factory.researcher
-            val systematicStudyId = factory.systematicStudy
+            val (researcher, systematicStudy) = factory
             val response = factory.findOneResponseModel()
 
-            makeResearcherToBeAllowed(credentialsService, presenter, researcherId)
-            makeSystematicStudyExist(systematicStudyId, researcherId, response.content)
+            makeResearcherToBeAllowed(credentialsService, presenter, researcher)
+            makeSystematicStudyExist(systematicStudy, researcher, response.content)
 
-            sut.findById(presenter, researcherId, systematicStudyId)
+            sut.findById(presenter, researcher, systematicStudy)
             verify { presenter.prepareSuccessView(response) }
         }
 
@@ -72,11 +71,13 @@ class FindOneSystematicStudyServiceImplTest {
     inner class WhenBeingUnableToFindASystematicStudy {
         @Test
         fun `should prepare a fail view when trying to find a nonexistent systematic study`() {
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcher)
-            every { repository.existsById(factory.systematicStudy) } returns false
+            val (researcher, systematicStudy) = factory
+
+            makeResearcherToBeAllowed(credentialsService, presenter, researcher)
+            every { repository.existsById(systematicStudy) } returns false
             every { presenter.isDone() } returns false andThen true
 
-            sut.findById(presenter, factory.researcher, factory.systematicStudy)
+            sut.findById(presenter, researcher, systematicStudy)
             verify {
                 presenter.prepareFailView(any<EntityNotFoundException>())
                 presenter.isDone()
@@ -85,12 +86,14 @@ class FindOneSystematicStudyServiceImplTest {
 
         @Test
         fun `should prepare a fail view if the researcher is not a collaborator`() {
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcher)
-            every { repository.existsById(factory.systematicStudy) } returns true
-            every { repository.hasReviewer(factory.systematicStudy, factory.researcher) } returns false
+            val (researcher, systematicStudy) = factory
+
+            makeResearcherToBeAllowed(credentialsService, presenter, researcher)
+            every { repository.existsById(systematicStudy) } returns true
+            every { repository.hasReviewer(systematicStudy, researcher) } returns false
             every { presenter.isDone() } returns false andThen true
 
-            sut.findById(presenter, factory.researcher, factory.systematicStudy)
+            sut.findById(presenter, researcher, systematicStudy)
             verify {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()
@@ -99,8 +102,10 @@ class FindOneSystematicStudyServiceImplTest {
 
         @Test
         fun `should a unauthenticated researcher be unable to find any systematic study`() {
-            makeResearcherToBeUnauthenticated(credentialsService, presenter, factory.researcher)
-            sut.findById(presenter, factory.researcher, factory.systematicStudy)
+            val (researcher, systematicStudy) = factory
+
+            makeResearcherToBeUnauthenticated(credentialsService, presenter, researcher)
+            sut.findById(presenter, researcher, systematicStudy)
             verify {
                 presenter.isDone()
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
@@ -109,8 +114,10 @@ class FindOneSystematicStudyServiceImplTest {
 
         @Test
         fun `should a unauthorized researcher be unable to find any systematic study`() {
-            makeResearcherToBeUnauthorized(credentialsService, presenter, factory.researcher)
-            sut.findById(presenter, factory.researcher, factory.systematicStudy)
+            val (researcher, systematicStudy) = factory
+
+            makeResearcherToBeUnauthorized(credentialsService, presenter, researcher)
+            sut.findById(presenter, researcher, systematicStudy)
             verify {
                 presenter.isDone()
                 presenter.prepareFailView(any<UnauthorizedUserException>())
