@@ -50,7 +50,7 @@ class FindAllSystematicStudiesServiceImplTest {
         @Test
         fun `should find the only existent systematic study`() {
             val (researcher) = factory
-            val response = factory.findAllResponseModel(factory.generateDto())
+            val response = factory.findAllResponseModel(1)
 
             every { repository.findAllByCollaborator(researcher) } returns response.systematicStudies
 
@@ -61,11 +61,7 @@ class FindAllSystematicStudiesServiceImplTest {
         @Test
         fun `should find all the several systematic studies`() {
             val (researcher) = factory
-            val response = factory.findAllResponseModel(
-                factory.generateDto(systematicStudyId = UUID.randomUUID()),
-                factory.generateDto(systematicStudyId = UUID.randomUUID()),
-                factory.generateDto(systematicStudyId = UUID.randomUUID()),
-            )
+            val response = factory.findAllResponseModel(3)
 
             every { repository.findAllByCollaborator(researcher) } returns response.systematicStudies
 
@@ -78,9 +74,9 @@ class FindAllSystematicStudiesServiceImplTest {
             val (researcher, owner) = factory
             val response = factory.findAllByOwnerResponseModel(
                 owner,
-                factory.generateDto(systematicStudyId = UUID.randomUUID(), ownerId = owner),
-                factory.generateDto(systematicStudyId = UUID.randomUUID(), ownerId = owner),
-                factory.generateDto(systematicStudyId = UUID.randomUUID(), ownerId = owner)
+                factory.generateDto(id = UUID.randomUUID(), ownerId = owner),
+                factory.generateDto(id = UUID.randomUUID(), ownerId = owner),
+                factory.generateDto(id = UUID.randomUUID(), ownerId = owner)
             )
 
             every { repository.findAllByCollaboratorAndOwner(researcher, owner) } returns response.systematicStudies

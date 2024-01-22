@@ -20,13 +20,13 @@ class TestDataFactory {
     val owner: UUID by lazy { UUID.randomUUID() }
 
     fun generateDto(
-        systematicStudyId: UUID = systematicStudy,
+        id: UUID = systematicStudy,
         title: String = faker.book.title(),
         description: String = faker.lorem.words(),
         ownerId: UUID = researcher,
         collaborators: Set<UUID> = emptySet(),
     ) = SystematicStudyDto(
-        systematicStudyId,
+        id,
         title,
         description,
         ownerId,
@@ -57,9 +57,12 @@ class TestDataFactory {
     ) = FindOneResponseModel(researcherId, systematicStudyId, dto)
 
     fun findAllResponseModel(
-        vararg systematicStudies: SystematicStudyDto,
+        amountOfStudies: Int,
         researcherId: UUID = this.researcher,
-    ) = FindAllResponseModel(researcherId, systematicStudies.toList())
+    ) = FindAllResponseModel(
+        researcherId,
+        List(amountOfStudies) { generateDto(id = UUID.randomUUID(), ownerId = researcherId) }
+    )
 
     fun emptyFindAllResponseModel(
         researcherId: UUID = this.researcher,
