@@ -13,6 +13,7 @@ import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import io.mockk.Runs
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.just
@@ -24,29 +25,26 @@ import org.junit.jupiter.api.extension.ExtendWith
 @Tag("ServiceTest")
 @ExtendWith(MockKExtension::class)
 class UpdateSystematicStudyServiceImplTest {
-    @MockK
+    @MockK(relaxUnitFun = true)
     private lateinit var repository: SystematicStudyRepository
     @MockK
     private lateinit var credentialsService: ResearcherCredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: UpdateSystematicStudyPresenter
-    private lateinit var factory: TestDataFactory
+    @InjectMockKs
     private lateinit var sut: UpdateSystematicStudyServiceImpl
 
+    private lateinit var factory: TestDataFactory
+
     @BeforeEach
-    fun setUp() {
-        factory = TestDataFactory()
-        sut = UpdateSystematicStudyServiceImpl(repository, credentialsService)
-    }
+    fun setUp() = run { factory = TestDataFactory() }
 
     @Nested
     @Tag("ValidClasses")
     @DisplayName("When the systematic study is updated")
     inner class WhenTheSystematicStudyIsUpdated {
         @BeforeEach
-        fun setUp() {
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcher)
-        }
+        fun setUp() = run { makeResearcherToBeAllowed(credentialsService, presenter, factory.researcher) }
 
         @Test
         fun `should only the title be updated`() {
