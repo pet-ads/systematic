@@ -81,6 +81,7 @@ class FindAllSystematicStudiesServiceImplTest {
     }
 
     @Nested
+    @Tag("InvalidClasses")
     @DisplayName("When being unable to find systematic studies")
     inner class WhenBeingUnableToFindSystematicStudies {
         @Test
