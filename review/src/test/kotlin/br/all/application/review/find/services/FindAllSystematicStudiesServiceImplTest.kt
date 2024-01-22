@@ -16,7 +16,6 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.*
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -72,12 +71,7 @@ class FindAllSystematicStudiesServiceImplTest {
         @Test
         fun `should find all the systematic studies of a owner`() {
             val (researcher, owner) = factory
-            val response = factory.findAllByOwnerResponseModel(
-                owner,
-                factory.generateDto(id = UUID.randomUUID(), ownerId = owner),
-                factory.generateDto(id = UUID.randomUUID(), ownerId = owner),
-                factory.generateDto(id = UUID.randomUUID(), ownerId = owner)
-            )
+            val response = factory.findAllByOwnerResponseModel(1)
 
             every { repository.findAllByCollaboratorAndOwner(researcher, owner) } returns response.systematicStudies
 

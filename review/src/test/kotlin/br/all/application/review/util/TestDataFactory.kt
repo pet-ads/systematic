@@ -74,13 +74,15 @@ class TestDataFactory {
     )
 
     fun findAllByOwnerResponseModel(
-        owner: UUID,
-        vararg systematicStudies: SystematicStudyDto,
+        amountOfStudies: Int,
+        owner: UUID = this.owner,
         researcherId: UUID = this.researcher,
     ) = FindAllResponseModel(
         researcherId = researcherId,
         ownerId = owner,
-        systematicStudies = systematicStudies.toList(),
+        systematicStudies = List(amountOfStudies) {
+            generateDto(id = UUID.randomUUID(), ownerId = owner, collaborators = setOf(researcherId))
+        },
     )
 
     fun updateRequestModel(
