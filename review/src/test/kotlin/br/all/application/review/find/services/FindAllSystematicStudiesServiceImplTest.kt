@@ -70,7 +70,7 @@ class FindAllSystematicStudiesServiceImplTest {
 
         @Test
         fun `should find all the systematic studies of a owner`() {
-            val (researcher, owner) = factory
+            val (researcher, _, owner) = factory
             val response = factory.findAllByOwnerResponseModel(1)
 
             every { repository.findAllByCollaboratorAndOwner(researcher, owner) } returns response.systematicStudies
