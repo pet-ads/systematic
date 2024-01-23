@@ -1,7 +1,8 @@
 package br.all.application.question.create
 
 import br.all.application.protocol.repository.ProtocolRepository
-import br.all.application.question.create.CreateQuestionService.*
+import br.all.application.question.create.CreateQuestionService.RequestModel
+import br.all.application.question.create.CreateQuestionService.ResponseModel
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
@@ -30,7 +31,7 @@ class CreateQuestionServiceImpl(
         val dto = context.executeStrategy(request)
 
         protocolRepository.addRiskOfBiasQuestion(request.questionId)
-        questionRepository.create(dto)
+        questionRepository.createOrUpdate(dto)
 
         presenter.prepareSuccessView(ResponseModel(request.researcherId, request.systematicStudyId, request.protocolId, request.questionId))
     }
@@ -50,7 +51,7 @@ class CreateQuestionServiceImpl(
         val dto = context.executeStrategy(request)
 
         protocolRepository.addExtractionQuestion(request.questionId)
-        questionRepository.create(dto)
+        questionRepository.createOrUpdate(dto)
 
         presenter.prepareSuccessView(ResponseModel(request.researcherId, request.systematicStudyId, request.protocolId, request.questionId))
     }
