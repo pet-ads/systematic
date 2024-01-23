@@ -20,13 +20,4 @@ data class Label(
     }
 
     override fun toString() = "Label(name: $name, value: $value)"
-
-    fun getName(): String{
-        return name
-    }
-
-    fun getValue(): Int{
-        return value
-    }
-
 }
