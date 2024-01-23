@@ -1,33 +1,73 @@
 package br.all.domain.model.question
 
 import br.all.domain.model.protocol.ProtocolId
-import org.junit.jupiter.api.Test
-import java.util.UUID
-import kotlin.test.assertIs
+import br.all.domain.model.study.Answer
+import io.github.serpro69.kfaker.Faker
+import org.junit.jupiter.api.*
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
+import java.util.*
 
-class QuestionTest{
+@Tag("UnitTest")
+class QuestionTest {
+    private val faker = Faker()
 
-    @Test
-    fun `should create TextualQuestion using builder`(){
-        val id = QuestionId(UUID.randomUUID())
-        val protocolId = ProtocolId(UUID.randomUUID())
-        val textual = QuestionBuilder()
-            .with(id, protocolId, "Q1", "Palmeiras tem mundial?")
-            .buildTextual()
-        //TODO add assertions for check if properties are correctly set
-        assertIs<Textual>(textual)
+    @Nested
+    @Tag("ValidClasses")
+    @DisplayName("When successfully creating questions")
+    inner class WhenSuccessfullyCreatingQuestions {
+        @Test
+        fun `should create a question with valid code and description`() {
+            val id = QuestionId(UUID.randomUUID())
+            val protocolId = ProtocolId(UUID.randomUUID())
+            val code = faker.lorem.words()
+            val description = faker.lorem.words()
+
+            assertDoesNotThrow { QuestionImpl(id, protocolId, code, description) }
+        }
     }
 
-    @Test
-    fun `should create NumberScale using builder`(){
-        val id = QuestionId(UUID.randomUUID())
-        val protocolId = ProtocolId(UUID.randomUUID())
-        val scale = QuestionBuilder()
-            .with(id, protocolId, "Q2", "Quantos mundiais tem o Palmeiras")
-            .buildNumberScale(0, 20)
-        //TODO add assertions for check if properties are correctly set
-        assertIs<NumberScale>(scale)
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("When being unable to create questions")
+    inner class WhenBeingUnableToCreateQuestions {
+        @ParameterizedTest(name = "[{index}]: code = \"{0}\"")
+        @ValueSource(strings = ["", " ", "   "])
+        fun `should throw IllegalArgumentException for blank codes`(code: String) {
+            val id = QuestionId(UUID.randomUUID())
+            val protocolId = ProtocolId(UUID.randomUUID())
+            val description = faker.lorem.words()
+
+            assertThrows<IllegalArgumentException> { QuestionImpl(id, protocolId, code, description) }
+        }
+
+        @ParameterizedTest(name = "[{index}]: description = \"{0}\"")
+        @ValueSource(strings = ["", " ", "   "])
+        fun `should throw IllegalArgumentException for blank descriptions`(description: String) {
+            val id = QuestionId(UUID.randomUUID())
+            val protocolId = ProtocolId(UUID.randomUUID())
+            val code = faker.lorem.words()
+
+            assertThrows<IllegalArgumentException> { QuestionImpl(id, protocolId, code, description) }
+        }
+
+        @Test
+        fun `should throw IllegalArgumentException for blank codes and descriptions`() {
+            val id = QuestionId(UUID.randomUUID())
+            val protocolId = ProtocolId(UUID.randomUUID())
+            val code = ""
+            val description = ""
+
+            assertThrows<IllegalArgumentException> { QuestionImpl(id, protocolId, code, description) }
+        }
     }
 
-
+    private class QuestionImpl(
+        id: QuestionId,
+        protocolId: ProtocolId,
+        code: String,
+        description: String,
+    ): Question<Int>(id, protocolId, code, description) {
+        override fun answer(value: Int) = Answer(id.value(), value)
+    }
 }
