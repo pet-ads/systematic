@@ -2,6 +2,7 @@ package br.all.application.protocol.util
 
 import br.all.application.protocol.repository.ProtocolDto
 import br.all.application.protocol.repository.ProtocolRepository
+import br.all.domain.model.question.QuestionId
 import java.util.*
 
 class FakeProtocolRepository: ProtocolRepository {
@@ -18,4 +19,12 @@ class FakeProtocolRepository: ProtocolRepository {
     override fun existsById(id: UUID) = id in db
 
     override fun existsBySystematicStudy(systematicStudyId: UUID) = db.values.any { it.systematicStudy == systematicStudyId }
+
+    override fun addRiskOfBiasQuestion(questionId: QuestionId) {
+        TODO("Not yet implemented")
+    }
+
+    override fun addExtractionQuestion(questionId: QuestionId) {
+        TODO("Not yet implemented")
+    }
 }
