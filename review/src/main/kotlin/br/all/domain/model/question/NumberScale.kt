@@ -21,7 +21,11 @@ class NumberScale(
         val notification = Notification()
         if (higher < lower)
             notification.addError(
-                "\"Higher\" value (${higher}) must be greater or equal than \"lower\" (${lower}) value."
+                "Higher value (${higher}) must be greater than \"lower\" (${lower}) value."
+            )
+        if (higher == lower)
+            notification.addError(
+                "Higher (${higher}) and lower (${lower}) values must be different."
             )
         return notification
     }

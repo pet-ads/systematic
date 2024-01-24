@@ -1,60 +1,46 @@
 package br.all.domain.model.question
-//
-//import br.all.domain.model.protocol.ProtocolId
-//import org.junit.jupiter.api.Assertions.*
-//import org.junit.jupiter.api.Test
-//import org.junit.jupiter.api.assertThrows
-//import java.util.*
-//import kotlin.NoSuchElementException
-//
-//class LabeledScaleTest {
-//
-//    //TODO em resumo, para tudo que é público e não gerado automaticamente, teste:
-//    // uma entrada válida, todas as possíveis entradas inválidas, uma por teste. Além disso, teste listas vazias, listas
-//    // com um único elemento, limites iguais (higher,lower), limites quase iguais (lower == higher -1), limites inválidos.
-//    @Test
-//    fun `should validate non blank answer`() {
-//        val questionId = QuestionId(UUID.randomUUID())
-//        val protocolId = ProtocolId(UUID.randomUUID())
-//        val code = "T1"
-//        val description = "Sample labeled scale question"
-//        val scales = mapOf(
-//            "Label1" to 1,
-//            "Label2" to 2,
-//            "Label3" to 3
-//        )
-//        val labeledScale = LabeledScale(questionId, protocolId, code, description, scales)
-//
-//        val answer = Label("Label1", 1)
-//        assertDoesNotThrow { labeledScale.answer = answer }
-//    }
-//
-//    @Test
-//    fun `should validate answer not in scales`() {
-//        val questionId = QuestionId(UUID.randomUUID())
-//        val protocolId = ProtocolId(UUID.randomUUID())
-//        val code = "T1"
-//        val description = "Sample labeled scale question"
-//        val scales = mapOf(
-//            "Label1" to 1,
-//            "Label2" to 2,
-//            "Label3" to 3
-//        )
-//        val labeledScale = LabeledScale(questionId, protocolId, code, description, scales)
-//
-//        val answer = Label("InvalidLabel", 4)
-//        assertThrows<NoSuchElementException> { labeledScale.answer = answer }
-//    }
-//
-//    @Test
-//    fun `should throw IllegalArgumentException for empty scales`() {
-//        val questionId = QuestionId(UUID.randomUUID())
-//        val protocolId = ProtocolId(UUID.randomUUID())
-//        val code = "T1"
-//        val description = "Sample labeled scale question"
-//        val scales = emptyMap<String, Int>()
-//        assertThrows<IllegalArgumentException> { LabeledScale(questionId, protocolId, code, description, scales) }
-//
-//    }
-//
-//}
+
+import br.all.domain.model.protocol.ProtocolId
+import io.github.serpro69.kfaker.Faker
+import org.junit.jupiter.api.*
+import java.util.*
+
+@Tag("UnitTest")
+class LabeledScaleTest {
+    private val faker = Faker()
+
+    private val validScale = mapOf(faker.lorem.words() to 1, faker.lorem.words() to 2)
+    private val emptyScale = emptyMap<String, Int>()
+
+    @Nested
+    @Tag("ValidClasses")
+    @DisplayName("When successfully creating LabeledScale questions")
+    inner class WhenSuccessfullyCreatingLabeledScaleQuestions {
+        @Test
+        fun `should create a LabeledScale question with valid parameters`() {
+            val id = QuestionId(UUID.randomUUID())
+            val protocolId = ProtocolId(UUID.randomUUID())
+            val code = faker.lorem.words()
+            val description = faker.lorem.words()
+
+            assertDoesNotThrow { LabeledScale(id, protocolId, code, description, validScale) }
+        }
+    }
+
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("When unable to create LabeledScale questions")
+    inner class WhenUnableToCreateLabeledScaleQuestions {
+        @Test
+        fun `should throw IllegalArgumentException for empty scales`() {
+            val id = QuestionId(UUID.randomUUID())
+            val protocolId = ProtocolId(UUID.randomUUID())
+            val code = faker.lorem.words()
+            val description = faker.lorem.words()
+
+            assertThrows<IllegalArgumentException> { LabeledScale(id, protocolId, code, description, emptyScale) }
+        }
+    }
+
+
+}
