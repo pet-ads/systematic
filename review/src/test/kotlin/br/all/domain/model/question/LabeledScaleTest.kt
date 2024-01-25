@@ -38,6 +38,17 @@ class LabeledScaleTest {
 
             assertEquals(expectedAnswer, question.answer(label))
         }
+
+        @Test
+        fun `should a label that is not yet in the scales be added to it`() {
+            val scales = mutableMapOf("Label" to 1)
+            val id = QuestionId(UUID.randomUUID())
+            val question = createLabeledScale(id, scales)
+
+            question.addScale("Other label", 2)
+
+            assertEquals(2, question.scales.size)
+        }
     }
 
     @Nested
