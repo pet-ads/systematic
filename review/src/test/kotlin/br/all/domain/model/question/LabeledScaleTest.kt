@@ -38,15 +38,6 @@ class LabeledScaleTest {
 
             assertEquals(expectedAnswer, question.answer(label))
         }
-
-        private fun createLabeledScale(
-            id: QuestionId,
-            scales: MutableMap<String, Int>
-        ): LabeledScale {
-            val protocolId = ProtocolId(UUID.randomUUID())
-            val question = LabeledScale(id, protocolId, faker.lorem.words(), faker.lorem.words(), scales)
-            return question
-        }
     }
 
     @Nested
@@ -62,7 +53,23 @@ class LabeledScaleTest {
 
             assertThrows<IllegalArgumentException> { LabeledScale(id, protocolId, code, description, emptyScale) }
         }
+
+        @Test
+        fun `should not answer a question if it does not have the label`() {
+            val scales = mutableMapOf("Label" to 1)
+            val id = QuestionId(UUID.randomUUID())
+            val question = createLabeledScale(id, scales)
+
+            assertThrows<IllegalArgumentException> { question.answer(Label("Other Label", 3)) }
+        }
     }
 
-
+    private fun createLabeledScale(
+        id: QuestionId,
+        scales: MutableMap<String, Int>
+    ): LabeledScale {
+        val protocolId = ProtocolId(UUID.randomUUID())
+        val question = LabeledScale(id, protocolId, faker.lorem.words(), faker.lorem.words(), scales)
+        return question
+    }
 }
