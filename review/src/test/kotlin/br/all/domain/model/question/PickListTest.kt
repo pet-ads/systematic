@@ -83,6 +83,16 @@ class PickListTest {
             assertThrows<IllegalArgumentException> { pickList.answer(value) }
         }
 
+        @Test
+        fun `should throw Illegal Argument Exception for value not in options`() {
+            val id = QuestionId(UUID.randomUUID())
+            val protocolId = ProtocolId(UUID.randomUUID())
+            val code = faker.lorem.words()
+            val description = faker.lorem.words()
+            val options = listOf("word1", "word2")
+            val pickList = PickList(id, protocolId, code, description, options)
 
+            assertThrows<IllegalArgumentException> { pickList.answer("word3") }
+        }
     }
 }
