@@ -16,14 +16,14 @@ class PickListTest {
     @Nested
     @Tag("ValidClasses")
     @DisplayName("When successfully creating PickList questions")
-    inner class WhenSuccessfullyCreatingPickListQuestions{
+    inner class WhenSuccessfullyCreatingPickListQuestions {
         @Test
-        fun `should create a PickList question with valid options`(){
+        fun `should create a PickList question with valid options`() {
             val id = QuestionId(UUID.randomUUID())
             val protocolId = ProtocolId(UUID.randomUUID())
             val code = faker.lorem.words()
             val description = faker.lorem.words()
-            val options = listOf(faker.lorem.words(),faker.lorem.words())
+            val options = listOf(faker.lorem.words(), faker.lorem.words())
 
             assertDoesNotThrow { PickList(id, protocolId, code, description, options) }
         }
@@ -46,9 +46,9 @@ class PickListTest {
     @Nested
     @Tag("InvalidClasses")
     @DisplayName("When being unable to create PickList questions")
-    inner class WhenBeingUnableToCreatePickListQuestions{
+    inner class WhenBeingUnableToCreatePickListQuestions {
         @Test
-        fun `should throw IllegalArgument exception for empty options list` (){
+        fun `should throw IllegalArgument exception for empty options list`() {
             val id = QuestionId(UUID.randomUUID())
             val protocolId = ProtocolId(UUID.randomUUID())
             val code = faker.lorem.words()
@@ -60,7 +60,7 @@ class PickListTest {
 
         @ParameterizedTest(name = "[{index}]: option = \"{0}\"")
         @ValueSource(strings = ["", " ", "  "])
-        fun `should throw IllegalArgument exception for blank option` (option: String){
+        fun `should throw IllegalArgument exception for blank option`(option: String) {
             val id = QuestionId(UUID.randomUUID())
             val protocolId = ProtocolId(UUID.randomUUID())
             val code = faker.lorem.words()
@@ -70,6 +70,19 @@ class PickListTest {
             assertThrows<IllegalArgumentException> { PickList(id, protocolId, code, description, options) }
         }
 
-        // TODO: Answer Test
+        @ParameterizedTest(name = "[{index}]: value = \"{0}\"")
+        @ValueSource(strings = ["", " ", "  "])
+        fun `should throw Illegal Argument Exception for blank value`(value: String) {
+            val id = QuestionId(UUID.randomUUID())
+            val protocolId = ProtocolId(UUID.randomUUID())
+            val code = faker.lorem.words()
+            val description = faker.lorem.words()
+            val options = listOf("word1", "word2")
+            val pickList = PickList(id, protocolId, code, description, options)
+
+            assertThrows<IllegalArgumentException> { pickList.answer(value) }
+        }
+
+
     }
 }
