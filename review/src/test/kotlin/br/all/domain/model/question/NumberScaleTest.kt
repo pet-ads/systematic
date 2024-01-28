@@ -1,9 +1,13 @@
 package br.all.domain.model.question
 
 import br.all.domain.model.protocol.ProtocolId
+import br.all.domain.model.study.Answer
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.*
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import java.util.*
+import kotlin.test.assertEquals
 
 @Tag("UnitTest")
 class NumberScaleTest{
@@ -23,6 +27,21 @@ class NumberScaleTest{
             val lower = 1
 
             assertDoesNotThrow { NumberScale(id, protocolId, code, description, higher, lower) }
+        }
+
+        @ParameterizedTest(name = "[{index}]: value = \"{0}\"")
+        @ValueSource(ints = [1,10,5])
+        fun `should answer the questions with valid value equal or between bounds`(value: Int) {
+            val id = QuestionId(UUID.randomUUID())
+            val protocolId = ProtocolId(UUID.randomUUID())
+            val code = faker.lorem.words()
+            val description = faker.lorem.words()
+            val higher = 10
+            val lower = 1
+            val numberScale = NumberScale(id, protocolId, code, description, higher, lower)
+            val expectedAnswer = Answer(numberScale.id.value(), value)
+
+            assertEquals(expectedAnswer, numberScale.answer(value))
         }
     }
 
@@ -54,6 +73,18 @@ class NumberScaleTest{
             assertThrows<IllegalArgumentException> { NumberScale(id, protocolId, code, description, higher, lower) }
         }
 
-        // TODO: answer test 
+        @ParameterizedTest(name = "[{index}]: value = \"{0}\"")
+        @ValueSource(ints = [0,11,15])
+        fun `should throw IllegalArgumentException for answer out of bounds`(value: Int) {
+            val id = QuestionId(UUID.randomUUID())
+            val protocolId = ProtocolId(UUID.randomUUID())
+            val code = faker.lorem.words()
+            val description = faker.lorem.words()
+            val higher = 10
+            val lower = 1
+            val numberScale = NumberScale(id, protocolId, code, description, higher, lower)
+
+            assertThrows<IllegalArgumentException> { numberScale.answer(value) }
+        }
     }
 }
