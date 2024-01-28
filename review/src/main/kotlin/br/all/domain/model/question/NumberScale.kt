@@ -36,8 +36,5 @@ class NumberScale(
         return Answer(id.value(), value)
     }
 
-    operator fun component5(): Int = higher
-    operator fun component6(): Int = lower
-
     override fun toString() = "NumberScale(questionId=$id, higher=$higher, lower=$lower)"
 }
