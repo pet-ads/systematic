@@ -14,7 +14,7 @@ class QuestionBuilderTest {
     @DisplayName("When Successfully building a question")
     inner class WhenSuccessfullyBuildingAQuestion {
         @Test
-        fun `should create a textual question with valid values`() {
+        fun `should create a Textual question with valid values`() {
             val id = QuestionId(UUID.randomUUID())
             val protocolId = ProtocolId(UUID.randomUUID())
             val code = faker.lorem.words()
@@ -25,7 +25,7 @@ class QuestionBuilderTest {
         }
 
         @Test
-        fun `should create a picklist question with valid values`() {
+        fun `should create a PickList question with valid values`() {
             val id = QuestionId(UUID.randomUUID())
             val protocolId = ProtocolId(UUID.randomUUID())
             val code = faker.lorem.words()
@@ -37,7 +37,7 @@ class QuestionBuilderTest {
         }
 
         @Test
-        fun `should create a numberscale question with valid values`() {
+        fun `should create a NumberScale question with valid values`() {
             val id = QuestionId(UUID.randomUUID())
             val protocolId = ProtocolId(UUID.randomUUID())
             val code = faker.lorem.words()
@@ -47,6 +47,18 @@ class QuestionBuilderTest {
             val lower = 1
 
             assertDoesNotThrow { question.buildNumberScale(higher, lower) }
+        }
+
+        @Test
+        fun `should create a LabeledScale question with valid values`() {
+            val id = QuestionId(UUID.randomUUID())
+            val protocolId = ProtocolId(UUID.randomUUID())
+            val code = faker.lorem.words()
+            val description = faker.lorem.words()
+            val question = buildQuestion(id, protocolId, code, description)
+            val scales = mapOf(faker.lorem.words() to 1, faker.lorem.words() to 2)
+
+            assertDoesNotThrow { question.buildLabeledScale(scales) }
         }
     }
 
