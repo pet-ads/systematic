@@ -92,6 +92,34 @@ class QuestionBuilderTest {
 
                 assertThrows<IllegalArgumentException> { question.buildPickList(options) }
             }
+
+            @ParameterizedTest(name = "[{index}]: lower = \"{0}\"")
+            @ValueSource(ints = [11, 15])
+            fun `should not create a NumberScale question with lower greater than higher`(lower: Int) {
+                val id = QuestionId(UUID.randomUUID())
+                val protocolId = ProtocolId(UUID.randomUUID())
+                val code = faker.lorem.words()
+                val description = faker.lorem.words()
+                val question = buildQuestion(id, protocolId, code, description)
+                val higher = 10
+
+                assertThrows<IllegalArgumentException> { question.buildNumberScale(higher, lower) }
+            }
+
+            @Test
+            fun `should not create a NumberScale question with equal lower and higher values`() {
+                val id = QuestionId(UUID.randomUUID())
+                val protocolId = ProtocolId(UUID.randomUUID())
+                val code = faker.lorem.words()
+                val description = faker.lorem.words()
+                val question = buildQuestion(id, protocolId, code, description)
+                val higher = 10
+                val lower = 10
+
+                assertThrows<IllegalArgumentException> { question.buildNumberScale(higher, lower) }
+            }
+
+
         }
     }
 
