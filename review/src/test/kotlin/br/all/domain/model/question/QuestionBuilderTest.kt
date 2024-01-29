@@ -24,6 +24,17 @@ class QuestionBuilderTest{
             assertDoesNotThrow { question.buildTextual() }
         }
 
+        @Test
+        fun `should create a picklist question with valid values`() {
+            val id = QuestionId(UUID.randomUUID())
+            val protocolId = ProtocolId(UUID.randomUUID())
+            val code = faker.lorem.words()
+            val description = faker.lorem.words()
+            val question = buildQuestion(id, protocolId, code, description)
+            val options = listOf(faker.lorem.words(), faker.lorem.words())
+
+            assertDoesNotThrow { question.buildPickList(options) }
+        }
     }
 
     fun buildQuestion(id: QuestionId, protocolId: ProtocolId, code: String, description: String) =
