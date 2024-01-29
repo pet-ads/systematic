@@ -66,7 +66,7 @@ class QuestionBuilderTest {
         @Nested
         @Tag("InvalidClasses")
         @DisplayName("When unable to create a question")
-        inner class WhenUnableToCreateAQuestion{
+        inner class WhenUnableToCreateAQuestion {
 
             @Test
             fun `should not create a PickList question with empty options list`() {
@@ -119,7 +119,17 @@ class QuestionBuilderTest {
                 assertThrows<IllegalArgumentException> { question.buildNumberScale(higher, lower) }
             }
 
+            @Test
+            fun `should not create a LabeledScale question with empty scales`() {
+                val id = QuestionId(UUID.randomUUID())
+                val protocolId = ProtocolId(UUID.randomUUID())
+                val code = faker.lorem.words()
+                val description = faker.lorem.words()
+                val question = buildQuestion(id, protocolId, code, description)
+                val scales = emptyMap<String, Int>()
 
+                assertThrows<IllegalArgumentException> { question.buildLabeledScale(scales) }
+            }
         }
     }
 
