@@ -3,6 +3,7 @@ package br.all.domain.model.question
 import br.all.domain.model.protocol.ProtocolId
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.*
+import org.junit.jupiter.params.ParameterizedTest
 import java.util.*
 
 @Tag("UnitTest")
@@ -59,6 +60,24 @@ class QuestionBuilderTest {
             val scales = mapOf(faker.lorem.words() to 1, faker.lorem.words() to 2)
 
             assertDoesNotThrow { question.buildLabeledScale(scales) }
+        }
+
+        @Nested
+        @Tag("InvalidClasses")
+        @DisplayName("When unable to create a question")
+        inner class WhenUnableToCreateAQuestion{
+
+            @Test
+            fun `should not create a PickList question with empty options list`() {
+                val id = QuestionId(UUID.randomUUID())
+                val protocolId = ProtocolId(UUID.randomUUID())
+                val code = faker.lorem.words()
+                val description = faker.lorem.words()
+                val question = buildQuestion(id, protocolId, code, description)
+                val options = emptyList<String>()
+
+                assertThrows<IllegalArgumentException> { question.buildPickList(options) }
+            }
         }
     }
 
