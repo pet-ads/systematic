@@ -6,13 +6,13 @@ import org.junit.jupiter.api.*
 import java.util.*
 
 @Tag("UnitTest")
-class QuestionBuilderTest{
+class QuestionBuilderTest {
     private val faker = Faker()
 
     @Nested
     @Tag("ValidClasses")
     @DisplayName("When Successfully building a question")
-    inner class WhenSuccessfullyBuildingAQuestion{
+    inner class WhenSuccessfullyBuildingAQuestion {
         @Test
         fun `should create a textual question with valid values`() {
             val id = QuestionId(UUID.randomUUID())
@@ -34,6 +34,19 @@ class QuestionBuilderTest{
             val options = listOf(faker.lorem.words(), faker.lorem.words())
 
             assertDoesNotThrow { question.buildPickList(options) }
+        }
+
+        @Test
+        fun `should create a numberscale question with valid values`() {
+            val id = QuestionId(UUID.randomUUID())
+            val protocolId = ProtocolId(UUID.randomUUID())
+            val code = faker.lorem.words()
+            val description = faker.lorem.words()
+            val question = buildQuestion(id, protocolId, code, description)
+            val higher = 10
+            val lower = 1
+
+            assertDoesNotThrow { question.buildNumberScale(higher, lower) }
         }
     }
 
