@@ -10,7 +10,7 @@ import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.services.UuidGeneratorService
-import br.all.infrastructure.question.factory.QuestionFactory
+import br.all.application.question.shared.QuestionFactory
 
 class CreateQuestionServiceImpl(
     private val questionFactory: QuestionFactory,

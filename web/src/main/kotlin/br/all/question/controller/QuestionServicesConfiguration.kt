@@ -7,9 +7,8 @@ import br.all.application.question.find.FindQuestionServiceImpl
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.domain.services.IdGeneratorService
 import br.all.domain.services.UuidGeneratorService
-import br.all.infrastructure.question.factory.QuestionFactory
+import br.all.application.question.shared.QuestionFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 

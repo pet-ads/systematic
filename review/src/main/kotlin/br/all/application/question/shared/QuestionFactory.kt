@@ -1,4 +1,4 @@
-package br.all.infrastructure.question.factory
+package br.all.application.question.shared
 
 import br.all.application.question.create.CreateQuestionService.RequestModel
 import br.all.application.question.repository.QuestionDto

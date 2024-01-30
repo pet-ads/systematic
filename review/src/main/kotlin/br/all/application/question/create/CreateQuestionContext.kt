@@ -1,6 +1,6 @@
 package br.all.application.question.create
 
-import br.all.infrastructure.question.factory.QuestionFactory
+import br.all.application.question.shared.QuestionFactory
 
 class CreateQuestionContext(questionType: String) {
     private fun setStrategy(questionType: String): QuestionFactory {
