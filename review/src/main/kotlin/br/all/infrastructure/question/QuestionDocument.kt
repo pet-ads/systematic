@@ -10,7 +10,6 @@ import java.util.*
 @Document("question")
 data class QuestionDocument(
     @Id val id: UUID,
-    val systematicStudyId: UUID,
     val protocolId: UUID,
     val code: String,
     val description: String,

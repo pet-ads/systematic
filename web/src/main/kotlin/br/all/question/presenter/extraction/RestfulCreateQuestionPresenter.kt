@@ -15,13 +15,13 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class RestfulCreateQuestionPresenter() : CreateQuestionPresenter {
+class RestfulCreateQuestionPresenter : CreateQuestionPresenter {
     var responseEntity: ResponseEntity<*>? = null
     override fun prepareSuccessView(response: ResponseModel) {
-        val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, response.protocolId, response.questionId)
+        val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, ProtocolId(response.protocolId), QuestionId(response.questionId))
 
         val self = linkTo<ExtractionQuestionController> {
-            findQuestion(response.researcherId, response.systematicStudyId, response.questionId)
+            findQuestion(response.researcherId, response.systematicStudyId, QuestionId(response.questionId))
         }.withSelfRel()
 
         restfulResponse.add(self)

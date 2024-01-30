@@ -18,7 +18,7 @@ class RestfulFindQuestionPresenter : FindQuestionPresenter {
         val restfulResponse = ViewModel(response.content)
 
         val self = linkTo<ExtractionQuestionController> {
-            findQuestion(response.researcherId, response.content.systematicStudyId, response.content.questionId)
+            findQuestion(response.researcherId, response.content., response.content.questionId)
         }.withSelfRel()
 
         restfulResponse.add(self)

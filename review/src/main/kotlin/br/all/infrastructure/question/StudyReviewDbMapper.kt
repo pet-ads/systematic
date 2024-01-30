@@ -16,7 +16,6 @@ fun QuestionDocument.toDto() = QuestionDto(
 
 fun QuestionDto.toDocument() = QuestionDocument(
     questionId,
-    systematicStudyId,
     protocolId,
     code,
     description,
