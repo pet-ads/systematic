@@ -13,5 +13,7 @@ interface ProtocolRepository {
 
     fun existsById(id: UUID): Boolean
 
+    fun existsBySystematicStudy(systematicStudyId: UUID): Boolean
+
     fun belongsToSystematicStudy(protocolId: UUID, systematicStudyId: UUID): Boolean
 }
