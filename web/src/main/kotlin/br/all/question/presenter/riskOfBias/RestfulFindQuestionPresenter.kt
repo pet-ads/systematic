@@ -1,6 +1,6 @@
 package br.all.question.presenter.riskOfBias
 
-import br.all.application.question.create.QuestionDTO
+import br.all.application.question.repository.QuestionDto
 import br.all.application.question.find.FindQuestionPresenter
 import br.all.application.question.find.FindQuestionService.*
 import br.all.question.controller.RiskOfBiasQuestionController
@@ -29,7 +29,7 @@ class RestfulFindQuestionPresenter : FindQuestionPresenter {
 
     override fun isDone() = responseEntity != null
 
-    private data class ViewModel(private val content: QuestionDTO) : RepresentationModel<ViewModel>(){
+    private data class ViewModel(private val content: QuestionDto) : RepresentationModel<ViewModel>(){
         val systematicStudyId = content.systematicStudyId
         val questionId = content.questionId
         val protocolId = content.protocolId

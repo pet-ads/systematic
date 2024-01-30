@@ -1,8 +1,8 @@
 package br.all.infrastructure.question
 
-import br.all.application.question.create.QuestionDTO
+import br.all.application.question.repository.QuestionDto
 
-fun QuestionDocument.toDto() = QuestionDTO(
+fun QuestionDocument.toDto() = QuestionDto(
     systematicStudyId,
     id,
     protocolId,
@@ -15,7 +15,7 @@ fun QuestionDocument.toDto() = QuestionDTO(
     options
 )
 
-fun QuestionDTO.toDocument() = QuestionDocument(
+fun QuestionDto.toDocument() = QuestionDocument(
     questionId,
     systematicStudyId,
     protocolId,

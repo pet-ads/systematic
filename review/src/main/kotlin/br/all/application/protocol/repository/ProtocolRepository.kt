@@ -1,6 +1,5 @@
 package br.all.application.protocol.repository
 
-import br.all.domain.model.question.QuestionId
 import java.util.*
 
 interface ProtocolRepository {
@@ -14,9 +13,5 @@ interface ProtocolRepository {
 
     fun existsById(id: UUID): Boolean
 
-    fun existsBySystematicStudy(systematicStudyId: UUID): Boolean
-
-    fun addRiskOfBiasQuestion(questionId: QuestionId)
-
-    fun addExtractionQuestion(questionId: QuestionId)
+    fun belongsToSystematicStudy(protocolId: UUID, systematicStudyId: UUID): Boolean
 }

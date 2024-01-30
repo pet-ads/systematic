@@ -23,7 +23,7 @@ class RiskOfBiasQuestionController(
         @RequestBody request: CreateRequest
     ): ResponseEntity<*> {
         val presenter = RestfulCreateQuestionPresenter()
-        createService.createRiskOfBiasQuestion(presenter, request)
+        createService.create(presenter, request)
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 

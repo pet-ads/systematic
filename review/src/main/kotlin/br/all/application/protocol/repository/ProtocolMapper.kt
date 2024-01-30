@@ -64,3 +64,22 @@ fun Protocol.Companion.fromRequestModel(
         .withPICOC(picoc?.let { Picoc(it.population, it.intervention, it.control, it.outcome, it.context) })
         .build()
 }
+
+fun Protocol.Companion.fromDto(dto: ProtocolDto) = with(dto) {
+    Protocol.with(SystematicStudyId(systematicStudy), keywords)
+        .researchesFor(goal)
+        .because(justification)
+        .toAnswer(researchQuestions.map { ResearchQuestion(it) }.toSet())
+        .followingSearchProcess(searchMethod, searchString)
+        .inSearchSources( informationSources.map { SearchSource(it) }.toSet()).selectedBecause(sourcesSelectionCriteria)
+        .searchingStudiesIn( studiesLanguages.map { Language(Language.LangType.valueOf(it)) }.toSet(),studyTypeDefinition)
+        .followingSelectionProcess(selectionProcess)
+        .withElegibilityCriteria(
+            selectionCriteria
+                .map { (description, type) -> Criteria(description, CriteriaType.valueOf(type)) }
+                .toSet())
+        .followingDataCollectionProcess(dataCollectionProcess)
+        .followingSynthesisProcess(analysisAndSynthesisProcess)
+        .withPICOC(picoc?.let { Picoc(it.population, it.intervention, it.control, it.outcome, it.context) })
+        .build()
+}

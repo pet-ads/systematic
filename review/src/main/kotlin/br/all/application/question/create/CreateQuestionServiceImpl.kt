@@ -3,56 +3,48 @@ package br.all.application.question.create
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.question.create.CreateQuestionService.RequestModel
 import br.all.application.question.create.CreateQuestionService.ResponseModel
-import br.all.application.question.repository.QuestionRepository
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.presenter.PreconditionChecker
+import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.services.UuidGeneratorService
+import br.all.infrastructure.question.factory.QuestionFactory
 
 class CreateQuestionServiceImpl(
-    private val questionRepository: QuestionRepository,
+    private val questionFactory: QuestionFactory,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val protocolRepository: ProtocolRepository,
-    private val credentialsService: ResearcherCredentialsService
+    private val strategy: CreateQuestionStrategy,
+    private val uuidGeneratorService: UuidGeneratorService,
+    private val credentialsService: ResearcherCredentialsService,
 ): CreateQuestionService {
-    override fun createRiskOfBiasQuestion(
+    override fun create(
         presenter: CreateQuestionPresenter,
         request: RequestModel
     ) {
-        val researcherId = ResearcherId(request.researcherId)
-        val systematicStudyId = SystematicStudyId(request.systematicStudyId)
-        val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
+        val (researcherId, systematicStudyId, protocolId) = request
+        val repository = questionFactory.repository()
 
+        PreconditionChecker(systematicStudyRepository, credentialsService).also {
+            it.prepareIfViolatesPreconditions(
+                presenter,
+                ResearcherId(researcherId),
+                SystematicStudyId(systematicStudyId),
+                ProtocolId(protocolId),
+                protocolRepository,
+            )
+        }
         if(presenter.isDone()) return
 
-        val context = CreateQuestionContext(request.questionType)
-        val dto = context.executeStrategy(request)
+        val questionId = uuidGeneratorService.next()
+        val question = questionFactory.create(questionId, request)
+        strategy.addQuestion(protocolId, questionId)
 
-        protocolRepository.addRiskOfBiasQuestion(request.questionId)
-        questionRepository.createOrUpdate(dto)
+        if (presenter.isDone()) return
 
-        presenter.prepareSuccessView(ResponseModel(request.researcherId, request.systematicStudyId, request.protocolId, request.questionId))
-    }
-
-    override fun createExtractionQuestion(
-        presenter: CreateQuestionPresenter,
-        request: RequestModel
-    ) {
-        val researcherId = ResearcherId(request.researcherId)
-        val systematicStudyId = SystematicStudyId(request.systematicStudyId)
-        val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
-
-        if(presenter.isDone()) return
-
-        val context = CreateQuestionContext(request.questionType)
-        val dto = context.executeStrategy(request)
-
-        protocolRepository.addExtractionQuestion(request.questionId)
-        questionRepository.createOrUpdate(dto)
-
-        presenter.prepareSuccessView(ResponseModel(request.researcherId, request.systematicStudyId, request.protocolId, request.questionId))
+        repository.createOrUpdate(questionFactory.toDto(question))
+        presenter.prepareSuccessView(ResponseModel(researcherId, systematicStudyId, protocolId, questionId))
     }
 }

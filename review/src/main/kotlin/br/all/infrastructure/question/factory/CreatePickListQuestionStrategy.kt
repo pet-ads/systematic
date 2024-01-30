@@ -1,6 +1,5 @@
-package br.all.application.question.create.numberScale
+package br.all.infrastructure.question.factory
 //
-//import br.all.application.question.create.CreateQuestionService
 //import br.all.application.question.create.CreateQuestionService.*
 //import br.all.application.question.create.CreateQuestionStrategy
 //import br.all.application.question.create.QuestionDTO
@@ -8,12 +7,12 @@ package br.all.application.question.create.numberScale
 //import br.all.domain.model.question.QuestionBuilder
 //import br.all.domain.model.question.QuestionId
 //
-//class CreateNumberScaleQuestionStrategy() : CreateQuestionStrategy {
+//class CreatePickListQuestionStrategy() : CreateQuestionStrategy {
 //    override fun create(request: RequestModel): QuestionDTO {
 //        val questionId = QuestionId(request.questionId.value)
-//        val numberScale = QuestionBuilder.with(questionId, request.protocolId, request.code, request.description)
-//            .buildNumberScale(request.lower, request.higher)
+//        val pickList = QuestionBuilder.with(questionId, request.protocolId, request.code, request.description)
+//            .buildPickList(request.options)
 //
-//        return numberScale.toDto()
+//        return pickList.toDto()
 //    }
 //}

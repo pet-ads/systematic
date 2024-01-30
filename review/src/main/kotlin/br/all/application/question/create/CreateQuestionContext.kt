@@ -1,10 +1,9 @@
 package br.all.application.question.create
 
-import br.all.application.question.create.CreateQuestionService.RequestModel
+import br.all.infrastructure.question.factory.QuestionFactory
 
 class CreateQuestionContext(questionType: String) {
-    private val strategy: CreateQuestionStrategy = setStrategy(questionType)
-    private fun setStrategy(questionType: String): CreateQuestionStrategy {
+    private fun setStrategy(questionType: String): QuestionFactory {
         return when (questionType) {
 //            "LabeledScale" -> CreateLabeledScaleQuestionStrategy()
 //            "NumberScale" -> CreateNumberScaleQuestionStrategy()
@@ -13,6 +12,4 @@ class CreateQuestionContext(questionType: String) {
             else -> throw IllegalArgumentException("Invalid Question Type: $questionType")
         }
     }
-
-    fun executeStrategy(request: RequestModel) = strategy.create(request)
 }
