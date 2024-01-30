@@ -3,7 +3,6 @@ package br.all.infrastructure.question
 import br.all.application.question.repository.QuestionDto
 
 fun QuestionDocument.toDto() = QuestionDto(
-    systematicStudyId,
     id,
     protocolId,
     code,

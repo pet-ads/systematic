@@ -48,7 +48,7 @@ class QuestionBuilderTest {
             val higher = 10
             val lower = 1
 
-            assertDoesNotThrow { question.buildNumberScale(higher, lower) }
+            assertDoesNotThrow { question.buildNumberScale(lower, higher) }
         }
 
         @Test
@@ -103,7 +103,7 @@ class QuestionBuilderTest {
                 val question = buildQuestion(id, protocolId, code, description)
                 val higher = 10
 
-                assertThrows<IllegalArgumentException> { question.buildNumberScale(higher, lower) }
+                assertThrows<IllegalArgumentException> { question.buildNumberScale(lower, higher) }
             }
 
             @Test
@@ -116,7 +116,7 @@ class QuestionBuilderTest {
                 val higher = 10
                 val lower = 10
 
-                assertThrows<IllegalArgumentException> { question.buildNumberScale(higher, lower) }
+                assertThrows<IllegalArgumentException> { question.buildNumberScale(lower, higher) }
             }
 
             @Test
