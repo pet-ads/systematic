@@ -2,7 +2,7 @@ package br.all.application.protocol.repository
 
 import br.all.application.protocol.create.ProtocolRequestModel
 import br.all.domain.model.protocol.*
-import br.all.domain.model.protocol.Criteria.CriteriaType
+import br.all.domain.model.protocol.Criterion.CriterionType
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.valueobject.Language
 import java.util.*
@@ -57,7 +57,7 @@ fun Protocol.Companion.fromRequestModel(
         .followingSelectionProcess(selectionProcess)
         .withElegibilityCriteria(
             selectionCriteria
-            .map { (description, type) -> Criteria(description, CriteriaType.valueOf(type)) }
+            .map { (description, type) -> Criterion(description, CriterionType.valueOf(type)) }
             .toSet())
         .followingDataCollectionProcess(dataCollectionProcess)
         .followingSynthesisProcess(analysisAndSynthesisProcess)

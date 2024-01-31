@@ -32,14 +32,14 @@ class ProtocolTest {
     @Test
     fun `Should throw if there is no inclusion criteria`() {
         assertThrows<IllegalArgumentException> {
-            generateProtocol(criteria =  setOf(Criteria.toExclude("It does not talk about life!")))
+            generateProtocol(criteria =  setOf(Criterion.toExclude("It does not talk about life!")))
         }
     }
 
     @Test
     fun `Should throw if there is no exclusion criteria`() {
         assertThrows<IllegalArgumentException> {
-            generateProtocol(criteria =  setOf(Criteria.toInclude("It has deep reflexion about life")))
+            generateProtocol(criteria =  setOf(Criterion.toInclude("It has deep reflexion about life")))
         }
     }
 
@@ -208,23 +208,23 @@ class ProtocolTest {
     @Test
     fun `Should add a new criteria if it is not in the protocol`() {
         val sut = generateProtocol()
-        val newCriteria = Criteria.toInclude("Nice thoughts")
+        val newCriterion = Criterion.toInclude("Nice thoughts")
 
-        sut.addSelectionCriteria(newCriteria)
+        sut.addSelectionCriteria(newCriterion)
 
         assertAll(
             { assertEquals(3, sut.selectionCriteria.size) },
-            { assertContains(sut.selectionCriteria, newCriteria) },
+            { assertContains(sut.selectionCriteria, newCriterion) },
         )
     }
 
     @Test
     fun `Should do nothing when trying to add a repeated criteria`() {
         val sut = generateProtocol()
-        val repeatedCriteria = Criteria.toInclude("It has deep reflection about life")
+        val repeatedCriterion = Criterion.toInclude("It has deep reflection about life")
 
         assertAll(
-            { assertDoesNotThrow { sut.addSelectionCriteria(repeatedCriteria) } },
+            { assertDoesNotThrow { sut.addSelectionCriteria(repeatedCriterion) } },
             { assertEquals(2, sut.selectionCriteria.size) },
         )
     }
@@ -233,18 +233,18 @@ class ProtocolTest {
     @CsvSource("Nice thoughts,INCLUSION", "Bad thoughts,EXCLUSION")
     fun `Should successfully remove a criteria if it is not the last of such type`(
         description: String,
-        type: Criteria.CriteriaType,
+        type: Criterion.CriterionType,
     ) {
         val sut = generateProtocol(criteria = setOf(
-            Criteria.toInclude("It has deep reflection about life!"),
-            Criteria.toInclude("Nice thoughts"),
-            Criteria.toExclude("It does not talk about life"),
-            Criteria.toExclude("Bad thoughts"),
+            Criterion.toInclude("It has deep reflection about life!"),
+            Criterion.toInclude("Nice thoughts"),
+            Criterion.toExclude("It does not talk about life"),
+            Criterion.toExclude("Bad thoughts"),
         ))
-        val removingCriteria = Criteria(description, type)
+        val removingCriterion = Criterion(description, type)
 
         assertAll(
-            { assertDoesNotThrow { sut.removeSelectionCriteria(removingCriteria) } },
+            { assertDoesNotThrow { sut.removeSelectionCriteria(removingCriterion) } },
             { assertEquals(3, sut.selectionCriteria.size) },
         )
     }
@@ -252,20 +252,20 @@ class ProtocolTest {
     @ParameterizedTest
     @CsvSource("It has deep reflection about life,INCLUSION", "It does not talk about life!,EXCLUSION")
     fun `Should throw when trying to remove the last criteria o a type`(
-        description: String, type: Criteria.CriteriaType) {
+        description: String, type: Criterion.CriterionType) {
 
         val sut = generateProtocol()
-        val removingCriteria = Criteria(description, type)
+        val removingCriterion = Criterion(description, type)
 
-        assertThrows<IllegalStateException> { sut.removeSelectionCriteria(removingCriteria) }
+        assertThrows<IllegalStateException> { sut.removeSelectionCriteria(removingCriterion) }
     }
 
     @Test
     fun `Should throw when trying to remove a criteria that is not defined in the protocol`() {
         val sut = generateProtocol()
-        val nonexistentCriteria = Criteria.toInclude("Nice thoughts")
+        val nonexistentCriterion = Criterion.toInclude("Nice thoughts")
 
-        assertThrows<NoSuchElementException> { sut.removeSelectionCriteria(nonexistentCriteria) }
+        assertThrows<NoSuchElementException> { sut.removeSelectionCriteria(nonexistentCriterion) }
     }
     
     @Test
@@ -354,9 +354,9 @@ class ProtocolTest {
 
     private fun generateProtocol(
         searchString: String = "String",
-        criteria: Set<Criteria> = setOf(
-            Criteria.toInclude("It has deep reflection about life"),
-            Criteria.toExclude("It does not talk about life!"),
+        criteria: Set<Criterion> = setOf(
+            Criterion.toInclude("It has deep reflection about life"),
+            Criterion.toExclude("It does not talk about life!"),
         ),
         keywords: Set<String> = setOf("Keyword"),
         sources: Set<SearchSource> = setOf(SearchSource("SomeSourceWithManyPhilosophicalArticles")),

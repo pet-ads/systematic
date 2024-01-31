@@ -32,7 +32,7 @@ class ProtocolBuilder private constructor() :
     private lateinit var studiesLanguages: Set<Language>
     private lateinit var studyTypeDefinition: String
     private lateinit var selectionProcess: String
-    private lateinit var selectionCriteria: Set<Criteria>
+    private lateinit var selectionCriteria: Set<Criterion>
     private lateinit var dataCollectionProcess: String
     private lateinit var analysisAndSynthesisProcess: String
     private var extractionQuestions = emptySet<QuestionId>()
@@ -81,7 +81,7 @@ class ProtocolBuilder private constructor() :
         this.selectionProcess = selectionProcess
     }
 
-    override fun withElegibilityCriteria(selectionCriteria: Set<Criteria>) = apply {
+    override fun withElegibilityCriteria(selectionCriteria: Set<Criterion>) = apply {
         this.selectionCriteria = selectionCriteria
     }
 
@@ -163,7 +163,7 @@ interface StudiesSelectionStep {
 }
 
 interface SelectionCriteriaStep {
-    infix fun withElegibilityCriteria(selectionCriteria: Set<Criteria>): DataCollectionStep
+    infix fun withElegibilityCriteria(selectionCriteria: Set<Criterion>): DataCollectionStep
 }
 
 interface DataCollectionStep {

@@ -27,7 +27,7 @@ class Protocol internal constructor(
     val studyTypeDefinition: String,
 
     val selectionProcess: String,
-    selectionCriteria: Set<Criteria>,
+    selectionCriteria: Set<Criterion>,
 
     val dataCollectionProcess: String,
     val analysisAndSynthesisProcess: String,
@@ -70,9 +70,9 @@ class Protocol internal constructor(
 
         if (searchString.isBlank())
             notification.addError("The search string cannot be blank!")
-        if (_selectionCriteria.none { it.type == Criteria.CriteriaType.INCLUSION })
+        if (_selectionCriteria.none { it.type == Criterion.CriterionType.INCLUSION })
             notification.addError("At least one studies inclusion criterion must be given!")
-        if (_selectionCriteria.none { it.type == Criteria.CriteriaType.EXCLUSION })
+        if (_selectionCriteria.none { it.type == Criterion.CriterionType.EXCLUSION })
             notification.addError("At least one studies exclusion criterion must be given!")
 
         return notification
@@ -102,18 +102,17 @@ class Protocol internal constructor(
         _studiesLanguages.remove(language)
     }
 
-    fun addSelectionCriteria(criteria: Criteria) = _selectionCriteria.add(criteria)
-
-    fun removeSelectionCriteria(criteria: Criteria) {
-        exists(criteria in _selectionCriteria)
-            { "Unable to remove a criteria that has never been  defined in the protocol! Provided: $criteria" }
-        check(isAbleToRemoveCriteriaWithSameTypeOf(criteria))
-            { "Cannot remove $criteria because it would cause in no criteria of its type!" }
-        _selectionCriteria.remove(criteria)
+    fun addSelectionCriteria(criterion: Criterion) = _selectionCriteria.add(criterion)
+    fun removeSelectionCriteria(criterion: Criterion) {
+        exists(criterion in _selectionCriteria)
+            { "Unable to remove a criteria that has never been  defined in the protocol! Provided: $criterion" }
+        check(isAbleToRemoveCriteriaWithSameTypeOf(criterion))
+            { "Cannot remove $criterion because it would cause in no criteria of its type!" }
+        _selectionCriteria.remove(criterion)
     }
 
-    private fun isAbleToRemoveCriteriaWithSameTypeOf(criteria: Criteria): Boolean {
-        return _selectionCriteria.count { it.type == criteria.type } > 1
+    private fun isAbleToRemoveCriteriaWithSameTypeOf(criterion: Criterion): Boolean {
+        return _selectionCriteria.count { it.type == criterion.type } > 1
     }
 
     fun addExtractionQuestion(questionId: QuestionId) = _extractionQuestions.add(questionId)
