@@ -12,5 +12,10 @@ class ResearchQuestionTest {
         fun `should create a valid ResearchQuestion`() {
             assertDoesNotThrow { ResearchQuestion("Valid description") }
         }
+
+        @Test
+        fun `should convert a valid String to a ResearchQuestion`() {
+            assertDoesNotThrow { "Valid description".toResearchQuestion() }
+        }
     }
 }
