@@ -2,6 +2,7 @@ package br.all.domain.model.search
 
 import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.protocol.SearchSource
+import br.all.domain.model.review.SystematicStudyId
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.util.*
@@ -14,7 +15,7 @@ class SearchSessionTest {
     @Test
     fun `testando getId`() {
         val searchSessionId = SearchSessionID(UUID.randomUUID())
-        val protocolId = ProtocolId(UUID.randomUUID())
+        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         val searchString = "Example Search String"
         val additionalInfo = "Additional Info"
         val timestamp = LocalDateTime.now()
@@ -22,7 +23,7 @@ class SearchSessionTest {
 
         val searchSession = SearchSession(
             searchSessionId,
-            protocolId,
+            systematicStudyId,
             searchString,
             additionalInfo,
             timestamp,
@@ -35,7 +36,7 @@ class SearchSessionTest {
     @Test
     fun `testando getSearchString`() {
         val searchSessionId = SearchSessionID(UUID.randomUUID())
-        val protocolId = ProtocolId(UUID.randomUUID())
+        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         val searchString = "Example Search String"
         val additionalInfo = "Additional Info"
         val timestamp = LocalDateTime.now()
@@ -43,7 +44,7 @@ class SearchSessionTest {
 
         val searchSession = SearchSession(
             searchSessionId,
-            protocolId,
+            systematicStudyId,
             searchString,
             additionalInfo,
             timestamp,
@@ -56,7 +57,7 @@ class SearchSessionTest {
     @Test
     fun `testando getAdditionalInfo`() {
         val searchSessionId = SearchSessionID(UUID.randomUUID())
-        val protocolId = ProtocolId(UUID.randomUUID())
+        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         val searchString = "Example Search String"
         val additionalInfo = "Additional Info"
         val timestamp = LocalDateTime.now()
@@ -64,7 +65,7 @@ class SearchSessionTest {
 
         val searchSession = SearchSession(
             searchSessionId,
-            protocolId,
+            systematicStudyId,
             searchString,
             additionalInfo,
             timestamp,
@@ -77,7 +78,7 @@ class SearchSessionTest {
     @Test
     fun `testando getTimestamp`() {
         val searchSessionId = SearchSessionID(UUID.randomUUID())
-        val protocolId = ProtocolId(UUID.randomUUID())
+        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         val searchString = "Example Search String"
         val additionalInfo = "Additional Info"
         val timestamp = LocalDateTime.now()
@@ -85,7 +86,7 @@ class SearchSessionTest {
 
         val searchSession = SearchSession(
             searchSessionId,
-            protocolId,
+            systematicStudyId,
             searchString,
             additionalInfo,
             timestamp,
@@ -98,7 +99,7 @@ class SearchSessionTest {
     @Test
     fun `testando getSource`() {
         val searchSessionId = SearchSessionID(UUID.randomUUID())
-        val protocolId = ProtocolId(UUID.randomUUID())
+        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         val searchString = "Example Search String"
         val additionalInfo = "Additional Info"
         val timestamp = LocalDateTime.now()
@@ -106,7 +107,7 @@ class SearchSessionTest {
 
         val searchSession = SearchSession(
             searchSessionId,
-            protocolId,
+            systematicStudyId,
             searchString,
             additionalInfo,
             timestamp,
