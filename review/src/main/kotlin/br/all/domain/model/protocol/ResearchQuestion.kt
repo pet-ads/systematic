@@ -15,3 +15,5 @@ data class ResearchQuestion(private val description: String) : ValueObject() {
 
     override fun toString() = description
 }
+
+fun String.toResearchQuestion() = ResearchQuestion(this)
