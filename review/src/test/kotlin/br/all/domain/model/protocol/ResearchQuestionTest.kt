@@ -3,6 +3,7 @@ package br.all.domain.model.protocol
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import kotlin.test.assertEquals
 
 @Tag("UnitClass")
 class ResearchQuestionTest {
@@ -35,6 +36,18 @@ class ResearchQuestionTest {
         @ValueSource(strings = ["", " ", "   "])
         fun `should throw when trying to transform blank Strings into ResearchQuestions`(string: String) {
             assertThrows<IllegalArgumentException> { string.toResearchQuestion() }
+        }
+    }
+
+    @Nested
+    @DisplayName("When converting ResearchQuestions to String")
+    inner class WhenConvertingResearchQuestionsToString {
+        @Test
+        @Tag("ValidClasses")
+        fun `should a research questions turn into a string using its description`() {
+            val description = "Valid description"
+            val converted = ResearchQuestion(description).toString()
+            assertEquals(description, converted)
         }
     }
 }
