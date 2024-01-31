@@ -30,5 +30,11 @@ class ResearchQuestionTest {
         fun `should throw when the description is blank`(description: String) {
             assertThrows<IllegalArgumentException> { ResearchQuestion(description) }
         }
+
+        @ParameterizedTest(name = "[{index}]: string=\"{0}\"")
+        @ValueSource(strings = ["", " ", "   "])
+        fun `should throw when trying to transform blank Strings into ResearchQuestions`(string: String) {
+            assertThrows<IllegalArgumentException> { string.toResearchQuestion() }
+        }
     }
 }
