@@ -23,5 +23,11 @@ class CriterionTest {
             val criterion = assertDoesNotThrow { Criterion.toExclude("Valid description") }
             assertEquals(CriterionType.EXCLUSION, criterion.type)
         }
+
+        @Test
+        fun `should create inclusion criteria with valid description`() {
+            val criterion = assertDoesNotThrow { Criterion.toInclude("Valid description") }
+            assertEquals(CriterionType.INCLUSION, criterion.type)
+        }
     }
 }
