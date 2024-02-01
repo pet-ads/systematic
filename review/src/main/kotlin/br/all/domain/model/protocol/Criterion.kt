@@ -9,11 +9,18 @@ data class Criterion internal constructor(
 ) : ValueObject() {
     enum class CriterionType { INCLUSION, EXCLUSION }
 
+    init {
+        val notification = validate()
+        require(notification.hasNoErrors()) { notification.message() }
+    }
+
     companion object {
         fun toInclude(description: String) = Criterion(description, CriterionType.INCLUSION)
 
         fun toExclude(description: String) = Criterion(description, CriterionType.EXCLUSION)
     }
 
-    override fun validate() = Notification()
+    override fun validate() = Notification().also {
+        if (description.isBlank()) it.addError("The criterion description cannot be blank!")
+    }
 }
