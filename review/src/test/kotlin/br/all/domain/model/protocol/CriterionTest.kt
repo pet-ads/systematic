@@ -44,5 +44,11 @@ class CriterionTest {
                 { assertThrows<IllegalArgumentException> { Criterion(description, CriterionType.EXCLUSION) } },
             )
         }
+
+        @ParameterizedTest(name = "[{index}]: description=\"{0}\"")
+        @ValueSource(strings = ["", " ", "  "])
+        fun `should not create inclusion criteria`(description: String) {
+            assertThrows<IllegalArgumentException> { Criterion.toInclude(description) }
+        }
     }
 }
