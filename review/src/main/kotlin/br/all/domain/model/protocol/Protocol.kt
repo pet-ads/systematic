@@ -3,51 +3,121 @@ package br.all.domain.model.protocol
 import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.ddd.Entity
-import br.all.domain.shared.ddd.Notification
-import br.all.domain.shared.valueobject.Language
 import br.all.domain.shared.utils.exists
 import br.all.domain.shared.utils.toNeverEmptyMutableSet
-import java.util.UUID
+import br.all.domain.shared.valueobject.Language
+import java.util.*
 
 class Protocol internal constructor(
     protocolId: ProtocolId,
     val systematicStudyId: SystematicStudyId,
 
-    val goal: String,
-    val justification: String,
+    goal: String?,
+    justification: String?,
 
-    val researchQuestions: Set<ResearchQuestion>,
+    researchQuestions: Set<ResearchQuestion>,
     keywords: Set<String>,
-    val searchString: String,
+    searchString: String?,
     informationSources: Set<SearchSource>,
-    val sourcesSelectionCriteria: String,
+    sourcesSelectionCriteria: String?,
 
-    val searchMethod: String,
+    searchMethod: String?,
     studiesLanguages: Set<Language>,
-    val studyTypeDefinition: String,
+    studyTypeDefinition: String?,
 
-    val selectionProcess: String,
+    selectionProcess: String?,
     selectionCriteria: Set<Criterion>,
 
-    val dataCollectionProcess: String,
-    val analysisAndSynthesisProcess: String,
+    dataCollectionProcess: String?,
+    analysisAndSynthesisProcess: String?,
 
     extractionQuestions: Set<QuestionId> = emptySet(),
     robQuestions: Set<QuestionId> = emptySet(),
-    val picoc: Picoc? = null,
+    var picoc: Picoc? = null,
 ) : Entity<UUID>(protocolId) {
+    var goal: String? = null
+        set(value) {
+            if (field != null) requireNotNull(value) { "Unable to clear the goal once it is written" }
+            if (value != null) require(value.isNotBlank()) { "The goal cannot be an empty string" }
+            field = value
+        }
 
-    private val _keywords = keywords.toNeverEmptyMutableSet()
+    var justification: String? = null
+        set(value) {
+            if (field != null) requireNotNull(value) { "Unable to clear the justification once it is written" }
+            if (value != null) require(value.isNotBlank()) { "The justification cannot be an empty string" }
+            field = value
+        }
+
+    private val _researchQuestions = researchQuestions.toMutableSet()
+    val researchQuestions get() = _researchQuestions.toSet()
+
+    private val _keywords = keywords.toMutableSet()
     val keywords get() = _keywords.toSet()
 
-    private val _informationSources = informationSources.toNeverEmptyMutableSet()
+    var searchString: String? = null
+        set(value) {
+            if (field != null) requireNotNull(value) { "Unable to clear the search string once it is written"}
+            if (value != null) require(value.isNotBlank()) { "The search string must not be blank!" }
+            field = value
+        }
+
+    private val _informationSources = informationSources.toMutableSet()
     val informationSources get() = _informationSources.toSet()
 
-    private val _studiesLanguages = studiesLanguages.toNeverEmptyMutableSet()
+    var sourcesSelectionCriteria: String? = null
+        set(value) {
+            if (field != null)
+                requireNotNull(value) { "Unable to clear the sources selection criteria description once it is written" }
+            if (value != null)
+                require(value.isNotBlank()) { "The sources selection criteria description must not be blank" }
+            field = value
+        }
+
+    var searchMethod: String? = null
+        set(value) {
+            if (field != null) requireNotNull(value) { "Unable to clear the search method description once it is written" }
+            if (value != null) require(value.isNotBlank()) { "The search method description must not be blank" }
+            field = value
+        }
+
+    private val _studiesLanguages = studiesLanguages.toMutableSet()
     val studiesLanguages get() = _studiesLanguages.toSet()
+
+    var studyTypeDefinition: String? = null
+        set(value) {
+            if (field != null) requireNotNull(value) { "Unable to clear the study type definition once it is written" }
+            if (value != null) require(value.isNotBlank()) { "The study type definition must not be blank" }
+            field = value
+        }
+
+    var selectionProcess: String? = null
+        set(value) {
+            if (field != null) requireNotNull(value) { "Unable to clear the selection process description once it is written" }
+            if (value != null) require(value.isNotBlank()) { "The selection process description must not be blank" }
+            field = value
+        }
 
     private val _selectionCriteria = selectionCriteria.toNeverEmptyMutableSet()
     val selectionCriteria get() = _selectionCriteria.toSet()
+
+    var dataCollectionProcess: String? = null
+        set(value) {
+            if (field != null)
+                requireNotNull(value) { "Unable to clear the data collection process description once it is written" }
+            if (value != null)
+                require(value.isNotBlank()) { "The data collection process description must not be blank" }
+            field = value
+        }
+
+    var analysisAndSynthesisProcess: String? = null
+        set(value) {
+            if (field != null)
+                requireNotNull(value) { "Unable to clear analysis and synthesis process description once it is written" }
+            if (value != null)
+                require(value.isNotBlank()) { "The analysis and synthesis process description must not be blank" }
+            field = value
+        }
 
     private val _extractionQuestions = extractionQuestions.toMutableSet()
     val extractionQuestions get() = _extractionQuestions.toSet()
@@ -56,26 +126,24 @@ class Protocol internal constructor(
     val robQuestions get() = _robQuestions.toSet()
 
     init {
-        val notification = validate()
-        require(notification.hasNoErrors()) { notification.message() }
+        this.goal = goal
+        this.justification = justification
+        this.searchString = searchString
+        this.sourcesSelectionCriteria = sourcesSelectionCriteria
+        this.searchMethod = searchMethod
+        this.studyTypeDefinition = studyTypeDefinition
+        this.selectionProcess = selectionProcess
+        this.dataCollectionProcess = dataCollectionProcess
+        this.analysisAndSynthesisProcess = analysisAndSynthesisProcess
+
+        require(keywords.none { it.isBlank() }) { "Protocol must not contain any blank keyword" }
     }
 
     companion object {
-        fun with(systematicStudyId: SystematicStudyId, keywords: Set<String>) =
-            ProtocolBuilder.with(systematicStudyId, keywords)
-    }
-
-    fun validate(): Notification {
-        val notification = Notification()
-
-        if (searchString.isBlank())
-            notification.addError("The search string cannot be blank!")
-        if (_selectionCriteria.none { it.type == Criterion.CriterionType.INCLUSION })
-            notification.addError("At least one studies inclusion criterion must be given!")
-        if (_selectionCriteria.none { it.type == Criterion.CriterionType.EXCLUSION })
-            notification.addError("At least one studies exclusion criterion must be given!")
-
-        return notification
+        fun with(systematicStudyId: SystematicStudyId, keywords: Set<String>) = ProtocolBuilder.with(
+            systematicStudyId,
+            keywords,
+        )
     }
 
     fun addKeyword(keyword: String) = _keywords.add(keyword)
