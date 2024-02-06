@@ -40,5 +40,11 @@ class SearchSourceTest {
         fun `should throw when trying to convert strings with symbols or digits`() {
             assertThrows<IllegalArgumentException> { "H& @ba O-O Dxd5 1m J0ta".toSearchSource() }
         }
+
+        @ParameterizedTest(name = "[{index}] blankString=\"{0}\"")
+        @ValueSource(strings = ["", " ", "   "])
+        fun `should throw when trying to get search sources from blank strings`(blankString: String) {
+            assertThrows<IllegalArgumentException> { blankString.toSearchSource() }
+        }
     }
 }
