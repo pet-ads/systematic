@@ -138,13 +138,6 @@ class Protocol internal constructor(
         require(keywords.none { it.isBlank() }) { "Protocol must not contain any blank keyword" }
     }
 
-    companion object {
-        fun with(systematicStudyId: SystematicStudyId, keywords: Set<String>) = ProtocolBuilder.with(
-            systematicStudyId,
-            keywords,
-        )
-    }
-
     fun addResearchQuestion(question: ResearchQuestion) = _researchQuestions.add(question)
 
     fun removeResearchQuestion(question: ResearchQuestion) {
@@ -215,5 +208,12 @@ class Protocol internal constructor(
             "Unable to remove a question that does not belongs to this protocol! Provided: $questionId"
         }
         _robQuestions.remove(questionId)
+    }
+
+    companion object {
+        fun with(systematicStudyId: SystematicStudyId, keywords: Set<String>) = ProtocolBuilder.with(
+            systematicStudyId,
+            keywords,
+        )
     }
 }
