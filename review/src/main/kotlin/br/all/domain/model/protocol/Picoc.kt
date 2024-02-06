@@ -23,7 +23,7 @@ data class Picoc(
         if (control.isBlank())
             it.addError("The control described in the PICOC must not be blank!")
         if (outcome.isBlank())
-            it.addError("The population described in the PICOC must not be blank!")
+            it.addError("The outcome described in the PICOC must not be blank!")
         if (context != null && context.isBlank())
             it.addError("The context, when provided, must not be blank!")
     }
