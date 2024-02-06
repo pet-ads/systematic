@@ -2,7 +2,7 @@ package br.all.domain.model.protocol
 
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EmptySource
+import org.junit.jupiter.params.provider.ValueSource
 
 @Tag("UnitTest")
 class SearchSourceTest {
@@ -26,7 +26,7 @@ class SearchSourceTest {
         }
 
         @ParameterizedTest(name = "[{index}] source=\"{0}\"")
-        @EmptySource
+        @ValueSource(strings = ["", " ", "   "])
         fun `should throw to any kind of empty search source`(source: String) {
             assertThrows<IllegalArgumentException> { SearchSource(source) }
         }
