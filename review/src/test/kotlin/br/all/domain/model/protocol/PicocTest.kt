@@ -19,5 +19,18 @@ class PicocTest {
                 )
             }
         }
+
+        @Test
+        fun `should create a valid PICOC with a specified context`() {
+            assertDoesNotThrow {
+                Picoc(
+                    "Population",
+                    "Intervention",
+                    "Control",
+                    "Outcome",
+                    "Context",
+                )
+            }
+        }
     }
 }
