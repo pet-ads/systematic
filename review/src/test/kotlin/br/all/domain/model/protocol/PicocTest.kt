@@ -1,6 +1,9 @@
 package br.all.domain.model.protocol
 
 import org.junit.jupiter.api.*
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
+import kotlin.test.assertEquals
 
 @Tag("UnitTest")
 class PicocTest {
@@ -31,6 +34,26 @@ class PicocTest {
                     "Context",
                 )
             }
+        }
+    }
+
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("When invalid arguments are provided")
+    inner class WhenInvalidArgumentsAreProvided {
+        @ParameterizedTest(name = "[{index}] population=\"{0}\"")
+        @ValueSource(strings = ["", " ", "   "])
+        fun `should not create a PICOC with blank population`(population: String) {
+            val exception = assertThrows<IllegalArgumentException> {
+                Picoc(
+                    population,
+                    "Intervention",
+                    "Control",
+                    "Outcome",
+                    "Context",
+                )
+            }
+            assertEquals("The population described in the PICOC must not be blank!", exception.message)
         }
     }
 }
