@@ -4,7 +4,6 @@ import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.utils.exists
-import br.all.domain.shared.utils.toNeverEmptyMutableSet
 import br.all.domain.shared.valueobject.Language
 import java.util.*
 
@@ -98,7 +97,7 @@ class Protocol internal constructor(
             field = value
         }
 
-    private val _selectionCriteria = selectionCriteria.toNeverEmptyMutableSet()
+    private val _selectionCriteria = selectionCriteria.toMutableSet()
     val selectionCriteria get() = _selectionCriteria.toSet()
 
     var dataCollectionProcess: String? = null
@@ -146,56 +145,75 @@ class Protocol internal constructor(
         )
     }
 
-    fun addKeyword(keyword: String) = _keywords.add(keyword)
+    fun addResearchQuestion(question: ResearchQuestion) = _researchQuestions.add(question)
+
+    fun removeResearchQuestion(question: ResearchQuestion) {
+        check(_researchQuestions.isNotEmpty()) { "Unable to remove any research question because none exist!" }
+        exists(question in _researchQuestions) {
+            "Unable to remove research question \"$question\", because it does not belongs to protocol"
+        }
+        _researchQuestions.remove(question)
+    }
+
+    fun addKeyword(keyword: String) {
+        require(keyword.isNotBlank()) { "Protocol must not have blank keywords" }
+        _keywords.add(keyword)
+    }
 
     fun removeKeyword(keyword: String) {
-        exists(keyword in _keywords)
-            { "Unable to remove a keyword that are in the protocol! Provided: $keyword" }
+        check(_keywords.isNotEmpty()) { "Unable to remove keyword from a protocol that does not have anyone!" }
+        exists(keyword in _keywords) {
+            "Unable to remove a keyword that are in the protocol! Provided: $keyword"
+        }
         _keywords.remove(keyword)
     }
 
     fun addInformationSource(searchSource: SearchSource) = _informationSources.add(searchSource)
 
     fun removeInformationSource(informationSource: SearchSource) {
-        exists(informationSource in _informationSources)
-            { "Unable to remove a information source that is not in the protocol! Provided: $informationSource" }
+        check(_informationSources.isNotEmpty()) { "Unable to remove any information source because none exist!" }
+        exists(informationSource in _informationSources) {
+            "Unable to remove a information source that is not in the protocol! Provided: $informationSource"
+        }
         _informationSources.remove(informationSource)
     }
 
     fun addLanguage(language: Language) = _studiesLanguages.add(language)
 
     fun removeLanguage(language: Language) {
-        exists(language in _studiesLanguages)
-            { "Unable to remove a language that is not in the protocol! Provided: $language" }
+        check(_studiesLanguages.isNotEmpty()) { "There is no languages to remove from this protocol" }
+        exists(language in _studiesLanguages) {
+            "Unable to remove a language that is not in the protocol! Provided: $language"
+        }
         _studiesLanguages.remove(language)
     }
 
     fun addSelectionCriteria(criterion: Criterion) = _selectionCriteria.add(criterion)
     fun removeSelectionCriteria(criterion: Criterion) {
-        exists(criterion in _selectionCriteria)
-            { "Unable to remove a criteria that has never been  defined in the protocol! Provided: $criterion" }
-        check(isAbleToRemoveCriteriaWithSameTypeOf(criterion))
-            { "Cannot remove $criterion because it would cause in no criteria of its type!" }
+        check(_selectionCriteria.isNotEmpty()) { "There is not any criterion to remove from this protocol" }
+        exists(criterion in _selectionCriteria) {
+            "Unable to remove a criteria that has never been  defined in the protocol! Provided: $criterion"
+        }
         _selectionCriteria.remove(criterion)
-    }
-
-    private fun isAbleToRemoveCriteriaWithSameTypeOf(criterion: Criterion): Boolean {
-        return _selectionCriteria.count { it.type == criterion.type } > 1
     }
 
     fun addExtractionQuestion(questionId: QuestionId) = _extractionQuestions.add(questionId)
 
     fun removeExtractionQuestion(questionId: QuestionId) {
-        exists(questionId in _extractionQuestions)
-            { "Unable to remove a question that does not belongs to this protocol! Provided: $questionId" }
+        check(_extractionQuestions.isNotEmpty()) { "Unable to remove any extraction question because none exist" }
+        exists(questionId in _extractionQuestions) {
+            "Unable to remove a question that does not belongs to this protocol! Provided: $questionId"
+        }
         _extractionQuestions.remove(questionId)
     }
 
     fun addRobQuestion(questionId: QuestionId) = _robQuestions.add(questionId)
 
     fun removeRobQuestion(questionId: QuestionId) {
-        exists(questionId in _robQuestions)
-            { "Unable to remove a question that does not belongs to this protocol! Provided: $questionId" }
+        check(_robQuestions.isNotEmpty()) { "Unable to remove any rob question because none exist" }
+        exists(questionId in _robQuestions) {
+            "Unable to remove a question that does not belongs to this protocol! Provided: $questionId"
+        }
         _robQuestions.remove(questionId)
     }
 }
