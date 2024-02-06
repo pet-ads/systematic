@@ -35,5 +35,10 @@ class SearchSourceTest {
         fun `should throw to any kind of empty search source`(source: String) {
             assertThrows<IllegalArgumentException> { SearchSource(source) }
         }
+
+        @Test
+        fun `should throw when trying to convert strings with symbols or digits`() {
+            assertThrows<IllegalArgumentException> { "H& @ba O-O Dxd5 1m J0ta".toSearchSource() }
+        }
     }
 }
