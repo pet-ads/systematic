@@ -14,6 +14,11 @@ class SearchSourceTest {
         fun `should successfully create a valid search source`() {
             assertDoesNotThrow { SearchSource("Valid SearchSource") }
         }
+
+        @Test
+        fun `should a valid string turn into a search source`() {
+            assertDoesNotThrow { "Valid SearchSource".toSearchSource() }
+        }
     }
 
     @Nested
