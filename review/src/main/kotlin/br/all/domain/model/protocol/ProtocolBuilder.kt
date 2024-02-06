@@ -4,72 +4,59 @@ import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.valueobject.Language
 
-class ProtocolBuilder private constructor() :
-    IdentificationStep,
-    GoalStep,
-    JustificationStep,
-    ResearchQuestionsStep,
-    SearchMethodDefinitionStep,
-    SourcesDefinitionStep,
-    SourcesCriteriaStep,
-    StudiesDefinitionStep,
-    StudiesSelectionStep,
-    SelectionCriteriaStep,
-    DataCollectionStep,
-    DataAnalysisStep,
-    BuildingStep {
+class ProtocolBuilder private constructor() {
     private var protocolId: ProtocolId? = null
     private var systematicStudyId: SystematicStudyId? = null
-    private lateinit var keywords: Set<String>
-    private lateinit var goal: String
-    private lateinit var justification: String
-    private lateinit var researchQuestions: Set<ResearchQuestion>
+    private var keywords = emptySet<String>()
+    private var goal: String? = null
+    private var justification: String? = null
+    private var researchQuestions = emptySet<ResearchQuestion>()
     private var picoc: Picoc? = null
-    private lateinit var searchMethod: String
-    private lateinit var searchString: String
-    private lateinit var informationSources: Set<SearchSource>
-    private lateinit var sourcesSelectionCriteria: String
-    private lateinit var studiesLanguages: Set<Language>
-    private lateinit var studyTypeDefinition: String
-    private lateinit var selectionProcess: String
-    private lateinit var selectionCriteria: Set<Criterion>
-    private lateinit var dataCollectionProcess: String
-    private lateinit var analysisAndSynthesisProcess: String
+    private var searchMethod: String? = null
+    private var searchString: String? = null
+    private var informationSources = emptySet<SearchSource>()
+    private var sourcesSelectionCriteria: String? = null
+    private var studiesLanguages = emptySet<Language>()
+    private var studyTypeDefinition: String? = null
+    private var selectionProcess: String? = null
+    private var selectionCriteria = emptySet<Criterion>()
+    private var dataCollectionProcess: String? = null
+    private var analysisAndSynthesisProcess: String? = null
     private var extractionQuestions = emptySet<QuestionId>()
     private var robQuestions = emptySet<QuestionId>()
 
     companion object {
-        fun with(systematicStudyId: SystematicStudyId, keywords: Set<String>) =
-            ProtocolBuilder().identifiedBy(systematicStudyId, keywords)
+       fun with(systematicStudyId: SystematicStudyId, keywords: Set<String>) = ProtocolBuilder().identifiedBy(
+           systematicStudyId,
+           keywords,
+       )
+    }
+    fun identifiedBy(systematicStudyId: SystematicStudyId, keywords: Set<String>) = apply {
+        this.protocolId = ProtocolId(systematicStudyId.value())
+        this.systematicStudyId = systematicStudyId
+        this.keywords = keywords
     }
 
-    override fun identifiedBy(systematicStudyId: SystematicStudyId, keywords: Set<String>) =
-        apply {
-            this.protocolId = ProtocolId(systematicStudyId.value())
-            this.systematicStudyId = systematicStudyId
-            this.keywords = keywords
-        }
+    infix fun researchesFor(goal: String) = apply { this.goal = goal }
 
-    override fun researchesFor(goal: String) = apply { this.goal = goal }
+    infix fun because(justification: String) = apply { this.justification = justification }
 
-    override fun because(justification: String) = apply { this.justification = justification }
-
-    override fun toAnswer(researchQuestions: Set<ResearchQuestion>) = apply {
+    infix fun toAnswer(researchQuestions: Set<ResearchQuestion>) = apply {
         this.researchQuestions = researchQuestions
     }
 
-    override fun followingSearchProcess(searchMethod: String, searchString: String) = apply {
+    fun followingSearchProcess(searchMethod: String, searchString: String) = apply {
         this.searchMethod = searchMethod
         this.searchString = searchString
     }
 
-    override fun inSearchSources(informationSources: Set<SearchSource>) = apply { this.informationSources = informationSources }
+    infix fun inSearchSources(informationSources: Set<SearchSource>) = apply { this.informationSources = informationSources }
 
-    override fun selectedBecause(sourcesSelectionCriteria: String) = apply {
+    infix fun selectedBecause(sourcesSelectionCriteria: String) = apply {
         this.sourcesSelectionCriteria = sourcesSelectionCriteria
     }
 
-    override fun searchingStudiesIn(
+    fun searchingStudiesIn(
         studiesLanguages: Set<Language>,
         studyTypeDefinition: String
     ) = apply {
@@ -77,33 +64,33 @@ class ProtocolBuilder private constructor() :
         this.studyTypeDefinition = studyTypeDefinition
     }
 
-    override fun followingSelectionProcess(selectionProcess: String) = apply {
+    infix fun followingSelectionProcess(selectionProcess: String) = apply {
         this.selectionProcess = selectionProcess
     }
 
-    override fun withElegibilityCriteria(selectionCriteria: Set<Criterion>) = apply {
+    infix fun withEligibilityCriteria(selectionCriteria: Set<Criterion>) = apply {
         this.selectionCriteria = selectionCriteria
     }
 
-    override fun followingDataCollectionProcess(dataCollectionProcess: String) = apply {
+    infix fun followingDataCollectionProcess(dataCollectionProcess: String) = apply {
         this.dataCollectionProcess = dataCollectionProcess
     }
 
-    override fun followingSynthesisProcess(analysisAndSynthesisProcess: String) = apply {
+    infix fun followingSynthesisProcess(analysisAndSynthesisProcess: String) = apply {
         this.analysisAndSynthesisProcess = analysisAndSynthesisProcess
     }
 
-    override fun extractDataByAnswering(extractionQuestions: Set<QuestionId>) = apply {
+    infix fun extractDataByAnswering(extractionQuestions: Set<QuestionId>) = apply {
         this.extractionQuestions = extractionQuestions
     }
 
-    override fun qualityFormConsiders(robQuestions: Set<QuestionId>) = apply {
+    infix fun qualityFormConsiders(robQuestions: Set<QuestionId>) = apply {
         this.robQuestions = robQuestions
     }
 
-    override fun withPICOC(picoc: Picoc?) = apply { this.picoc = picoc }
+    infix fun withPICOC(picoc: Picoc?) = apply { this.picoc = picoc }
 
-    override fun build() = Protocol(
+    fun build() = Protocol(
         protocolId = protocolId as ProtocolId,
         systematicStudyId = systematicStudyId as SystematicStudyId,
         keywords = keywords,
@@ -124,62 +111,4 @@ class ProtocolBuilder private constructor() :
         extractionQuestions = extractionQuestions,
         robQuestions = robQuestions
     )
-}
-
-interface IdentificationStep {
-    fun identifiedBy(systematicStudyId: SystematicStudyId, keywords: Set<String>): GoalStep
-}
-
-interface GoalStep {
-    infix fun researchesFor(goal: String): JustificationStep
-}
-
-interface JustificationStep {
-    infix fun because(justification: String): ResearchQuestionsStep
-}
-
-interface ResearchQuestionsStep {
-    fun toAnswer(researchQuestions: Set<ResearchQuestion>): SearchMethodDefinitionStep
-}
-
-interface SearchMethodDefinitionStep {
-    fun followingSearchProcess(searchMethod: String, searchString: String): SourcesDefinitionStep
-}
-
-interface SourcesDefinitionStep {
-    infix fun inSearchSources(informationSources: Set<SearchSource>): SourcesCriteriaStep
-}
-
-interface SourcesCriteriaStep {
-    infix fun selectedBecause(sourcesSelectionCriteria: String): StudiesDefinitionStep
-}
-
-interface StudiesDefinitionStep {
-    fun searchingStudiesIn(studiesLanguages: Set<Language>, studyTypeDefinition: String): StudiesSelectionStep
-}
-
-interface StudiesSelectionStep {
-    infix fun followingSelectionProcess(selectionProcess: String): SelectionCriteriaStep
-}
-
-interface SelectionCriteriaStep {
-    infix fun withElegibilityCriteria(selectionCriteria: Set<Criterion>): DataCollectionStep
-}
-
-interface DataCollectionStep {
-    infix fun followingDataCollectionProcess(dataCollectionProcess: String): DataAnalysisStep
-}
-
-interface DataAnalysisStep {
-    infix fun followingSynthesisProcess(analysisAndSynthesisProcess: String): BuildingStep
-}
-
-interface BuildingStep {
-    infix fun extractDataByAnswering(extractionQuestions: Set<QuestionId>): BuildingStep
-
-    infix fun qualityFormConsiders(robQuestions: Set<QuestionId>): BuildingStep
-
-    infix fun withPICOC(picoc: Picoc?): BuildingStep
-
-    fun build(): Protocol
 }

@@ -375,7 +375,7 @@ class ProtocolTest {
             .selectedBecause("I want so")
             .searchingStudiesIn(languages, "Primaries and secondaries")
             .followingSelectionProcess("Classify articles by criteria")
-            .withElegibilityCriteria(criteria)
+            .withEligibilityCriteria(criteria)
             .followingDataCollectionProcess("Reading the articles and reflect about them")
             .followingSynthesisProcess("Analyse opinions on each article")
             .extractDataByAnswering(extractionQuestions)

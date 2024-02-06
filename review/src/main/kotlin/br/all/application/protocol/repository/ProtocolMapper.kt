@@ -55,7 +55,7 @@ fun Protocol.Companion.fromRequestModel(
         .inSearchSources( informationSources.map { SearchSource(it) }.toSet()).selectedBecause(sourcesSelectionCriteria)
         .searchingStudiesIn( studiesLanguages.map { Language(Language.LangType.valueOf(it)) }.toSet(),studyTypeDefinition)
         .followingSelectionProcess(selectionProcess)
-        .withElegibilityCriteria(
+        .withEligibilityCriteria(
             selectionCriteria
             .map { (description, type) -> Criterion(description, CriterionType.valueOf(type)) }
             .toSet())
