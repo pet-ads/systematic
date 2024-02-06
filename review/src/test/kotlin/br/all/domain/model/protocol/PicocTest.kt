@@ -85,5 +85,20 @@ class PicocTest {
             }
             assertEquals("The control described in the PICOC must not be blank!", exception.message)
         }
+
+        @ParameterizedTest(name = "[{index}] outcome=\"{0}\"")
+        @ValueSource(strings = ["", " ", "   "])
+        fun `should not create a PICOC with blank outcome`(outcome: String) {
+            val exception = assertThrows<IllegalArgumentException> {
+                Picoc(
+                    "Population",
+                    "Intervention",
+                    "Control",
+                    outcome,
+                    "Context",
+                )
+            }
+            assertEquals("The outcome described in the PICOC must not be blank!", exception.message)
+        }
     }
 }
