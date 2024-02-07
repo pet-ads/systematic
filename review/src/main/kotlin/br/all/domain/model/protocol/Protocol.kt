@@ -211,7 +211,7 @@ class Protocol internal constructor(
     }
 
     companion object {
-        fun with(systematicStudyId: SystematicStudyId, keywords: Set<String>) = ProtocolBuilder.with(
+        fun write(systematicStudyId: SystematicStudyId, keywords: Set<String>) = ProtocolBuilder.with(
             systematicStudyId,
             keywords,
         )

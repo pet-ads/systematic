@@ -47,7 +47,7 @@ fun Protocol.Companion.fromRequestModel(
     reviewId: UUID,
     requestModel: ProtocolRequestModel,
 ) = with(requestModel) {
-    with(SystematicStudyId(reviewId), keywords)
+    write(SystematicStudyId(reviewId), keywords)
         .researchesFor(goal)
         .because(justification)
         .toAnswer(researchQuestions.map { ResearchQuestion(it) }.toSet())
