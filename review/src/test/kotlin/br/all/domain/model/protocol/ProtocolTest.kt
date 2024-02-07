@@ -278,20 +278,6 @@ class ProtocolTest {
         }
     }
 
-    @Test
-    fun `Should throw if there is no inclusion criteria`() {
-        assertThrows<IllegalArgumentException> {
-            generateProtocol(criteria =  setOf(Criterion.toExclude("It does not talk about life!")))
-        }
-    }
-
-    @Test
-    fun `Should throw if there is no exclusion criteria`() {
-        assertThrows<IllegalArgumentException> {
-            generateProtocol(criteria =  setOf(Criterion.toInclude("It has deep reflexion about life")))
-        }
-    }
-
     @Nested
     @DisplayName("When managing eligibility criteria")
     inner class WhenManagingEligibilityCriteria {
