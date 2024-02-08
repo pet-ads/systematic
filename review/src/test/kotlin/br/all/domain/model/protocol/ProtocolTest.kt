@@ -55,6 +55,15 @@ class ProtocolTest {
                 assertEquals("The search string must not be blank!", e.message)
             }
 
+            @ParameterizedTest(name = "[{index}] sourcesSelectionCriteria=\"{0}\"")
+            @ValueSource(strings = ["", " ", "   "])
+            fun `should not create protocols with blank sources selection criteria`(sourcesSelectionCriteria: String) {
+                val e = assertThrows<IllegalArgumentException> {
+                    factory.createProtocol(sourcesSelectionCriteria = sourcesSelectionCriteria)
+                }
+                assertEquals("The sources selection criteria description must not be blank", e.message)
+            }
+
             // TODO: Invalid classes for creating the protocol with other blank fields
         }
     }
