@@ -37,7 +37,7 @@ class ProtocolBuilder private constructor() {
         this.keywords = keywords
     }
 
-    infix fun researchesFor(goal: String) = apply { this.goal = goal }
+    infix fun researchesFor(goal: String?) = apply { this.goal = goal }
 
     infix fun because(justification: String) = apply { this.justification = justification }
 

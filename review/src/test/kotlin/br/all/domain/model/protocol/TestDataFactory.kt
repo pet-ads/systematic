@@ -14,7 +14,7 @@ class TestDataFactory {
     fun createProtocol(
         systematicStudy: SystematicStudyId = systematicStudy(),
         keywords: Set<String> = keywords(),
-        goal: String = text(),
+        goal: String? = text(),
         justification: String = text(),
         researchQuestions: Set<ResearchQuestion> = researchQuestions(),
         searchMethod: String = text(),

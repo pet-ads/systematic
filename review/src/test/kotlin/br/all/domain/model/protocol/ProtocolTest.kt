@@ -116,7 +116,17 @@ class ProtocolTest {
         @Tag("ValidClasses")
         @DisplayName("And providing valid changes")
         inner class AndProvidingValidChanges {
-            // TODO: Valid classes for changing the protocol string fields
+            @ParameterizedTest
+            @CsvSource(",", "Old goal")
+            fun `should update the protocol goal`(original: String?) {
+                val sut = factory.createProtocol(goal = original)
+                val newGoal = factory.text()
+
+                assertAll(
+                    { assertDoesNotThrow { sut.goal = newGoal } },
+                    { assertEquals(newGoal, sut.goal) },
+                )
+            }
         }
 
         @Nested
