@@ -52,7 +52,7 @@ class ProtocolBuilder private constructor() {
 
     infix fun inSearchSources(informationSources: Set<SearchSource>) = apply { this.informationSources = informationSources }
 
-    infix fun selectedBecause(sourcesSelectionCriteria: String) = apply {
+    infix fun selectedBecause(sourcesSelectionCriteria: String?) = apply {
         this.sourcesSelectionCriteria = sourcesSelectionCriteria
     }
 

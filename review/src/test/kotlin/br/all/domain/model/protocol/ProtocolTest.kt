@@ -151,6 +151,18 @@ class ProtocolTest {
                     { assertEquals(searchString, sut.searchString) },
                 )
             }
+
+            @ParameterizedTest
+            @CsvSource(",", "Old sources selection criteria")
+            fun `should throw if sources selection criteria are blank`(original: String?) {
+                val sut = factory.createProtocol(sourcesSelectionCriteria = original)
+                val sourcesSelectionCriteria = factory.text()
+
+                assertAll(
+                    { assertDoesNotThrow { sut.sourcesSelectionCriteria = sourcesSelectionCriteria } },
+                    { assertEquals(sourcesSelectionCriteria, sut.sourcesSelectionCriteria) },
+                )
+            }
         }
 
         @Nested
