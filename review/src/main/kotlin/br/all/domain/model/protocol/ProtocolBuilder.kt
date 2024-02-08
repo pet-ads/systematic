@@ -45,7 +45,7 @@ class ProtocolBuilder private constructor() {
         this.researchQuestions = researchQuestions
     }
 
-    fun followingSearchProcess(searchMethod: String, searchString: String) = apply {
+    fun followingSearchProcess(searchMethod: String, searchString: String?) = apply {
         this.searchMethod = searchMethod
         this.searchString = searchString
     }

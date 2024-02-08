@@ -139,6 +139,18 @@ class ProtocolTest {
                     { assertEquals(newJustification, sut.justification) },
                 )
             }
+
+            @ParameterizedTest
+            @CsvSource(",", "Old search string")
+            fun `should valid new search strings be accepted`(original: String?) {
+                val sut = factory.createProtocol(searchString = original)
+                val searchString = factory.text()
+
+                assertAll(
+                    { assertDoesNotThrow { sut.searchString = searchString } },
+                    { assertEquals(searchString, sut.searchString) },
+                )
+            }
         }
 
         @Nested
