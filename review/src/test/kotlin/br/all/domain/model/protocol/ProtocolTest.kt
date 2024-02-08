@@ -41,6 +41,13 @@ class ProtocolTest {
                 assertThrows<IllegalArgumentException> { factory.createProtocol(goal = goal) }
             }
 
+            @ParameterizedTest(name = "[{index}] justification=\"{0}\"")
+            @ValueSource(strings = ["", " ", "   "])
+            fun `should throw blank justification`(justification: String) {
+                val e = assertThrows<IllegalArgumentException> { factory.createProtocol(justification = justification) }
+                assertEquals("The justification cannot be an empty string", e.message)
+            }
+
             @Test
             fun `Should throw if the search string is blank`() {
                 assertThrows<IllegalArgumentException> { factory.createProtocol(searchString = "") }
