@@ -127,6 +127,18 @@ class ProtocolTest {
                     { assertEquals(newGoal, sut.goal) },
                 )
             }
+
+            @ParameterizedTest
+            @CsvSource(",", "Old justification")
+            fun `should the justification be updated`(original: String?) {
+                val sut = factory.createProtocol(justification = original)
+                val newJustification = factory.text()
+
+                assertAll(
+                    { assertDoesNotThrow { sut.justification = newJustification } },
+                    { assertEquals(newJustification, sut.justification) },
+                )
+            }
         }
 
         @Nested
