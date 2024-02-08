@@ -15,7 +15,7 @@ import java.util.*
 class LabeledScaleQuestionFactory(private val mongoRepository: MongoQuestionRepository): QuestionFactory {
     override fun create(id: UUID, request: CreateQuestionService.RequestModel) = with(request){
         if (scales == null) throw IllegalArgumentException("scales must not be null.")
-        QuestionBuilder.with(QuestionId(id), ProtocolId(protocolId), code, description)
+        QuestionBuilder.with(QuestionId(id), ProtocolId(systematicStudyId), code, description)
             .buildLabeledScale(scales)
     }
 

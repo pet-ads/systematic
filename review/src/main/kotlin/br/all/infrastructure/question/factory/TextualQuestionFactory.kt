@@ -14,7 +14,7 @@ import java.util.*
 class TextualQuestionFactory(private val mongoRepository: MongoQuestionRepository) : QuestionFactory {
 
     override fun create(id: UUID, request: RequestModel) = with(request) {
-        QuestionBuilder.with(QuestionId(id), ProtocolId(protocolId), code, description)
+        QuestionBuilder.with(QuestionId(id), ProtocolId(systematicStudyId), code, description)
             .buildTextual()
     }
 

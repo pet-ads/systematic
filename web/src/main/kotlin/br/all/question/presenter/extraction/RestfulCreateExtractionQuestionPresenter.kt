@@ -2,8 +2,6 @@ package br.all.question.presenter.extraction
 
 import br.all.application.question.create.CreateQuestionPresenter
 import br.all.application.question.create.CreateQuestionService.*
-import br.all.domain.model.protocol.ProtocolId
-import br.all.domain.model.question.QuestionId
 import br.all.question.controller.ExtractionQuestionController
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
@@ -15,13 +13,13 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class RestfulCreateQuestionPresenter : CreateQuestionPresenter {
+class RestfulCreateExtractionQuestionPresenter : CreateQuestionPresenter {
     var responseEntity: ResponseEntity<*>? = null
     override fun prepareSuccessView(response: ResponseModel) {
-        val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, ProtocolId(response.protocolId), QuestionId(response.questionId))
+        val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, response.questionId)
 
         val self = linkTo<ExtractionQuestionController> {
-            findQuestion(response.researcherId, response.systematicStudyId, QuestionId(response.questionId))
+            findQuestion(response.researcherId, response.systematicStudyId, response.questionId)
         }.withSelfRel()
 
         restfulResponse.add(self)
@@ -35,7 +33,6 @@ class RestfulCreateQuestionPresenter : CreateQuestionPresenter {
     private data class ViewModel(
         val researcherId: UUID,
         val systematicStudyId: UUID,
-        val protocolId: ProtocolId,
-        val questionId: QuestionId
+        val questionId: UUID
     ): RepresentationModel<ViewModel>()
 }

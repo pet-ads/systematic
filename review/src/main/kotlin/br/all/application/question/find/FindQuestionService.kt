@@ -10,7 +10,7 @@ interface FindQuestionService {
     data class RequestModel(
         val researcherId: UUID,
         val systematicStudyId: UUID,
-        val questionId: QuestionId
+        val questionId: UUID
     )
 
     data class ResponseModel(

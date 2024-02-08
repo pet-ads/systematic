@@ -12,13 +12,13 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
 @Component
-class RestfulFindQuestionPresenter : FindQuestionPresenter {
+class RestfulFindRoBQuestionPresenter : FindQuestionPresenter {
     var responseEntity: ResponseEntity<*>? = null
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.content)
 
         val self = linkTo<RiskOfBiasQuestionController> {
-            findQuestion(response.researcherId, response.content.systematicStudyId, response.content.questionId)
+            findQuestion(response.researcherId, response.content.protocolId, response.content.questionId)
         }.withSelfRel()
 
         restfulResponse.add(self)
@@ -30,9 +30,8 @@ class RestfulFindQuestionPresenter : FindQuestionPresenter {
     override fun isDone() = responseEntity != null
 
     private data class ViewModel(private val content: QuestionDto) : RepresentationModel<ViewModel>(){
-        val systematicStudyId = content.systematicStudyId
+        val systematicStudyId = content.protocolId
         val questionId = content.questionId
-        val protocolId = content.protocolId
         val code = content.code
         val description = content.code
         val questionType = content.questionType

@@ -8,7 +8,7 @@ interface CreateQuestionService {
     data class RequestModel(
         val researcherId: UUID,
         val systematicStudyId: UUID,
-        val protocolId: UUID,
+        val questionType: String,
         val code: String,
         val description: String,
         val scales: Map<String, Int>? = null,
@@ -20,7 +20,6 @@ interface CreateQuestionService {
     data class ResponseModel(
         val researcherId: UUID,
         val systematicStudyId: UUID,
-        val protocolId: UUID,
         val questionId: UUID,
     )
 }

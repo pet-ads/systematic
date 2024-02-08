@@ -15,7 +15,7 @@ import java.util.*
 class NumberScaleQuestionFactory(private val mongoRepository: MongoQuestionRepository): QuestionFactory {
     override fun create(id: UUID, request: CreateQuestionService.RequestModel) = with(request){
         if (higher == null || lower == null) throw IllegalArgumentException("Higher and Lower values must not be null.")
-        QuestionBuilder.with(QuestionId(id), ProtocolId(protocolId), code, description)
+        QuestionBuilder.with(QuestionId(id), ProtocolId(systematicStudyId), code, description)
             .buildNumberScale(lower, higher)
     }
 

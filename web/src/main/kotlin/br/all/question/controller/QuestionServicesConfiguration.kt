@@ -22,9 +22,7 @@ class QuestionServicesConfiguration {
         credentialsService: ResearcherCredentialsService,
         idGenerator: UuidGeneratorService,
         strategy: CreateQuestionStrategy
-    ) = CreateQuestionServiceImpl(
-        questionFactory, systematicStudyRepository, protocolRepository, strategy, idGenerator, credentialsService
-    )
+    ) = CreateQuestionServiceImpl(questionFactory, systematicStudyRepository, strategy, idGenerator, credentialsService)
 
     @Bean
     fun findQuestionService(
@@ -34,4 +32,7 @@ class QuestionServicesConfiguration {
     ) = FindQuestionServiceImpl(
         systematicStudyRepository, questionRepository, credentialsService
     )
+
+    @Bean
+    fun questionFactory()
 }

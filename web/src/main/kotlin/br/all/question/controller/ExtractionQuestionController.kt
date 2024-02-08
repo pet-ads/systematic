@@ -2,9 +2,8 @@ package br.all.question.controller
 
 import br.all.application.question.create.CreateQuestionService
 import br.all.application.question.find.FindQuestionService
-import br.all.domain.model.question.QuestionId
-import br.all.question.presenter.riskOfBias.RestfulCreateQuestionPresenter
-import br.all.question.presenter.riskOfBias.RestfulFindQuestionPresenter
+import br.all.question.presenter.riskOfBias.RestfulCreateRoBQuestionPresenter
+import br.all.question.presenter.riskOfBias.RestfulFindRoBQuestionPresenter
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -14,31 +13,30 @@ import br.all.application.question.create.CreateQuestionService.RequestModel as 
 @RestController
 @RequestMapping("/api/v1/researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question")
 class ExtractionQuestionController(
-    val createService: CreateQuestionService,
+    val createQuestionService: CreateQuestionService,
     val findOneService: FindQuestionService
-){
-    @PostMapping("/{questionType}")
-     fun createQuestion(
+) {
+    @PostMapping
+    fun createQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
-        @PathVariable questionType: String,
         @RequestBody request: CreateRequest,
     ): ResponseEntity<*> {
-        val presenter = RestfulCreateQuestionPresenter()
-        createService.createExtractionQuestion(presenter, request)
+        val presenter = RestfulCreateRoBQuestionPresenter()
+        createQuestionService.create(presenter, request)
 
-        return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @GetMapping("/{code}")
-     fun findQuestion(
+    fun findQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
-        @PathVariable questionId: QuestionId,
+        @PathVariable questionId: UUID,
     ): ResponseEntity<*> {
-        val presenter = RestfulFindQuestionPresenter()
+        val presenter = RestfulFindRoBQuestionPresenter()
         val request = FindQuestionService.RequestModel(researcherId, systematicStudyId, questionId)
         findOneService.findOne(presenter, request)
-        return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

@@ -15,7 +15,7 @@ import java.util.*
 class PickListQuestionFactory(private val mongoRepository: MongoQuestionRepository) : QuestionFactory {
     override fun create(id: UUID, request: RequestModel) = with(request) {
         if (options == null) throw IllegalArgumentException("Options list must not be null.")
-        QuestionBuilder.with(QuestionId(id), ProtocolId(protocolId), code, description)
+        QuestionBuilder.with(QuestionId(id), ProtocolId(systematicStudyId), code, description)
             .buildPickList(options)
     }
 

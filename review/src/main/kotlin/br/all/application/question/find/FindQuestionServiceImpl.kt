@@ -7,6 +7,7 @@ import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.presenter.PreconditionChecker
+import br.all.domain.model.question.QuestionId
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 
@@ -19,12 +20,13 @@ class FindQuestionServiceImpl(
     override fun findOne(presenter: FindQuestionPresenter, request: RequestModel) {
         val researcherId = ResearcherId(request.researcherId)
         val systematicStudyId = SystematicStudyId(request.systematicStudyId)
+        val questionId = QuestionId(request.questionId)
         val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
         preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
         if (presenter.isDone()) return
 
-        val question = questionRepository.findById(request.systematicStudyId, request.questionId)
+        val question = questionRepository.findById(request.systematicStudyId, questionId)
         if (question === null) {
             val message =
                 "There is no review of id ${request.systematicStudyId} or question of id ${request.questionId}."

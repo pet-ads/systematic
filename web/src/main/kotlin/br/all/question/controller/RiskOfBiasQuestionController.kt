@@ -2,9 +2,8 @@ package br.all.question.controller
 
 import br.all.application.question.create.CreateQuestionService
 import br.all.application.question.find.FindQuestionService
-import br.all.domain.model.question.QuestionId
-import br.all.question.presenter.riskOfBias.RestfulCreateQuestionPresenter
-import br.all.question.presenter.riskOfBias.RestfulFindQuestionPresenter
+import br.all.question.presenter.riskOfBias.RestfulCreateRoBQuestionPresenter
+import br.all.question.presenter.riskOfBias.RestfulFindRoBQuestionPresenter
 import org.springframework.http.HttpStatus
 import br.all.application.question.create.CreateQuestionService.RequestModel as CreateRequest
 import org.springframework.http.ResponseEntity
@@ -22,7 +21,7 @@ class RiskOfBiasQuestionController(
         @PathVariable systematicStudyId: UUID,
         @RequestBody request: CreateRequest
     ): ResponseEntity<*> {
-        val presenter = RestfulCreateQuestionPresenter()
+        val presenter = RestfulCreateRoBQuestionPresenter()
         createService.create(presenter, request)
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -31,9 +30,9 @@ class RiskOfBiasQuestionController(
      fun findQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
-        @PathVariable questionId: QuestionId,
+        @PathVariable questionId: UUID,
     ): ResponseEntity<*> {
-        val presenter = RestfulFindQuestionPresenter()
+        val presenter = RestfulFindRoBQuestionPresenter()
         val request = FindQuestionService.RequestModel(researcherId, systematicStudyId, questionId)
         findOneService.findOne(presenter, request)
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)

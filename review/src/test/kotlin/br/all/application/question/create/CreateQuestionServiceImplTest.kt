@@ -26,7 +26,7 @@ import java.util.*
 @Tag("ServiceTest")
 @ExtendWith(MockKExtension::class)
 class CreateQuestionServiceImplTest {
-    @MockK1
+    @MockK
     private lateinit var factory: QuestionFactory
     @MockK(relaxUnitFun = true)
     private lateinit var repository: QuestionRepository
@@ -49,7 +49,6 @@ class CreateQuestionServiceImplTest {
         sut = CreateQuestionServiceImpl(
             factory,
             systematicStudyRepository,
-            protocolRepository,
             strategy,
             uuidGeneratorService,
             credentialsService,
@@ -62,7 +61,7 @@ class CreateQuestionServiceImplTest {
         val systematicStudy = UUID.randomUUID()
         val questionId = UUID.randomUUID()
         val protocolId = UUID.randomUUID()
-        val request = RequestModel(researcher, systematicStudy, protocolId, "Code", "Description")
+        val request = RequestModel(researcher, systematicStudy, "Textual","Code", "Description")
         val textual = Textual(QuestionId(questionId), ProtocolId(protocolId), "Code", "Description")
         val dto = QuestionDto(questionId, protocolId, "Code", "Description", "Textual")
 
@@ -79,7 +78,7 @@ class CreateQuestionServiceImplTest {
         verify {
             protocolRepository.create(any())
             repository.createOrUpdate(dto)
-            presenter.prepareSuccessView(ResponseModel(researcher, systematicStudy, protocolId, questionId))
+            presenter.prepareSuccessView(ResponseModel(researcher, systematicStudy, questionId))
         }
     }
 }

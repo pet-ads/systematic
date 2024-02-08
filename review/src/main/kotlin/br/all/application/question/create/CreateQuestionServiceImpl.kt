@@ -15,7 +15,6 @@ import br.all.application.question.shared.QuestionFactory
 class CreateQuestionServiceImpl(
     private val questionFactory: QuestionFactory,
     private val systematicStudyRepository: SystematicStudyRepository,
-    private val protocolRepository: ProtocolRepository,
     private val strategy: CreateQuestionStrategy,
     private val uuidGeneratorService: UuidGeneratorService,
     private val credentialsService: ResearcherCredentialsService,
@@ -32,19 +31,17 @@ class CreateQuestionServiceImpl(
                 presenter,
                 ResearcherId(researcherId),
                 SystematicStudyId(systematicStudyId),
-                ProtocolId(protocolId),
-                protocolRepository,
             )
         }
         if(presenter.isDone()) return
 
         val questionId = uuidGeneratorService.next()
         val question = questionFactory.create(questionId, request)
-        strategy.addQuestion(protocolId, questionId)
+        strategy.addQuestion(systematicStudyId, questionId)
 
         if (presenter.isDone()) return
 
         repository.createOrUpdate(questionFactory.toDto(question))
-        presenter.prepareSuccessView(ResponseModel(researcherId, systematicStudyId, protocolId, questionId))
+        presenter.prepareSuccessView(ResponseModel(researcherId, systematicStudyId, questionId))
     }
 }
