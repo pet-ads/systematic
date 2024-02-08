@@ -71,6 +71,15 @@ class ProtocolTest {
                 assertEquals("The search method description must not be blank", e.message)
             }
 
+            @ParameterizedTest(name = "[{index}] studyTypeDefinition=\"{0}\"")
+            @ValueSource(strings = ["", " ", "   "])
+            fun `should throw when the provided study type definition is blank`(studyTypeDefinition: String) {
+                val e = assertThrows<IllegalArgumentException> {
+                    factory.createProtocol(studyTypeDefinition = studyTypeDefinition)
+                }
+                assertEquals("The study type definition must not be blank", e.message)
+            }
+
             // TODO: Invalid classes for creating the protocol with other blank fields
         }
     }
