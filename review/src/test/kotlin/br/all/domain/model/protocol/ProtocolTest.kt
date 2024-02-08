@@ -98,7 +98,14 @@ class ProtocolTest {
                 assertEquals("The data collection process description must not be blank", e.message)
             }
 
-            // TODO: Invalid classes for creating the protocol with other blank fields
+            @ParameterizedTest(name = "[{index}] analysisAndSynthesis=\"{0}\"")
+            @ValueSource(strings = ["", " ", "   "])
+            fun `should not the analysis and synthesis description be blank`(analysisAndSynthesis: String) {
+                val e = assertThrows<IllegalArgumentException> {
+                    factory.createProtocol(analysisAndSynthesis = analysisAndSynthesis)
+                }
+                assertEquals("The analysis and synthesis process description must not be blank", e.message)
+            }
         }
     }
 
