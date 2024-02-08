@@ -89,6 +89,15 @@ class ProtocolTest {
                 assertEquals("The selection process description must not be blank", e.message)
             }
 
+            @ParameterizedTest(name = "[{index}] dataCollectionProcess=\"{0}\"")
+            @ValueSource(strings = ["", " ", "   "])
+            fun `should not the data collection process description be blank`(dataCollectionProcess: String) {
+                val e = assertThrows<IllegalArgumentException> {
+                    factory.createProtocol(dataCollectionProcess = dataCollectionProcess)
+                }
+                assertEquals("The data collection process description must not be blank", e.message)
+            }
+
             // TODO: Invalid classes for creating the protocol with other blank fields
         }
     }
