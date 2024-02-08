@@ -5,6 +5,7 @@ import br.all.domain.shared.valueobject.Language
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.ValueSource
 import java.util.*
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -34,6 +35,12 @@ class ProtocolTest {
         @Tag("InvalidClasses")
         @DisplayName("But providing invalid input")
         inner class ButProvidingInvalidInput {
+            @ParameterizedTest(name = "[{index}] goal=\"{0}\"")
+            @ValueSource(strings = ["", " ", "   "])
+            fun `should throw when the goal is blank`(goal: String) {
+                assertThrows<IllegalArgumentException> { factory.createProtocol(goal = goal) }
+            }
+
             @Test
             fun `Should throw if the search string is blank`() {
                 assertThrows<IllegalArgumentException> { factory.createProtocol(searchString = "") }
