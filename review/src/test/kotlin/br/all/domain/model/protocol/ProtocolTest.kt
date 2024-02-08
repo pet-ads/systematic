@@ -1,7 +1,6 @@
 package br.all.domain.model.protocol
 
 import br.all.domain.model.question.QuestionId
-import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.valueobject.Language
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
@@ -13,6 +12,11 @@ import kotlin.test.assertTrue
 
 @Tag("UnitTest")
 class ProtocolTest {
+    private lateinit var factory: TestDataFactory
+
+    @BeforeEach
+    fun setUp() = run { factory = TestDataFactory() }
+
     @Nested
     @DisplayName("When writing protocols")
     inner class WhenWritingProtocols {
@@ -22,7 +26,7 @@ class ProtocolTest {
         inner class AndFillingOutTheFieldCorrectly {
             @Test
             fun `Should successfully create a protocol`() {
-                assertDoesNotThrow { generateProtocol() }
+                assertDoesNotThrow { factory.createProtocol() }
             }
         }
         
@@ -32,7 +36,7 @@ class ProtocolTest {
         inner class ButProvidingInvalidInput {
             @Test
             fun `Should throw if the search string is blank`() {
-                assertThrows<IllegalArgumentException> { generateProtocol("") }
+                assertThrows<IllegalArgumentException> { factory.createProtocol(searchString = "") }
             }
 
             // TODO: Invalid classes for creating the protocol with other blank fields
@@ -84,7 +88,7 @@ class ProtocolTest {
         inner class AndBeingAbleToChangeThem {
             @Test
             fun `Should add a new keyword if it is not in the protocol yet`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val newKeyword = "New keyword"
 
                 sut.addKeyword(newKeyword)
@@ -97,7 +101,7 @@ class ProtocolTest {
 
             @Test
             fun `Should do nothing when trying to add a keyword that already is in the protocol`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val keyword = "Keyword"
 
                 assertAll(
@@ -109,7 +113,7 @@ class ProtocolTest {
             @Test
             fun `Should successfully remove a keyword if it is not the last one`() {
                 val removingKeyword = "Keyword"
-                val sut = generateProtocol(keywords = setOf(removingKeyword, "Other keyword"))
+                val sut = factory.createProtocol(keywords = setOf(removingKeyword, "Other keyword"))
 
                 assertAll(
                     { assertDoesNotThrow { sut.removeKeyword(removingKeyword) } },
@@ -125,14 +129,14 @@ class ProtocolTest {
             @Test
             fun `Should throw when trying to remove the last keyword`() {
                 val removingKeyword = "Keyword"
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
 
                 assertThrows<IllegalStateException> { sut.removeKeyword(removingKeyword) }
             }
 
             @Test
             fun `Should throw when trying to remove an nonexistent keyword`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 assertThrows<NoSuchElementException> { sut.removeKeyword("Nonexistent keyword") }
             }
         }
@@ -147,7 +151,7 @@ class ProtocolTest {
         inner class AndBeingAbleToUpdateThem {
             @Test
             fun `Should add a information source if it is not in the protocol yet`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val newSearchSource = SearchSource("New SearchSource")
 
                 sut.addInformationSource(newSearchSource)
@@ -160,7 +164,7 @@ class ProtocolTest {
 
             @Test
             fun `Should do nothing when trying to add a information source that already is in the protocol`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val existentInformationSource = SearchSource("SomeSourceWithManyPhilosophicalArticles")
 
                 assertAll(
@@ -172,7 +176,7 @@ class ProtocolTest {
             @Test
             fun `Should successfully remove a information source if it is not the last one`() {
                 val removingSource = SearchSource("PhilosophicalSource")
-                val sut = generateProtocol(sources = setOf(
+                val sut = factory.createProtocol(informationSources = setOf(
                     removingSource,
                     SearchSource("Other Source"),
                 ))
@@ -191,7 +195,7 @@ class ProtocolTest {
         inner class AndFailingToPerformChanges {
             @Test
             fun `Should throw when trying to remove the last information source`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val removingSource = SearchSource("SomeSourceWithManyPhilosophicalArticles")
 
                 assertThrows<IllegalStateException> { sut.removeInformationSource(removingSource) }
@@ -199,7 +203,7 @@ class ProtocolTest {
 
             @Test
             fun `Should throw when trying to remove a information source that does not exist`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val nonexistentSource = SearchSource("Nonexistent Source")
 
                 assertThrows<NoSuchElementException> { sut.removeInformationSource(nonexistentSource) }
@@ -216,7 +220,7 @@ class ProtocolTest {
         inner class AndPerformingChangesSuccessfully {
             @Test
             fun `Should add a new language if it is not in the protocol`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val newLanguage = Language(Language.LangType.PORTUGUESE)
 
                 sut.addLanguage(newLanguage)
@@ -229,7 +233,7 @@ class ProtocolTest {
 
             @Test
             fun `Should do nothing when trying to add a language that already is in the protocol`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val existentLanguage = Language(Language.LangType.ENGLISH)
 
                 assertAll(
@@ -241,7 +245,7 @@ class ProtocolTest {
             @Test
             fun `Should successfully remove a language if it is not the last one`() {
                 val removingLanguage = Language(Language.LangType.PORTUGUESE)
-                val sut = generateProtocol(languages = setOf(
+                val sut = factory.createProtocol(languages = setOf(
                     removingLanguage,
                     Language(Language.LangType.ENGLISH),
                 ))
@@ -262,7 +266,7 @@ class ProtocolTest {
         inner class AndFailingToUpdateThem {
             @Test
             fun `Should throw when trying to remove the last language`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val removingLanguage = Language(Language.LangType.ENGLISH)
 
                 assertThrows<IllegalStateException> { sut.removeLanguage(removingLanguage) }
@@ -270,7 +274,7 @@ class ProtocolTest {
 
             @Test
             fun `Should throw when trying to remove a nonexistent language from protocol`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val nonexistentLanguage = Language(Language.LangType.PORTUGUESE)
 
                 assertThrows<NoSuchElementException> { sut.removeLanguage(nonexistentLanguage) }
@@ -287,7 +291,7 @@ class ProtocolTest {
         inner class AndPerformingChanges {
             @Test
             fun `Should add a new criteria if it is not in the protocol`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val newCriterion = Criterion.toInclude("Nice thoughts")
 
                 sut.addSelectionCriteria(newCriterion)
@@ -300,7 +304,7 @@ class ProtocolTest {
 
             @Test
             fun `Should do nothing when trying to add a repeated criteria`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val repeatedCriterion = Criterion.toInclude("It has deep reflection about life")
 
                 assertAll(
@@ -315,7 +319,7 @@ class ProtocolTest {
                 description: String,
                 type: Criterion.CriterionType,
             ) {
-                val sut = generateProtocol(criteria = setOf(
+                val sut = factory.createProtocol(eligibilityCriteria = setOf(
                     Criterion.toInclude("It has deep reflection about life!"),
                     Criterion.toInclude("Nice thoughts"),
                     Criterion.toExclude("It does not talk about life"),
@@ -339,7 +343,7 @@ class ProtocolTest {
             fun `Should throw when trying to remove the last criteria o a type`(
                 description: String, type: Criterion.CriterionType) {
 
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val removingCriterion = Criterion(description, type)
 
                 assertThrows<IllegalStateException> { sut.removeSelectionCriteria(removingCriterion) }
@@ -347,7 +351,7 @@ class ProtocolTest {
 
             @Test
             fun `Should throw when trying to remove a criteria that is not defined in the protocol`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val nonexistentCriterion = Criterion.toInclude("Nice thoughts")
 
                 assertThrows<NoSuchElementException> { sut.removeSelectionCriteria(nonexistentCriterion) }
@@ -364,7 +368,7 @@ class ProtocolTest {
         inner class AndBeingAbleToUpdateThem {
             @Test
             fun `Should add a new extraction question if it is not defined yet`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val newExtractionQuestion = QuestionId(UUID.randomUUID())
 
                 sut.addExtractionQuestion(newExtractionQuestion)
@@ -378,7 +382,7 @@ class ProtocolTest {
             @Test
             fun `Should do nothing when trying to add a extraction question that has already been defined`() {
                 val question = QuestionId(UUID.randomUUID())
-                val sut = generateProtocol(extractionQuestions = setOf(question))
+                val sut = factory.createProtocol(extractionQuestions = setOf(question))
 
                 assertAll(
                     { assertDoesNotThrow { sut.addExtractionQuestion(question) } },
@@ -389,7 +393,7 @@ class ProtocolTest {
             @Test
             fun `Should remove a extraction question if its present`() {
                 val removingQuestion = QuestionId(UUID.randomUUID())
-                val sut = generateProtocol(extractionQuestions = setOf(removingQuestion))
+                val sut = factory.createProtocol(extractionQuestions = setOf(removingQuestion))
 
                 sut.removeExtractionQuestion(removingQuestion)
 
@@ -403,7 +407,7 @@ class ProtocolTest {
         inner class AndBeingUnableToPerformChanges {
             @Test
             fun `Should throw when trying to remove a question that does not belongs to the protocol`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val removingQuestion = QuestionId(UUID.randomUUID())
 
                 assertThrows<NoSuchElementException> { sut.removeExtractionQuestion(removingQuestion) }
@@ -420,7 +424,7 @@ class ProtocolTest {
         inner class AndProvidingValidChanges {
             @Test
             fun `Should a new rob question successfully if it is not defined`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val newRobQuestion = QuestionId(UUID.randomUUID())
 
                 sut.addRobQuestion(newRobQuestion)
@@ -434,7 +438,7 @@ class ProtocolTest {
             @Test
             fun `Should do nothing when trying to add repeated rob questions`() {
                 val repeatedQuestion = QuestionId(UUID.randomUUID())
-                val sut = generateProtocol(robQuestions = setOf(repeatedQuestion))
+                val sut = factory.createProtocol(robQuestions = setOf(repeatedQuestion))
 
                 assertAll(
                     { assertDoesNotThrow { sut.addRobQuestion(repeatedQuestion) } },
@@ -445,7 +449,7 @@ class ProtocolTest {
             @Test
             fun `Should existent rob questions be successfully removed`() {
                 val robQuestion = QuestionId(UUID.randomUUID())
-                val sut = generateProtocol(robQuestions = setOf(robQuestion))
+                val sut = factory.createProtocol(robQuestions = setOf(robQuestion))
 
                 sut.removeRobQuestion(robQuestion)
 
@@ -460,42 +464,11 @@ class ProtocolTest {
 
             @Test
             fun `Should throw when trying to remove nonexistent rob questions`() {
-                val sut = generateProtocol()
+                val sut = factory.createProtocol()
                 val removingQuestion = QuestionId(UUID.randomUUID())
 
                 assertThrows<NoSuchElementException> { sut.removeRobQuestion(removingQuestion) }
             }
         }
-    }
-
-    private fun generateProtocol(
-        searchString: String = "String",
-        criteria: Set<Criterion> = setOf(
-            Criterion.toInclude("It has deep reflection about life"),
-            Criterion.toExclude("It does not talk about life!"),
-        ),
-        keywords: Set<String> = setOf("Keyword"),
-        sources: Set<SearchSource> = setOf(SearchSource("SomeSourceWithManyPhilosophicalArticles")),
-        languages: Set<Language> = setOf(Language(Language.LangType.ENGLISH)),
-        extractionQuestions: Set<QuestionId> = emptySet(),
-        robQuestions: Set<QuestionId> = emptySet(),
-    ): Protocol {
-        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-
-        return Protocol.with(systematicStudyId, keywords)
-            .researchesFor("Something")
-            .because("It is important")
-            .toAnswer(setOf(ResearchQuestion("What is the question which its answer is 42?")))
-            .followingSearchProcess("Reading philosophical articles", searchString)
-            .inSearchSources(sources)
-            .selectedBecause("I want so")
-            .searchingStudiesIn(languages, "Primaries and secondaries")
-            .followingSelectionProcess("Classify articles by criteria")
-            .withEligibilityCriteria(criteria)
-            .followingDataCollectionProcess("Reading the articles and reflect about them")
-            .followingSynthesisProcess("Analyse opinions on each article")
-            .extractDataByAnswering(extractionQuestions)
-            .qualityFormConsiders(robQuestions)
-            .build()
     }
 }
