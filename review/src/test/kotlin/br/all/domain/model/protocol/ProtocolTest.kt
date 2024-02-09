@@ -211,6 +211,18 @@ class ProtocolTest {
                     { assertEquals(dataCollectionProcess, sut.dataCollectionProcess) },
                 )
             }
+
+            @ParameterizedTest
+            @CsvSource(",", "Old data collection process")
+            fun `should analysis and synthesis be updated to valid strings`(original: String?) {
+                val sut = factory.createProtocol(analysisAndSynthesis = original)
+                val analysisAndSynthesis = factory.text()
+
+                assertAll(
+                    { assertDoesNotThrow { sut.analysisAndSynthesisProcess = analysisAndSynthesis } },
+                    { assertEquals(analysisAndSynthesis, sut.analysisAndSynthesisProcess) },
+                )
+            }
         }
 
         @Nested
