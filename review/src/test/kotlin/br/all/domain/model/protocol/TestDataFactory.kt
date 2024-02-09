@@ -25,7 +25,7 @@ class TestDataFactory {
         studyTypeDefinition: String? = text(),
         selectionProcess: String? = text(),
         eligibilityCriteria: Set<Criterion> = eligibilityCriteria(),
-        dataCollectionProcess: String = text(),
+        dataCollectionProcess: String? = text(),
         analysisAndSynthesis: String = text(),
         extractionQuestions: Set<QuestionId> = questionsSet(),
         robQuestions: Set<QuestionId> = questionsSet(),

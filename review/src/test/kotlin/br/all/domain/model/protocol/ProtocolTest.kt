@@ -199,6 +199,18 @@ class ProtocolTest {
                     { assertEquals(selectionProcess, sut.selectionProcess) },
                 )
             }
+
+            @ParameterizedTest
+            @CsvSource(",", "Old data collection process")
+            fun `should throw if the provided new data collection process is blank`(original: String?) {
+                val sut = factory.createProtocol(dataCollectionProcess = original)
+                val dataCollectionProcess = factory.text()
+
+                assertAll(
+                    { assertDoesNotThrow { sut.dataCollectionProcess = dataCollectionProcess } },
+                    { assertEquals(dataCollectionProcess, sut.dataCollectionProcess) },
+                )
+            }
         }
 
         @Nested

@@ -72,7 +72,7 @@ class ProtocolBuilder private constructor() {
         this.selectionCriteria = selectionCriteria
     }
 
-    infix fun followingDataCollectionProcess(dataCollectionProcess: String) = apply {
+    infix fun followingDataCollectionProcess(dataCollectionProcess: String?) = apply {
         this.dataCollectionProcess = dataCollectionProcess
     }
 
