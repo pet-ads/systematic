@@ -76,7 +76,7 @@ class ProtocolBuilder private constructor() {
         this.dataCollectionProcess = dataCollectionProcess
     }
 
-    infix fun followingSynthesisProcess(analysisAndSynthesisProcess: String) = apply {
+    infix fun followingSynthesisProcess(analysisAndSynthesisProcess: String?) = apply {
         this.analysisAndSynthesisProcess = analysisAndSynthesisProcess
     }
 
