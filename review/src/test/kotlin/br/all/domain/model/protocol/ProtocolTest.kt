@@ -229,7 +229,15 @@ class ProtocolTest {
         @Tag("InvalidClasses")
         @DisplayName("And doing wrong changes")
         inner class AndDoingWrongChanges {
-            // TODO: Invalid classes for changing the protocol string fields
+            private lateinit var sut: Protocol
+
+            @BeforeEach
+            fun setUp() = run { sut = factory.createProtocol() }
+
+            @Test
+            fun `should throw when trying to assign null to written goals`() {
+                assertThrows<IllegalArgumentException> { sut.goal = null }
+            }
         }
     }
 
