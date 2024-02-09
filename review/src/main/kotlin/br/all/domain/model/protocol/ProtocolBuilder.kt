@@ -58,7 +58,7 @@ class ProtocolBuilder private constructor() {
 
     fun searchingStudiesIn(
         studiesLanguages: Set<Language>,
-        studyTypeDefinition: String
+        studyTypeDefinition: String?,
     ) = apply {
         this.studiesLanguages = studiesLanguages
         this.studyTypeDefinition = studyTypeDefinition
