@@ -187,6 +187,18 @@ class ProtocolTest {
                     { assertEquals(studyTypeDefinition, sut.studyTypeDefinition) },
                 )
             }
+
+            @ParameterizedTest
+            @CsvSource(",", "Old selection process")
+            fun `should IllegalArgumentException be thrown for blank selection processes`(original: String?) {
+                val sut = factory.createProtocol(selectionProcess = original)
+                val selectionProcess = factory.text()
+
+                assertAll(
+                    { assertDoesNotThrow { sut.selectionProcess = selectionProcess } },
+                    { assertEquals(selectionProcess, sut.selectionProcess) },
+                )
+            }
         }
 
         @Nested
