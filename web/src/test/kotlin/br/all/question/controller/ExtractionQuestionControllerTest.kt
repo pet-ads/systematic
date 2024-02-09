@@ -1,16 +1,16 @@
 package br.all.question.controller
 
 import br.all.infrastructure.question.MongoQuestionRepository
-import br.all.infrastructure.study.MongoStudyReviewRepository
-import br.all.infrastructure.study.StudyReviewIdGeneratorService
-import br.all.study.utils.TestDataFactory
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Tag
+import br.all.question.utils.TestDataFactory
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import java.util.*
 
 @SpringBootTest
@@ -18,16 +18,42 @@ import java.util.*
 @Tag("IntegrationTest")
 class ExtractionQuestionControllerTest(
     @Autowired val repository: MongoQuestionRepository,
-    @Autowired val idService: StudyReviewIdGeneratorService,
     @Autowired val mockMvc: MockMvc,
 ) {
     private lateinit var factory: TestDataFactory
     private lateinit var systematicStudyId: UUID
     private lateinit var researcherId: UUID
 
+    @BeforeEach
+    fun setUp() {
+        repository.deleteAll()
+        factory = TestDataFactory()
+        systematicStudyId = factory.systematicStudyId
+        researcherId = factory.researcherId
+    }
+
+    @AfterEach
+    fun teardown() = repository.deleteAll()
+
+
     fun postUrl() = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/extraction-question"
 
     fun getUrl(questionId: String = "") =
         "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/extraction-question/$questionId"
 
+
+    @Nested
+    @DisplayName("When creating questions")
+    inner class CreateTests {
+        @Test
+        fun `should create textual question and return 201`() {
+            val json = factory.validCreateTextualRequest()
+            mockMvc.perform(MockMvcRequestBuilders
+                .post(postUrl() + "/textual").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isCreated)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+        }
+    }
 }

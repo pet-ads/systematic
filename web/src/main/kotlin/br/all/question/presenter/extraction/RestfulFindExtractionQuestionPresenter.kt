@@ -17,11 +17,11 @@ class RestfulFindExtractionQuestionPresenter : FindQuestionPresenter {
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.content)
 
-        val self = linkTo<ExtractionQuestionController> {
-            findQuestion(response.researcherId, response.content.protocolId, response.content.questionId)
-        }.withSelfRel()
-
-        restfulResponse.add(self)
+//        val self = linkTo<ExtractionQuestionController> {
+//            findQuestion(response.researcherId, response.content.protocolId, response.content.questionId)
+//        }.withSelfRel()
+//
+//        restfulResponse.add(self)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
@@ -30,7 +30,7 @@ class RestfulFindExtractionQuestionPresenter : FindQuestionPresenter {
     override fun isDone() = responseEntity != null
 
     private data class ViewModel(private val content: QuestionDto) : RepresentationModel<ViewModel>(){
-        val systematicStudyId = content.protocolId
+        val systematicStudyId = content.systematicStudyId
         val questionId = content.questionId
         val code = content.code
         val description = content.code

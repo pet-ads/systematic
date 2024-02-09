@@ -7,5 +7,5 @@ import java.util.UUID
 interface QuestionRepository {
     fun createOrUpdate(dto: QuestionDto): Any
     fun findById(systematicStudyId: UUID, id: QuestionId): QuestionDto?
-    fun findAllByProtocol(systematicStudyId: UUID, protocolId: ProtocolId): List<QuestionDto>
+//    fun findAllByProtocol(systematicStudyId: UUID, protocolId: ProtocolId): List<QuestionDto>
 }

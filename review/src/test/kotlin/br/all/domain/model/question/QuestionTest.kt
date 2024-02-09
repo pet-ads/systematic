@@ -1,6 +1,7 @@
 package br.all.domain.model.question
 
 import br.all.domain.model.protocol.ProtocolId
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.Answer
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.*
@@ -19,11 +20,11 @@ class QuestionTest {
         @Test
         fun `should create a question with valid code and description`() {
             val id = QuestionId(UUID.randomUUID())
-            val protocolId = ProtocolId(UUID.randomUUID())
+            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
             val code = faker.lorem.words()
             val description = faker.lorem.words()
 
-            assertDoesNotThrow { QuestionImpl(id, protocolId, code, description) }
+            assertDoesNotThrow { QuestionImpl(id, systematicStudyId, code, description) }
         }
     }
 
@@ -35,39 +36,39 @@ class QuestionTest {
         @ValueSource(strings = ["", " ", "   "])
         fun `should throw IllegalArgumentException for blank codes`(code: String) {
             val id = QuestionId(UUID.randomUUID())
-            val protocolId = ProtocolId(UUID.randomUUID())
+            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
             val description = faker.lorem.words()
 
-            assertThrows<IllegalArgumentException> { QuestionImpl(id, protocolId, code, description) }
+            assertThrows<IllegalArgumentException> { QuestionImpl(id, systematicStudyId, code, description) }
         }
 
         @ParameterizedTest(name = "[{index}]: description = \"{0}\"")
         @ValueSource(strings = ["", " ", "   "])
         fun `should throw IllegalArgumentException for blank descriptions`(description: String) {
             val id = QuestionId(UUID.randomUUID())
-            val protocolId = ProtocolId(UUID.randomUUID())
+            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
             val code = faker.lorem.words()
 
-            assertThrows<IllegalArgumentException> { QuestionImpl(id, protocolId, code, description) }
+            assertThrows<IllegalArgumentException> { QuestionImpl(id, systematicStudyId, code, description) }
         }
 
         @Test
         fun `should throw IllegalArgumentException for blank codes and descriptions`() {
             val id = QuestionId(UUID.randomUUID())
-            val protocolId = ProtocolId(UUID.randomUUID())
+            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
             val code = ""
             val description = ""
 
-            assertThrows<IllegalArgumentException> { QuestionImpl(id, protocolId, code, description) }
+            assertThrows<IllegalArgumentException> { QuestionImpl(id, systematicStudyId, code, description) }
         }
     }
 
     private class QuestionImpl(
         id: QuestionId,
-        protocolId: ProtocolId,
+        systematicStudyId: SystematicStudyId,
         code: String,
         description: String,
-    ): Question<Int>(id, protocolId, code, description) {
+    ): Question<Int>(id, systematicStudyId, code, description) {
         override fun answer(value: Int) = Answer(id.value(), value)
     }
 }

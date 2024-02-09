@@ -1,6 +1,7 @@
 package br.all.domain.model.question
 
 import br.all.domain.model.protocol.ProtocolId
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.Answer
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
@@ -8,7 +9,7 @@ import java.util.*
 
 abstract class Question<T>(
     questionId: QuestionId,
-    val protocolId: ProtocolId,
+    val systematicStudyId: SystematicStudyId,
     val code: String,
     val description: String,
 ) : Entity<UUID>(questionId) {

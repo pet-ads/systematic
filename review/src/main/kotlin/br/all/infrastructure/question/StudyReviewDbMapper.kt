@@ -4,7 +4,7 @@ import br.all.application.question.repository.QuestionDto
 
 fun QuestionDocument.toDto() = QuestionDto(
     id,
-    protocolId,
+    systematicStudyId,
     code,
     description,
     questionType,
@@ -16,7 +16,7 @@ fun QuestionDocument.toDto() = QuestionDto(
 
 fun QuestionDto.toDocument() = QuestionDocument(
     questionId,
-    protocolId,
+    systematicStudyId,
     code,
     description,
     questionType,

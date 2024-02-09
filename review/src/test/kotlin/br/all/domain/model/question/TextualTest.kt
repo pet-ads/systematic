@@ -1,6 +1,7 @@
 package br.all.domain.model.question
 
 import br.all.domain.model.protocol.ProtocolId
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.Answer
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.*
@@ -20,20 +21,20 @@ class TextualTest {
         @Test
         fun `should create a Textual question with valid parameters`() {
             val id = QuestionId(UUID.randomUUID())
-            val protocolId = ProtocolId(UUID.randomUUID())
+            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
             val code = faker.lorem.words()
             val description = faker.lorem.words()
 
-            assertDoesNotThrow { Textual(id, protocolId, code, description) }
+            assertDoesNotThrow { Textual(id, systematicStudyId, code, description) }
         }
 
         @Test
         fun `should answer the question with valid text`() {
             val id = QuestionId(UUID.randomUUID())
-            val protocolId = ProtocolId(UUID.randomUUID())
+            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
             val code = faker.lorem.words()
             val description = faker.lorem.words()
-            val textual = Textual(id, protocolId, code, description)
+            val textual = Textual(id, systematicStudyId, code, description)
             val value = "TestingAnswer"
             val expectedAnswer = Answer(textual.id.value(), value)
 
@@ -49,10 +50,10 @@ class TextualTest {
         @ValueSource(strings = ["", " ", "  "])
         fun `should throw IllegalArgumentException for blank answer`(value: String) {
             val id = QuestionId(UUID.randomUUID())
-            val protocolId = ProtocolId(UUID.randomUUID())
+            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
             val code = faker.lorem.words()
             val description = faker.lorem.words()
-            val textual = Textual(id, protocolId, code, description)
+            val textual = Textual(id, systematicStudyId, code, description)
 
             assertThrows<IllegalArgumentException> { textual.answer(value) }
         }

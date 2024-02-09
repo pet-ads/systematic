@@ -10,7 +10,7 @@ import java.util.*
 @Document("question")
 data class QuestionDocument(
     @Id val id: UUID,
-    val protocolId: UUID,
+    val systematicStudyId: UUID,
     val code: String,
     val description: String,
     val questionType: String,
@@ -18,9 +18,4 @@ data class QuestionDocument(
     val higher: Int?,
     val lower: Int?,
     val options: List<String>?
-){
-    companion object{
-        @Transient
-        val SEQUENCE_NAME = "question_sequence"
-    }
-}
+)

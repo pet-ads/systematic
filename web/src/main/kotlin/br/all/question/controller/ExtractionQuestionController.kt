@@ -1,6 +1,7 @@
 package br.all.question.controller
 
 import br.all.application.question.create.CreateQuestionService
+import br.all.application.question.create.CreateQuestionService.QuestionType.*
 import br.all.application.question.create.CreateQuestionService.RequestModel
 import br.all.application.question.find.FindQuestionService
 import br.all.question.presenter.extraction.RestfulFindExtractionQuestionPresenter
@@ -33,7 +34,8 @@ class ExtractionQuestionController(
     ): ResponseEntity<*> = createQuestion(
         RequestModel(
             researcherId,
-            systematicStudyId, "Textual",
+            systematicStudyId,
+            TEXTUAL,
             request.code,
             request.description
         )
@@ -46,7 +48,7 @@ class ExtractionQuestionController(
         RequestModel(
             researcherId,
             systematicStudyId,
-            "PickList",
+            PICK_LIST,
             request.code,
             request.description,
             options = request.options
@@ -62,7 +64,7 @@ class ExtractionQuestionController(
         RequestModel(
             researcherId,
             systematicStudyId,
-            "LabeledScale",
+            LABELED_SCALE,
             request.code,
             request.description,
             scales = request.scales
@@ -78,7 +80,7 @@ class ExtractionQuestionController(
         RequestModel(
             researcherId,
             systematicStudyId,
-            "LabeledScale",
+            NUMBERED_SCALE,
             request.code,
             request.description,
             higher = request.higher,

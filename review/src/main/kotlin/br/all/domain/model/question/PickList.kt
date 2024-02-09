@@ -1,16 +1,17 @@
 package br.all.domain.model.question
 
 import br.all.domain.model.protocol.ProtocolId
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.Answer
 import br.all.domain.shared.ddd.Notification
 
 class PickList(
     id: QuestionId,
-    protocolId: ProtocolId,
+    systematicStudyId: SystematicStudyId,
     code: String,
     description: String,
     val options: List<String>
-) : Question<String>(id, protocolId, code, description) {
+) : Question<String>(id, systematicStudyId, code, description) {
 
     init {
         val notification = validate()
@@ -35,6 +36,6 @@ class PickList(
     }
 
     override fun toString() =
-        "PickList(QuestionId: $id, ProtocolId: $protocolId, Code: $code, " +
+        "PickList(QuestionId: $id, ProtocolId: $systematicStudyId, Code: $code, " +
                 "Description: $description, Options: $options)"
 }

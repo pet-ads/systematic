@@ -1,17 +1,18 @@
 package br.all.domain.model.question
 
 import br.all.domain.model.protocol.ProtocolId
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.Answer
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.utils.requireThatExists
 
 class LabeledScale(
     id: QuestionId,
-    protocolId: ProtocolId,
+    systematicStudyId: SystematicStudyId,
     code: String,
     description: String,
     scales: Map<String, Int>
-) : Question<Label>(id, protocolId, code, description) {
+) : Question<Label>(id, systematicStudyId, code, description) {
     private val _scales = scales.mapValues { (key, value) -> Label(key, value) }.toMutableMap()
     val scales get() = _scales.toMap()
 
@@ -41,6 +42,6 @@ class LabeledScale(
     }
 
     override fun toString() =
-        "LabeledScale(QuestionId: $id, ProtocolId: $protocolId, Code: $code, " +
+        "LabeledScale(QuestionId: $id, ProtocolId: $systematicStudyId, Code: $code, " +
                 "Description: $description, Scales: $_scales)"
 }

@@ -1,6 +1,7 @@
 package br.all.domain.model.question
 
 import br.all.domain.model.protocol.ProtocolId
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.Answer
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.*
@@ -23,11 +24,11 @@ class LabeledScaleTest {
         @Test
         fun `should create a LabeledScale question with valid parameters`() {
             val id = QuestionId(UUID.randomUUID())
-            val protocolId = ProtocolId(UUID.randomUUID())
+            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
             val code = faker.lorem.words()
             val description = faker.lorem.words()
 
-            assertDoesNotThrow { LabeledScale(id, protocolId, code, description, validScale) }
+            assertDoesNotThrow { LabeledScale(id, systematicStudyId, code, description, validScale) }
         }
 
         @Test
@@ -71,11 +72,11 @@ class LabeledScaleTest {
         @Test
         fun `should throw IllegalArgumentException for empty scales`() {
             val id = QuestionId(UUID.randomUUID())
-            val protocolId = ProtocolId(UUID.randomUUID())
+            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
             val code = faker.lorem.words()
             val description = faker.lorem.words()
 
-            assertThrows<IllegalArgumentException> { LabeledScale(id, protocolId, code, description, emptyScale) }
+            assertThrows<IllegalArgumentException> { LabeledScale(id, systematicStudyId, code, description, emptyScale) }
         }
 
         @Test
@@ -110,7 +111,7 @@ class LabeledScaleTest {
         id: QuestionId,
         scales: MutableMap<String, Int>
     ): LabeledScale {
-        val protocolId = ProtocolId(UUID.randomUUID())
-        return LabeledScale(id, protocolId, faker.lorem.words(), faker.lorem.words(), scales)
+        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
+        return LabeledScale(id, systematicStudyId, faker.lorem.words(), faker.lorem.words(), scales)
     }
 }

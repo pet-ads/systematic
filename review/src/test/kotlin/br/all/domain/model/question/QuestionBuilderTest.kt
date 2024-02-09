@@ -1,6 +1,7 @@
 package br.all.domain.model.question
 
 import br.all.domain.model.protocol.ProtocolId
+import br.all.domain.model.review.SystematicStudyId
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
@@ -18,10 +19,10 @@ class QuestionBuilderTest {
         @Test
         fun `should create a Textual question with valid values`() {
             val id = QuestionId(UUID.randomUUID())
-            val protocolId = ProtocolId(UUID.randomUUID())
+            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
             val code = faker.lorem.words()
             val description = faker.lorem.words()
-            val question = buildQuestion(id, protocolId, code, description)
+            val question = buildQuestion(id, systematicStudyId, code, description)
 
             assertDoesNotThrow { question.buildTextual() }
         }
@@ -29,10 +30,10 @@ class QuestionBuilderTest {
         @Test
         fun `should create a PickList question with valid values`() {
             val id = QuestionId(UUID.randomUUID())
-            val protocolId = ProtocolId(UUID.randomUUID())
+            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
             val code = faker.lorem.words()
             val description = faker.lorem.words()
-            val question = buildQuestion(id, protocolId, code, description)
+            val question = buildQuestion(id, systematicStudyId, code, description)
             val options = listOf(faker.lorem.words(), faker.lorem.words())
 
             assertDoesNotThrow { question.buildPickList(options) }
@@ -41,10 +42,10 @@ class QuestionBuilderTest {
         @Test
         fun `should create a NumberScale question with valid values`() {
             val id = QuestionId(UUID.randomUUID())
-            val protocolId = ProtocolId(UUID.randomUUID())
+            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
             val code = faker.lorem.words()
             val description = faker.lorem.words()
-            val question = buildQuestion(id, protocolId, code, description)
+            val question = buildQuestion(id, systematicStudyId, code, description)
             val higher = 10
             val lower = 1
 
@@ -54,10 +55,10 @@ class QuestionBuilderTest {
         @Test
         fun `should create a LabeledScale question with valid values`() {
             val id = QuestionId(UUID.randomUUID())
-            val protocolId = ProtocolId(UUID.randomUUID())
+            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
             val code = faker.lorem.words()
             val description = faker.lorem.words()
-            val question = buildQuestion(id, protocolId, code, description)
+            val question = buildQuestion(id, systematicStudyId, code, description)
             val scales = mapOf(faker.lorem.words() to 1, faker.lorem.words() to 2)
 
             assertDoesNotThrow { question.buildLabeledScale(scales) }
@@ -71,10 +72,10 @@ class QuestionBuilderTest {
             @Test
             fun `should not create a PickList question with empty options list`() {
                 val id = QuestionId(UUID.randomUUID())
-                val protocolId = ProtocolId(UUID.randomUUID())
+                val systematicStudyId = SystematicStudyId(UUID.randomUUID())
                 val code = faker.lorem.words()
                 val description = faker.lorem.words()
-                val question = buildQuestion(id, protocolId, code, description)
+                val question = buildQuestion(id, systematicStudyId, code, description)
                 val options = emptyList<String>()
 
                 assertThrows<IllegalArgumentException> { question.buildPickList(options) }
@@ -84,10 +85,10 @@ class QuestionBuilderTest {
             @ValueSource(strings = ["", " ", "  "])
             fun `should not create a PickList question with an empty item in the options list`(item: String) {
                 val id = QuestionId(UUID.randomUUID())
-                val protocolId = ProtocolId(UUID.randomUUID())
+                val systematicStudyId = SystematicStudyId(UUID.randomUUID())
                 val code = faker.lorem.words()
                 val description = faker.lorem.words()
-                val question = buildQuestion(id, protocolId, code, description)
+                val question = buildQuestion(id, systematicStudyId, code, description)
                 val options = listOf(faker.lorem.words(), item)
 
                 assertThrows<IllegalArgumentException> { question.buildPickList(options) }
@@ -97,10 +98,10 @@ class QuestionBuilderTest {
             @ValueSource(ints = [11, 15])
             fun `should not create a NumberScale question with lower greater than higher`(lower: Int) {
                 val id = QuestionId(UUID.randomUUID())
-                val protocolId = ProtocolId(UUID.randomUUID())
+                val systematicStudyId = SystematicStudyId(UUID.randomUUID())
                 val code = faker.lorem.words()
                 val description = faker.lorem.words()
-                val question = buildQuestion(id, protocolId, code, description)
+                val question = buildQuestion(id, systematicStudyId, code, description)
                 val higher = 10
 
                 assertThrows<IllegalArgumentException> { question.buildNumberScale(lower, higher) }
@@ -109,10 +110,10 @@ class QuestionBuilderTest {
             @Test
             fun `should not create a NumberScale question with equal lower and higher values`() {
                 val id = QuestionId(UUID.randomUUID())
-                val protocolId = ProtocolId(UUID.randomUUID())
+                val systematicStudyId = SystematicStudyId(UUID.randomUUID())
                 val code = faker.lorem.words()
                 val description = faker.lorem.words()
-                val question = buildQuestion(id, protocolId, code, description)
+                val question = buildQuestion(id, systematicStudyId, code, description)
                 val higher = 10
                 val lower = 10
 
@@ -122,10 +123,10 @@ class QuestionBuilderTest {
             @Test
             fun `should not create a LabeledScale question with empty scales`() {
                 val id = QuestionId(UUID.randomUUID())
-                val protocolId = ProtocolId(UUID.randomUUID())
+                val systematicStudyId = SystematicStudyId(UUID.randomUUID())
                 val code = faker.lorem.words()
                 val description = faker.lorem.words()
-                val question = buildQuestion(id, protocolId, code, description)
+                val question = buildQuestion(id, systematicStudyId, code, description)
                 val scales = emptyMap<String, Int>()
 
                 assertThrows<IllegalArgumentException> { question.buildLabeledScale(scales) }
@@ -133,6 +134,6 @@ class QuestionBuilderTest {
         }
     }
 
-    fun buildQuestion(id: QuestionId, protocolId: ProtocolId, code: String, description: String) =
-        QuestionBuilder.with(id, protocolId, code, description)
+    fun buildQuestion(id: QuestionId, systematicStudyId: SystematicStudyId, code: String, description: String) =
+        QuestionBuilder.with(id, systematicStudyId, code, description)
 }
