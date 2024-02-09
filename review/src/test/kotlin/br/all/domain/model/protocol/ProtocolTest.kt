@@ -241,6 +241,17 @@ class ProtocolTest {
                 sut.addResearchQuestion(question)
                 assertEquals(1, sut.researchQuestions.size)
             }
+
+            @Test
+            fun `should do nothing when trying to add a duplicated research question`() {
+                val sut = factory.createProtocol(researchQuestions = emptySet())
+                val question = ResearchQuestion(factory.text())
+
+                sut.addResearchQuestion(question)
+                sut.addResearchQuestion(question)
+
+                assertEquals(1, sut.researchQuestions.count { it == question })
+            }
         }
 
         @Nested
