@@ -3,6 +3,7 @@ package br.all.domain.model.protocol
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import kotlin.test.assertEquals
 
 @Tag("UnitTest")
 class SearchSourceTest {
@@ -18,6 +19,12 @@ class SearchSourceTest {
         @Test
         fun `should a valid string turn into a search source`() {
             assertDoesNotThrow { "Valid SearchSource".toSearchSource() }
+        }
+
+        @Test
+        fun `should a full lowercase string be transformed to have all of its first letters uppercase`() {
+            val source = assertDoesNotThrow { "valid searchsource in lowercase".toSearchSource() }
+            assertEquals("Valid Searchsource In Lowercase", source.toString())
         }
     }
 
