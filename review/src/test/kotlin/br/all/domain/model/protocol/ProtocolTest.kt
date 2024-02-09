@@ -154,7 +154,7 @@ class ProtocolTest {
 
             @ParameterizedTest
             @CsvSource(",", "Old sources selection criteria")
-            fun `should throw if sources selection criteria are blank`(original: String?) {
+            fun `should valid sources selection criteria be accepted`(original: String?) {
                 val sut = factory.createProtocol(sourcesSelectionCriteria = original)
                 val sourcesSelectionCriteria = factory.text()
 
@@ -166,7 +166,7 @@ class ProtocolTest {
 
             @ParameterizedTest
             @CsvSource(",", "Old search method")
-            fun `should not accept blank strings as new search method`(original: String?) {
+            fun `should search method be updated to valid strings`(original: String?) {
                 val sut = factory.createProtocol(searchMethod = original)
                 val searchMethod = factory.text()
 
@@ -178,7 +178,7 @@ class ProtocolTest {
 
             @ParameterizedTest
             @CsvSource(",", "Old study type definition")
-            fun `should throw when providing blank strings for study type definition`(original: String?) {
+            fun `should not throw when providing non blank strings for study type definition`(original: String?) {
                 val sut = factory.createProtocol(studyTypeDefinition = original)
                 val studyTypeDefinition = factory.text()
 
@@ -190,7 +190,7 @@ class ProtocolTest {
 
             @ParameterizedTest
             @CsvSource(",", "Old selection process")
-            fun `should IllegalArgumentException be thrown for blank selection processes`(original: String?) {
+            fun `should valid strings update the protocol selection process`(original: String?) {
                 val sut = factory.createProtocol(selectionProcess = original)
                 val selectionProcess = factory.text()
 
@@ -202,7 +202,7 @@ class ProtocolTest {
 
             @ParameterizedTest
             @CsvSource(",", "Old data collection process")
-            fun `should throw if the provided new data collection process is blank`(original: String?) {
+            fun `should not throw if the provided new data collection process is valid`(original: String?) {
                 val sut = factory.createProtocol(dataCollectionProcess = original)
                 val dataCollectionProcess = factory.text()
 
