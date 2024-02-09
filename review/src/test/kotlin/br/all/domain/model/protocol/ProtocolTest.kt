@@ -163,6 +163,18 @@ class ProtocolTest {
                     { assertEquals(sourcesSelectionCriteria, sut.sourcesSelectionCriteria) },
                 )
             }
+
+            @ParameterizedTest
+            @CsvSource(",", "Old search method")
+            fun `should not accept blank strings as new search method`(original: String?) {
+                val sut = factory.createProtocol(searchMethod = original)
+                val searchMethod = factory.text()
+
+                assertAll(
+                    { assertDoesNotThrow { sut.searchMethod = searchMethod } },
+                    { assertEquals(searchMethod, sut.searchMethod) },
+                )
+            }
         }
 
         @Nested

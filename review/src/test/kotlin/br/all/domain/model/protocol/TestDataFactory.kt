@@ -17,7 +17,7 @@ class TestDataFactory {
         goal: String? = text(),
         justification: String? = text(),
         researchQuestions: Set<ResearchQuestion> = researchQuestions(),
-        searchMethod: String = text(),
+        searchMethod: String? = text(),
         searchString: String? = text(),
         informationSources: Set<SearchSource> = informationSources(),
         sourcesSelectionCriteria: String? = text(),
