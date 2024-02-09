@@ -64,7 +64,7 @@ class ProtocolBuilder private constructor() {
         this.studyTypeDefinition = studyTypeDefinition
     }
 
-    infix fun followingSelectionProcess(selectionProcess: String) = apply {
+    infix fun followingSelectionProcess(selectionProcess: String?) = apply {
         this.selectionProcess = selectionProcess
     }
 
