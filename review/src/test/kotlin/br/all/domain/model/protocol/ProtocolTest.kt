@@ -233,7 +233,14 @@ class ProtocolTest {
         @Tag("ValidClasses")
         @DisplayName("And performing the updates successfully")
         inner class AndPerformingTheUpdatesSuccessfully {
-            // TODO: Valid classes for adding/removing research questions to the protocol
+            @Test
+            fun `should add a valid nonexistent research question to protocol`() {
+                val sut = factory.createProtocol(researchQuestions = emptySet())
+                val question = ResearchQuestion(factory.text())
+
+                sut.addResearchQuestion(question)
+                assertEquals(1, sut.researchQuestions.size)
+            }
         }
 
         @Nested
