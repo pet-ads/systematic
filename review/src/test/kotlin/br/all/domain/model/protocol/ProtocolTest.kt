@@ -224,26 +224,6 @@ class ProtocolTest {
                 )
             }
         }
-
-        @Nested
-        @Tag("InvalidClasses")
-        @DisplayName("And doing wrong changes")
-        inner class AndDoingWrongChanges {
-            private lateinit var sut: Protocol
-
-            @BeforeEach
-            fun setUp() = run { sut = factory.createProtocol() }
-
-            @Test
-            fun `should throw when trying to assign null to written goals`() {
-                assertThrows<IllegalArgumentException> { sut.goal = null }
-            }
-
-            @Test
-            fun `should not accept null values to already written justifications`() {
-                assertThrows<IllegalArgumentException> { sut.justification = null }
-            }
-        }
     }
 
     @Nested

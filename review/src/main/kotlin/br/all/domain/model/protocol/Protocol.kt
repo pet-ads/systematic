@@ -36,14 +36,12 @@ class Protocol internal constructor(
 ) : Entity<UUID>(protocolId) {
     var goal: String? = null
         set(value) {
-            if (field != null) requireNotNull(value) { "Unable to clear the goal once it is written" }
             if (value != null) require(value.isNotBlank()) { "The goal cannot be an empty string" }
             field = value
         }
 
     var justification: String? = null
         set(value) {
-            if (field != null) requireNotNull(value) { "Unable to clear the justification once it is written" }
             if (value != null) require(value.isNotBlank()) { "The justification cannot be an empty string" }
             field = value
         }
@@ -56,7 +54,6 @@ class Protocol internal constructor(
 
     var searchString: String? = null
         set(value) {
-            if (field != null) requireNotNull(value) { "Unable to clear the search string once it is written"}
             if (value != null) require(value.isNotBlank()) { "The search string must not be blank!" }
             field = value
         }
@@ -66,16 +63,12 @@ class Protocol internal constructor(
 
     var sourcesSelectionCriteria: String? = null
         set(value) {
-            if (field != null)
-                requireNotNull(value) { "Unable to clear the sources selection criteria description once it is written" }
-            if (value != null)
-                require(value.isNotBlank()) { "The sources selection criteria description must not be blank" }
+            if (value != null) require(value.isNotBlank()) { "The sources selection criteria description must not be blank" }
             field = value
         }
 
     var searchMethod: String? = null
         set(value) {
-            if (field != null) requireNotNull(value) { "Unable to clear the search method description once it is written" }
             if (value != null) require(value.isNotBlank()) { "The search method description must not be blank" }
             field = value
         }
@@ -85,14 +78,12 @@ class Protocol internal constructor(
 
     var studyTypeDefinition: String? = null
         set(value) {
-            if (field != null) requireNotNull(value) { "Unable to clear the study type definition once it is written" }
             if (value != null) require(value.isNotBlank()) { "The study type definition must not be blank" }
             field = value
         }
 
     var selectionProcess: String? = null
         set(value) {
-            if (field != null) requireNotNull(value) { "Unable to clear the selection process description once it is written" }
             if (value != null) require(value.isNotBlank()) { "The selection process description must not be blank" }
             field = value
         }
@@ -102,17 +93,12 @@ class Protocol internal constructor(
 
     var dataCollectionProcess: String? = null
         set(value) {
-            if (field != null)
-                requireNotNull(value) { "Unable to clear the data collection process description once it is written" }
-            if (value != null)
-                require(value.isNotBlank()) { "The data collection process description must not be blank" }
+            if (value != null) require(value.isNotBlank()) { "The data collection process description must not be blank" }
             field = value
         }
 
     var analysisAndSynthesisProcess: String? = null
         set(value) {
-            if (field != null)
-                requireNotNull(value) { "Unable to clear analysis and synthesis process description once it is written" }
             if (value != null)
                 require(value.isNotBlank()) { "The analysis and synthesis process description must not be blank" }
             field = value
