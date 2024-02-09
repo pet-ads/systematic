@@ -238,6 +238,11 @@ class ProtocolTest {
             fun `should throw when trying to assign null to written goals`() {
                 assertThrows<IllegalArgumentException> { sut.goal = null }
             }
+
+            @Test
+            fun `should not accept null values to already written justifications`() {
+                assertThrows<IllegalArgumentException> { sut.justification = null }
+            }
         }
     }
 
