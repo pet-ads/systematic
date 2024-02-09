@@ -258,7 +258,12 @@ class ProtocolTest {
         @Tag("InvalidClasses")
         @DisplayName("And being unable to change them")
         inner class AndBeingUnableToChangeThem {
-            // TODO: Invalid classes for adding/removing research questions to the protocol
+            @Test
+            fun `should throw when trying to remove a research questions if none exists`() {
+                val sut = factory.createProtocol(researchQuestions = emptySet())
+                val question = ResearchQuestion(factory.text())
+                assertThrows<IllegalStateException> { sut.removeResearchQuestion(question) }
+            }
         }
     }
 
