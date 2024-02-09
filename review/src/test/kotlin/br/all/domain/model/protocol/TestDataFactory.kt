@@ -22,7 +22,7 @@ class TestDataFactory {
         informationSources: Set<SearchSource> = informationSources(),
         sourcesSelectionCriteria: String? = text(),
         languages: Set<Language> = languages(),
-        studyTypeDefinition: String = text(),
+        studyTypeDefinition: String? = text(),
         selectionProcess: String = text(),
         eligibilityCriteria: Set<Criterion> = eligibilityCriteria(),
         dataCollectionProcess: String = text(),

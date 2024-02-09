@@ -175,6 +175,18 @@ class ProtocolTest {
                     { assertEquals(searchMethod, sut.searchMethod) },
                 )
             }
+
+            @ParameterizedTest
+            @CsvSource(",", "Old study type definition")
+            fun `should throw when providing blank strings for study type definition`(original: String?) {
+                val sut = factory.createProtocol(studyTypeDefinition = original)
+                val studyTypeDefinition = factory.text()
+
+                assertAll(
+                    { assertDoesNotThrow { sut.studyTypeDefinition = studyTypeDefinition } },
+                    { assertEquals(studyTypeDefinition, sut.studyTypeDefinition) },
+                )
+            }
         }
 
         @Nested
