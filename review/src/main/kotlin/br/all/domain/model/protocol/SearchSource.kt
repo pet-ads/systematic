@@ -3,14 +3,15 @@ package br.all.domain.model.protocol
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.ddd.ValueObject
 
-data class SearchSource(private val value: String) : ValueObject() {
+data class SearchSource(private var value: String) : ValueObject() {
     init {
+        value = value.replace("(^|\\s)[a-z]".toRegex()) { it.value.uppercase() }
         val notification = validate()
         require(notification.hasNoErrors()) { notification.message() }
     }
 
     override fun validate() = Notification().also {
-        val regex = Regex("([A-Z][A-Za-z]+)(\\s?[A-Za-z]+)*")
+        val regex = Regex("([a-z]+)(\\s[a-z]+)*", RegexOption.IGNORE_CASE)
 
         if (value.isBlank())
             it.addError("A search source must not be blank!")
