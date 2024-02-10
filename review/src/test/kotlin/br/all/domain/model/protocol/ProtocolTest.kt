@@ -413,13 +413,13 @@ class ProtocolTest {
         inner class AndPerformingChangesSuccessfully {
             @Test
             fun `should add a new language if it is not in the protocol`() {
-                val sut = factory.createProtocol()
+                val sut = factory.createProtocol(languages = emptySet())
                 val newLanguage = Language(Language.LangType.PORTUGUESE)
 
                 sut.addLanguage(newLanguage)
 
                 assertAll(
-                    { assertEquals(2, sut.studiesLanguages.size) },
+                    { assertEquals(1, sut.studiesLanguages.size) },
                     { assertContains(sut.studiesLanguages, newLanguage) },
                 )
             }
