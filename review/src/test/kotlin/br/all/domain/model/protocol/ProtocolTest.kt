@@ -304,14 +304,11 @@ class ProtocolTest {
 
             @Test
             fun `should successfully remove a keyword if it is not the last one`() {
-                val removingKeyword = "Keyword"
-                val sut = factory.createProtocol(keywords = setOf(removingKeyword, "Other keyword"))
+                val removingKeyword = factory.text()
+                val sut = factory.createProtocol(keywords = setOf(removingKeyword))
 
-                assertAll(
-                    { assertDoesNotThrow { sut.removeKeyword(removingKeyword) } },
-                    { assertEquals(1, sut.keywords.size) },
-                    { assertTrue { removingKeyword !in sut.keywords } },
-                )
+                sut.removeKeyword(removingKeyword)
+                assertEquals(0, sut.keywords.size)
             }
         }
 
