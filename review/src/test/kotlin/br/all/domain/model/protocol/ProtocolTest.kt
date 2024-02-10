@@ -264,6 +264,13 @@ class ProtocolTest {
                 val question = ResearchQuestion(factory.text())
                 assertThrows<IllegalStateException> { sut.removeResearchQuestion(question) }
             }
+
+            @Test
+            fun `should thrown when trying to remove a nonexistent research question`() {
+                val sut = factory.createProtocol()
+                val question = ResearchQuestion("Nonexistent question")
+                assertThrows<NoSuchElementException> { sut.removeResearchQuestion(question) }
+            }
         }
     }
 
