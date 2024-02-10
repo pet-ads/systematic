@@ -252,6 +252,15 @@ class ProtocolTest {
 
                 assertEquals(1, sut.researchQuestions.count { it == question })
             }
+
+            @Test
+            fun `should remove existent research questions`() {
+                val question = ResearchQuestion(factory.text())
+                val sut = factory.createProtocol(researchQuestions = setOf(question))
+                
+                sut.removeResearchQuestion(question)
+                assertEquals(0, sut.researchQuestions.size)
+            }
         }
 
         @Nested
