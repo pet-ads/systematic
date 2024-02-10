@@ -375,19 +375,12 @@ class ProtocolTest {
             }
 
             @Test
-            fun `should successfully remove a information source if it is not the last one`() {
-                val removingSource = SearchSource("PhilosophicalSource")
-                val sut = factory.createProtocol(informationSources = setOf(
-                    removingSource,
-                    SearchSource("Other Source"),
-                ))
-
+            fun `should successfully remove a information source`() {
+                val removingSource = SearchSource(factory.text())
+                val sut = factory.createProtocol(informationSources = setOf(removingSource))
+                
                 sut.removeInformationSource(removingSource)
-
-                assertAll(
-                    { assertEquals(1, sut.informationSources.size) },
-                    { assertTrue { removingSource !in sut.informationSources } },
-                )
+                assertEquals(0, sut.informationSources.size)
             }
         }
 
