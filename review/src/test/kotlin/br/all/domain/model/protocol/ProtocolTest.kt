@@ -332,11 +332,9 @@ class ProtocolTest {
             }
 
             @Test
-            fun `should throw when trying to remove the last keyword`() {
-                val removingKeyword = "Keyword"
-                val sut = factory.createProtocol()
-
-                assertThrows<IllegalStateException> { sut.removeKeyword(removingKeyword) }
+            fun `should throw when trying to remove keywords when none exists`() {
+                val sut = factory.createProtocol(keywords = emptySet())
+                assertThrows<IllegalStateException> { sut.removeKeyword(factory.text()) }
             }
 
             @Test
