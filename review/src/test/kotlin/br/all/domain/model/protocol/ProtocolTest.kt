@@ -378,7 +378,7 @@ class ProtocolTest {
             fun `should successfully remove a information source`() {
                 val removingSource = SearchSource(factory.text())
                 val sut = factory.createProtocol(informationSources = setOf(removingSource))
-                
+
                 sut.removeInformationSource(removingSource)
                 assertEquals(0, sut.informationSources.size)
             }
@@ -388,11 +388,10 @@ class ProtocolTest {
         @DisplayName("And failing to perform changes")
         inner class AndFailingToPerformChanges {
             @Test
-            fun `should throw when trying to remove the last information source`() {
-                val sut = factory.createProtocol()
-                val removingSource = SearchSource("SomeSourceWithManyPhilosophicalArticles")
-
-                assertThrows<IllegalStateException> { sut.removeInformationSource(removingSource) }
+            fun `should not be possible to remove information sources when none exists`() {
+                val sut = factory.createProtocol(informationSources = emptySet())
+                val source = SearchSource(factory.text())
+                assertThrows<IllegalStateException> { sut.removeInformationSource(source) }
             }
 
             @Test
