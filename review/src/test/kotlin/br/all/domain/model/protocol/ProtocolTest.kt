@@ -486,13 +486,11 @@ class ProtocolTest {
 
             @Test
             fun `should do nothing when trying to add a repeated criteria`() {
-                val sut = factory.createProtocol()
-                val repeatedCriterion = Criterion.toInclude("It has deep reflection about life")
+                val repeatedCriterion = Criterion.toInclude(factory.text())
+                val sut = factory.createProtocol(eligibilityCriteria = setOf(repeatedCriterion))
 
-                assertAll(
-                    { assertDoesNotThrow { sut.addSelectionCriteria(repeatedCriterion) } },
-                    { assertEquals(2, sut.selectionCriteria.size) },
-                )
+                sut.addSelectionCriteria(repeatedCriterion)
+                assertEquals(1, sut.selectionCriteria.count { it == repeatedCriterion })
             }
 
             @ParameterizedTest
