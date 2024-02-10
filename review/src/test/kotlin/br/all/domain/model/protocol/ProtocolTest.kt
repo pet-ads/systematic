@@ -549,10 +549,8 @@ class ProtocolTest {
                 val question = QuestionId(UUID.randomUUID())
                 val sut = factory.createProtocol(extractionQuestions = setOf(question))
 
-                assertAll(
-                    { assertDoesNotThrow { sut.addExtractionQuestion(question) } },
-                    { assertEquals(1, sut.extractionQuestions.size) },
-                )
+                sut.addExtractionQuestion(question)
+                assertEquals(1, sut.extractionQuestions.count{ it == question })
             }
 
             @Test
