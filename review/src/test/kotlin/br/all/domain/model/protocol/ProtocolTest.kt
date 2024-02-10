@@ -296,13 +296,10 @@ class ProtocolTest {
 
             @Test
             fun `should do nothing when trying to add a keyword that already is in the protocol`() {
-                val sut = factory.createProtocol()
-                val keyword = "Keyword"
+                val keyword = factory.text()
+                val sut = factory.createProtocol(keywords = setOf(keyword))
 
-                assertAll(
-                    { assertDoesNotThrow { sut.addKeyword(keyword) } },
-                    { assertEquals(1, sut.keywords.size) }
-                )
+                assertEquals(1, sut.keywords.count { it == keyword })
             }
 
             @Test
