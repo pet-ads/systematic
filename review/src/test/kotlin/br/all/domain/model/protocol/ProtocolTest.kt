@@ -477,11 +477,11 @@ class ProtocolTest {
                 val sut = factory.createProtocol(eligibilityCriteria = emptySet())
                 val newCriterion = Criterion.toInclude(factory.text())
 
-                sut.addSelectionCriterion(newCriterion)
+                sut.addEligibilityCriterion(newCriterion)
 
                 assertAll(
-                    { assertEquals(1, sut.selectionCriteria.size) },
-                    { assertContains(sut.selectionCriteria, newCriterion) },
+                    { assertEquals(1, sut.eligibilityCriteria.size) },
+                    { assertContains(sut.eligibilityCriteria, newCriterion) },
                 )
             }
 
@@ -490,8 +490,8 @@ class ProtocolTest {
                 val repeatedCriterion = Criterion.toInclude(factory.text())
                 val sut = factory.createProtocol(eligibilityCriteria = setOf(repeatedCriterion))
 
-                sut.addSelectionCriterion(repeatedCriterion)
-                assertEquals(1, sut.selectionCriteria.count { it == repeatedCriterion })
+                sut.addEligibilityCriterion(repeatedCriterion)
+                assertEquals(1, sut.eligibilityCriteria.count { it == repeatedCriterion })
             }
 
             @Test
@@ -499,8 +499,8 @@ class ProtocolTest {
                 val criterion = Criterion.toInclude(factory.text())
                 val sut = factory.createProtocol(eligibilityCriteria = setOf(criterion))
 
-                sut.removeSelectionCriteria(criterion)
-                assertTrue(sut.selectionCriteria.isEmpty())
+                sut.removeEligibilityCriterion(criterion)
+                assertTrue(sut.eligibilityCriteria.isEmpty())
             }
         }
 
@@ -516,7 +516,7 @@ class ProtocolTest {
                 val sut = factory.createProtocol()
                 val removingCriterion = Criterion(description, type)
 
-                assertThrows<IllegalStateException> { sut.removeSelectionCriteria(removingCriterion) }
+                assertThrows<IllegalStateException> { sut.removeEligibilityCriterion(removingCriterion) }
             }
 
             @Test
@@ -524,7 +524,7 @@ class ProtocolTest {
                 val sut = factory.createProtocol()
                 val nonexistentCriterion = Criterion.toInclude("Nice thoughts")
 
-                assertThrows<NoSuchElementException> { sut.removeSelectionCriteria(nonexistentCriterion) }
+                assertThrows<NoSuchElementException> { sut.removeEligibilityCriterion(nonexistentCriterion) }
             }
         }
     }

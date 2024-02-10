@@ -25,7 +25,7 @@ class Protocol internal constructor(
     studyTypeDefinition: String?,
 
     selectionProcess: String?,
-    selectionCriteria: Set<Criterion>,
+    eligibilityCriteria: Set<Criterion>,
 
     dataCollectionProcess: String?,
     analysisAndSynthesisProcess: String?,
@@ -88,8 +88,8 @@ class Protocol internal constructor(
             field = value
         }
 
-    private val _selectionCriteria = selectionCriteria.toMutableSet()
-    val selectionCriteria get() = _selectionCriteria.toSet()
+    private val _eligibilityCriteria = eligibilityCriteria.toMutableSet()
+    val eligibilityCriteria get() = _eligibilityCriteria.toSet()
 
     var dataCollectionProcess: String? = null
         set(value) {
@@ -166,15 +166,14 @@ class Protocol internal constructor(
         }
         _studiesLanguages.remove(language)
     }
+    fun addEligibilityCriterion(criterion: Criterion) = _eligibilityCriteria.add(criterion)
 
-    fun addSelectionCriterion(criterion: Criterion) = _selectionCriteria.add(criterion)
-    
-    fun removeSelectionCriteria(criterion: Criterion) {
-        check(_selectionCriteria.isNotEmpty()) { "There is not any criterion to remove from this protocol" }
-        exists(criterion in _selectionCriteria) {
+    fun removeEligibilityCriterion(criterion: Criterion) {
+        check(_eligibilityCriteria.isNotEmpty()) { "There is not any criterion to remove from this protocol" }
+        exists(criterion in _eligibilityCriteria) {
             "Unable to remove a criteria that has never been  defined in the protocol! Provided: $criterion"
         }
-        _selectionCriteria.remove(criterion)
+        _eligibilityCriteria.remove(criterion)
     }
 
     fun addExtractionQuestion(questionId: QuestionId) = _extractionQuestions.add(questionId)

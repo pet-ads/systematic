@@ -25,7 +25,7 @@ fun Protocol.toDto() = ProtocolDto(
     studyTypeDefinition = studyTypeDefinition,
 
     selectionProcess = selectionProcess,
-    selectionCriteria = selectionCriteria.map { it.description to it.type.name }
+    selectionCriteria = eligibilityCriteria.map { it.description to it.type.name }
         .toSet(),
 
     dataCollectionProcess = dataCollectionProcess,

@@ -19,7 +19,7 @@ class ProtocolBuilder private constructor() {
     private var studiesLanguages = emptySet<Language>()
     private var studyTypeDefinition: String? = null
     private var selectionProcess: String? = null
-    private var selectionCriteria = emptySet<Criterion>()
+    private var eligibilityCriteria = emptySet<Criterion>()
     private var dataCollectionProcess: String? = null
     private var analysisAndSynthesisProcess: String? = null
     private var extractionQuestions = emptySet<QuestionId>()
@@ -68,8 +68,8 @@ class ProtocolBuilder private constructor() {
         this.selectionProcess = selectionProcess
     }
 
-    infix fun withEligibilityCriteria(selectionCriteria: Set<Criterion>) = apply {
-        this.selectionCriteria = selectionCriteria
+    infix fun withEligibilityCriteria(eligibilityCriteria: Set<Criterion>) = apply {
+        this.eligibilityCriteria = eligibilityCriteria
     }
 
     infix fun followingDataCollectionProcess(dataCollectionProcess: String?) = apply {
@@ -105,7 +105,7 @@ class ProtocolBuilder private constructor() {
         studiesLanguages = studiesLanguages,
         studyTypeDefinition = studyTypeDefinition,
         selectionProcess = selectionProcess,
-        selectionCriteria = selectionCriteria,
+        eligibilityCriteria = eligibilityCriteria,
         dataCollectionProcess = dataCollectionProcess,
         analysisAndSynthesisProcess = analysisAndSynthesisProcess,
         extractionQuestions = extractionQuestions,
