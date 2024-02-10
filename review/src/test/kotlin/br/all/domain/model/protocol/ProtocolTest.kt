@@ -2,6 +2,7 @@ package br.all.domain.model.protocol
 
 import br.all.domain.model.question.QuestionId
 import br.all.domain.shared.valueobject.Language
+import br.all.domain.shared.valueobject.Language.LangType
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -414,7 +415,7 @@ class ProtocolTest {
             @Test
             fun `should add a new language if it is not in the protocol`() {
                 val sut = factory.createProtocol(languages = emptySet())
-                val newLanguage = Language(Language.LangType.PORTUGUESE)
+                val newLanguage = Language(LangType.PORTUGUESE)
 
                 sut.addLanguage(newLanguage)
 
@@ -427,7 +428,7 @@ class ProtocolTest {
             @Test
             fun `should do nothing when trying to add a language that already is in the protocol`() {
                 val sut = factory.createProtocol()
-                val existentLanguage = Language(Language.LangType.ENGLISH)
+                val existentLanguage = Language(LangType.ENGLISH)
 
                 assertAll(
                     { assertDoesNotThrow { sut.addLanguage(existentLanguage) } },
@@ -437,10 +438,10 @@ class ProtocolTest {
 
             @Test
             fun `should successfully remove a language if it is not the last one`() {
-                val removingLanguage = Language(Language.LangType.PORTUGUESE)
+                val removingLanguage = Language(LangType.PORTUGUESE)
                 val sut = factory.createProtocol(languages = setOf(
                     removingLanguage,
-                    Language(Language.LangType.ENGLISH),
+                    Language(LangType.ENGLISH),
                 ))
 
                 sut.removeLanguage(removingLanguage)
@@ -460,7 +461,7 @@ class ProtocolTest {
             @Test
             fun `should throw when trying to remove the last language`() {
                 val sut = factory.createProtocol()
-                val removingLanguage = Language(Language.LangType.ENGLISH)
+                val removingLanguage = Language(LangType.ENGLISH)
 
                 assertThrows<IllegalStateException> { sut.removeLanguage(removingLanguage) }
             }
@@ -468,7 +469,7 @@ class ProtocolTest {
             @Test
             fun `should throw when trying to remove a nonexistent language from protocol`() {
                 val sut = factory.createProtocol()
-                val nonexistentLanguage = Language(Language.LangType.PORTUGUESE)
+                val nonexistentLanguage = Language(LangType.PORTUGUESE)
 
                 assertThrows<NoSuchElementException> { sut.removeLanguage(nonexistentLanguage) }
             }
