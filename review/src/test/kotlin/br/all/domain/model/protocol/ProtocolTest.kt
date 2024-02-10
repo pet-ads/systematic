@@ -508,15 +508,11 @@ class ProtocolTest {
         @Tag("InvalidClasses")
         @DisplayName("And failing to update them")
         inner class AndFailingToUpdateThem {
-            @ParameterizedTest
-            @CsvSource("It has deep reflection about life,INCLUSION", "It does not talk about life!,EXCLUSION")
-            fun `should throw when trying to remove the last criteria o a type`(
-                description: String, type: Criterion.CriterionType) {
-
-                val sut = factory.createProtocol()
-                val removingCriterion = Criterion(description, type)
-
-                assertThrows<IllegalStateException> { sut.removeEligibilityCriterion(removingCriterion) }
+            @Test
+            fun `should throw when trying to remove eligibility criteria but none exists`() {
+                val sut = factory.createProtocol(eligibilityCriteria = emptySet())
+                val criterion = Criterion.toInclude(factory.text())
+                assertThrows<IllegalStateException> { sut.removeEligibilityCriterion(criterion) }
             }
 
             @Test
