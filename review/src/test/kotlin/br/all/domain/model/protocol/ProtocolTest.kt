@@ -367,13 +367,11 @@ class ProtocolTest {
 
             @Test
             fun `should do nothing when trying to add a information source that already is in the protocol`() {
-                val sut = factory.createProtocol()
-                val existentInformationSource = SearchSource("SomeSourceWithManyPhilosophicalArticles")
+                val informationSource = SearchSource(factory.text())
+                val sut = factory.createProtocol(informationSources = setOf(informationSource))
 
-                assertAll(
-                    { assertDoesNotThrow { sut.addInformationSource(existentInformationSource) } },
-                    { assertEquals(1, sut.informationSources.size) }
-                )
+                sut.addInformationSource(informationSource)
+                assertEquals(1, sut.informationSources.count { it == informationSource })
             }
 
             @Test
