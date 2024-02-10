@@ -456,7 +456,7 @@ class ProtocolTest {
 
             @Test
             fun `should throw when trying to remove a nonexistent language from protocol`() {
-                val sut = factory.createProtocol()
+                val sut = factory.createProtocol(languages = setOf(Language(LangType.ENGLISH)))
                 val nonexistentLanguage = Language(LangType.PORTUGUESE)
 
                 assertThrows<NoSuchElementException> { sut.removeLanguage(nonexistentLanguage) }
