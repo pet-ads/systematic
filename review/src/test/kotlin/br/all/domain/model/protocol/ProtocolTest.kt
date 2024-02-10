@@ -257,7 +257,7 @@ class ProtocolTest {
             fun `should remove existent research questions`() {
                 val question = ResearchQuestion(factory.text())
                 val sut = factory.createProtocol(researchQuestions = setOf(question))
-                
+
                 sut.removeResearchQuestion(question)
                 assertEquals(0, sut.researchQuestions.size)
             }
@@ -324,6 +324,13 @@ class ProtocolTest {
         @Nested
         @DisplayName("And being unable to change any keyword")
         inner class AndBeingUnableToChangeAnyKeyword {
+            @ParameterizedTest( name = "[{index}] keyword=\"{0}\"")
+            @ValueSource(strings = ["", " ", "   "])
+            fun `should blank keywords be not accepted`(keyword: String) {
+                val sut = factory.createProtocol(keywords = emptySet())
+                assertThrows<IllegalArgumentException> { sut.addKeyword(keyword) }
+            }
+
             @Test
             fun `should throw when trying to remove the last keyword`() {
                 val removingKeyword = "Keyword"
