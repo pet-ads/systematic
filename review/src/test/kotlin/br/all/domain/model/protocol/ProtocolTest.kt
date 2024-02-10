@@ -10,7 +10,6 @@ import org.junit.jupiter.params.provider.ValueSource
 import java.util.*
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 @Tag("UnitTest")
 class ProtocolTest {
@@ -435,19 +434,12 @@ class ProtocolTest {
             }
 
             @Test
-            fun `should successfully remove a language if it is not the last one`() {
-                val removingLanguage = Language(LangType.PORTUGUESE)
-                val sut = factory.createProtocol(languages = setOf(
-                    removingLanguage,
-                    Language(LangType.ENGLISH),
-                ))
+            fun `should successfully remove a language if it exists`() {
+                val removingLanguage = Language(LangType.ENGLISH)
+                val sut = factory.createProtocol(languages = setOf(removingLanguage))
 
                 sut.removeLanguage(removingLanguage)
-
-                assertAll(
-                    { assertEquals(1, sut.studiesLanguages.size) },
-                    { assertTrue { removingLanguage !in sut.studiesLanguages } },
-                )
+                assertEquals(0, sut.studiesLanguages.size)
             }
 
         }
