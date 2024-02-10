@@ -354,13 +354,13 @@ class ProtocolTest {
         inner class AndBeingAbleToUpdateThem {
             @Test
             fun `should add a information source if it is not in the protocol yet`() {
-                val sut = factory.createProtocol()
-                val newSearchSource = SearchSource("New SearchSource")
+                val sut = factory.createProtocol(informationSources = emptySet())
+                val newSearchSource = SearchSource(factory.text())
 
                 sut.addInformationSource(newSearchSource)
 
                 assertAll(
-                    { assertEquals(2, sut.informationSources.size) },
+                    { assertEquals(1, sut.informationSources.size) },
                     { assertContains(sut.informationSources, newSearchSource) }
                 )
             }
