@@ -283,13 +283,13 @@ class ProtocolTest {
         inner class AndBeingAbleToChangeThem {
             @Test
             fun `should add a new keyword if it is not in the protocol yet`() {
-                val sut = factory.createProtocol()
-                val newKeyword = "New keyword"
+                val sut = factory.createProtocol(keywords = emptySet())
+                val newKeyword = factory.text()
 
                 sut.addKeyword(newKeyword)
 
                 assertAll(
-                    { assertEquals(2, sut.keywords.size) },
+                    { assertEquals(1, sut.keywords.size) },
                     { assertContains(sut.keywords, newKeyword) }
                 )
             }
