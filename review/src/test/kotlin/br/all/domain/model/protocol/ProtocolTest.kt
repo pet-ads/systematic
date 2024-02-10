@@ -533,7 +533,7 @@ class ProtocolTest {
         inner class AndBeingAbleToUpdateThem {
             @Test
             fun `should add a new extraction question if it is not defined yet`() {
-                val sut = factory.createProtocol()
+                val sut = factory.createProtocol(extractionQuestions = emptySet())
                 val newExtractionQuestion = QuestionId(UUID.randomUUID())
 
                 sut.addExtractionQuestion(newExtractionQuestion)
