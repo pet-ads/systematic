@@ -339,8 +339,8 @@ class ProtocolTest {
 
             @Test
             fun `should throw when trying to remove an nonexistent keyword`() {
-                val sut = factory.createProtocol()
-                assertThrows<NoSuchElementException> { sut.removeKeyword("Nonexistent keyword") }
+                val sut = factory.createProtocol(keywords = setOf("Existent keyword"))
+                assertThrows<NoSuchElementException> { sut.removeKeyword(factory.text()) }
             }
         }
     }
