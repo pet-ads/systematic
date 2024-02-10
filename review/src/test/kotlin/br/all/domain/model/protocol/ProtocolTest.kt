@@ -518,8 +518,7 @@ class ProtocolTest {
             @Test
             fun `should throw when trying to remove a criteria that is not defined in the protocol`() {
                 val sut = factory.createProtocol()
-                val nonexistentCriterion = Criterion.toInclude("Nice thoughts")
-
+                val nonexistentCriterion = Criterion.toInclude("Nonexistent criterion")
                 assertThrows<NoSuchElementException> { sut.removeEligibilityCriterion(nonexistentCriterion) }
             }
         }
