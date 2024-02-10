@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import java.util.*
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @Tag("UnitTest")
 class ProtocolTest {
@@ -493,24 +494,13 @@ class ProtocolTest {
                 assertEquals(1, sut.selectionCriteria.count { it == repeatedCriterion })
             }
 
-            @ParameterizedTest
-            @CsvSource("Nice thoughts,INCLUSION", "Bad thoughts,EXCLUSION")
-            fun `should successfully remove a criteria if it is not the last of such type`(
-                description: String,
-                type: Criterion.CriterionType,
-            ) {
-                val sut = factory.createProtocol(eligibilityCriteria = setOf(
-                    Criterion.toInclude("It has deep reflection about life!"),
-                    Criterion.toInclude("Nice thoughts"),
-                    Criterion.toExclude("It does not talk about life"),
-                    Criterion.toExclude("Bad thoughts"),
-                ))
-                val removingCriterion = Criterion(description, type)
+            @Test
+            fun `should remove a existent selection criterion`() {
+                val criterion = Criterion.toInclude(factory.text())
+                val sut = factory.createProtocol(eligibilityCriteria = setOf(criterion))
 
-                assertAll(
-                    { assertDoesNotThrow { sut.removeSelectionCriteria(removingCriterion) } },
-                    { assertEquals(3, sut.selectionCriteria.size) },
-                )
+                sut.removeSelectionCriteria(criterion)
+                assertTrue(sut.selectionCriteria.isEmpty())
             }
         }
 
