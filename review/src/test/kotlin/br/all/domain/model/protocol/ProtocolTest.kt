@@ -569,6 +569,13 @@ class ProtocolTest {
         @DisplayName("And being unable to perform changes")
         inner class AndBeingUnableToPerformChanges {
             @Test
+            fun `should not be possible to remove extractions from empty set`() {
+                val sut = factory.createProtocol(extractionQuestions = emptySet())
+                val question = QuestionId(UUID.randomUUID())
+                assertThrows<IllegalStateException> { sut.removeExtractionQuestion(question) }
+            }
+
+            @Test
             fun `should throw when trying to remove a question that does not belongs to the protocol`() {
                 val sut = factory.createProtocol()
                 val removingQuestion = QuestionId(UUID.randomUUID())
