@@ -473,13 +473,13 @@ class ProtocolTest {
         inner class AndPerformingChanges {
             @Test
             fun `should add a new criteria if it is not in the protocol`() {
-                val sut = factory.createProtocol()
-                val newCriterion = Criterion.toInclude("Nice thoughts")
+                val sut = factory.createProtocol(eligibilityCriteria = emptySet())
+                val newCriterion = Criterion.toInclude(factory.text())
 
                 sut.addSelectionCriteria(newCriterion)
 
                 assertAll(
-                    { assertEquals(3, sut.selectionCriteria.size) },
+                    { assertEquals(1, sut.selectionCriteria.size) },
                     { assertContains(sut.selectionCriteria, newCriterion) },
                 )
             }
