@@ -167,7 +167,8 @@ class Protocol internal constructor(
         _studiesLanguages.remove(language)
     }
 
-    fun addSelectionCriteria(criterion: Criterion) = _selectionCriteria.add(criterion)
+    fun addSelectionCriterion(criterion: Criterion) = _selectionCriteria.add(criterion)
+    
     fun removeSelectionCriteria(criterion: Criterion) {
         check(_selectionCriteria.isNotEmpty()) { "There is not any criterion to remove from this protocol" }
         exists(criterion in _selectionCriteria) {

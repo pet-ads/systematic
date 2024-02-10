@@ -476,7 +476,7 @@ class ProtocolTest {
                 val sut = factory.createProtocol(eligibilityCriteria = emptySet())
                 val newCriterion = Criterion.toInclude(factory.text())
 
-                sut.addSelectionCriteria(newCriterion)
+                sut.addSelectionCriterion(newCriterion)
 
                 assertAll(
                     { assertEquals(1, sut.selectionCriteria.size) },
@@ -489,7 +489,7 @@ class ProtocolTest {
                 val repeatedCriterion = Criterion.toInclude(factory.text())
                 val sut = factory.createProtocol(eligibilityCriteria = setOf(repeatedCriterion))
 
-                sut.addSelectionCriteria(repeatedCriterion)
+                sut.addSelectionCriterion(repeatedCriterion)
                 assertEquals(1, sut.selectionCriteria.count { it == repeatedCriterion })
             }
 
