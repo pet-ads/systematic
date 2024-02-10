@@ -449,11 +449,9 @@ class ProtocolTest {
         @DisplayName("And failing to update them")
         inner class AndFailingToUpdateThem {
             @Test
-            fun `should throw when trying to remove the last language`() {
-                val sut = factory.createProtocol()
-                val removingLanguage = Language(LangType.ENGLISH)
-
-                assertThrows<IllegalStateException> { sut.removeLanguage(removingLanguage) }
+            fun `should thrown when trying to remove languages if none exists`() {
+                val sut = factory.createProtocol(languages = emptySet())
+                assertThrows<IllegalStateException> { sut.removeLanguage(Language(LangType.ENGLISH)) }
             }
 
             @Test
