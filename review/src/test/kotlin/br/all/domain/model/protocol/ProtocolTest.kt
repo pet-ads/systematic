@@ -427,13 +427,11 @@ class ProtocolTest {
 
             @Test
             fun `should do nothing when trying to add a language that already is in the protocol`() {
-                val sut = factory.createProtocol()
                 val existentLanguage = Language(LangType.ENGLISH)
+                val sut = factory.createProtocol(languages = setOf(existentLanguage))
 
-                assertAll(
-                    { assertDoesNotThrow { sut.addLanguage(existentLanguage) } },
-                    { assertEquals(1, sut.studiesLanguages.size) },
-                )
+                sut.addLanguage(existentLanguage)
+                assertEquals(1, sut.studiesLanguages.count { it == existentLanguage })
             }
 
             @Test
