@@ -1,9 +1,6 @@
 package br.all.question.utils
 
-import br.all.domain.model.study.StudyType
-import br.all.domain.shared.utils.jsonWordsArray
 import br.all.domain.shared.utils.paragraph
-import br.all.domain.shared.utils.year
 import io.github.serpro69.kfaker.Faker
 import java.util.*
 
@@ -20,6 +17,22 @@ class TestDataFactory {
             "type": "TEXTUAL",
             "code": "${faker.lorem.words()}",
             "description": "${faker.paragraph(8)}"
+        }
+        """
+
+    fun validCreatePickListRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId) =
+        """
+        {
+            "researcherId": "$researcher",
+            "systematicStudyId": "$systematicStudyId",
+            "type": "PICK_LIST",
+            "code": "${faker.lorem.words()}",
+            "description": "${faker.paragraph(8)}",
+            "options": [
+                "${faker.lorem.words()}",
+                "${faker.lorem.words()}",
+                "${faker.lorem.words()}"
+            ]
         }
         """
 }

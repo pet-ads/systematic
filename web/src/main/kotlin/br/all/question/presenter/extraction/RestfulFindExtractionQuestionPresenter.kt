@@ -17,11 +17,6 @@ class RestfulFindExtractionQuestionPresenter : FindQuestionPresenter {
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.content)
 
-//        val self = linkTo<ExtractionQuestionController> {
-//            findQuestion(response.researcherId, response.content.protocolId, response.content.questionId)
-//        }.withSelfRel()
-//
-//        restfulResponse.add(self)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 

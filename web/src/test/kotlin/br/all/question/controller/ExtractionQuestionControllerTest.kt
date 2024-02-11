@@ -43,13 +43,25 @@ class ExtractionQuestionControllerTest(
 
 
     @Nested
+    @Tag("ValidClasses")
     @DisplayName("When creating questions")
-    inner class CreateTests {
+    inner class WhenCreatingQuestions {
         @Test
         fun `should create textual question and return 201`() {
             val json = factory.validCreateTextualRequest()
             mockMvc.perform(MockMvcRequestBuilders
                 .post(postUrl() + "/textual").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isCreated)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+        }
+
+        @Test
+        fun `should create picklist question and return 201`() {
+            val json = factory.validCreatePickListRequest()
+            mockMvc.perform(MockMvcRequestBuilders
+                .post(postUrl() + "/pick-list").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isCreated)
                 .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
