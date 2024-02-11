@@ -594,7 +594,7 @@ class ProtocolTest {
         inner class AndProvidingValidChanges {
             @Test
             fun `should a new rob question successfully if it is not defined`() {
-                val sut = factory.createProtocol()
+                val sut = factory.createProtocol(robQuestions = emptySet())
                 val newRobQuestion = QuestionId(UUID.randomUUID())
 
                 sut.addRobQuestion(newRobQuestion)
