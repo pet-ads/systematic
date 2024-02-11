@@ -629,6 +629,12 @@ class ProtocolTest {
         @Tag("InvalidClasses")
         @DisplayName("And being unable to perform changes")
         inner class AndBeingUnableToPerformChanges {
+            @Test
+            fun `should thrown when trying to remove rob questions but none exists`() {
+                val sut = factory.createProtocol(robQuestions = emptySet())
+                val question = QuestionId(UUID.randomUUID())
+                assertThrows<IllegalStateException> { sut.removeRobQuestion(question) }
+            }
 
             @Test
             fun `should throw when trying to remove nonexistent rob questions`() {
