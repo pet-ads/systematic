@@ -22,7 +22,7 @@ class QuestionBuilder private constructor(
 
     fun buildLabeledScale(scales: Map<String, Int>) = LabeledScale(questionId, systematicStudyId, code, description, scales)
 
-    fun buildNumberScale(lower: Int, higher: Int) = NumberScale(questionId, systematicStudyId, code, description, lower, higher)
+    fun buildNumberScale(lower: Int, higher: Int) = NumberScale(questionId, systematicStudyId, code, description, higher, lower)
 
     fun buildPickList(options: List<String>) = PickList(questionId, systematicStudyId, code, description, options)
 }

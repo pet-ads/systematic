@@ -35,4 +35,17 @@ class TestDataFactory {
             ]
         }
         """
+
+    fun validCreateNumberScaleRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId) =
+        """
+        {
+            "researcherId": "$researcher",
+            "systematicStudyId": "$systematicStudyId",
+            "type": "NUMBERED_SCALE",
+            "code": "${faker.lorem.words()}",
+            "description": "${faker.paragraph(8)}",
+            "higher": "${10}",
+            "lower": "${1}"
+        }
+        """
 }
