@@ -36,6 +36,22 @@ class TestDataFactory {
         }
         """
 
+    fun validCreateLabeledScaleRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId) =
+        """
+        {
+            "researcherId": "$researcher",
+            "systematicStudyId": "$systematicStudyId",
+            "type": "LABELED_SCALE",
+            "code": "${faker.lorem.words()}",
+            "description": "${faker.paragraph(8)}",
+            "scales": {
+                "${faker.lorem.words()}": 1,
+                "${faker.lorem.words()}": 2,
+                "${faker.lorem.words()}": 3
+            }
+        }
+        """
+
     fun validCreateNumberScaleRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId) =
         """
         {

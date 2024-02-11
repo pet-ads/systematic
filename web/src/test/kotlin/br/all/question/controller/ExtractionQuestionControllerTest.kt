@@ -69,6 +69,17 @@ class ExtractionQuestionControllerTest(
         }
 
         @Test
+        fun `should create labeledscale question and return 201`() {
+            val json = factory.validCreateLabeledScaleRequest()
+            mockMvc.perform(MockMvcRequestBuilders
+                .post(postUrl() + "/labeled-scale").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isCreated)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+        }
+
+        @Test
         fun `should create numberscale question and return 201`() {
             val json = factory.validCreateNumberScaleRequest()
             mockMvc.perform(MockMvcRequestBuilders
