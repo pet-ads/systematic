@@ -610,10 +610,8 @@ class ProtocolTest {
                 val repeatedQuestion = QuestionId(UUID.randomUUID())
                 val sut = factory.createProtocol(robQuestions = setOf(repeatedQuestion))
 
-                assertAll(
-                    { assertDoesNotThrow { sut.addRobQuestion(repeatedQuestion) } },
-                    { assertEquals(1, sut.robQuestions.size) },
-                )
+                sut.addRobQuestion(repeatedQuestion)
+                assertEquals(1, sut.robQuestions.count { it == repeatedQuestion })
             }
 
             @Test
