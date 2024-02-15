@@ -90,4 +90,49 @@ class ExtractionQuestionControllerTest(
                 .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
         }
     }
+
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("when not able to create question successfully")
+    inner class WhenNotAbleToCreateQuestionSuccessfully{
+        @Test
+        fun `should not create textual question with invalid input and return 400`() {
+            val json = factory.invalidCreateTextualRequest()
+            mockMvc.perform(
+                MockMvcRequestBuilders.post(postUrl() + "/textual")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+            ).andExpect(MockMvcResultMatchers.status().isBadRequest)
+        }
+
+        @Test
+        fun `should not create picklist question with invalid input and return 400`() {
+            val json = factory.invalidCreatePickListRequest()
+            mockMvc.perform(
+                MockMvcRequestBuilders.post(postUrl() + "/pick-list")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+            ).andExpect(MockMvcResultMatchers.status().isBadRequest)
+        }
+
+        @Test
+        fun `should not create labeled scale question with invalid input and return 400`() {
+            val json = factory.invalidCreateLabeledScaleRequest()
+            mockMvc.perform(
+                MockMvcRequestBuilders.post(postUrl() + "/labeled-scale")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+            ).andExpect(MockMvcResultMatchers.status().isBadRequest)
+        }
+
+        @Test
+        fun `should not create number scale question with invalid input and return 400`() {
+            val json = factory.invalidCreateNumberScaleRequest()
+            mockMvc.perform(
+                MockMvcRequestBuilders.post(postUrl() + "/number-scale")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+            ).andExpect(MockMvcResultMatchers.status().isBadRequest)
+        }
+    }
 }
