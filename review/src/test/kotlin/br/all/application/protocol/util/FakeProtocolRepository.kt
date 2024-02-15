@@ -7,7 +7,7 @@ import java.util.*
 class FakeProtocolRepository: ProtocolRepository {
     private val db = mutableMapOf<UUID, ProtocolDto>()
 
-    override fun create(dto: ProtocolDto) = run { db[dto.id] = dto }
+    override fun saveOrUpdate(dto: ProtocolDto) = run { db[dto.id] = dto }
 
     override fun findById(id: UUID) = db[id]
 

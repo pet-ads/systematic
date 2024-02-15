@@ -7,7 +7,6 @@ import br.all.application.protocol.util.FakeProtocolRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.DuplicateElementException
 import br.all.domain.model.protocol.Protocol
-import br.all.domain.services.UuidGeneratorService
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -61,7 +60,7 @@ class CreateProtocolServiceImplTest {
         val dto = Protocol.fromRequestModel(reviewId, requestModel).toDto()
 
         every { systematicStudyRepository.existsById(reviewId) } returns true
-        protocolRepository.create(dto)
+        protocolRepository.saveOrUpdate(dto)
 
         assertThrows<DuplicateElementException> { sut.create(reviewId, requestModel) }
     }
