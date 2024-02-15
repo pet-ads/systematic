@@ -35,8 +35,8 @@ class PreconditionCheckerTest {
         val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         every { credentialsService.isAuthenticated(researcherId) } returns true
         every { credentialsService.hasAuthority(researcherId) } returns true
-        every { repository.existsById(systematicStudyId.value) } returns true
-        every { repository.hasReviewer(systematicStudyId.value, researcherId.value) } returns true
+        every { repository.existsById(systematicStudyId.value()) } returns true
+        every { repository.hasReviewer(systematicStudyId.value(), researcherId.value) } returns true
 
         preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
@@ -72,7 +72,7 @@ class PreconditionCheckerTest {
         val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         every { credentialsService.isAuthenticated(researcherId) } returns true
         every { credentialsService.hasAuthority(researcherId) } returns true
-        every { repository.existsById(systematicStudyId.value) } returns false
+        every { repository.existsById(systematicStudyId.value()) } returns false
 
         preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
@@ -85,8 +85,8 @@ class PreconditionCheckerTest {
         val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         every { credentialsService.isAuthenticated(researcherId) } returns true
         every { credentialsService.hasAuthority(researcherId) } returns true
-        every { repository.existsById(systematicStudyId.value) } returns true
-        every { repository.hasReviewer(systematicStudyId.value, researcherId.value) } returns false
+        every { repository.existsById(systematicStudyId.value()) } returns true
+        every { repository.hasReviewer(systematicStudyId.value(), researcherId.value) } returns false
 
         preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 

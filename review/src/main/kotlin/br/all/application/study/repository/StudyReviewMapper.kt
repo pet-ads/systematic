@@ -8,7 +8,7 @@ import br.all.domain.model.study.*
 
 fun StudyReview.toDto() = StudyReviewDto(
     id.value(),
-    systematicStudyId.value,
+    systematicStudyId.value(),
     studyType.toString(),
     title,
     year,

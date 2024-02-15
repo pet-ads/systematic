@@ -9,7 +9,7 @@ import java.util.*
 
 fun Protocol.toDto() = ProtocolDto(
     id = id.value(),
-    systematicStudy = systematicStudyId.value,
+    systematicStudy = systematicStudyId.value(),
 
     goal = goal,
     justification = justification,

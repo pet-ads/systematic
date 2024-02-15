@@ -45,7 +45,7 @@ class ProtocolBuilder private constructor() :
 
     override fun identifiedBy(systematicStudyId: SystematicStudyId, keywords: Set<String>) =
         apply {
-            this.protocolId = ProtocolId(systematicStudyId.value)
+            this.protocolId = ProtocolId(systematicStudyId.value())
             this.systematicStudyId = systematicStudyId
             this.keywords = keywords
         }

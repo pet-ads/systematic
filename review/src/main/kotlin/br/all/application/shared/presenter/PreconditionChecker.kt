@@ -17,11 +17,11 @@ class PreconditionChecker(
         prepareIfUnauthenticatedOrUnauthorized(presenter, researcherId)
         if (presenter.isDone())
             return
-        if (!reviewRepository.existsById(systematicStudyId.value)) {
+        if (!reviewRepository.existsById(systematicStudyId.value())) {
             presenter.prepareFailView(EntityNotFoundException("Review of id $systematicStudyId do not exists."))
             return
         }
-        if (!reviewRepository.hasReviewer(systematicStudyId.value, researcherId.value))
+        if (!reviewRepository.hasReviewer(systematicStudyId.value(), researcherId.value))
             presenter.prepareFailView(UnauthorizedUserException("User of id $researcherId is not a reviewer."))
     }
 
