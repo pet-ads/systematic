@@ -3,10 +3,8 @@ package br.all.question.presenter.riskOfBias
 import br.all.application.question.repository.QuestionDto
 import br.all.application.question.find.FindQuestionPresenter
 import br.all.application.question.find.FindQuestionService.*
-import br.all.question.controller.RiskOfBiasQuestionController
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
-import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
@@ -17,11 +15,6 @@ class RestfulFindRoBQuestionPresenter : FindQuestionPresenter {
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.content)
 
-//        val self = linkTo<RiskOfBiasQuestionController> {
-//            findQuestion(response.researcherId, response.content.protocolId, response.content.questionId)
-//        }.withSelfRel()
-//
-//        restfulResponse.add(self)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 

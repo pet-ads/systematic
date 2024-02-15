@@ -3,10 +3,8 @@ package br.all.question.presenter.extraction
 import br.all.application.question.repository.QuestionDto
 import br.all.application.question.find.FindQuestionPresenter
 import br.all.application.question.find.FindQuestionService.*
-import br.all.question.controller.ExtractionQuestionController
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
-import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
