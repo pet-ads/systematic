@@ -17,3 +17,5 @@ value class SystematicStudyId(private val value: UUID) : Identifier <UUID>{
 
     override fun toString() = value.toString()
 }
+
+fun UUID.toSystematicStudyId() = SystematicStudyId(this)
