@@ -126,5 +126,15 @@ class RiskOfBiasQuestionControllerTest(
                     .content(json)
             ).andExpect(status().isBadRequest)
         }
+
+        @Test
+        fun `should not create number scale question with invalid input and return 400`() {
+            val json = factory.invalidCreateNumberScaleRequest()
+            mockMvc.perform(
+                post(postUrl() + "/number-scale")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+            ).andExpect(status().isBadRequest)
+        }
     }
 }
