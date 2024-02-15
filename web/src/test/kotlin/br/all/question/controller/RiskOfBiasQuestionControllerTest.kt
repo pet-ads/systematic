@@ -46,8 +46,8 @@ class RiskOfBiasQuestionControllerTest(
 
     @Nested
     @Tag("ValidClasses")
-    @DisplayName("When creating questions")
-    inner class WhenCreatingQuestions {
+    @DisplayName("When successfully creating questions")
+    inner class WhenSuccessfullyCreatingQuestions {
         @Test
         fun `should create textual question and return 201`() {
             val json = factory.validCreateTextualRequest()
