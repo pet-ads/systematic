@@ -67,7 +67,7 @@ class StudyReviewControllerTest(
         }
 
         @Test
-        fun `should not create study with valid input and return 400`() {
+        fun `should not create study with invalid input and return 400`() {
             val json = factory.invalidPostRequest()
             mockMvc.perform(
                 post(postUrl())
