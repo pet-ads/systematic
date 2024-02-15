@@ -38,7 +38,10 @@ class SystematicStudyTest {
 
             @Test
             fun `should owner be a collaborator`() {
-                val ownerId = sut.owner
+                val id = SystematicStudyId(UUID.randomUUID())
+                val ownerId = ResearcherId(UUID.randomUUID())
+                val sut = SystematicStudy(id, "Title", "Description", ownerId, mutableSetOf())
+                
                 assertTrue(ownerId in sut.collaborators)
             }
         }
