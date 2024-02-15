@@ -64,4 +64,52 @@ class TestDataFactory {
             "lower": "${1}"
         }
         """
+
+    fun invalidCreateTextualRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId) =
+        """
+        {
+            "researcherId": "$researcher",
+            "systematicStudyId": "$systematicStudyId",
+            "type": "TEXTUAL",
+            "code": "${faker.lorem.words()}",
+            "description": ""
+        }
+        """
+
+    fun invalidCreatePickListRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId) =
+        """
+        {
+            "researcherId": "$researcher",
+            "systematicStudyId": "$systematicStudyId",
+            "type": "PICK_LIST",
+            "code": "${faker.lorem.words()}",
+            "description": "${faker.paragraph(8)}",
+            "options": []
+        }
+        """
+
+    fun invalidCreateLabeledScaleRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId) =
+        """
+        {
+            "researcherId": "$researcher",
+            "systematicStudyId": "$systematicStudyId",
+            "type": "LABELED_SCALE",
+            "code": "${faker.lorem.words()}",
+            "description": "${faker.paragraph(8)}",
+            "scales": {}
+        }
+        """
+
+    fun invalidCreateNumberScaleRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId) =
+        """
+        {
+            "researcherId": "$researcher",
+            "systematicStudyId": "$systematicStudyId",
+            "type": "NUMBERED_SCALE",
+            "code": "${faker.lorem.words()}",
+            "description": "${faker.paragraph(8)}",
+            "higher": "${1}",
+            "lower": "${10}"
+        }
+        """
 }

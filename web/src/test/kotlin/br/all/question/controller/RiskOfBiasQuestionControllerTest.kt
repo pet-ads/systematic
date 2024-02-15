@@ -9,8 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.*
 
 @SpringBootTest
@@ -88,6 +90,21 @@ class RiskOfBiasQuestionControllerTest(
                 .andExpect(MockMvcResultMatchers.status().isCreated)
                 .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+        }
+    }
+
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("when not able to create question successfully")
+    inner class WhenNotAbleToCreateQuestionSuccessfully{
+        @Test
+        fun `should not create textual question with invalid input and return 400`() {
+            val json = factory.invalidCreateTextualRequest()
+            mockMvc.perform(
+                post(postUrl() + "/textual")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+            ).andExpect(status().isBadRequest)
         }
     }
 }
