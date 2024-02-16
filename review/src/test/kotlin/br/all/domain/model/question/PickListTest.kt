@@ -46,25 +46,31 @@ class PickListTest {
     inner class WhenBeingUnableToCreatePickListQuestions {
         @Test
         fun `should throw IllegalArgument exception for empty options list`() {
-            val id = QuestionId(UUID.randomUUID())
-            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-            val code = faker.lorem.words()
-            val description = faker.lorem.words()
-            val options = emptyList<String>()
-
-            assertThrows<IllegalArgumentException> { PickList(id, systematicStudyId, code, description, options) }
+            assertThrows<IllegalArgumentException> {
+                PickList(
+                    QuestionId(UUID.randomUUID()),
+                    SystematicStudyId(UUID.randomUUID()),
+                    faker.lorem.words(),
+                    faker.lorem.words(),
+                    emptyList()
+                )
+            }
         }
 
         @ParameterizedTest(name = "[{index}]: option = \"{0}\"")
         @ValueSource(strings = ["", " ", "  "])
         fun `should throw IllegalArgument exception for blank option`(option: String) {
-            val id = QuestionId(UUID.randomUUID())
-            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-            val code = faker.lorem.words()
-            val description = faker.lorem.words()
             val options = listOf(faker.lorem.words(), option)
 
-            assertThrows<IllegalArgumentException> { PickList(id, systematicStudyId, code, description, options) }
+            assertThrows<IllegalArgumentException> {
+                PickList(
+                    QuestionId(UUID.randomUUID()),
+                    SystematicStudyId(UUID.randomUUID()),
+                    faker.lorem.words(),
+                    faker.lorem.words(),
+                    options
+                )
+            }
         }
 
         @ParameterizedTest(name = "[{index}]: value = \"{0}\"")
