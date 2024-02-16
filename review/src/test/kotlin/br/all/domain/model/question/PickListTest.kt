@@ -76,14 +76,8 @@ class PickListTest {
         @ParameterizedTest(name = "[{index}]: value = \"{0}\"")
         @ValueSource(strings = ["", " ", "  "])
         fun `should throw Illegal Argument Exception for blank value`(value: String) {
-            val id = QuestionId(UUID.randomUUID())
-            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-            val code = faker.lorem.words()
-            val description = faker.lorem.words()
-            val options = listOf("word1", "word2")
-            val pickList = PickList(id, systematicStudyId, code, description, options)
 
-            assertThrows<IllegalArgumentException> { pickList.answer(value) }
+            assertThrows<IllegalArgumentException> { validPickList.answer(value) }
         }
 
         @Test
