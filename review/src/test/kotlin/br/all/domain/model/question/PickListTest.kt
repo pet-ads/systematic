@@ -1,46 +1,42 @@
 package br.all.domain.model.question
 
-import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.study.Answer
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.*
-import br.all.domain.model.study.Answer
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import java.util.*
 import kotlin.test.assertEquals
 
+
 @Tag("UnitTest")
 class PickListTest {
     private val faker = Faker()
+    private lateinit var validPickList: PickList
+
+    @BeforeEach
+    fun setUp() {
+        val validOptions = listOf(faker.lorem.words(), faker.lorem.words())
+        validPickList = PickList(
+            QuestionId(UUID.randomUUID()),
+            SystematicStudyId(UUID.randomUUID()),
+            faker.lorem.words(),
+            faker.lorem.words(),
+            validOptions
+        )
+    }
 
     @Nested
     @Tag("ValidClasses")
-    @DisplayName("When successfully creating PickList questions")
+    @DisplayName("When successfully answering a picklist question")
     inner class WhenSuccessfullyCreatingPickListQuestions {
         @Test
-        fun `should create a PickList question with valid options`() {
-            val id = QuestionId(UUID.randomUUID())
-            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-            val code = faker.lorem.words()
-            val description = faker.lorem.words()
-            val options = listOf(faker.lorem.words(), faker.lorem.words())
-
-            assertDoesNotThrow { PickList(id, systematicStudyId, code, description, options) }
-        }
-
-        @Test
         fun `should answer the questions with valid value in the valid options`() {
-            val id = QuestionId(UUID.randomUUID())
-            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-            val code = faker.lorem.words()
-            val description = faker.lorem.words()
-            val options = listOf("word1", "word2")
-            val pickList = PickList(id, systematicStudyId, code, description, options)
-            val value = "word1"
-            val expectedAnswer = Answer(pickList.id.value(), value)
+            val validValue = validPickList.options[1]
+            val expectedAnswer = Answer(validPickList.id.value(), validValue)
 
-            assertEquals(expectedAnswer, pickList.answer(value))
+            assertEquals(expectedAnswer, validPickList.answer(validValue))
         }
     }
 
