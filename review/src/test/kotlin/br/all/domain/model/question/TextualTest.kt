@@ -1,6 +1,5 @@
 package br.all.domain.model.question
 
-import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.Answer
 import io.github.serpro69.kfaker.Faker
@@ -13,32 +12,29 @@ import kotlin.test.assertEquals
 @Tag("UnitTest")
 class TextualTest {
     private val faker = Faker()
+    private lateinit var validTextual: Textual
+
+    @BeforeEach
+    fun setUp() {
+        validTextual = Textual(
+            QuestionId(UUID.randomUUID()),
+            SystematicStudyId(UUID.randomUUID()),
+            faker.lorem.words(),
+            faker.lorem.words(),
+        )
+    }
 
     @Nested
     @Tag("ValidClasses")
-    @DisplayName("When successfully creating Textual questions")
+    @DisplayName("When successfully answering Textual questions")
     inner class WhenSuccessfullyCreatingTextualQuestions {
-        @Test
-        fun `should create a Textual question with valid parameters`() {
-            val id = QuestionId(UUID.randomUUID())
-            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-            val code = faker.lorem.words()
-            val description = faker.lorem.words()
-
-            assertDoesNotThrow { Textual(id, systematicStudyId, code, description) }
-        }
 
         @Test
         fun `should answer the question with valid text`() {
-            val id = QuestionId(UUID.randomUUID())
-            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-            val code = faker.lorem.words()
-            val description = faker.lorem.words()
-            val textual = Textual(id, systematicStudyId, code, description)
             val value = "TestingAnswer"
-            val expectedAnswer = Answer(textual.id.value(), value)
+            val expectedAnswer = Answer(validTextual.id.value(), value)
 
-            assertEquals(expectedAnswer, textual.answer(value))
+            assertEquals(expectedAnswer, validTextual.answer(value))
         }
     }
 
@@ -49,13 +45,7 @@ class TextualTest {
         @ParameterizedTest(name = "[{index}]: value = \"{0}\"")
         @ValueSource(strings = ["", " ", "  "])
         fun `should throw IllegalArgumentException for blank answer`(value: String) {
-            val id = QuestionId(UUID.randomUUID())
-            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-            val code = faker.lorem.words()
-            val description = faker.lorem.words()
-            val textual = Textual(id, systematicStudyId, code, description)
-
-            assertThrows<IllegalArgumentException> { textual.answer(value) }
+            assertThrows<IllegalArgumentException> { validTextual.answer(value) }
         }
     }
 }
