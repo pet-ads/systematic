@@ -1,6 +1,5 @@
 package br.all.domain.model.question
 
-import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.Answer
 import io.github.serpro69.kfaker.Faker
@@ -13,55 +12,46 @@ import kotlin.test.assertEquals
 @Tag("UnitTest")
 class LabeledScaleTest {
     private val faker = Faker()
+    private lateinit var validLabeledScale: LabeledScale
 
-    private val validScale = mapOf(faker.lorem.words() to 1, faker.lorem.words() to 2)
+    private val validScale = mapOf("label1" to 1, "label2" to 2)
     private val emptyScale = emptyMap<String, Int>()
+
+    @BeforeEach
+    fun setUp() {
+        validLabeledScale = LabeledScale(
+            QuestionId(UUID.randomUUID()),
+            SystematicStudyId(UUID.randomUUID()),
+            faker.lorem.words(),
+            faker.lorem.words(),
+            validScale
+        )
+    }
 
     @Nested
     @Tag("ValidClasses")
     @DisplayName("WhenSuccessfully")
     inner class WhenSuccessfully {
         @Test
-        fun `should create a LabeledScale question with valid parameters`() {
-            val id = QuestionId(UUID.randomUUID())
-            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-            val code = faker.lorem.words()
-            val description = faker.lorem.words()
-
-            assertDoesNotThrow { LabeledScale(id, systematicStudyId, code, description, validScale) }
-        }
-
-        @Test
         fun `should answer the questions with a valid scale`() {
-            val label = Label("Label", 3)
-            val scales = mutableMapOf(label.name to label.value).also { it.putAll(validScale) }
-            val id = QuestionId(UUID.randomUUID())
-            val question = createLabeledScale(id, scales)
-            val expectedAnswer = Answer(id.value, label)
+            val label = Label("label1", 1)
+            val expectedAnswer = Answer(validLabeledScale.id.value(), label)
 
-            assertEquals(expectedAnswer, question.answer(label))
+            assertEquals(expectedAnswer, validLabeledScale.answer(label))
         }
 
         @Test
         fun `should a label that is not yet in the scales be added to it`() {
-            val scales = mutableMapOf("Label" to 1)
-            val id = QuestionId(UUID.randomUUID())
-            val question = createLabeledScale(id, scales)
+            validLabeledScale.addScale("label3", 3)
 
-            question.addScale("Other label", 2)
-
-            assertEquals(2, question.scales.size)
+            assertEquals(3, validLabeledScale.scales.size)
         }
 
         @Test
         fun `should a existing label be removed if not the last one in the scales`() {
-            val scales = mutableMapOf("Label" to 1, "Label2" to 2)
-            val id = QuestionId(UUID.randomUUID())
-            val question = createLabeledScale(id, scales)
+            validLabeledScale.removeScale("label2")
 
-            question.removeScale("Label2")
-
-            assertEquals(1, question.scales.size)
+            assertEquals(1, validLabeledScale.scales.size)
         }
     }
 
@@ -71,47 +61,32 @@ class LabeledScaleTest {
     inner class WhenUnable {
         @Test
         fun `should throw IllegalArgumentException for empty scales`() {
-            val id = QuestionId(UUID.randomUUID())
-            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-            val code = faker.lorem.words()
-            val description = faker.lorem.words()
-
-            assertThrows<IllegalArgumentException> { LabeledScale(id, systematicStudyId, code, description, emptyScale) }
+            assertThrows<IllegalArgumentException> {
+                LabeledScale(
+                    QuestionId(UUID.randomUUID()),
+                    SystematicStudyId(UUID.randomUUID()),
+                    faker.lorem.words(),
+                    faker.lorem.words(),
+                    emptyScale
+                )
+            }
         }
 
         @Test
         fun `should not answer a question if it does not have the label`() {
-            val scales = mutableMapOf("Label" to 1)
-            val id = QuestionId(UUID.randomUUID())
-            val question = createLabeledScale(id, scales)
-
-            assertThrows<IllegalArgumentException> { question.answer(Label("Other Label", 3)) }
+            assertThrows<IllegalArgumentException> { validLabeledScale.answer(Label("label3", 3)) }
         }
 
         @Test
         fun `should not remove a Label from scale if it is the last one remaining`() {
-            val scales = mutableMapOf("Label" to 1)
-            val id = QuestionId(UUID.randomUUID())
-            val question = createLabeledScale(id, scales)
+            validLabeledScale.removeScale("label2")
 
-            assertThrows<IllegalStateException> { question.removeScale("Label") }
+            assertThrows<IllegalStateException> { validLabeledScale.removeScale("label1") }
         }
 
         @Test
         fun `should throw IllegalArgumentException for non-existing Label`() {
-            val scales = mutableMapOf("Label" to 1, "Label2" to 2)
-            val id = QuestionId(UUID.randomUUID())
-            val question = createLabeledScale(id, scales)
-
-            assertThrows<NoSuchElementException> { question.removeScale("Label3") }
+            assertThrows<NoSuchElementException> { validLabeledScale.removeScale("label3") }
         }
-    }
-
-    private fun createLabeledScale(
-        id: QuestionId,
-        scales: MutableMap<String, Int>
-    ): LabeledScale {
-        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-        return LabeledScale(id, systematicStudyId, faker.lorem.words(), faker.lorem.words(), scales)
     }
 }
