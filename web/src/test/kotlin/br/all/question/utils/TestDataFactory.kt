@@ -1,6 +1,7 @@
 package br.all.question.utils
 
 import br.all.domain.shared.utils.paragraph
+import br.all.infrastructure.question.QuestionDocument
 import io.github.serpro69.kfaker.Faker
 import java.util.*
 
@@ -112,4 +113,20 @@ class TestDataFactory {
             "lower": "${10}"
         }
         """
+
+//    fun questionDocument(
+//        questionId: UUID,
+//        systematicStudyId: UUID,
+//        code: String = faker.lorem.words(),
+//        description: String = faker.lorem.words(),
+//
+//    ): QuestionDocument {
+//        return QuestionDocument(
+//            questionId,
+//            systematicStudyId,
+//            code,
+//            description,
+//
+//        )
+//    }
 }

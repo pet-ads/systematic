@@ -1,6 +1,9 @@
 package br.all.question.controller
 
+import br.all.domain.model.question.QuestionId
+import br.all.domain.model.review.SystematicStudyId
 import br.all.infrastructure.question.MongoQuestionRepository
+import br.all.infrastructure.question.QuestionDocument
 import br.all.question.utils.TestDataFactory
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,8 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.*
 
 @SpringBootTest
@@ -43,7 +49,6 @@ class ExtractionQuestionControllerTest(
 
 
     @Nested
-    @Tag("ValidClasses")
     @DisplayName("When successfully creating questions")
     inner class WhenSuccessfullyCreatingQuestions {
         @Test
@@ -52,9 +57,9 @@ class ExtractionQuestionControllerTest(
             mockMvc.perform(MockMvcRequestBuilders
                 .post(postUrl() + "/textual").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isCreated)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+                .andExpect(status().isCreated)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
         }
 
         @Test
@@ -63,9 +68,9 @@ class ExtractionQuestionControllerTest(
             mockMvc.perform(MockMvcRequestBuilders
                 .post(postUrl() + "/pick-list").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isCreated)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+                .andExpect(status().isCreated)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
         }
 
         @Test
@@ -74,9 +79,9 @@ class ExtractionQuestionControllerTest(
             mockMvc.perform(MockMvcRequestBuilders
                 .post(postUrl() + "/labeled-scale").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isCreated)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+                .andExpect(status().isCreated)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
         }
 
         @Test
@@ -85,9 +90,36 @@ class ExtractionQuestionControllerTest(
             mockMvc.perform(MockMvcRequestBuilders
                 .post(postUrl() + "/number-scale").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isCreated)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+                .andExpect(status().isCreated)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
+        }
+    }
+
+    @Nested
+    @DisplayName("when successfully finding questions")
+    inner class WhenSuccessfullyFindingQuestions{
+        @Test
+        fun `should find the question and return 200`() {
+            val question = QuestionDocument(
+               UUID.randomUUID(),
+               UUID.randomUUID(),
+                "test",
+                "teste",
+                "TEXTUAL",
+                null,
+                null,
+                null,
+                null
+            )
+
+            repository.insert(question)
+
+            val questionId = "${question.questionId}"
+            mockMvc.perform(get(getUrl(questionId)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
         }
     }
 
@@ -102,7 +134,7 @@ class ExtractionQuestionControllerTest(
                 MockMvcRequestBuilders.post(postUrl() + "/textual")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
-            ).andExpect(MockMvcResultMatchers.status().isBadRequest)
+            ).andExpect(status().isBadRequest)
         }
 
         @Test
@@ -112,7 +144,7 @@ class ExtractionQuestionControllerTest(
                 MockMvcRequestBuilders.post(postUrl() + "/pick-list")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
-            ).andExpect(MockMvcResultMatchers.status().isBadRequest)
+            ).andExpect(status().isBadRequest)
         }
 
         @Test
@@ -122,7 +154,7 @@ class ExtractionQuestionControllerTest(
                 MockMvcRequestBuilders.post(postUrl() + "/labeled-scale")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
-            ).andExpect(MockMvcResultMatchers.status().isBadRequest)
+            ).andExpect(status().isBadRequest)
         }
 
         @Test
@@ -132,7 +164,7 @@ class ExtractionQuestionControllerTest(
                 MockMvcRequestBuilders.post(postUrl() + "/number-scale")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
-            ).andExpect(MockMvcResultMatchers.status().isBadRequest)
+            ).andExpect(status().isBadRequest)
         }
     }
 }
