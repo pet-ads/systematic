@@ -11,81 +11,74 @@ import java.util.*
 import kotlin.test.assertEquals
 
 @Tag("UnitTest")
-class NumberScaleTest{
+class NumberScaleTest {
     private val faker = Faker()
+    private lateinit var validNumberScale: NumberScale
+
+    @BeforeEach
+    fun setUp() {
+        val higher = 10
+        val lower = 1
+        validNumberScale = NumberScale(
+            QuestionId(UUID.randomUUID()),
+            SystematicStudyId(UUID.randomUUID()),
+            faker.lorem.words(),
+            faker.lorem.words(),
+            higher,
+            lower
+        )
+    }
 
     @Nested
     @Tag("ValidClasses")
-    @DisplayName("When successfully creating NumberScale questions")
-    inner class WhenSuccessfullyCreatingNumberScaleQuestions{
-        @Test
-        fun `should create a NumberScale question with valid options`(){
-            val id = QuestionId(UUID.randomUUID())
-            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-            val code = faker.lorem.words()
-            val description = faker.lorem.words()
-            val higher = 10
-            val lower = 1
-
-            assertDoesNotThrow { NumberScale(id, systematicStudyId, code, description, higher, lower) }
-        }
+    @DisplayName("When successfully answering NumberScale questions")
+    inner class WhenSuccessfullyAnsweringNumberScaleQuestions {
 
         @ParameterizedTest(name = "[{index}]: value = \"{0}\"")
-        @ValueSource(ints = [1,10,5])
+        @ValueSource(ints = [1, 10, 5])
         fun `should answer the questions with valid value equal or between bounds`(value: Int) {
-            val id = QuestionId(UUID.randomUUID())
-            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-            val code = faker.lorem.words()
-            val description = faker.lorem.words()
-            val higher = 10
-            val lower = 1
-            val numberScale = NumberScale(id, systematicStudyId, code, description, higher, lower)
-            val expectedAnswer = Answer(numberScale.id.value(), value)
+            val expectedAnswer = Answer(validNumberScale.id.value(), value)
 
-            assertEquals(expectedAnswer, numberScale.answer(value))
+            assertEquals(expectedAnswer, validNumberScale.answer(value))
         }
     }
 
     @Nested
     @Tag("InvalidClasses")
     @DisplayName("When being unable to create NumberScale questions")
-    inner class WhenBeingUnableToCreateNumberScaleQuestions{
+    inner class WhenBeingUnableToCreateNumberScaleQuestions {
         @Test
-        fun `should throw IllegalArgumentException for equal higher and lower values`(){
-            val id = QuestionId(UUID.randomUUID())
-            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-            val code = faker.lorem.words()
-            val description = faker.lorem.words()
-            val higher = 10
-            val lower = 10
-
-            assertThrows<IllegalArgumentException> { NumberScale(id, systematicStudyId, code, description, higher, lower) }
+        fun `should throw IllegalArgumentException for equal higher and lower values`() {
+            assertThrows<IllegalArgumentException> {
+                NumberScale(
+                    QuestionId(UUID.randomUUID()),
+                    SystematicStudyId(UUID.randomUUID()),
+                    faker.lorem.words(),
+                    faker.lorem.words(),
+                    10,
+                    10
+                )
+            }
         }
 
         @Test
-        fun `should throw IllegalArgumentException for Higher attribute smaller than Lower`(){
-            val id = QuestionId(UUID.randomUUID())
-            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-            val code = faker.lorem.words()
-            val description = faker.lorem.words()
-            val higher = 5
-            val lower = 10
-
-            assertThrows<IllegalArgumentException> { NumberScale(id, systematicStudyId, code, description, higher, lower) }
+        fun `should throw IllegalArgumentException for Higher attribute smaller than Lower`() {
+            assertThrows<IllegalArgumentException> {
+                NumberScale(
+                    QuestionId(UUID.randomUUID()),
+                    SystematicStudyId(UUID.randomUUID()),
+                    faker.lorem.words(),
+                    faker.lorem.words(),
+                    1,
+                    10
+                )
+            }
         }
 
         @ParameterizedTest(name = "[{index}]: value = \"{0}\"")
-        @ValueSource(ints = [0,11,15])
+        @ValueSource(ints = [0, 11, 15])
         fun `should throw IllegalArgumentException for answer out of bounds`(value: Int) {
-            val id = QuestionId(UUID.randomUUID())
-            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-            val code = faker.lorem.words()
-            val description = faker.lorem.words()
-            val higher = 10
-            val lower = 1
-            val numberScale = NumberScale(id, systematicStudyId, code, description, higher, lower)
-
-            assertThrows<IllegalArgumentException> { numberScale.answer(value) }
+            assertThrows<IllegalArgumentException> { validNumberScale.answer(value) }
         }
     }
 }
