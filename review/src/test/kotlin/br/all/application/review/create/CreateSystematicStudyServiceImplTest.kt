@@ -2,12 +2,10 @@ package br.all.application.review.create
 
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeAllowed
-import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeUnauthenticated
-import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeUnauthorized
 import br.all.application.review.util.TestDataFactory
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
+import br.all.application.util.PreconditionCheckerMocking
 import br.all.domain.services.UuidGeneratorService
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -31,11 +29,21 @@ class CreateSystematicStudyServiceImplTest {
     private lateinit var presenter: CreateSystematicStudyPresenter
 
     private lateinit var factory: TestDataFactory
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
     @InjectMockKs
     private lateinit var sut: CreateSystematicStudyServiceImpl
 
     @BeforeEach
-    fun setUp() = run { factory = TestDataFactory() }
+    fun setUp() {
+        factory = TestDataFactory()
+        preconditionCheckerMocking = PreconditionCheckerMocking(
+            presenter,
+            credentialsService,
+            repository,
+            factory.researcher,
+            factory.systematicStudy
+        )
+    }
 
     @Nested
     @Tag("ValidClasses")
@@ -48,7 +56,7 @@ class CreateSystematicStudyServiceImplTest {
             val response = factory.createResponseModel()
             val dto = factory.dtoFromCreateRequest(request)
 
-            makeResearcherToBeAllowed(credentialsService, presenter, researcher)
+            preconditionCheckerMocking.makeEverythingWork()
             every { uuidGeneratorService.next() } returns systematicStudy
 
             sut.create(presenter, researcher, request)
@@ -69,7 +77,7 @@ class CreateSystematicStudyServiceImplTest {
             val (researcher) = factory
             val request = factory.createRequestModel()
 
-            makeResearcherToBeUnauthenticated(credentialsService, presenter, researcher)
+            preconditionCheckerMocking.makeResearcherUnauthenticated()
             sut.create(presenter, researcher, request)
 
             verify(exactly = 1) {
@@ -83,7 +91,7 @@ class CreateSystematicStudyServiceImplTest {
             val (researcher) = factory
             val request = factory.createRequestModel()
 
-            makeResearcherToBeUnauthorized(credentialsService, presenter, researcher)
+            preconditionCheckerMocking.makeResearcherUnauthorized()
             sut.create(presenter, researcher, request)
 
             verify(exactly = 1) {
