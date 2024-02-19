@@ -97,4 +97,14 @@ class CreateProtocolServiceImplTest {
 
         verify { presenter.prepareFailView(any<UnauthenticatedUserException>()) }
     }
+
+    @Test
+    fun `should throw when the researcher has no permission`() {
+        val request = factory.createRequestModel()
+
+        preconditionCheckerMocking.makeResearcherUnauthorized()
+        sut.create(presenter, request)
+
+        verify { presenter.prepareFailView(any<UnauthorizedUserException>()) }
+    }
 }
