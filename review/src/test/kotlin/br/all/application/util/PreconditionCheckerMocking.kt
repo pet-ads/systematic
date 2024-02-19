@@ -3,13 +3,9 @@ package br.all.application.util
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.presenter.GenericPresenter
-import br.all.application.shared.presenter.PreconditionChecker
 import br.all.domain.model.researcher.toResearcherId
 import br.all.domain.model.review.toSystematicStudyId
-import io.mockk.Runs
 import io.mockk.every
-import io.mockk.just
-import io.mockk.mockkConstructor
 import java.util.*
 
 class PreconditionCheckerMocking(
@@ -23,17 +19,11 @@ class PreconditionCheckerMocking(
     private val systematicStudy = systematicStudy.toSystematicStudyId()
 
     fun makeEverythingWork() {
-        mockkConstructor(PreconditionChecker::class)
-        every {
-            anyConstructed<PreconditionChecker>().prepareIfViolatesPreconditions(
-                presenter,
-                researcher,
-                systematicStudy,
-            )
-        } just Runs
-        every {
-            anyConstructed<PreconditionChecker>().prepareIfUnauthenticatedOrUnauthorized(presenter, researcher)
-        } just Runs
+        println(researcher.value())
+        every { credentialsService.isAuthenticated(researcher) } returns true
+        every { credentialsService.hasAuthority(researcher) } returns true
+        every { systematicStudyRepository.existsById(systematicStudy.value()) } returns true
+        every { systematicStudyRepository.hasReviewer(systematicStudy.value(), researcher.value()) } returns true
     }
 
     fun makeResearcherUnauthenticated() {
