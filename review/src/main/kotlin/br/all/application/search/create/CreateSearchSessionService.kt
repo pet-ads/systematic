@@ -18,8 +18,8 @@ interface CreateSearchSessionService {
         val bibFile: MultipartFile
     )
 
-    open class ResponseModel(
-        val sessionId: String,
+    data class ResponseModel(
+        val sessionId: UUID,
         val systematicStudyId: SystematicStudyId,
         val researcherId: ResearcherId
     )
