@@ -3,12 +3,10 @@ package br.all.application.review.find.services
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.find.presenter.FindAllSystematicStudyPresenter
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeAllowed
-import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeUnauthenticated
-import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeUnauthorized
 import br.all.application.review.util.TestDataFactory
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
+import br.all.application.util.PreconditionCheckerMocking
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -31,16 +29,26 @@ class FindAllSystematicStudiesServiceImplTest {
     private lateinit var sut: FindAllSystematicStudiesServiceImpl
 
     private lateinit var factory: TestDataFactory
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
 
     @BeforeEach
-    fun setUp() = run { factory = TestDataFactory() }
+    fun setUp() = run {
+        factory = TestDataFactory()
+        preconditionCheckerMocking = PreconditionCheckerMocking(
+            presenter,
+            credentialsService,
+            repository,
+            factory.researcher,
+            factory.systematicStudy,
+        )
+    }
 
     @Nested
     @Tag("ValidClasses")
     @DisplayName("When successfully finding systematic studies")
     inner class WhenSuccessfullyFindingSystematicStudies {
         @BeforeEach
-        fun setUp() = run { makeResearcherToBeAllowed(credentialsService, presenter, factory.researcher) }
+        fun setUp() = run { preconditionCheckerMocking.makeEverythingWork() }
 
         @Test
         fun `should find the only existent systematic study`() {
@@ -85,7 +93,7 @@ class FindAllSystematicStudiesServiceImplTest {
             val (researcher) = factory
             val response = factory.emptyFindAllResponseModel()
 
-            makeResearcherToBeAllowed(credentialsService, presenter, researcher)
+            preconditionCheckerMocking.makeEverythingWork()
             every { repository.findAllByCollaborator(researcher) } returns emptyList()
 
             sut.findAll(presenter, researcher)
@@ -97,7 +105,7 @@ class FindAllSystematicStudiesServiceImplTest {
             val (researcher, owner) = factory
             val response = factory.emptyFindAllResponseModel(owner = owner)
 
-            makeResearcherToBeAllowed(credentialsService, presenter, researcher)
+            preconditionCheckerMocking.makeEverythingWork()
             every { repository.findAllByCollaboratorAndOwner(researcher, owner) } returns emptyList()
 
             sut.findAllByOwner(presenter, researcher, owner)
@@ -108,7 +116,7 @@ class FindAllSystematicStudiesServiceImplTest {
         fun `should prepare fail view when the researcher is unauthenticated`() {
             val (researcher) = factory
 
-            makeResearcherToBeUnauthenticated(credentialsService, presenter, researcher)
+            preconditionCheckerMocking.makeResearcherUnauthenticated()
 
             sut.findAll(presenter, researcher)
             verify {
@@ -121,7 +129,7 @@ class FindAllSystematicStudiesServiceImplTest {
         fun `should prepare fail view when the researcher is unauthorized`() {
             val (researcher) = factory
 
-            makeResearcherToBeUnauthorized(credentialsService, presenter, researcher)
+            preconditionCheckerMocking.makeResearcherUnauthorized()
 
             sut.findAll(presenter, researcher)
             verify {
