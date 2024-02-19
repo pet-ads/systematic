@@ -8,6 +8,7 @@ import br.all.application.protocol.util.TestDataFactory
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.util.PreconditionCheckerMocking
 import br.all.domain.model.protocol.Protocol
 import io.mockk.impl.annotations.InjectMockKs
@@ -74,5 +75,15 @@ class CreateProtocolServiceImplTest {
         sut.create(presenter, request)
 
         verify { presenter.prepareFailView(any<EntityNotFoundException>()) }
+    }
+
+    @Test
+    fun `should throw when the researcher is not a collaborator of the requested study`() {
+        val request = factory.createRequestModel()
+
+        preconditionCheckerMocking.makeResearcherNotACollaborator()
+        sut.create(presenter, request)
+
+        verify { presenter.prepareFailView(any<UnauthorizedUserException>()) }
     }
 }
