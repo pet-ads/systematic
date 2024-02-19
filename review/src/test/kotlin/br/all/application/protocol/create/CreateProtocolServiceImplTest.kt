@@ -8,6 +8,7 @@ import br.all.application.protocol.util.TestDataFactory
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.util.PreconditionCheckerMocking
 import br.all.domain.model.protocol.Protocol
@@ -85,5 +86,15 @@ class CreateProtocolServiceImplTest {
         sut.create(presenter, request)
 
         verify { presenter.prepareFailView(any<UnauthorizedUserException>()) }
+    }
+
+    @Test
+    fun `should throw when the researcher is unauthenticated`() {
+        val request = factory.createRequestModel()
+
+        preconditionCheckerMocking.makeResearcherUnauthenticated()
+        sut.create(presenter, request)
+
+        verify { presenter.prepareFailView(any<UnauthenticatedUserException>()) }
     }
 }
