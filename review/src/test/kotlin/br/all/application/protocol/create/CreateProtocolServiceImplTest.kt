@@ -16,9 +16,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Tag
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 
 @Tag("UnitTest")
@@ -51,60 +49,70 @@ class CreateProtocolServiceImplTest {
         )
     }
 
-    @Test
-    fun `should create a protocol for an existent systematic study`() {
-        val (researcher, systematicStudy) = factory
-        val request = factory.createRequestModel()
-        val dto = Protocol.fromRequestModel(request).toDto()
-        val response = ResponseModel(researcher, systematicStudy)
+    @Nested
+    @Tag("ValidClasses")
+    @DisplayName("When successfully creating protocols")
+    inner class WhenSuccessfullyCreatingProtocols {
+        @Test
+        fun `should create a protocol for an existent systematic study`() {
+            val (researcher, systematicStudy) = factory
+            val request = factory.createRequestModel()
+            val dto = Protocol.fromRequestModel(request).toDto()
+            val response = ResponseModel(researcher, systematicStudy)
 
-        preconditionCheckerMocking.makeEverythingWork()
+            preconditionCheckerMocking.makeEverythingWork()
 
-        sut.create(presenter, request)
+            sut.create(presenter, request)
 
-        verify {
-            repository.saveOrUpdate(dto)
-            presenter.prepareSuccessView(response)
+            verify {
+                repository.saveOrUpdate(dto)
+                presenter.prepareSuccessView(response)
+            }
         }
     }
 
-    @Test
-    fun `should not be possible to write a protocol for a nonexistent study`() {
-        val request = factory.createRequestModel()
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("When failing to create protocols")
+    inner class WhenFailingToCreateProtocols {
+        @Test
+        fun `should not be possible to write a protocol for a nonexistent study`() {
+            val request = factory.createRequestModel()
 
-        preconditionCheckerMocking.makeSystematicStudyNonexistent()
-        sut.create(presenter, request)
+            preconditionCheckerMocking.makeSystematicStudyNonexistent()
+            sut.create(presenter, request)
 
-        verify { presenter.prepareFailView(any<EntityNotFoundException>()) }
-    }
+            verify { presenter.prepareFailView(any<EntityNotFoundException>()) }
+        }
 
-    @Test
-    fun `should throw when the researcher is not a collaborator of the requested study`() {
-        val request = factory.createRequestModel()
+        @Test
+        fun `should throw when the researcher is not a collaborator of the requested study`() {
+            val request = factory.createRequestModel()
 
-        preconditionCheckerMocking.makeResearcherNotACollaborator()
-        sut.create(presenter, request)
+            preconditionCheckerMocking.makeResearcherNotACollaborator()
+            sut.create(presenter, request)
 
-        verify { presenter.prepareFailView(any<UnauthorizedUserException>()) }
-    }
+            verify { presenter.prepareFailView(any<UnauthorizedUserException>()) }
+        }
 
-    @Test
-    fun `should throw when the researcher is unauthenticated`() {
-        val request = factory.createRequestModel()
+        @Test
+        fun `should throw when the researcher is unauthenticated`() {
+            val request = factory.createRequestModel()
 
-        preconditionCheckerMocking.makeResearcherUnauthenticated()
-        sut.create(presenter, request)
+            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            sut.create(presenter, request)
 
-        verify { presenter.prepareFailView(any<UnauthenticatedUserException>()) }
-    }
+            verify { presenter.prepareFailView(any<UnauthenticatedUserException>()) }
+        }
 
-    @Test
-    fun `should throw when the researcher has no permission`() {
-        val request = factory.createRequestModel()
+        @Test
+        fun `should throw when the researcher has no permission`() {
+            val request = factory.createRequestModel()
 
-        preconditionCheckerMocking.makeResearcherUnauthorized()
-        sut.create(presenter, request)
+            preconditionCheckerMocking.makeResearcherUnauthorized()
+            sut.create(presenter, request)
 
-        verify { presenter.prepareFailView(any<UnauthorizedUserException>()) }
+            verify { presenter.prepareFailView(any<UnauthorizedUserException>()) }
+        }
     }
 }
