@@ -7,6 +7,7 @@ import br.all.application.protocol.repository.toDto
 import br.all.application.protocol.util.TestDataFactory
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.util.PreconditionCheckerMocking
 import br.all.domain.model.protocol.Protocol
 import io.mockk.impl.annotations.InjectMockKs
@@ -63,5 +64,15 @@ class CreateProtocolServiceImplTest {
             repository.saveOrUpdate(dto)
             presenter.prepareSuccessView(response)
         }
+    }
+
+    @Test
+    fun `should not be possible to write a protocol for a nonexistent study`() {
+        val request = factory.createRequestModel()
+
+        preconditionCheckerMocking.makeSystematicStudyNonexistent()
+        sut.create(presenter, request)
+
+        verify { presenter.prepareFailView(any<EntityNotFoundException>()) }
     }
 }
