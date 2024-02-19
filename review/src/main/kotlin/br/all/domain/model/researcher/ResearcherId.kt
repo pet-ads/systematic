@@ -14,4 +14,4 @@ value class ResearcherId(val value : UUID ) : Identifier <UUID> {
     override fun toString() = value.toString()
 }
 
-fun UUID.toResearcherId() = ResearcherId(UUID.randomUUID())
+fun UUID.toResearcherId() = ResearcherId(this)
