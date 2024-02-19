@@ -39,7 +39,7 @@ class RestfulCreateSearchSessionPresenter : CreateSearchSessionPresenter {
     override fun isDone() = responseEntity != null
 
     private data class ViewModel(
-        val sessionId: String,
+        val sessionId: UUID,
         val systematicStudyId: SystematicStudyId,
         val researcherId: ResearcherId
     ) : RepresentationModel<ViewModel>()
