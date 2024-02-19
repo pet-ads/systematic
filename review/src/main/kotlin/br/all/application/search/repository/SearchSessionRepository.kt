@@ -5,10 +5,12 @@ import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.protocol.SearchSource
+import java.util.*
 
 interface SearchSessionRepository {
     fun create(searchSession: SearchSession)
     fun findById(searchSessionId: SearchSessionID): SearchSession?
     fun getSearchSessionBySource(protocolId: ProtocolId, source: SearchSource): SearchSession?
+    fun existsBySearchSource(protocolId: UUID, source: String): Boolean
 
 }
