@@ -6,6 +6,7 @@ import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.create.CreateSearchSessionPresenter
 import br.all.application.search.create.CreateSearchSessionService
 import br.all.application.search.create.CreateSearchSessionService.RequestModel
+import br.all.application.shared.exceptions.UniquenessViolationException
 import br.all.application.shared.presenter.PreconditionChecker
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.toDto
@@ -17,7 +18,6 @@ import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.services.BibtexConverterService
 import java.util.*
-import kotlin.NoSuchElementException
 
 class CreateSearchSessionServiceImpl(
     private val searchSessionRepository: SearchSessionRepository,
@@ -30,27 +30,24 @@ class CreateSearchSessionServiceImpl(
     override fun createSession(presenter: CreateSearchSessionPresenter, request: RequestModel) {
 
         val researcherId = ResearcherId(request.researcherId)
-        val systematicStudyIdForVerification = SystematicStudyId(request.systematicStudyId)
+        val systematicStudy = SystematicStudyId(request.systematicStudyId)
         val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyIdForVerification)
+        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudy)
 
         if(presenter.isDone()) return
 
         require(request.searchString.isNotBlank()) { "Search string must not be blank" }
 
-        val systematicStudy = systematicStudyRepository.findById(request.systematicStudyId)
-            ?: throw NoSuchElementException("Systematic study not found with ID: ${request.systematicStudyId}")
+        val protocolId = ProtocolId(request.systematicStudyId)
 
-        val protocolId = ProtocolId(systematicStudy.id)
-
-        if (searchSessionRepository.getSearchSessionBySource(protocolId, request.source) != null) {
-            throw IllegalStateException("Search session already exists for source: ${request.source}")
+        if (searchSessionRepository.existsBySearchSource(request.systematicStudyId, request.source.searchSource)) {
+            presenter.prepareFailView((UniquenessViolationException("Search session already exists for source: ${request.source}")))
         }
 
         val sessionId = SearchSessionID(uuidGeneratorService.next())
         val searchSession = SearchSession(
             sessionId,
-            systematicStudyId = SystematicStudyId(UUID.randomUUID()),
+            systematicStudyId = systematicStudy,
             request.searchString,
             request.additionalInfo ?: "",
             source = request.source
@@ -58,12 +55,11 @@ class CreateSearchSessionServiceImpl(
 
         val bibFileContent = String(request.bibFile.bytes)
 
-        val systematicStudyId = SystematicStudyId(systematicStudy.id)
-
-        val studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudyId, bibFileContent)
+        val studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudy, bibFileContent)
 
         studyReviewRepository.saveOrUpdateBatch(studyReviews.map { it.toDto() })
 
         searchSessionRepository.create(searchSession)
+        presenter.prepareSuccessView(CreateSearchSessionService.ResponseModel(sessionId.value, systematicStudy, researcherId))
     }
 }
