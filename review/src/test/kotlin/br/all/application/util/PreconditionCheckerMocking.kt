@@ -47,7 +47,7 @@ class PreconditionCheckerMocking(
         every { credentialsService.hasAuthority(researcher) } returns true
         every { systematicStudyRepository.existsById(systematicStudy.value()) } returns false
         every { systematicStudyRepository.hasReviewer(systematicStudy.value(), researcher.value()) } returns false
-        every { presenter.isDone() } returns true
+        every { presenter.isDone() } returns false andThen true
     }
 
     fun makeResearcherNotACollaborator() {
@@ -55,6 +55,6 @@ class PreconditionCheckerMocking(
         every { credentialsService.hasAuthority(researcher) } returns true
         every { systematicStudyRepository.existsById(systematicStudy.value()) } returns true
         every { systematicStudyRepository.hasReviewer(systematicStudy.value(), researcher.value()) } returns false
-        every { presenter.isDone() } returns true
+        every { presenter.isDone() } returns false andThen true
     }
 }
