@@ -19,7 +19,6 @@ class PreconditionCheckerMocking(
     private val systematicStudy = systematicStudy.toSystematicStudyId()
 
     fun makeEverythingWork() {
-        println(researcher.value())
         every { credentialsService.isAuthenticated(researcher) } returns true
         every { credentialsService.hasAuthority(researcher) } returns true
         every { systematicStudyRepository.existsById(systematicStudy.value()) } returns true
