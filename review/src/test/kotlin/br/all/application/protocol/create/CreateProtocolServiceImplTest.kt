@@ -7,14 +7,12 @@ import br.all.application.protocol.repository.toDto
 import br.all.application.protocol.util.TestDataFactory
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.presenter.PreconditionChecker
+import br.all.application.util.PreconditionCheckerMocking
 import br.all.domain.model.protocol.Protocol
-import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.SystematicStudyId
-import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -32,15 +30,22 @@ class CreateProtocolServiceImplTest {
     private lateinit var researcherCredentialsService: ResearcherCredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: CreateProtocolPresenter
-
     @InjectMockKs
     private lateinit var sut: CreateProtocolServiceImpl
+
     private lateinit var factory: TestDataFactory
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
 
     @BeforeEach
     fun setUp() {
-        mockkConstructor(PreconditionChecker::class)
         factory = TestDataFactory()
+        preconditionCheckerMocking = PreconditionCheckerMocking(
+            presenter,
+            researcherCredentialsService,
+            systematicStudyRepository,
+            factory.researcher,
+            factory.systematicStudy,
+        )
     }
 
     @Test
@@ -50,13 +55,7 @@ class CreateProtocolServiceImplTest {
         val dto = Protocol.fromRequestModel(request).toDto()
         val response = ResponseModel(researcher, systematicStudy)
 
-        every {
-            anyConstructed<PreconditionChecker>().prepareIfViolatesPreconditions(
-                presenter,
-                ResearcherId(researcher), 
-                SystematicStudyId(systematicStudy)
-            )
-        } just Runs
+        preconditionCheckerMocking.makeEverythingWork()
 
         sut.create(presenter, request)
 
