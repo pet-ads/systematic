@@ -68,5 +68,17 @@ class ProtocolControllerTest(
             researcher: UUID = factory.researcher,
             systematicStudy: UUID = factory.protocol,
         ) = "/researcher/$researcher/systematic-study/$systematicStudy/protocol"
+
+        @Test
+        @Tag("InvalidClasses")
+        fun `should not write a protocol for nonexistent systematic study and return 404`() {
+            val json = factory.validPostRequest()
+
+            mockMvc.perform(
+                post(postUrl(systematicStudy = UUID.randomUUID()))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+            ).andExpect(status().isNotFound)
+        }
     }
 }
