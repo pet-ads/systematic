@@ -80,5 +80,16 @@ class ProtocolControllerTest(
                     .content(json)
             ).andExpect(status().isNotFound)
         }
+
+        @Test
+        fun `should not allow non collaborator researcher to write protocols`() {
+            val json = factory.validPostRequest()
+
+            mockMvc.perform(
+                post(postUrl(researcher = UUID.randomUUID()))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+            ).andExpect(status().isForbidden)
+        }
     }
 }
