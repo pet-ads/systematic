@@ -1,7 +1,7 @@
 package br.all.protocol.presenter
 
 import br.all.application.protocol.create.CreateProtocolPresenter
-import br.all.application.protocol.create.CreateProtocolService
+import br.all.application.protocol.create.CreateProtocolService.ResponseModel
 import br.all.protocol.controller.ProtocolController
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
@@ -13,7 +13,7 @@ import java.util.*
 class RestfulCreateProtocolPresenter: CreateProtocolPresenter {
     var responseEntity: ResponseEntity<*>? = null
 
-    override fun prepareSuccessView(response: CreateProtocolService.ResponseModel) {
+    override fun prepareSuccessView(response: ResponseModel) {
         val (researcher, systematicStudy) = response
         val viewModel = ViewModel(researcher, systematicStudy)
 
@@ -25,10 +25,10 @@ class RestfulCreateProtocolPresenter: CreateProtocolPresenter {
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 
-    override fun isDone() = responseEntity == null
+    override fun isDone() = responseEntity != null
 
     data class ViewModel(
-        val researcher: UUID,
-        val systematicStudy: UUID,
+        val researcherId: UUID,
+        val systematicStudyId: UUID,
     ): RepresentationModel<ViewModel>()
 }
