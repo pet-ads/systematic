@@ -121,6 +121,8 @@ class ExtractionQuestionControllerTest(
                 .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
         }
+
+        // TODO: esse teste aqui de find.
     }
 
     @Nested
