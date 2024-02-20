@@ -7,6 +7,7 @@ import io.github.serpro69.kfaker.Faker
 import java.util.*
 
 class TestDataFactory {
+    val researcher: UUID = UUID.randomUUID()
     val protocol: UUID = UUID.randomUUID()
 
     private val faker = Faker()
@@ -65,4 +66,44 @@ class TestDataFactory {
         outcome,
         context,
     )
+
+    fun validPostRequest(
+        goal: String? = faker.paragraph(5),
+        justification: String? = faker.paragraph(5),
+        keywords: Set<String> = emptySet(),
+
+        searchString: String? = faker.paragraph(5),
+        informationSources: Set<String> = emptySet(),
+        sourcesSelectionCriteria: String? = faker.paragraph(5),
+        searchMethod: String? = faker.paragraph(5),
+
+        studiesLanguages: Set<String> = emptySet(),
+        studyTypeDefinition: String? = faker.paragraph(5),
+
+        selectionProcess: String? = faker.paragraph(5),
+        dataCollectionProcess: String? = faker.paragraph(5),
+        analysisAndSynthesisProcess: String? = faker.paragraph(5),
+    ) = """ 
+        {
+            "goal": "$goal",
+            "justification": "$justification",
+            "keywords": $keywords,
+    
+            "searchString": "$searchString",
+            "informationSources": $informationSources,
+            "sourcesSelectionCriteria": "$sourcesSelectionCriteria",
+            "searchMethod": "$searchMethod",
+    
+            "studiesLanguages": $studiesLanguages,
+            "studyTypeDefinition": "$studyTypeDefinition",
+    
+            "selectionProcess": "$selectionProcess",
+            "dataCollectionProcess": "$dataCollectionProcess",
+            "analysisAndSynthesisProcess": "$analysisAndSynthesisProcess"
+        }
+    """.trimIndent()
+
+    operator fun component1() = researcher
+
+    operator fun component2() = protocol
 }
