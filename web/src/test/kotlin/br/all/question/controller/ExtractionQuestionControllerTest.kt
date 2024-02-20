@@ -103,9 +103,9 @@ class ExtractionQuestionControllerTest(
         fun `should find the question and return 200`() {
             val question = QuestionDocument(
                UUID.randomUUID(),
-               UUID.randomUUID(),
+               systematicStudyId,
                 "test",
-                "teste",
+                "test",
                 "TEXTUAL",
                 null,
                 null,

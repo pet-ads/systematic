@@ -22,6 +22,7 @@ class RestfulFindExtractionQuestionPresenter : FindQuestionPresenter {
             findQuestion(response.researcherId, content.systematicStudyId, content.questionId)
         }.withSelfRel()
 
+        restfulResponse.add(self)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 

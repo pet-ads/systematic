@@ -33,6 +33,6 @@ class FindQuestionServiceImpl(
             presenter.prepareFailView(EntityNotFoundException(message))
             return
         }
-        presenter.prepareSuccessView(FindQuestionService.ResponseModel(request.researcherId, question))
+        presenter.prepareSuccessView(ResponseModel(request.researcherId, question))
     }
 }
