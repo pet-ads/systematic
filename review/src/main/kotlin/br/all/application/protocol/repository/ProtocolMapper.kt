@@ -17,7 +17,7 @@ fun Protocol.toDto() = ProtocolDto(
     researchQuestions = researchQuestions.map { it.description }.toSet(),
     keywords = keywords,
     searchString = searchString,
-    informationSources = informationSources.map { it.searchSource }.toSet(),
+    informationSources = informationSources.map { it.id }.toSet(),
     sourcesSelectionCriteria = sourcesSelectionCriteria,
 
     searchMethod = searchMethod,

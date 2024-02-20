@@ -2,9 +2,9 @@ package br.all.application.protocol.util
 
 import br.all.application.protocol.repository.ProtocolDto
 import br.all.application.protocol.repository.ProtocolRepository
+import org.springframework.stereotype.Repository
 import java.util.*
-
-class FakeProtocolRepository: ProtocolRepository {
+open class FakeProtocolRepository: ProtocolRepository {
     private val db = mutableMapOf<UUID, ProtocolDto>()
 
     override fun create(dto: ProtocolDto) = run { db[dto.id] = dto }

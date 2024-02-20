@@ -88,6 +88,8 @@ class Protocol internal constructor(
 
     fun addInformationSource(searchSource: SearchSource) = _informationSources.add(searchSource)
 
+    fun hasInformationSource(searchSource: SearchSource) = _informationSources.contains(searchSource)
+
     fun removeInformationSource(informationSource: SearchSource) {
         requireThatExists(informationSource in _informationSources)
             { "Unable to remove a information source that is not in the protocol! Provided: $informationSource" }
