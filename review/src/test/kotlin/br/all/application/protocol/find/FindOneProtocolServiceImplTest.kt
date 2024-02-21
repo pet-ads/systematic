@@ -128,5 +128,18 @@ class FindOneProtocolServiceImplTest {
                 presenter.isDone()
             }
         }
+
+        @Test
+        fun `should not allow unauthorized users to find protocols`() {
+            val request = factory.findRequestModel()
+
+            preconditionCheckerMocking.makeResearcherUnauthorized()
+            sut.findById(presenter, request)
+
+            verifyOrder {
+                presenter.prepareFailView(any<UnauthorizedUserException>())
+                presenter.isDone()
+            }
+        }
     }
 }
