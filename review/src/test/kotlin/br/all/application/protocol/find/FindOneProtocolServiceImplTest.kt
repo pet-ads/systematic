@@ -86,5 +86,18 @@ class FindOneProtocolServiceImplTest {
                 presenter.prepareFailView(any<EntityNotFoundException>())
             }
         }
+
+        @Test
+        fun `should prepare fail view when trying to find the protocol of a nonexistent study`() {
+            val request = factory.findRequestModel()
+
+            preconditionCheckerMocking.makeSystematicStudyNonexistent()
+            sut.findById(presenter, request)
+
+            verify {
+                presenter.prepareFailView(any<EntityNotFoundException>())
+                presenter.isDone()
+            }
+        }
     }
 }
