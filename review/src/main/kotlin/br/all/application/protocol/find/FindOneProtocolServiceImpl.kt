@@ -5,6 +5,7 @@ import br.all.application.protocol.find.FindOneProtocolService.ResponseModel
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.presenter.PreconditionChecker
 import br.all.domain.model.researcher.toResearcherId
 import br.all.domain.model.review.toSystematicStudyId
@@ -21,9 +22,17 @@ class FindOneProtocolServiceImpl(
         }
         if (presenter.isDone()) return
 
-        protocolRepository.findById(systematicStudy)?.let {
-            val response = ResponseModel(researcher, systematicStudy, it)
-            presenter.prepareSuccessView(response)
+        val dto = protocolRepository.findById(systematicStudy)
+
+        if (dto == null) {
+            presenter.prepareFailView(
+                EntityNotFoundException("The protocol for systematic study $systematicStudy hasn't been written yet!"),
+            )
+            return
+        }
+
+        ResponseModel(researcher, systematicStudy, dto).also {
+            presenter.prepareSuccessView(it)
         }
     }
 }
