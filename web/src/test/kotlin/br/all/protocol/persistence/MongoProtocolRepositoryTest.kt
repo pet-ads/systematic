@@ -5,6 +5,7 @@ import br.all.infrastructure.shared.toNullable
 import br.all.protocol.shared.TestDataFactory
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
@@ -30,6 +31,22 @@ class MongoProtocolRepositoryTest(
             val document = factory.createProtocolDocument()
             sut.save(document)
             assertEquals(document, sut.findById(factory.protocol).toNullable())
+        }
+    }
+
+    @Nested
+    @DisplayName("When looking for protocols")
+    inner class WhenLookingForProtocols {
+        @Nested
+        @Tag("ValidClasses")
+        @DisplayName("And being able to find them")
+        inner class AndBeingAbleToFindThem {
+            @Test
+            fun `should find a existent protocol`() {
+                val document = factory.createProtocolDocument()
+                sut.save(document)
+                assertNotEquals(null, sut.findById(factory.protocol).toNullable())
+            }
         }
     }
 }
