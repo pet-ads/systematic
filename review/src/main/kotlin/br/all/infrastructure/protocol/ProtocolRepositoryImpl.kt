@@ -2,6 +2,7 @@ package br.all.infrastructure.protocol
 
 import br.all.application.protocol.repository.ProtocolDto
 import br.all.application.protocol.repository.ProtocolRepository
+import br.all.infrastructure.shared.toNullable
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -11,23 +12,9 @@ open class ProtocolRepositoryImpl(private val innerRepository: MongoProtocolRepo
         innerRepository.save(dto.toDocument())
     }
 
-    override fun findById(id: UUID): ProtocolDto? {
-        TODO("Not yet implemented")
-    }
+    override fun findById(id: UUID) = innerRepository.findById(id)
+        .toNullable()
+        ?.toDto()
 
-    override fun findBySystematicStudy(systematicStudyId: UUID): ProtocolDto? {
-        TODO("Not yet implemented")
-    }
-
-    override fun findAll(): List<ProtocolDto> {
-        TODO("Not yet implemented")
-    }
-
-    override fun existsById(id: UUID): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun existsBySystematicStudy(systematicStudyId: UUID): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun existsById(id: UUID) = innerRepository.existsById(id)
 }
