@@ -4,6 +4,7 @@ import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.util.TestDataFactory
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.util.PreconditionCheckerMocking
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -59,9 +60,30 @@ class FindOneProtocolServiceImplTest {
 
             sut.findById(presenter, request)
 
-            verify { 
+            verify {
                 protocolRepository.findById(protocolId)
                 presenter.prepareSuccessView(response)
+            }
+        }
+    }
+
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("When being unable to find any protocol")
+    inner class WhenBeingUnableToFindAnyProtocol {
+        @Test
+        fun `should not be possible to find nonexistent protocols`() {
+            val (_, protocolId) = factory
+            val request = factory.findRequestModel()
+
+            preconditionCheckerMocking.makeEverythingWork()
+            every { protocolRepository.findById(protocolId) } returns null
+
+            sut.findById(presenter, request)
+
+            verify {
+                protocolRepository.findById(protocolId)
+                presenter.prepareFailView(any<EntityNotFoundException>())
             }
         }
     }
