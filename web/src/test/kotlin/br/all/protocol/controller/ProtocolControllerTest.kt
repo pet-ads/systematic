@@ -51,45 +51,53 @@ class ProtocolControllerTest(
             systematicStudyRepository.save(systematicStudy)
         }
 
-        @Test
-        @Tag("ValidClasses")
-        fun `should post a new protocol`() {
-            val (researcher, systematicStudy) = factory
-            val json = factory.validPostRequest()
-
-            mockMvc.perform(post(postUrl()).contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isCreated)
-                .andExpect(jsonPath("$.researcherId").value(researcher.toString()))
-                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudy.toString()))
-                .andExpect(jsonPath("$._links").exists())
-        }
-
         private fun postUrl(
             researcher: UUID = factory.researcher,
             systematicStudy: UUID = factory.protocol,
         ) = "/researcher/$researcher/systematic-study/$systematicStudy/protocol"
 
-        @Test
-        @Tag("InvalidClasses")
-        fun `should not write a protocol for nonexistent systematic study and return 404`() {
-            val json = factory.validPostRequest()
+        @Nested
+        @Tag("ValidClasses")
+        @DisplayName("And being succeed")
+        inner class AndBeingSucceed {
+            @Test
+            fun `should post a new protocol`() {
+                val (researcher, systematicStudy) = factory
+                val json = factory.validPostRequest()
 
-            mockMvc.perform(
-                post(postUrl(systematicStudy = UUID.randomUUID()))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(json)
-            ).andExpect(status().isNotFound)
+                mockMvc.perform(post(postUrl()).contentType(MediaType.APPLICATION_JSON).content(json))
+                    .andExpect(status().isCreated)
+                    .andExpect(jsonPath("$.researcherId").value(researcher.toString()))
+                    .andExpect(jsonPath("$.systematicStudyId").value(systematicStudy.toString()))
+                    .andExpect(jsonPath("$._links").exists())
+            }
         }
 
-        @Test
-        fun `should not allow non collaborator researcher to write protocols`() {
-            val json = factory.validPostRequest()
+        @Nested
+        @Tag("InvalidClasses")
+        @DisplayName("And failing to create it")
+        inner class AndFailingToCreateIt {
+            @Test
+            fun `should not write a protocol for nonexistent systematic study and return 404`() {
+                val json = factory.validPostRequest()
 
-            mockMvc.perform(
-                post(postUrl(researcher = UUID.randomUUID()))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(json)
-            ).andExpect(status().isForbidden)
+                mockMvc.perform(
+                    post(postUrl(systematicStudy = UUID.randomUUID()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                ).andExpect(status().isNotFound)
+            }
+
+            @Test
+            fun `should not allow non collaborator researcher to write protocols`() {
+                val json = factory.validPostRequest()
+
+                mockMvc.perform(
+                    post(postUrl(researcher = UUID.randomUUID()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                ).andExpect(status().isForbidden)
+            }
         }
     }
 }
