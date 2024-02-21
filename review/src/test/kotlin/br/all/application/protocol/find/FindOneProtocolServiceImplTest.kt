@@ -5,6 +5,7 @@ import br.all.application.protocol.util.TestDataFactory
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.util.PreconditionCheckerMocking
 import io.mockk.every
@@ -111,6 +112,19 @@ class FindOneProtocolServiceImplTest {
 
             verifyOrder {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
+                presenter.isDone()
+            }
+        }
+
+        @Test
+        fun `should prepare fail view for unauthenticated researchers`() {
+            val request = factory.findRequestModel()
+
+            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            sut.findById(presenter, request)
+
+            verifyOrder {
+                presenter.prepareFailView(any<UnauthenticatedUserException>())
                 presenter.isDone()
             }
         }
