@@ -4,8 +4,7 @@ import br.all.infrastructure.protocol.MongoProtocolRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.protocol.shared.TestDataFactory
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
@@ -46,6 +45,13 @@ class MongoProtocolRepositoryTest(
                 val document = factory.createProtocolDocument()
                 sut.save(document)
                 assertNotEquals(null, sut.findById(factory.protocol).toNullable())
+            }
+
+            @Test
+            fun `should find out that a existent protocol truly exists`() {
+                val document = factory.createProtocolDocument()
+                sut.save(document)
+                assertTrue(sut.existsById(factory.protocol))
             }
         }
     }
