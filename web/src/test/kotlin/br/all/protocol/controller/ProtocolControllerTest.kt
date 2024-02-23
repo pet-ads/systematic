@@ -139,6 +139,15 @@ class ProtocolControllerTest(
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.detail").exists())
             }
+
+            @Test
+            fun `should return 404 when trying to find protocols of nonexistent systematic studies`() {
+                mockMvc.perform(
+                    get(getUrl(systematicStudy = UUID.randomUUID())).contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isNotFound)
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.detail").exists())
+            }
         }
     }
 }
