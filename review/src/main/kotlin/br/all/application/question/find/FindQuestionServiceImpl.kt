@@ -26,7 +26,7 @@ class FindQuestionServiceImpl(
 
         if (presenter.isDone()) return
 
-        val question = questionRepository.findById(request.systematicStudyId, questionId)
+        val question = questionRepository.findById(request.systematicStudyId, questionId.value)
         if (question === null) {
             val message =
                 "There is no review of id ${request.systematicStudyId} or question of id ${request.questionId}."
