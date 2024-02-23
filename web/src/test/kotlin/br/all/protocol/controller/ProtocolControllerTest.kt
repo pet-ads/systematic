@@ -29,28 +29,28 @@ class ProtocolControllerTest(
     @BeforeEach
     fun setUp()  {
         protocolRepository.deleteAll()
+        systematicStudyRepository.deleteAll()
+
         factory = TestDataFactory()
         systematicStudyDataFactory = SystematicStudyTestDataFactory()
+
+        val (researcher, systematicStudyId) = factory
+        val systematicStudy = systematicStudyDataFactory.createSystematicStudyDocument(
+            id = systematicStudyId,
+            collaborators = mutableSetOf(researcher),
+        )
+        systematicStudyRepository.save(systematicStudy)
     }
 
     @AfterEach
     fun tearDown() {
         protocolRepository.deleteAll()
+        systematicStudyRepository.deleteAll()
     }
 
     @Nested
     @DisplayName("When posting protocols")
     inner class WhenPostingProtocols {
-        @BeforeEach
-        fun setUp() {
-            val (researcher, systematicStudyId) = factory
-            val systematicStudy = systematicStudyDataFactory.createSystematicStudyDocument(
-                id = systematicStudyId,
-                collaborators = mutableSetOf(researcher),
-            )
-            systematicStudyRepository.save(systematicStudy)
-        }
-
         private fun postUrl(
             researcher: UUID = factory.researcher,
             systematicStudy: UUID = factory.protocol,
