@@ -127,5 +127,18 @@ class ProtocolControllerTest(
                     .andExpect(jsonPath("$._links").exists())
             }
         }
+
+        @Nested
+        @Tag("InvalidClasses")
+        @DisplayName("And failing to get any")
+        inner class AndFailingToGetAny {
+            @Test
+            fun `should return 404 when trying to find nonexistent protocols`() {
+                mockMvc.perform(get(getUrl()).contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound)
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.detail").exists())
+            }
+        }
     }
 }
