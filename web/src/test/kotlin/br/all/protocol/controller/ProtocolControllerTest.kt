@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -97,6 +98,33 @@ class ProtocolControllerTest(
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                 ).andExpect(status().isForbidden)
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("When getting protocols")
+    inner class WhenGettingProtocols {
+        private fun getUrl(
+            researcher: UUID = factory.researcher,
+            systematicStudy: UUID = factory.protocol,
+        ) = "/researcher/$researcher/systematic-study/$systematicStudy/protocol"
+
+        @Nested
+        @Tag("ValidClasses")
+        @DisplayName("And finding them")
+        inner class AndFindingThem {
+            @Test
+            fun `should find the protocol and return it as well as 200 status code`() {
+                val document = factory.createProtocolDocument()
+                protocolRepository.save(document)
+
+                mockMvc.perform(get(getUrl()).contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.researcherId").value(factory.researcher.toString()))
+                    .andExpect(jsonPath("$.systematicStudyId").value(factory.protocol.toString()))
+                    .andExpect(jsonPath("$.content").exists())
+                    .andExpect(jsonPath("$._links").exists())
             }
         }
     }
