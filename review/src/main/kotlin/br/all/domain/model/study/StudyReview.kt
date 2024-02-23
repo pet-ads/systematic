@@ -1,6 +1,6 @@
 package br.all.domain.model.study
 
-import br.all.domain.model.protocol.Criteria
+import br.all.domain.model.protocol.Criterion
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.model.review.SystematicStudyId
 
@@ -17,7 +17,7 @@ class StudyReview(
     keywords: Set<String> = mutableSetOf(),
     searchSources: MutableSet<String>,
     references: List<String> = mutableListOf(),
-    criteria: MutableSet<Criteria> = mutableSetOf(),
+    criteria: MutableSet<Criterion> = mutableSetOf(),
     formAnswers: MutableSet<Answer<*>> = mutableSetOf(),
     robAnswers: MutableSet<Answer<*>> = mutableSetOf(),
     var comments: String = "",
@@ -58,9 +58,9 @@ class StudyReview(
 
     companion object{}
 
-    fun addCriterion(criterion: Criteria) = _criteria.add(criterion)
+    fun addCriterion(criterion: Criterion) = _criteria.add(criterion)
 
-    fun removeCriterion(criterion: Criteria) = _criteria.remove(criterion)
+    fun removeCriterion(criterion: Criterion) = _criteria.remove(criterion)
 
     fun answerQualityQuestionOf( answer: Answer<*>) = _qualityAnswers.add(answer)
 

@@ -4,7 +4,6 @@ import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
 import br.all.application.review.update.services.UpdateSystematicStudyService.ResponseModel
-import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudy
 import io.github.serpro69.kfaker.Faker
 import java.util.*
@@ -16,17 +15,18 @@ import br.all.application.review.update.services.UpdateSystematicStudyService.Re
 
 class TestDataFactory {
     private val faker = Faker()
-    val researcherId = UUID.randomUUID()
-    val systematicStudyId = UUID.randomUUID()
+    val researcher: UUID = UUID.randomUUID()
+    val systematicStudy: UUID = UUID.randomUUID()
+    val owner: UUID by lazy { UUID.randomUUID() }
 
     fun generateDto(
-        systematicStudyId: UUID = this.systematicStudyId,
+        id: UUID = systematicStudy,
         title: String = faker.book.title(),
         description: String = faker.lorem.words(),
-        ownerId: UUID = this.researcherId,
+        ownerId: UUID = researcher,
         collaborators: Set<UUID> = emptySet(),
     ) = SystematicStudyDto(
-        systematicStudyId,
+        id,
         title,
         description,
         ownerId,
@@ -40,29 +40,32 @@ class TestDataFactory {
     ) = CreateRequestModel(title, description, collaborators)
 
     fun createResponseModel(
-        researcherId: ResearcherId,
-        systematicStudyId: UUID,
-    ) = CreateResponseModel(researcherId.value, systematicStudyId)
+        researcherId: UUID = researcher,
+        systematicStudyId: UUID = systematicStudy,
+    ) = CreateResponseModel(researcherId, systematicStudyId)
 
-    fun createDtoFromCreateRequestModel(
-        systematicStudyId: UUID,
-        researcherId: ResearcherId,
+    fun dtoFromCreateRequest(
         request: CreateRequestModel,
-    ) = SystematicStudy.fromRequestModel(systematicStudyId, researcherId.value, request).toDto()
+        researcherId: UUID = researcher,
+        systematicStudyId: UUID = systematicStudy,
+    ) = SystematicStudy.fromRequestModel(systematicStudyId, researcherId, request).toDto()
 
     fun findOneResponseModel(
-        researcherId: UUID = this.researcherId,
-        systematicStudyId: UUID = this.systematicStudyId,
+        researcherId: UUID = this.researcher,
+        systematicStudyId: UUID = this.systematicStudy,
         dto: SystematicStudyDto = generateDto(),
     ) = FindOneResponseModel(researcherId, systematicStudyId, dto)
 
     fun findAllResponseModel(
-        vararg systematicStudies: SystematicStudyDto,
-        researcherId: UUID = this.researcherId,
-    ) = FindAllResponseModel(researcherId, systematicStudies.toList())
+        amountOfStudies: Int,
+        researcherId: UUID = this.researcher,
+    ) = FindAllResponseModel(
+        researcherId,
+        List(amountOfStudies) { generateDto(id = UUID.randomUUID(), ownerId = researcherId) }
+    )
 
     fun emptyFindAllResponseModel(
-        researcherId: UUID = this.researcherId,
+        researcherId: UUID = this.researcher,
         owner: UUID? = null,
     ) = FindAllResponseModel(
         researcherId = researcherId,
@@ -71,13 +74,15 @@ class TestDataFactory {
     )
 
     fun findAllByOwnerResponseModel(
-        owner: UUID,
-        vararg systematicStudies: SystematicStudyDto,
-        researcherId: UUID = this.researcherId,
+        amountOfStudies: Int,
+        owner: UUID = this.owner,
+        researcherId: UUID = this.researcher,
     ) = FindAllResponseModel(
         researcherId = researcherId,
         ownerId = owner,
-        systematicStudies = systematicStudies.toList(),
+        systematicStudies = List(amountOfStudies) {
+            generateDto(id = UUID.randomUUID(), ownerId = owner, collaborators = setOf(researcherId))
+        },
     )
 
     fun updateRequestModel(
@@ -86,7 +91,13 @@ class TestDataFactory {
     ) = UpdateRequestModel(title, description)
 
     fun updateResponseModel(
-        researcherId: UUID = this.researcherId,
-        systematicStudyId: UUID = this.systematicStudyId,
+        researcherId: UUID = this.researcher,
+        systematicStudyId: UUID = this.systematicStudy,
     ) = ResponseModel(researcherId, systematicStudyId)
+
+    operator fun component1() = researcher
+
+    operator fun component2() = systematicStudy
+
+    operator fun component3() = owner
 }

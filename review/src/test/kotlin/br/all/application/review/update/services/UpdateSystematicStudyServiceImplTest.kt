@@ -4,15 +4,14 @@ import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter
-import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeAllowed
-import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeUnauthenticated
-import br.all.application.review.util.CredentialsServiceMockBuilder.makeResearcherToBeUnauthorized
 import br.all.application.review.util.TestDataFactory
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
+import br.all.application.util.PreconditionCheckerMocking
 import io.mockk.Runs
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.just
@@ -24,19 +23,28 @@ import org.junit.jupiter.api.extension.ExtendWith
 @Tag("ServiceTest")
 @ExtendWith(MockKExtension::class)
 class UpdateSystematicStudyServiceImplTest {
-    @MockK
+    @MockK(relaxUnitFun = true)
     private lateinit var repository: SystematicStudyRepository
     @MockK
     private lateinit var credentialsService: ResearcherCredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: UpdateSystematicStudyPresenter
-    private lateinit var factory: TestDataFactory
+    @InjectMockKs
     private lateinit var sut: UpdateSystematicStudyServiceImpl
+
+    private lateinit var factory: TestDataFactory
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
-        sut = UpdateSystematicStudyServiceImpl(repository, credentialsService)
+        preconditionCheckerMocking = PreconditionCheckerMocking(
+            presenter,
+            credentialsService,
+            repository,
+            factory.researcher,
+            factory.systematicStudy,
+        )
     }
 
     @Nested
@@ -44,9 +52,7 @@ class UpdateSystematicStudyServiceImplTest {
     @DisplayName("When the systematic study is updated")
     inner class WhenTheSystematicStudyIsUpdated {
         @BeforeEach
-        fun setUp() {
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
-        }
+        fun setUp() = run { preconditionCheckerMocking.makeEverythingWork() }
 
         @Test
         fun `should only the title be updated`() {
@@ -54,26 +60,16 @@ class UpdateSystematicStudyServiceImplTest {
             val updatedDto = dto.copy(title = "New title")
             val response = factory.updateResponseModel()
 
-            makeStudyToBeUpdated(dto, updatedDto, response)
+            every { repository.findById(factory.systematicStudy) } returns dto
+            every { repository.saveOrUpdate(updatedDto) } just Runs
 
             val request = factory.updateRequestModel("New title")
-            sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
+            sut.update(presenter, factory.researcher, factory.systematicStudy, request)
 
             verify {
                 repository.saveOrUpdate(updatedDto)
                 presenter.prepareSuccessView(response)
             }
-        }
-
-        private fun makeStudyToBeUpdated(
-            dto: SystematicStudyDto,
-            updatedDto: SystematicStudyDto,
-            response: UpdateSystematicStudyService.ResponseModel
-        ) {
-            makeSystematicStudyExist()
-            every { repository.findById(factory.systematicStudyId) } returns dto
-            every { repository.saveOrUpdate(updatedDto) } just Runs
-            every { presenter.prepareSuccessView(response) } just Runs
         }
 
         @Test
@@ -82,10 +78,11 @@ class UpdateSystematicStudyServiceImplTest {
             val updatedDto = dto.copy(description = "New description")
             val response = factory.updateResponseModel()
 
-            makeStudyToBeUpdated(dto, updatedDto, response)
+            every { repository.findById(factory.systematicStudy) } returns dto
+            every { repository.saveOrUpdate(updatedDto) } just Runs
 
             val request = factory.updateRequestModel(description = "New description")
-            sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
+            sut.update(presenter, factory.researcher, factory.systematicStudy, request)
 
             verify {
                 repository.saveOrUpdate(updatedDto)
@@ -99,21 +96,17 @@ class UpdateSystematicStudyServiceImplTest {
             val updatedDto = dto.copy(title = "New title", description = "New description")
             val response = factory.updateResponseModel()
 
-            makeStudyToBeUpdated(dto, updatedDto, response)
+            every { repository.findById(factory.systematicStudy) } returns dto
+            every { repository.saveOrUpdate(updatedDto) } just Runs
 
             val request = factory.updateRequestModel("New title", "New description")
-            sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
+            sut.update(presenter, factory.researcher, factory.systematicStudy, request)
 
             verify {
                 repository.saveOrUpdate(updatedDto)
                 presenter.prepareSuccessView(response)
             }
         }
-    }
-
-    private fun makeSystematicStudyExist() {
-        every { repository.existsById(factory.systematicStudyId) } returns true
-        every { repository.hasReviewer(factory.systematicStudyId, factory.researcherId) } returns true
     }
 
     @Nested
@@ -125,12 +118,11 @@ class UpdateSystematicStudyServiceImplTest {
             val dto = factory.generateDto()
             val response = factory.updateResponseModel()
 
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
-            makeSystematicStudyExist()
-            every { repository.findById(factory.systematicStudyId) } returns dto
+            preconditionCheckerMocking.makeEverythingWork()
+            every { repository.findById(factory.systematicStudy) } returns dto
 
             val request = factory.updateRequestModel()
-            sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
+            sut.update(presenter, factory.researcher, factory.systematicStudy, request)
 
             verify(exactly = 0) { repository.saveOrUpdate(any<SystematicStudyDto>()) }
             verify { presenter.prepareSuccessView(response) }
@@ -140,14 +132,12 @@ class UpdateSystematicStudyServiceImplTest {
         fun `should prepare fail view with EntityNotFoundException when the study does not exist`() {
             val request = factory.updateRequestModel()
 
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
-            every { repository.existsById(factory.systematicStudyId) } returns false
-            every { presenter.isDone() } returns false andThen true
+            preconditionCheckerMocking.makeSystematicStudyNonexistent()
 
-            sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
+            sut.update(presenter, factory.researcher, factory.systematicStudy, request)
             verify(exactly = 2) { presenter.isDone() }
             verify {
-                repository.existsById(factory.systematicStudyId)
+                repository.existsById(factory.systematicStudy)
                 presenter.prepareFailView(any<EntityNotFoundException>())
             }
         }
@@ -156,14 +146,11 @@ class UpdateSystematicStudyServiceImplTest {
         fun `should the researcher be unauthorized if they are not a collaborator`() {
             val request = factory.updateRequestModel()
 
-            makeResearcherToBeAllowed(credentialsService, presenter, factory.researcherId)
-            every { repository.existsById(factory.systematicStudyId) } returns true
-            every { repository.hasReviewer(factory.systematicStudyId, factory.researcherId) } returns false
-            every { presenter.isDone() } returns false andThen true
+            preconditionCheckerMocking.makeResearcherNotACollaborator()
 
-            sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
+            sut.update(presenter, factory.researcher, factory.systematicStudy, request)
             verify {
-                repository.hasReviewer(factory.systematicStudyId, factory.researcherId)
+                repository.hasReviewer(factory.systematicStudy, factory.researcher)
                 presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()
             }
@@ -172,9 +159,10 @@ class UpdateSystematicStudyServiceImplTest {
         @Test
         fun `should prepare fail view if the researcher is unauthenticated`() {
             val request = factory.updateRequestModel()
-            makeResearcherToBeUnauthenticated(credentialsService, presenter, factory.researcherId)
 
-            sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
+            preconditionCheckerMocking.makeResearcherUnauthenticated()
+
+            sut.update(presenter, factory.researcher, factory.systematicStudy, request)
             verify {
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
                 presenter.isDone()
@@ -184,9 +172,10 @@ class UpdateSystematicStudyServiceImplTest {
         @Test
         fun `should prepare fail view if the researcher is unauthorized`() {
             val request = factory.updateRequestModel()
-            makeResearcherToBeUnauthorized(credentialsService, presenter, factory.researcherId)
 
-            sut.update(presenter, factory.researcherId, factory.systematicStudyId, request)
+            preconditionCheckerMocking.makeResearcherUnauthorized()
+
+            sut.update(presenter, factory.researcher, factory.systematicStudy, request)
             verify {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()

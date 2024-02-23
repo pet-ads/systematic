@@ -3,51 +3,106 @@ package br.all.domain.model.protocol
 import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.ddd.Entity
-import br.all.domain.shared.ddd.Notification
+import br.all.domain.shared.utils.exists
 import br.all.domain.shared.valueobject.Language
-import br.all.domain.shared.utils.requireThatExists
-import br.all.domain.shared.utils.toNeverEmptyMutableSet
-import java.util.UUID
+import java.util.*
 
 class Protocol internal constructor(
     protocolId: ProtocolId,
     val systematicStudyId: SystematicStudyId,
 
-    val goal: String,
-    val justification: String,
+    goal: String?,
+    justification: String?,
 
-    val researchQuestions: Set<ResearchQuestion>,
+    researchQuestions: Set<ResearchQuestion>,
     keywords: Set<String>,
-    val searchString: String,
+    searchString: String?,
     informationSources: Set<SearchSource>,
-    val sourcesSelectionCriteria: String,
+    sourcesSelectionCriteria: String?,
 
-    val searchMethod: String,
+    searchMethod: String?,
     studiesLanguages: Set<Language>,
-    val studyTypeDefinition: String,
+    studyTypeDefinition: String?,
 
-    val selectionProcess: String,
-    selectionCriteria: Set<Criteria>,
+    selectionProcess: String?,
+    eligibilityCriteria: Set<Criterion>,
 
-    val dataCollectionProcess: String,
-    val analysisAndSynthesisProcess: String,
+    dataCollectionProcess: String?,
+    analysisAndSynthesisProcess: String?,
 
     extractionQuestions: Set<QuestionId> = emptySet(),
     robQuestions: Set<QuestionId> = emptySet(),
-    val picoc: Picoc? = null,
+    var picoc: Picoc? = null,
 ) : Entity<UUID>(protocolId) {
+    var goal: String? = null
+        set(value) {
+            if (value != null) require(value.isNotBlank()) { "The goal cannot be an empty string" }
+            field = value
+        }
 
-    private val _keywords = keywords.toNeverEmptyMutableSet()
+    var justification: String? = null
+        set(value) {
+            if (value != null) require(value.isNotBlank()) { "The justification cannot be an empty string" }
+            field = value
+        }
+
+    private val _researchQuestions = researchQuestions.toMutableSet()
+    val researchQuestions get() = _researchQuestions.toSet()
+
+    private val _keywords = keywords.toMutableSet()
     val keywords get() = _keywords.toSet()
 
-    private val _informationSources = informationSources.toNeverEmptyMutableSet()
+    var searchString: String? = null
+        set(value) {
+            if (value != null) require(value.isNotBlank()) { "The search string must not be blank!" }
+            field = value
+        }
+
+    private val _informationSources = informationSources.toMutableSet()
     val informationSources get() = _informationSources.toSet()
 
-    private val _studiesLanguages = studiesLanguages.toNeverEmptyMutableSet()
+    var sourcesSelectionCriteria: String? = null
+        set(value) {
+            if (value != null) require(value.isNotBlank()) { "The sources selection criteria description must not be blank" }
+            field = value
+        }
+
+    var searchMethod: String? = null
+        set(value) {
+            if (value != null) require(value.isNotBlank()) { "The search method description must not be blank" }
+            field = value
+        }
+
+    private val _studiesLanguages = studiesLanguages.toMutableSet()
     val studiesLanguages get() = _studiesLanguages.toSet()
 
-    private val _selectionCriteria = selectionCriteria.toNeverEmptyMutableSet()
-    val selectionCriteria get() = _selectionCriteria.toSet()
+    var studyTypeDefinition: String? = null
+        set(value) {
+            if (value != null) require(value.isNotBlank()) { "The study type definition must not be blank" }
+            field = value
+        }
+
+    var selectionProcess: String? = null
+        set(value) {
+            if (value != null) require(value.isNotBlank()) { "The selection process description must not be blank" }
+            field = value
+        }
+
+    private val _eligibilityCriteria = eligibilityCriteria.toMutableSet()
+    val eligibilityCriteria get() = _eligibilityCriteria.toSet()
+
+    var dataCollectionProcess: String? = null
+        set(value) {
+            if (value != null) require(value.isNotBlank()) { "The data collection process description must not be blank" }
+            field = value
+        }
+
+    var analysisAndSynthesisProcess: String? = null
+        set(value) {
+            if (value != null)
+                require(value.isNotBlank()) { "The analysis and synthesis process description must not be blank" }
+            field = value
+        }
 
     private val _extractionQuestions = extractionQuestions.toMutableSet()
     val extractionQuestions get() = _extractionQuestions.toSet()
@@ -56,79 +111,95 @@ class Protocol internal constructor(
     val robQuestions get() = _robQuestions.toSet()
 
     init {
-        val notification = validate()
-        require(notification.hasNoErrors()) { notification.message() }
+        this.goal = goal
+        this.justification = justification
+        this.searchString = searchString
+        this.sourcesSelectionCriteria = sourcesSelectionCriteria
+        this.searchMethod = searchMethod
+        this.studyTypeDefinition = studyTypeDefinition
+        this.selectionProcess = selectionProcess
+        this.dataCollectionProcess = dataCollectionProcess
+        this.analysisAndSynthesisProcess = analysisAndSynthesisProcess
+
+        require(keywords.none { it.isBlank() }) { "Protocol must not contain any blank keyword" }
     }
 
-    companion object {
-        fun with(systematicStudyId: SystematicStudyId, keywords: Set<String>) =
-            ProtocolBuilder.with(systematicStudyId, keywords)
+    fun addResearchQuestion(question: ResearchQuestion) = _researchQuestions.add(question)
+
+    fun removeResearchQuestion(question: ResearchQuestion) {
+        check(_researchQuestions.isNotEmpty()) { "Unable to remove any research question because none exist!" }
+        exists(question in _researchQuestions) {
+            "Unable to remove research question \"$question\", because it does not belongs to protocol"
+        }
+        _researchQuestions.remove(question)
     }
 
-    fun validate(): Notification {
-        val notification = Notification()
-
-        if (searchString.isBlank())
-            notification.addError("The search string cannot be blank!")
-        if (_selectionCriteria.none { it.type == Criteria.CriteriaType.INCLUSION })
-            notification.addError("At least one studies inclusion criterion must be given!")
-        if (_selectionCriteria.none { it.type == Criteria.CriteriaType.EXCLUSION })
-            notification.addError("At least one studies exclusion criterion must be given!")
-
-        return notification
+    fun addKeyword(keyword: String) {
+        require(keyword.isNotBlank()) { "Protocol must not have blank keywords" }
+        _keywords.add(keyword)
     }
-
-    fun addKeyword(keyword: String) = _keywords.add(keyword)
 
     fun removeKeyword(keyword: String) {
-        requireThatExists(keyword in _keywords)
-            { "Unable to remove a keyword that are in the protocol! Provided: $keyword" }
+        check(_keywords.isNotEmpty()) { "Unable to remove keyword from a protocol that does not have anyone!" }
+        exists(keyword in _keywords) {
+            "Unable to remove a keyword that are in the protocol! Provided: $keyword"
+        }
         _keywords.remove(keyword)
     }
 
     fun addInformationSource(searchSource: SearchSource) = _informationSources.add(searchSource)
 
     fun removeInformationSource(informationSource: SearchSource) {
-        requireThatExists(informationSource in _informationSources)
-            { "Unable to remove a information source that is not in the protocol! Provided: $informationSource" }
+        check(_informationSources.isNotEmpty()) { "Unable to remove any information source because none exist!" }
+        exists(informationSource in _informationSources) {
+            "Unable to remove a information source that is not in the protocol! Provided: $informationSource"
+        }
         _informationSources.remove(informationSource)
     }
 
     fun addLanguage(language: Language) = _studiesLanguages.add(language)
 
     fun removeLanguage(language: Language) {
-        requireThatExists(language in _studiesLanguages)
-            { "Unable to remove a language that is not in the protocol! Provided: $language" }
+        check(_studiesLanguages.isNotEmpty()) { "There is no languages to remove from this protocol" }
+        exists(language in _studiesLanguages) {
+            "Unable to remove a language that is not in the protocol! Provided: $language"
+        }
         _studiesLanguages.remove(language)
     }
+    fun addEligibilityCriterion(criterion: Criterion) = _eligibilityCriteria.add(criterion)
 
-    fun addSelectionCriteria(criteria: Criteria) = _selectionCriteria.add(criteria)
-
-    fun removeSelectionCriteria(criteria: Criteria) {
-        requireThatExists(criteria in _selectionCriteria)
-            { "Unable to remove a criteria that has never been  defined in the protocol! Provided: $criteria" }
-        check(isAbleToRemoveCriteriaWithSameTypeOf(criteria))
-            { "Cannot remove $criteria because it would cause in no criteria of its type!" }
-        _selectionCriteria.remove(criteria)
-    }
-
-    private fun isAbleToRemoveCriteriaWithSameTypeOf(criteria: Criteria): Boolean {
-        return _selectionCriteria.count { it.type == criteria.type } > 1
+    fun removeEligibilityCriterion(criterion: Criterion) {
+        check(_eligibilityCriteria.isNotEmpty()) { "There is not any criterion to remove from this protocol" }
+        exists(criterion in _eligibilityCriteria) {
+            "Unable to remove a criteria that has never been  defined in the protocol! Provided: $criterion"
+        }
+        _eligibilityCriteria.remove(criterion)
     }
 
     fun addExtractionQuestion(questionId: QuestionId) = _extractionQuestions.add(questionId)
 
     fun removeExtractionQuestion(questionId: QuestionId) {
-        requireThatExists(questionId in _extractionQuestions)
-            { "Unable to remove a question that does not belongs to this protocol! Provided: $questionId" }
+        check(_extractionQuestions.isNotEmpty()) { "Unable to remove any extraction question because none exist" }
+        exists(questionId in _extractionQuestions) {
+            "Unable to remove a question that does not belongs to this protocol! Provided: $questionId"
+        }
         _extractionQuestions.remove(questionId)
     }
 
     fun addRobQuestion(questionId: QuestionId) = _robQuestions.add(questionId)
 
     fun removeRobQuestion(questionId: QuestionId) {
-        requireThatExists(questionId in _robQuestions)
-            { "Unable to remove a question that does not belongs to this protocol! Provided: $questionId" }
+        check(_robQuestions.isNotEmpty()) { "Unable to remove any rob question because none exist" }
+        exists(questionId in _robQuestions) {
+            "Unable to remove a question that does not belongs to this protocol! Provided: $questionId"
+        }
         _robQuestions.remove(questionId)
+    }
+
+    companion object {
+        fun write(systematicStudyId: SystematicStudyId, keywords: Set<String>) = ProtocolBuilder.with(
+            systematicStudyId,
+            keywords,
+        )
     }
 }

@@ -9,35 +9,32 @@ import br.all.domain.model.researcher.ResearcherId
 import java.util.*
 
 class FindAllSystematicStudiesServiceImpl(
-    private val systematicStudyRepository: SystematicStudyRepository,
+    private val repository: SystematicStudyRepository,
     private val credentialsService: ResearcherCredentialsService,
 ): FindAllSystematicStudiesService {
-    override fun findAll(presenter: FindAllSystematicStudyPresenter, researcherId: UUID) {
-        if (researcherNotAllowed(presenter, researcherId)) return
+    override fun findAll(presenter: FindAllSystematicStudyPresenter, researcher: UUID) {
+        if (researcherNotAllowed(presenter, researcher)) return
 
-        systematicStudyRepository.findSomeByCollaborator(researcherId).let {
-            presenter.prepareSuccessView(ResponseModel(researcherId, it))
+        repository.findAllByCollaborator(researcher).let {
+            presenter.prepareSuccessView(ResponseModel(researcher, it))
         }
     }
 
-    override fun findAllByOwner(presenter: FindAllSystematicStudyPresenter, researcherId: UUID, ownerId: UUID) {
-        if (researcherNotAllowed(presenter, researcherId)) return
+    override fun findAllByOwner(presenter: FindAllSystematicStudyPresenter, researcher: UUID, owner: UUID) {
+        if (researcherNotAllowed(presenter, researcher)) return
 
-        systematicStudyRepository.findSomeByCollaboratorAndOwner(researcherId, ownerId).let {
-            val response = ResponseModel(
-                researcherId = researcherId,
-                ownerId = ownerId,
-                systematicStudies = it
-            )
-            presenter.prepareSuccessView(response)
+        repository.findAllByCollaboratorAndOwner(researcher, owner).let {
+            ResponseModel(researcherId = researcher, ownerId = owner, systematicStudies = it).also { response ->
+                presenter.prepareSuccessView(response)
+            }
         }
     }
 
     private fun researcherNotAllowed(
         presenter: FindAllSystematicStudyPresenter,
-        researcherId: UUID,
-    ) = PreconditionChecker(systematicStudyRepository, credentialsService).run {
-            prepareIfUnauthenticatedOrUnauthorized(presenter, ResearcherId(researcherId))
-            presenter.isDone()
+        researcher: UUID,
+    ) = PreconditionChecker(repository, credentialsService).run {
+        prepareIfUnauthenticatedOrUnauthorized(presenter, ResearcherId(researcher))
+        presenter.isDone()
     }
 }
