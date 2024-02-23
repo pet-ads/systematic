@@ -63,6 +63,11 @@ class MongoProtocolRepositoryTest(
                 val document = sut.findById(factory.protocol).toNullable()
                 assertNull(document)
             }
+
+            @Test
+            fun `should find out that a nonexistent protocol truly does not exist`() {
+                assertFalse(sut.existsById(factory.protocol))
+            }
         }
     }
 }
