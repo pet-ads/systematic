@@ -1,9 +1,9 @@
 package br.all.application.review.repository
 
-import br.all.application.review.create.SystematicStudyRequestModel
+import br.all.application.review.create.CreateSystematicStudyService.RequestModel
 import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.review.SystematicStudy
+import br.all.domain.model.review.SystematicStudyId
 import java.util.*
 
 fun SystematicStudy.toDto() = SystematicStudyDto(
@@ -14,12 +14,12 @@ fun SystematicStudy.toDto() = SystematicStudyDto(
     collaborators.map { it.value }.toSet(),
 )
 
-fun SystematicStudy.Companion.fromRequestModel(id: UUID, requestModel: SystematicStudyRequestModel) : SystematicStudy {
+fun SystematicStudy.Companion.fromRequestModel(id: UUID, ownerId: UUID, requestModel: RequestModel) : SystematicStudy {
     return SystematicStudy(
         SystematicStudyId(id),
         requestModel.title,
         requestModel.description,
-        ResearcherId(requestModel.owner),
+        ResearcherId(ownerId),
     )
 }
 

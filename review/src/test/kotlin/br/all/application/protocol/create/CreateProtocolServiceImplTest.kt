@@ -1,93 +1,118 @@
 package br.all.application.protocol.create
 
+import br.all.application.protocol.create.CreateProtocolService.ResponseModel
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.repository.fromRequestModel
 import br.all.application.protocol.repository.toDto
-import br.all.application.protocol.util.FakeProtocolRepository
+import br.all.application.protocol.util.TestDataFactory
+import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.DuplicateElementException
+import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.application.shared.exceptions.UnauthenticatedUserException
+import br.all.application.shared.exceptions.UnauthorizedUserException
+import br.all.application.util.PreconditionCheckerMocking
 import br.all.domain.model.protocol.Protocol
-import br.all.domain.services.UuidGeneratorService
-import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import io.mockk.verify
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.*
-import kotlin.test.assertEquals
 
+@Tag("UnitTest")
+@Tag("ServiceTest")
 @ExtendWith(MockKExtension::class)
 class CreateProtocolServiceImplTest {
-    @MockK private lateinit var systematicStudyRepository: SystematicStudyRepository
-    @MockK private lateinit var protocolRepository: ProtocolRepository
+    @MockK(relaxUnitFun = true)
+    private lateinit var repository: ProtocolRepository
+    @MockK(relaxUnitFun = true)
+    private lateinit var systematicStudyRepository: SystematicStudyRepository
+    @MockK
+    private lateinit var researcherCredentialsService: ResearcherCredentialsService
+    @MockK(relaxed = true)
+    private lateinit var presenter: CreateProtocolPresenter
+    @InjectMockKs
     private lateinit var sut: CreateProtocolServiceImpl
+
+    private lateinit var factory: TestDataFactory
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
 
     @BeforeEach
     fun setUp() {
-        protocolRepository = FakeProtocolRepository()
-        sut = CreateProtocolServiceImpl(protocolRepository, systematicStudyRepository)
-    }
-
-    @Test
-    fun `Should successfully create a new protocol`() {
-        val reviewId = UUID.randomUUID()
-        val requestModel = getProtocolRequestModel()
-        val protocolDto = Protocol.fromRequestModel(reviewId, requestModel).toDto()
-
-        every { systematicStudyRepository.existsById(reviewId) } returns true
-
-        sut.create(reviewId, requestModel)
-
-        val createdDto = protocolRepository.findById(reviewId)
-        assertEquals(protocolDto, createdDto)
-    }
-
-    @Test
-    fun `Should throw when trying to assign a protocol to a nonexistent systematic study`() {
-        val reviewId = UUID.randomUUID()
-        val requestModel = getProtocolRequestModel()
-
-        every { systematicStudyRepository.existsById(reviewId) } returns false
-
-        assertThrows<NoSuchElementException> { sut.create(reviewId, requestModel) }
-    }
-
-    @Test
-    fun `Should throw when to create a protocol to a systematic study that already has one`() {
-        val reviewId = UUID.randomUUID()
-        val requestModel = getProtocolRequestModel()
-        val dto = Protocol.fromRequestModel(reviewId, requestModel).toDto()
-
-        every { systematicStudyRepository.existsById(reviewId) } returns true
-        protocolRepository.create(dto)
-
-        assertThrows<DuplicateElementException> { sut.create(reviewId, requestModel) }
-    }
-
-    private fun getProtocolRequestModel(): ProtocolRequestModel {
-        return ProtocolRequestModel(
-            goal = "Something",
-            justification = "It is important",
-
-            researchQuestions = setOf("What is the questions which its answer is 42?"),
-            keywords = setOf("Keyword"),
-            searchString = "String",
-            informationSources = setOf("SomeSourceWithManyPhilophicalArticles"),
-            sourcesSelectionCriteria = "I want so",
-
-            searchMethod = "Reading philosophical articles",
-            studiesLanguages = setOf("ENGLISH"),
-            studyTypeDefinition = "Primary",
-
-            selectionProcess = "Classify articles by criteria",
-            selectionCriteria = setOf(
-                "It has deep reflection about life" to "INCLUSION",
-                "It does not talk about life" to "EXCLUSION",
-            ),
-            dataCollectionProcess = "Reading the articles and reflecting about them",
-            analysisAndSynthesisProcess = "Analyse opinions on each article",
+        factory = TestDataFactory()
+        preconditionCheckerMocking = PreconditionCheckerMocking(
+            presenter,
+            researcherCredentialsService,
+            systematicStudyRepository,
+            factory.researcher,
+            factory.systematicStudy,
         )
+    }
+
+    @Nested
+    @Tag("ValidClasses")
+    @DisplayName("When successfully creating protocols")
+    inner class WhenSuccessfullyCreatingProtocols {
+        @Test
+        fun `should create a protocol for an existent systematic study`() {
+            val (researcher, systematicStudy) = factory
+            val request = factory.createRequestModel()
+            val dto = Protocol.fromRequestModel(request).toDto()
+            val response = ResponseModel(researcher, systematicStudy)
+
+            preconditionCheckerMocking.makeEverythingWork()
+
+            sut.create(presenter, request)
+
+            verify {
+                repository.saveOrUpdate(dto)
+                presenter.prepareSuccessView(response)
+            }
+        }
+    }
+
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("When failing to create protocols")
+    inner class WhenFailingToCreateProtocols {
+        @Test
+        fun `should not be possible to write a protocol for a nonexistent study`() {
+            val request = factory.createRequestModel()
+
+            preconditionCheckerMocking.makeSystematicStudyNonexistent()
+            sut.create(presenter, request)
+
+            verify { presenter.prepareFailView(any<EntityNotFoundException>()) }
+        }
+
+        @Test
+        fun `should throw when the researcher is not a collaborator of the requested study`() {
+            val request = factory.createRequestModel()
+
+            preconditionCheckerMocking.makeResearcherNotACollaborator()
+            sut.create(presenter, request)
+
+            verify { presenter.prepareFailView(any<UnauthorizedUserException>()) }
+        }
+
+        @Test
+        fun `should throw when the researcher is unauthenticated`() {
+            val request = factory.createRequestModel()
+
+            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            sut.create(presenter, request)
+
+            verify { presenter.prepareFailView(any<UnauthenticatedUserException>()) }
+        }
+
+        @Test
+        fun `should throw when the researcher has no permission`() {
+            val request = factory.createRequestModel()
+
+            preconditionCheckerMocking.makeResearcherUnauthorized()
+            sut.create(presenter, request)
+
+            verify { presenter.prepareFailView(any<UnauthorizedUserException>()) }
+        }
     }
 }

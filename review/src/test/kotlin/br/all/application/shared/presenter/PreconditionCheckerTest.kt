@@ -7,8 +7,9 @@ import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
-
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -24,7 +25,7 @@ class PreconditionCheckerTest {
     fun setUp() {
         presenter = mockk(relaxed = true)
         credentialsService = mockk()
-        repository = mockk()
+        repository = mockk(relaxed = true)
         preconditionChecker = PreconditionChecker(repository, credentialsService)
     }
 
@@ -34,8 +35,8 @@ class PreconditionCheckerTest {
         val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         every { credentialsService.isAuthenticated(researcherId) } returns true
         every { credentialsService.hasAuthority(researcherId) } returns true
-        every { repository.existsById(systematicStudyId.value) } returns true
-        every { repository.hasReviewer(systematicStudyId.value, researcherId.value) } returns true
+        every { repository.existsById(systematicStudyId.value()) } returns true
+        every { repository.hasReviewer(systematicStudyId.value(), researcherId.value) } returns true
 
         preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
@@ -71,7 +72,7 @@ class PreconditionCheckerTest {
         val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         every { credentialsService.isAuthenticated(researcherId) } returns true
         every { credentialsService.hasAuthority(researcherId) } returns true
-        every { repository.existsById(systematicStudyId.value) } returns false
+        every { repository.existsById(systematicStudyId.value()) } returns false
 
         preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
@@ -84,8 +85,8 @@ class PreconditionCheckerTest {
         val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         every { credentialsService.isAuthenticated(researcherId) } returns true
         every { credentialsService.hasAuthority(researcherId) } returns true
-        every { repository.existsById(systematicStudyId.value) } returns true
-        every { repository.hasReviewer(systematicStudyId.value, researcherId.value) } returns false
+        every { repository.existsById(systematicStudyId.value()) } returns true
+        every { repository.hasReviewer(systematicStudyId.value(), researcherId.value) } returns false
 
         preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
 
