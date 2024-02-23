@@ -148,6 +148,15 @@ class ProtocolControllerTest(
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.detail").exists())
             }
+
+            @Test
+            fun `should not authorize researchers that are not a collaborator to find protocols`() {
+                mockMvc.perform(
+                    get(getUrl(researcher =  UUID.randomUUID())).contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isForbidden)
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.detail").exists())
+            }
         }
     }
 }
