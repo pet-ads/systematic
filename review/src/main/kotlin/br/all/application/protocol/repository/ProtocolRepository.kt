@@ -1,7 +1,7 @@
 package br.all.application.protocol.repository
 
+import org.springframework.stereotype.Repository
 import java.util.*
-
 interface ProtocolRepository {
     fun saveOrUpdate(dto: ProtocolDto)
 
