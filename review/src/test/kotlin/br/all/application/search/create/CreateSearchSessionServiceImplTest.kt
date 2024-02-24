@@ -3,7 +3,9 @@ import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.CreateSearchSessionServiceImpl
 import br.all.application.search.create.CreateSearchSessionPresenter
 import br.all.application.search.create.CreateSearchSessionService.*
+import br.all.application.search.create.TestDataFactory
 import br.all.application.search.repository.SearchSessionRepository
+import br.all.application.search.repository.toDto
 import br.all.application.shared.exceptions.*
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.domain.model.protocol.ProtocolId
@@ -38,14 +40,26 @@ object MultipartFileUtil {
 @ExtendWith(MockKExtension::class)
 class CreateSearchSessionServiceImplTest {
 
-    @MockK private lateinit var searchSessionRepository: SearchSessionRepository
-    @MockK private lateinit var systematicStudyRepository: SystematicStudyRepository
-    @MockK private lateinit var uuidGeneratorService: UuidGeneratorService
-    @MockK private lateinit var bibtexConverterService: BibtexConverterService
-    @MockK private lateinit var studyReviewRepository: StudyReviewRepository
-    @MockK private lateinit var credentialsService: ResearcherCredentialsService
+    @MockK
+    private lateinit var searchSessionRepository: SearchSessionRepository
+
+    @MockK
+    private lateinit var systematicStudyRepository: SystematicStudyRepository
+
+    @MockK
+    private lateinit var uuidGeneratorService: UuidGeneratorService
+
+    @MockK
+    private lateinit var bibtexConverterService: BibtexConverterService
+
+    @MockK
+    private lateinit var studyReviewRepository: StudyReviewRepository
+
+    @MockK
+    private lateinit var credentialsService: ResearcherCredentialsService
 
     private lateinit var sut: CreateSearchSessionServiceImpl
+    private lateinit var testDataFactory: TestDataFactory
 
     @BeforeEach
     fun setUp() {
@@ -57,6 +71,7 @@ class CreateSearchSessionServiceImplTest {
             studyReviewRepository,
             credentialsService
         )
+        testDataFactory = TestDataFactory()
     }
 
     @Nested
@@ -65,15 +80,12 @@ class CreateSearchSessionServiceImplTest {
         @Test
         fun `createSession should create search session`() {
             val presenter = mockk<CreateSearchSessionPresenter>(relaxed = true)
-            val bibFileContent = "bib_file_content".toByteArray()
-            val mockMultipartFile = MultipartFileUtil.createMockMultipartFile("bibFile", bibFileContent)
             val request = RequestModel(
                 researcherId = UUID.randomUUID(),
                 systematicStudyId = UUID.randomUUID(),
                 searchString = "Test search",
                 additionalInfo = "Additional info",
-                source = SearchSource("Test source"),
-                bibFile = mockMultipartFile
+                source = "Test source",
             )
 
             val systematicStudyId = SystematicStudyId(request.systematicStudyId)
@@ -81,12 +93,12 @@ class CreateSearchSessionServiceImplTest {
             val sessionId = SearchSessionID(UUID.randomUUID())
             val searchSession = SearchSession(
                 sessionId, systematicStudyId, request.searchString, request.additionalInfo ?: "",
-                LocalDateTime.now(), request.source
+                LocalDateTime.now(), SearchSource(request.source)
             )
 
             every { credentialsService.isAuthenticated(ResearcherId(request.researcherId)) } returns true
             every { credentialsService.hasAuthority(ResearcherId(request.researcherId)) } returns true
-            every { systematicStudyRepository.existsById(systematicStudyId.value) } returns true
+            every { systematicStudyRepository.existsById(systematicStudyId.value()) } returns true
             every {
                 systematicStudyRepository.hasReviewer(
                     systematicStudyId.value(),
@@ -100,14 +112,14 @@ class CreateSearchSessionServiceImplTest {
             every {
                 searchSessionRepository.existsBySearchSource(
                     protocolId.value,
-                    request.source.searchSource
+                    request.source
                 )
             } returns false
-            every { searchSessionRepository.create(searchSession) } just Runs
+            every { searchSessionRepository.create(searchSession.toDto()) } just Runs
             every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
             every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } returns emptyList()
 
-            sut.createSession(presenter, request)
+            sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
             verify {
                 presenter.prepareSuccessView(any<ResponseModel>())
@@ -121,15 +133,12 @@ class CreateSearchSessionServiceImplTest {
         @Test
         fun `createSession should fail authentication`() {
             val presenter = mockk<CreateSearchSessionPresenter>(relaxed = true)
-            val bibFileContent = "bib_file_content".toByteArray()
-            val mockMultipartFile = MultipartFileUtil.createMockMultipartFile("bibFile", bibFileContent)
             val request = RequestModel(
                 researcherId = UUID.randomUUID(),
                 systematicStudyId = UUID.randomUUID(),
                 searchString = "Test search",
                 additionalInfo = "Additional info",
-                source = SearchSource("Test source"),
-                bibFile = mockMultipartFile
+                source = "Test source",
             )
 
             val systematicStudyId = SystematicStudyId(request.systematicStudyId)
@@ -137,12 +146,12 @@ class CreateSearchSessionServiceImplTest {
             val sessionId = SearchSessionID(UUID.randomUUID())
             val searchSession = SearchSession(
                 sessionId, systematicStudyId, request.searchString, request.additionalInfo ?: "",
-                LocalDateTime.now(), request.source
+                LocalDateTime.now(), SearchSource(request.source)
             )
 
             every { credentialsService.isAuthenticated(ResearcherId(request.researcherId)) } returns false
             every { credentialsService.hasAuthority(ResearcherId(request.researcherId)) } returns true
-            every { systematicStudyRepository.existsById(systematicStudyId.value) } returns true
+            every { systematicStudyRepository.existsById(systematicStudyId.value()) } returns true
             every {
                 systematicStudyRepository.hasReviewer(
                     systematicStudyId.value(),
@@ -156,14 +165,14 @@ class CreateSearchSessionServiceImplTest {
             every {
                 searchSessionRepository.existsBySearchSource(
                     protocolId.value,
-                    request.source.searchSource
+                    request.source
                 )
             } returns false
-            every { searchSessionRepository.create(searchSession) } just Runs
+            every { searchSessionRepository.create(searchSession.toDto()) } just Runs
             every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
             every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } returns emptyList()
 
-            sut.createSession(presenter, request)
+            sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
             verify {
                 presenter.prepareFailView(match { it is UnauthenticatedUserException })
@@ -180,8 +189,7 @@ class CreateSearchSessionServiceImplTest {
                 systematicStudyId = UUID.randomUUID(),
                 searchString = "Test search",
                 additionalInfo = "Additional info",
-                source = SearchSource("Test source"),
-                bibFile = mockMultipartFile
+                source ="Test source",
             )
 
             val systematicStudyId = SystematicStudyId(request.systematicStudyId)
@@ -189,12 +197,12 @@ class CreateSearchSessionServiceImplTest {
             val sessionId = SearchSessionID(UUID.randomUUID())
             val searchSession = SearchSession(
                 sessionId, systematicStudyId, request.searchString, request.additionalInfo ?: "",
-                LocalDateTime.now(), request.source
+                LocalDateTime.now(), SearchSource(request.source)
             )
 
             every { credentialsService.isAuthenticated(ResearcherId(request.researcherId)) } returns true
             every { credentialsService.hasAuthority(ResearcherId(request.researcherId)) } returns false
-            every { systematicStudyRepository.existsById(systematicStudyId.value) } returns true
+            every { systematicStudyRepository.existsById(systematicStudyId.value()) } returns true
             every {
                 systematicStudyRepository.hasReviewer(
                     systematicStudyId.value(),
@@ -208,14 +216,14 @@ class CreateSearchSessionServiceImplTest {
             every {
                 searchSessionRepository.existsBySearchSource(
                     protocolId.value,
-                    request.source.searchSource
+                    request.source
                 )
             } returns false
-            every { searchSessionRepository.create(searchSession) } just Runs
+            every { searchSessionRepository.create(searchSession.toDto()) } just Runs
             every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
             every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } returns emptyList()
 
-            sut.createSession(presenter, request)
+            sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
             verify {
                 presenter.prepareFailView(match { it is UnauthorizedUserException })
@@ -232,8 +240,7 @@ class CreateSearchSessionServiceImplTest {
                 systematicStudyId = UUID.randomUUID(),
                 searchString = "Test search",
                 additionalInfo = "Additional info",
-                source = SearchSource("Test source"),
-                bibFile = mockMultipartFile
+                source ="Test source",
             )
 
             val systematicStudyId = SystematicStudyId(request.systematicStudyId)
@@ -241,12 +248,12 @@ class CreateSearchSessionServiceImplTest {
             val sessionId = SearchSessionID(UUID.randomUUID())
             val searchSession = SearchSession(
                 sessionId, systematicStudyId, request.searchString, request.additionalInfo ?: "",
-                LocalDateTime.now(), request.source
+                LocalDateTime.now(), SearchSource(request.source)
             )
 
             every { credentialsService.isAuthenticated(ResearcherId(request.researcherId)) } returns true
             every { credentialsService.hasAuthority(ResearcherId(request.researcherId)) } returns true
-            every { systematicStudyRepository.existsById(systematicStudyId.value) } returns false
+            every { systematicStudyRepository.existsById(systematicStudyId.value()) } returns false
 
             every { uuidGeneratorService.next() } returns sessionId.value
 
@@ -254,14 +261,14 @@ class CreateSearchSessionServiceImplTest {
             every {
                 searchSessionRepository.existsBySearchSource(
                     protocolId.value,
-                    request.source.searchSource
+                    request.source
                 )
             } returns false
-            every { searchSessionRepository.create(searchSession) } just Runs
+            every { searchSessionRepository.create(searchSession.toDto()) } just Runs
             every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
             every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } returns emptyList()
 
-            sut.createSession(presenter, request)
+            sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
             verify {
                 presenter.prepareFailView(match { it is EntityNotFoundException })
@@ -278,8 +285,7 @@ class CreateSearchSessionServiceImplTest {
                 systematicStudyId = UUID.randomUUID(),
                 searchString = "Test search",
                 additionalInfo = "Additional info",
-                source = SearchSource("Test source"),
-                bibFile = mockMultipartFile
+                source ="Test source",
             )
 
             val systematicStudyId = SystematicStudyId(request.systematicStudyId)
@@ -287,12 +293,12 @@ class CreateSearchSessionServiceImplTest {
             val sessionId = SearchSessionID(UUID.randomUUID())
             val searchSession = SearchSession(
                 sessionId, systematicStudyId, request.searchString, request.additionalInfo ?: "",
-                LocalDateTime.now(), request.source
+                LocalDateTime.now(), SearchSource(request.source)
             )
 
             every { credentialsService.isAuthenticated(ResearcherId(request.researcherId)) } returns true
             every { credentialsService.hasAuthority(ResearcherId(request.researcherId)) } returns true
-            every { systematicStudyRepository.existsById(systematicStudyId.value) } returns true
+            every { systematicStudyRepository.existsById(systematicStudyId.value()) } returns true
             every {
                 systematicStudyRepository.hasReviewer(
                     systematicStudyId.value(),
@@ -306,15 +312,15 @@ class CreateSearchSessionServiceImplTest {
             every {
                 searchSessionRepository.existsBySearchSource(
                     protocolId.value,
-                    request.source.searchSource
+                    request.source
                 )
             } returns true
-            every { searchSessionRepository.create(searchSession) } just Runs
+            every { searchSessionRepository.create(searchSession.toDto()) } just Runs
             every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
             every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } returns emptyList()
 
             // Act
-            sut.createSession(presenter, request)
+            sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
             verify {
                 presenter.prepareFailView(match { it is UniquenessViolationException })

@@ -4,6 +4,7 @@ import br.all.application.search.create.CreateSearchSessionService
 import br.all.domain.model.protocol.SearchSource
 import br.all.search.presenter.RestfulCreateSearchSessionPresenter
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -16,18 +17,15 @@ class SearchSessionController(
     val createService : CreateSearchSessionService,
 ) {
 
-    @PostMapping
+    @PostMapping(consumes = [ MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE])
     fun createSearchSession(
-        @PathVariable researcher: UUID,
-        @PathVariable systematicStudy: UUID,
-        @RequestBody request : CreateRequest,
-        @RequestPart("bibFile") bibFile: MultipartFile
-
+        @PathVariable researcherId: UUID,
+        @PathVariable systematicStudyId: UUID,
+        @RequestPart("request") request : CreateRequest,
+        @RequestPart("file") file: MultipartFile
     ) : ResponseEntity<*> {
         val presenter = RestfulCreateSearchSessionPresenter()
-        createService.createSession(
-            presenter,
-            request)
+        createService.createSession(presenter, request, String(file.bytes))
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

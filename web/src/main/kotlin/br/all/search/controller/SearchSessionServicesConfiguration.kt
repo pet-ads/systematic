@@ -15,6 +15,9 @@ import org.springframework.context.annotation.Configuration
 class SearchSessionServicesConfiguration {
 
     @Bean
+    fun bibtexConverterService(idGenerator: IdGeneratorService) = BibtexConverterService(idGenerator)
+
+    @Bean
     fun createSearchSession(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
