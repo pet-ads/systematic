@@ -13,21 +13,21 @@ import br.all.domain.services.UuidGeneratorService
 import java.util.*
 
 class CreateSystematicStudyServiceImpl(
-    private val systematicStudyRepository: SystematicStudyRepository,
+    private val repository: SystematicStudyRepository,
     private val uuidGeneratorService: UuidGeneratorService,
     private val credentialsService: ResearcherCredentialsService,
 ): CreateSystematicStudyService {
-    override fun create(presenter: CreateSystematicStudyPresenter, researcherId: UUID, request: RequestModel) {
-        val ownerId = ResearcherId(researcherId)
-        val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfUnauthenticatedOrUnauthorized(presenter, ownerId)
-
+    override fun create(presenter: CreateSystematicStudyPresenter, researcher: UUID, request: RequestModel) {
+        PreconditionChecker(repository, credentialsService).also {
+            it.prepareIfUnauthenticatedOrUnauthorized(presenter, ResearcherId(researcher))
+        }
         if (presenter.isDone()) return
 
         val id = uuidGeneratorService.next()
-        val systematicStudy = SystematicStudy.fromRequestModel(id, researcherId, request)
-        systematicStudyRepository.saveOrUpdate(systematicStudy.toDto())
+        SystematicStudy.fromRequestModel(id, researcher, request).also {
+            repository.saveOrUpdate(it.toDto())
+        }
 
-        presenter.prepareSuccessView(ResponseModel(researcherId, id))
+        presenter.prepareSuccessView(ResponseModel(researcher, id))
     }
 }

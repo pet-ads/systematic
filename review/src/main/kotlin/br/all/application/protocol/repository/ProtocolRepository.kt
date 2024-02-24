@@ -3,7 +3,7 @@ package br.all.application.protocol.repository
 import org.springframework.stereotype.Repository
 import java.util.*
 interface ProtocolRepository {
-    fun create(dto: ProtocolDto)
+    fun saveOrUpdate(dto: ProtocolDto)
 
     fun findById(id: UUID): ProtocolDto?
 

@@ -5,12 +5,12 @@
 *api/v1/systematic*
 
 ### SystematicStudy:
-- [**POST**] */researcher/{researcherId}/systematic-study*]: create a new systematic study
-- [**PUT**] */researcher/{researcherId}/systematic-study/{systematicStudyId}*]:  update an existing systematic study
+- **[OK]**[**POST**] */researcher/{researcherId}/systematic-study*]: create a new systematic study
+- **[OK]**[**PUT**] */researcher/{researcherId}/systematic-study/{systematicStudyId}*]:  update an existing systematic study
 - [**DELETE**] */researcher/{researcherId}/systematic-study/{systematicStudyId}*]:  delete an existing systematic study
-- [**GET**] */researcher/{researcherId}/systematic-study/{systematicStudyId}*]:  get a systematic study by id
-- [**GET**] */researcher/{researcherId}/systematic-study/owner/{researcherId}*]:  get all systematic studies of a given reviewer
-- [**GET**] */researcher/{researcherId}/systematic-study/*]:  get all systematic studies
+- **[OK]**[**GET**] */researcher/{researcherId}/systematic-study/{systematicStudyId}*]:  get a systematic study by id
+- **[OK]**[**GET**] */researcher/{researcherId}/systematic-study/owner/{researcherId}*]:  get all systematic studies of a given reviewer
+- **[OK]**[**GET**] */researcher/{researcherId}/systematic-study/*]:  get all systematic studies
 
 ### Protocol:
 - [**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol*]: create a protocol for a given systematic study
@@ -59,21 +59,21 @@
 - [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/search-session/*]: get all search sessions of a systematic review
 
 ### Study Review:
-- [**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/*]: create a study review in the systematic study
+- **[OK]**[**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/*]: create a study review in the systematic study
 - [**PUT**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}*]: update an existing study review of a systematic study
 - [**DELETE**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}*]: delete an existing study review of a systematic study
-- [**PATCH**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewIdToKeep}/duplicated/{studyReviewIdtoIgnore}*]: mark an existing study as duplicated in the systematic study
+- **[OK]**[**PATCH**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewIdToKeep}/duplicated/{studyReviewIdtoIgnore}*]: mark an existing study as duplicated in the systematic study
 
-- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}*]: get an existing study review of a systematic study
-- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/*]: get all existing studies of a systematic review
+- **[OK]**[**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}*]: get an existing study review of a systematic study
+- **[OK]**[**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/*]: get all existing studies of a systematic review
 - [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/search-session/{sessionId}/study-review/*]: get all existing studies of a systematic review search session
 
 - [**PATCH**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}/extraction-answer*]: update the answer of a given extraction question defined in the protocol
 - [**PATCH**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}/rob-answer*]: update the answer of a given risk of bias question defined in the protocol
 
-- [**PATCH**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}/selection*]: update the selection status of study review
-- [**PATCH**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}/extraction*]: update the selection status of study review
-- [**PATCH**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}/priority*]: update the reading priority of study review
+- **[OK]**[**PATCH**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}/selection*]: update the selection status of study review
+- **[OK]**[**PATCH**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}/extraction*]: update the selection status of study review
+- **[OK]**[**PATCH**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}/priority*]: update the reading priority of study review
 
 ## Resources
 

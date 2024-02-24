@@ -3,7 +3,7 @@ package br.all.application.review.create
 import java.util.*
 
 interface CreateSystematicStudyService {
-    fun create(presenter: CreateSystematicStudyPresenter, researcherId: UUID, request: RequestModel)
+    fun create(presenter: CreateSystematicStudyPresenter, researcher: UUID, request: RequestModel)
 
     data class RequestModel(
         val title : String,

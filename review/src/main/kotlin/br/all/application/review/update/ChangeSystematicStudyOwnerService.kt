@@ -9,7 +9,7 @@ import br.all.application.review.shared.SystematicStudyResponseModel
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.shared.ddd.Notification
-import br.all.domain.shared.utils.requireThatExists
+import br.all.domain.shared.utils.exists
 import java.util.*
 
 class ChangeSystematicStudyOwnerService(
@@ -27,7 +27,7 @@ class ChangeSystematicStudyOwnerService(
         if(possibleSystematicStudy == null)
             notification.addError("Cannot find a systematic study with id: $reviewId")
 
-        requireThatExists(notification.hasNoErrors()) { notification.message() }
+        exists(notification.hasNoErrors()) { notification.message() }
 
         val dto = possibleSystematicStudy as SystematicStudyDto
 
