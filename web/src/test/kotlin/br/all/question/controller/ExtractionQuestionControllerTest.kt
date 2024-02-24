@@ -43,7 +43,7 @@ class ExtractionQuestionControllerTest(
     fun postUrl() = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/extraction-question"
 
     fun getUrl(questionId: String = "") =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/extraction-question/$questionId"
+        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/extraction-question${questionId}"
 
 
     @Nested
@@ -111,7 +111,8 @@ class ExtractionQuestionControllerTest(
 
             repository.insert(question)
 
-            mockMvc.perform(get(getUrl(questionId.toString())).contentType(MediaType.APPLICATION_JSON))
+            val questionIdUrl = "/${questionId}"
+            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -123,7 +124,8 @@ class ExtractionQuestionControllerTest(
 
             repository.insert(question)
 
-            mockMvc.perform(get(getUrl(questionId.toString())).contentType(MediaType.APPLICATION_JSON))
+            val questionIdUrl = "/${questionId}"
+            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -136,7 +138,8 @@ class ExtractionQuestionControllerTest(
 
             repository.insert(question)
 
-            mockMvc.perform(get(getUrl(questionId.toString())).contentType(MediaType.APPLICATION_JSON))
+            val questionIdUrl = "/${questionId}"
+            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -148,7 +151,8 @@ class ExtractionQuestionControllerTest(
 
             repository.insert(question)
 
-            mockMvc.perform(get(getUrl(questionId.toString())).contentType(MediaType.APPLICATION_JSON))
+            val questionIdUrl = "/${questionId}"
+            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -164,7 +168,7 @@ class ExtractionQuestionControllerTest(
 
             mockMvc.perform(get(getUrl()).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("$.systematicStudyId").value(textualQuestion.systematicStudyId.toString()))
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$.size").value(2))
         }
     }
