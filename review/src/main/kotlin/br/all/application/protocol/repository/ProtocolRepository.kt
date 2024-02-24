@@ -1,7 +1,6 @@
 package br.all.application.protocol.repository
 
 import java.util.*
-
 interface ProtocolRepository {
     fun saveOrUpdate(dto: ProtocolDto)
 

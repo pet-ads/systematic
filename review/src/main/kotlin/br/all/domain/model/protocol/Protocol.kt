@@ -149,6 +149,8 @@ class Protocol internal constructor(
 
     fun addInformationSource(searchSource: SearchSource) = _informationSources.add(searchSource)
 
+    fun hasInformationSource(searchSource: SearchSource) = _informationSources.contains(searchSource)
+
     fun removeInformationSource(informationSource: SearchSource) {
         check(_informationSources.isNotEmpty()) { "Unable to remove any information source because none exist!" }
         exists(informationSource in _informationSources) {

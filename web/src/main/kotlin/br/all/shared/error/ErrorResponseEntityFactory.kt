@@ -12,6 +12,7 @@ fun createErrorResponseFrom(throwable: Throwable): ResponseEntity<ErrorMessage> 
         is UnauthenticatedUserException -> UNAUTHORIZED
         is UnauthorizedUserException -> FORBIDDEN
         is EntityNotFoundException -> NOT_FOUND
+        is NoSuchElementException -> NOT_FOUND
         is UniquenessViolationException -> CONFLICT
         else -> BAD_REQUEST
     }
