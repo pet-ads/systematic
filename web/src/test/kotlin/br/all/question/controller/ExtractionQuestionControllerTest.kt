@@ -153,6 +153,20 @@ class ExtractionQuestionControllerTest(
                 .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
         }
+
+        @Test
+        fun `should find all questions and return 200`() {
+            val textualQuestion = factory.validCreateTextualQuestionDocument(UUID.randomUUID(), systematicStudyId)
+            val pickListQuestion = factory.validCreatePickListQuestionDocument(UUID.randomUUID(), systematicStudyId)
+
+            repository.insert(textualQuestion)
+            repository.insert(pickListQuestion)
+
+            mockMvc.perform(get(getUrl()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(textualQuestion.systematicStudyId.toString()))
+                .andExpect(jsonPath("$.size").value(2))
+        }
     }
 
     @Nested
@@ -198,5 +212,18 @@ class ExtractionQuestionControllerTest(
                     .content(json)
             ).andExpect(status().isBadRequest)
         }
+    }
+
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("when not able to find question successfully")
+    inner class WhenNotAbleToFindQuestionSuccessfully {
+        @Test
+        fun `should return 404 if don't find the question`() {
+            mockMvc.perform(get(getUrl(UUID.randomUUID().toString())).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound)
+        }
+
+
     }
 }

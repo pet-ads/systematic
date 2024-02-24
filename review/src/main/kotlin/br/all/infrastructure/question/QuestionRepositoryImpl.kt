@@ -14,6 +14,6 @@ open class QuestionRepositoryImpl(private val repository: MongoQuestionRepositor
 
     override fun findById(systematicStudyId: UUID, id: UUID) = repository.findById(id).toNullable()?.toDto()
 
-//    override fun findAllByProtocol(systematicStudyId: UUID, protocolId: ProtocolId) =
-//        repository.findAll()
+    override fun findAllBySystematicStudyId(systematicStudyId: UUID): List<QuestionDto> =
+        repository.findAllBySystematicStudyId(systematicStudyId).map { it.toDto() }
 }
