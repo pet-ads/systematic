@@ -27,6 +27,7 @@ class ExtractionQuestionControllerTest(
     private lateinit var factory: TestDataFactory
     private lateinit var systematicStudyId: UUID
     private lateinit var researcherId: UUID
+    private lateinit var questionId: UUID
 
     @BeforeEach
     fun setUp() {
@@ -34,6 +35,7 @@ class ExtractionQuestionControllerTest(
         factory = TestDataFactory()
         systematicStudyId = factory.systematicStudyId
         researcherId = factory.researcherId
+        questionId = factory.questionId
     }
 
     @AfterEach
@@ -106,19 +108,8 @@ class ExtractionQuestionControllerTest(
     @DisplayName("when successfully finding questions")
     inner class WhenSuccessfullyFindingQuestions {
         @Test
-        fun `should find the question and return 200`() {
-            val questionId = UUID.randomUUID()
-            val question = QuestionDocument(
-                questionId,
-                systematicStudyId,
-                "test",
-                "test",
-                "TEXTUAL",
-                null,
-                null,
-                null,
-                null
-            )
+        fun `should find textual question and return 200`() {
+            val question = factory.validCreateTextualQuestionDocument(questionId, systematicStudyId)
 
             repository.insert(question)
 
@@ -128,7 +119,42 @@ class ExtractionQuestionControllerTest(
                 .andExpect(jsonPath("$._links").exists())
         }
 
-        // TODO: esse teste aqui de find.
+        @Test
+        fun `should find picklist question and return 200`() {
+            val question = factory.validCreatePickListQuestionDocument(questionId, systematicStudyId)
+
+            repository.insert(question)
+
+            mockMvc.perform(get(getUrl(questionId.toString())).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
+
+        }
+        
+        @Test
+        fun `should find labeled scale question and return 200`() {
+            val question = factory.validCreateLabeledScaleQuestionDocument(questionId, systematicStudyId)
+
+            repository.insert(question)
+
+            mockMvc.perform(get(getUrl(questionId.toString())).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
+        }
+
+        @Test
+        fun `should find numbered scale question and return 200`() {
+            val question = factory.validCreateNumberedScaleQuestionDocument(questionId, systematicStudyId)
+
+            repository.insert(question)
+
+            mockMvc.perform(get(getUrl(questionId.toString())).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
+        }
     }
 
     @Nested
