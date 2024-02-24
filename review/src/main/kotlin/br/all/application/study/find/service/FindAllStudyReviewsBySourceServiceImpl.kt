@@ -36,7 +36,7 @@ class FindAllStudyReviewsBySourceServiceImpl(
 
         if (presenter.isDone()) return
 
-        val studyReviews = studyReviewRepository.findAllBySource(request.systematicStudyId, searchSource.id)
+        val studyReviews = studyReviewRepository.findAllBySource(request.systematicStudyId, searchSource.toString())
         presenter.prepareSuccessView(
             ResponseModel(
                 request.researcherId, request.systematicStudyId,
