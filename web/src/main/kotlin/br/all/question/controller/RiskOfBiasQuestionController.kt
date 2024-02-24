@@ -1,7 +1,6 @@
 package br.all.question.controller
 
 import br.all.application.question.create.CreateQuestionService
-import br.all.application.question.create.CreateQuestionService.QuestionType
 import br.all.application.question.create.CreateQuestionService.QuestionType.*
 import br.all.application.question.create.CreateQuestionService.RequestModel
 import br.all.application.question.find.FindQuestionService
