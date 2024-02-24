@@ -171,6 +171,15 @@ class ExtractionQuestionControllerTest(
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$.size").value(2))
         }
+
+        @Test
+        fun `should return an empty list and return 200 if no study is found`() {
+            mockMvc.perform(get(getUrl()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$.size").value(0))
+                .andExpect(jsonPath("$.questions").isEmpty())
+        }
     }
 
     @Nested
@@ -227,7 +236,6 @@ class ExtractionQuestionControllerTest(
             mockMvc.perform(get(getUrl(UUID.randomUUID().toString())).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound)
         }
-
 
     }
 }
