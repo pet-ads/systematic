@@ -1,6 +1,5 @@
 package br.all.question.persistence
 
-import br.all.domain.model.review.SystematicStudyId
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.question.utils.TestDataFactory
