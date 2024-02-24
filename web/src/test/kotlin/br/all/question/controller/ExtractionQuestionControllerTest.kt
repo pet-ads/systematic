@@ -9,8 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.*
@@ -53,10 +54,9 @@ class ExtractionQuestionControllerTest(
         fun `should create textual question and return 201`() {
             val json = factory.validCreateTextualRequest()
             mockMvc.perform(
-                MockMvcRequestBuilders
-                    .post(postUrl() + "/textual").contentType(MediaType.APPLICATION_JSON).content(json)
+                post(postUrl() + "/textual").contentType(MediaType.APPLICATION_JSON).content(json)
             )
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -66,10 +66,9 @@ class ExtractionQuestionControllerTest(
         fun `should create picklist question and return 201`() {
             val json = factory.validCreatePickListRequest()
             mockMvc.perform(
-                MockMvcRequestBuilders
-                    .post(postUrl() + "/pick-list").contentType(MediaType.APPLICATION_JSON).content(json)
+                post(postUrl() + "/pick-list").contentType(MediaType.APPLICATION_JSON).content(json)
             )
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -79,10 +78,9 @@ class ExtractionQuestionControllerTest(
         fun `should create labeledscale question and return 201`() {
             val json = factory.validCreateLabeledScaleRequest()
             mockMvc.perform(
-                MockMvcRequestBuilders
-                    .post(postUrl() + "/labeled-scale").contentType(MediaType.APPLICATION_JSON).content(json)
+                post(postUrl() + "/labeled-scale").contentType(MediaType.APPLICATION_JSON).content(json)
             )
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -92,10 +90,9 @@ class ExtractionQuestionControllerTest(
         fun `should create numberscale question and return 201`() {
             val json = factory.validCreateNumberScaleRequest()
             mockMvc.perform(
-                MockMvcRequestBuilders
-                    .post(postUrl() + "/number-scale").contentType(MediaType.APPLICATION_JSON).content(json)
+                post(postUrl() + "/number-scale").contentType(MediaType.APPLICATION_JSON).content(json)
             )
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -131,7 +128,7 @@ class ExtractionQuestionControllerTest(
                 .andExpect(jsonPath("$._links").exists())
 
         }
-        
+
         @Test
         fun `should find labeled scale question and return 200`() {
             val question = factory.validCreateLabeledScaleQuestionDocument(questionId, systematicStudyId)
@@ -180,6 +177,8 @@ class ExtractionQuestionControllerTest(
                 .andExpect(jsonPath("$.size").value(0))
                 .andExpect(jsonPath("$.questions").isEmpty())
         }
+
+
     }
 
     @Nested
@@ -190,7 +189,7 @@ class ExtractionQuestionControllerTest(
         fun `should not create textual question with invalid input and return 400`() {
             val json = factory.invalidCreateTextualRequest()
             mockMvc.perform(
-                MockMvcRequestBuilders.post(postUrl() + "/textual")
+                post(postUrl() + "/textual")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
             ).andExpect(status().isBadRequest)
@@ -200,7 +199,7 @@ class ExtractionQuestionControllerTest(
         fun `should not create picklist question with invalid input and return 400`() {
             val json = factory.invalidCreatePickListRequest()
             mockMvc.perform(
-                MockMvcRequestBuilders.post(postUrl() + "/pick-list")
+                post(postUrl() + "/pick-list")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
             ).andExpect(status().isBadRequest)
@@ -210,7 +209,7 @@ class ExtractionQuestionControllerTest(
         fun `should not create labeled scale question with invalid input and return 400`() {
             val json = factory.invalidCreateLabeledScaleRequest()
             mockMvc.perform(
-                MockMvcRequestBuilders.post(postUrl() + "/labeled-scale")
+                post(postUrl() + "/labeled-scale")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
             ).andExpect(status().isBadRequest)
@@ -220,7 +219,7 @@ class ExtractionQuestionControllerTest(
         fun `should not create number scale question with invalid input and return 400`() {
             val json = factory.invalidCreateNumberScaleRequest()
             mockMvc.perform(
-                MockMvcRequestBuilders.post(postUrl() + "/number-scale")
+                post(postUrl() + "/number-scale")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
             ).andExpect(status().isBadRequest)

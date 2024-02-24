@@ -11,8 +11,9 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.util.*
 
 @SpringBootTest
@@ -25,12 +26,14 @@ class RiskOfBiasQuestionControllerTest(
     private lateinit var factory: TestDataFactory
     private lateinit var systematicStudyId: UUID
     private lateinit var researcherId: UUID
+    private lateinit var questionId: UUID
 
     @BeforeEach
     fun setUp() {
         repository.deleteAll()
         factory = TestDataFactory()
         systematicStudyId = factory.systematicStudyId
+        questionId = factory.questionId
         researcherId = factory.researcherId
     }
 
@@ -41,7 +44,7 @@ class RiskOfBiasQuestionControllerTest(
     fun postUrl() = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/rob-question"
 
     fun getUrl(questionId: String = "") =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/rob-question/$questionId"
+        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/rob-question${questionId}"
 
 
     @Nested
@@ -51,52 +54,136 @@ class RiskOfBiasQuestionControllerTest(
         @Test
         fun `should create textual question and return 201`() {
             val json = factory.validCreateTextualRequest()
-            mockMvc.perform(MockMvcRequestBuilders
-                .post(postUrl() + "/textual").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isCreated)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+            mockMvc.perform(
+                post(postUrl() + "/textual").contentType(MediaType.APPLICATION_JSON).content(json)
+            )
+                .andDo(print())
+                .andExpect(status().isCreated)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
         }
 
         @Test
         fun `should create picklist question and return 201`() {
             val json = factory.validCreatePickListRequest()
-            mockMvc.perform(MockMvcRequestBuilders
-                .post(postUrl() + "/pick-list").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isCreated)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+            mockMvc.perform(
+                post(postUrl() + "/pick-list").contentType(MediaType.APPLICATION_JSON).content(json)
+            )
+                .andDo(print())
+                .andExpect(status().isCreated)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
         }
 
         @Test
         fun `should create labeledscale question and return 201`() {
             val json = factory.validCreateLabeledScaleRequest()
-            mockMvc.perform(MockMvcRequestBuilders
-                .post(postUrl() + "/labeled-scale").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isCreated)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+            mockMvc.perform(
+                post(postUrl() + "/labeled-scale").contentType(MediaType.APPLICATION_JSON).content(json)
+            )
+                .andDo(print())
+                .andExpect(status().isCreated)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
         }
 
         @Test
         fun `should create numberscale question and return 201`() {
             val json = factory.validCreateNumberScaleRequest()
-            mockMvc.perform(MockMvcRequestBuilders
-                .post(postUrl() + "/number-scale").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isCreated)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+            mockMvc.perform(
+                post(postUrl() + "/number-scale").contentType(MediaType.APPLICATION_JSON).content(json)
+            )
+                .andDo(print())
+                .andExpect(status().isCreated)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
+        }
+    }
+
+    @Nested
+    @DisplayName("when successfully finding questions")
+    inner class WhenSuccessfullyFindingQuestions {
+        @Test
+        fun `should find textual question and return 200`() {
+            val question = factory.validCreateTextualQuestionDocument(questionId, systematicStudyId)
+
+            repository.insert(question)
+
+            val questionIdUrl = "/${questionId}"
+            mockMvc.perform(MockMvcRequestBuilders.get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
+        }
+
+        @Test
+        fun `should find picklist question and return 200`() {
+            val question = factory.validCreatePickListQuestionDocument(questionId, systematicStudyId)
+
+            repository.insert(question)
+
+            val questionIdUrl = "/${questionId}"
+            mockMvc.perform(MockMvcRequestBuilders.get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
+
+        }
+
+        @Test
+        fun `should find labeled scale question and return 200`() {
+            val question = factory.validCreateLabeledScaleQuestionDocument(questionId, systematicStudyId)
+
+            repository.insert(question)
+
+            val questionIdUrl = "/${questionId}"
+            mockMvc.perform(MockMvcRequestBuilders.get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
+        }
+
+        @Test
+        fun `should find numbered scale question and return 200`() {
+            val question = factory.validCreateNumberedScaleQuestionDocument(questionId, systematicStudyId)
+
+            repository.insert(question)
+
+            val questionIdUrl = "/${questionId}"
+            mockMvc.perform(MockMvcRequestBuilders.get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
+        }
+
+        @Test
+        fun `should find all questions and return 200`() {
+            val textualQuestion = factory.validCreateTextualQuestionDocument(UUID.randomUUID(), systematicStudyId)
+            val pickListQuestion = factory.validCreatePickListQuestionDocument(UUID.randomUUID(), systematicStudyId)
+
+            repository.insert(textualQuestion)
+            repository.insert(pickListQuestion)
+
+            mockMvc.perform(MockMvcRequestBuilders.get(getUrl()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$.size").value(2))
+        }
+
+        @Test
+        fun `should return an empty list and return 200 if no study is found`() {
+            mockMvc.perform(MockMvcRequestBuilders.get(getUrl()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$.size").value(0))
+                .andExpect(jsonPath("$.questions").isEmpty())
         }
     }
 
     @Nested
     @Tag("InvalidClasses")
     @DisplayName("when not able to create question successfully")
-    inner class WhenNotAbleToCreateQuestionSuccessfully{
+    inner class WhenNotAbleToCreateQuestionSuccessfully {
         @Test
         fun `should not create textual question with invalid input and return 400`() {
             val json = factory.invalidCreateTextualRequest()
@@ -136,5 +223,19 @@ class RiskOfBiasQuestionControllerTest(
                     .content(json)
             ).andExpect(status().isBadRequest)
         }
+    }
+
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("when not able to find question successfully")
+    inner class WhenNotAbleToFindQuestionSuccessfully {
+        @Test
+        fun `should return 404 if don't find the question`() {
+            mockMvc.perform(
+                MockMvcRequestBuilders.get(getUrl(UUID.randomUUID().toString())).contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isNotFound)
+        }
+
     }
 }

@@ -22,7 +22,8 @@ class QuestionServicesConfiguration {
         systematicStudyRepository,
         questionRepository,
         idGenerator,
-        credentialsService)
+        credentialsService
+    )
 
     @Bean
     fun findQuestionService(

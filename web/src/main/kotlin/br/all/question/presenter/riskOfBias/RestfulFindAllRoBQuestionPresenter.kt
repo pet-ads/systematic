@@ -1,9 +1,9 @@
-package br.all.question.presenter.extraction
+package br.all.question.presenter.riskOfBias
 
 import br.all.application.question.findAll.FindAllBySystematicStudyIdPresenter
-import br.all.application.question.findAll.FindAllBySystematicStudyIdService.ResponseModel
+import br.all.application.question.findAll.FindAllBySystematicStudyIdService
 import br.all.application.question.repository.QuestionDto
-import br.all.question.controller.ExtractionQuestionController
+import br.all.question.controller.RiskOfBiasQuestionController
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
@@ -11,12 +11,12 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.util.*
 
-class RestfulFindAllExtractionQuestionPresenter : FindAllBySystematicStudyIdPresenter {
+class RestfulFindAllRoBQuestionPresenter : FindAllBySystematicStudyIdPresenter {
     var responseEntity: ResponseEntity<*>? = null
-    override fun prepareSuccessView(response: ResponseModel) {
+    override fun prepareSuccessView(response: FindAllBySystematicStudyIdService.ResponseModel) {
         val restfulResponse = ViewModel(response.systematicStudyId, response.questions.size, response.questions)
 
-        val self = linkTo<ExtractionQuestionController> {
+        val self = linkTo<RiskOfBiasQuestionController> {
             findAllBySystematicStudyId(response.researcherId, response.systematicStudyId)
         }.withSelfRel()
 
