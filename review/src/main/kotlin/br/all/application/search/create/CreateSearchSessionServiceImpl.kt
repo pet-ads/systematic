@@ -19,6 +19,7 @@ import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.services.BibtexConverterService
 import br.all.domain.services.UuidGeneratorService
+import java.util.*
 
 class CreateSearchSessionServiceImpl(
     private val searchSessionRepository: SearchSessionRepository,
@@ -28,8 +29,9 @@ class CreateSearchSessionServiceImpl(
     private val studyReviewRepository: StudyReviewRepository,
     private val credentialsService: ResearcherCredentialsService,
 ) : CreateSearchSessionService {
-    override fun createSession(presenter: CreateSearchSessionPresenter, request: RequestModel, file: String) {
 
+
+    override fun createSession(presenter: CreateSearchSessionPresenter, request: RequestModel, file: String) {
         val researcherId = ResearcherId(request.researcherId)
         val systematicStudy = SystematicStudyId(request.systematicStudyId)
         val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
@@ -58,5 +60,6 @@ class CreateSearchSessionServiceImpl(
 
         searchSessionRepository.create(searchSession.toDto())
         presenter.prepareSuccessView(ResponseModel(sessionId.value, systematicStudy, researcherId))
+
     }
 }

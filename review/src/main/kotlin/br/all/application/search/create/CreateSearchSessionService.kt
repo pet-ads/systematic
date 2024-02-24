@@ -9,6 +9,7 @@ import java.util.*
 interface CreateSearchSessionService {
     fun createSession(presenter: CreateSearchSessionPresenter, request: RequestModel, file: String)
 
+
     data class RequestModel(
         val researcherId: UUID,
         val systematicStudyId: UUID,

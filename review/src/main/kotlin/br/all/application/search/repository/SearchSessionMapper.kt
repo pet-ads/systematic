@@ -1,5 +1,4 @@
 package br.all.application.search.repository
-
 import br.all.domain.model.search.SearchSession
 
 fun SearchSession.toDto() = SearchSessionDto(
@@ -10,3 +9,4 @@ fun SearchSession.toDto() = SearchSessionDto(
     timestamp,
     source.toString()
 )
+

@@ -1,5 +1,6 @@
 package br.all.search.controller
 
+<<<<<<< HEAD
 import br.all.domain.shared.utils.paragraph
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.search.MongoSearchSessionRepository
@@ -78,3 +79,7 @@ class SearchSessionControllerTest(
 
     }
 }
+=======
+class SearchSessionControllerTest {
+}
+>>>>>>> 69c5f383551801509fb6df2324fb49516a685399

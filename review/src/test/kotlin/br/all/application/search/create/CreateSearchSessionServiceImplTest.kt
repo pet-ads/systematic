@@ -61,6 +61,7 @@ class CreateSearchSessionServiceImplTest {
     private lateinit var sut: CreateSearchSessionServiceImpl
     private lateinit var testDataFactory: TestDataFactory
 
+
     @BeforeEach
     fun setUp() {
         sut = CreateSearchSessionServiceImpl(
@@ -120,10 +121,7 @@ class CreateSearchSessionServiceImplTest {
             every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } returns emptyList()
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
-
-            verify {
-                presenter.prepareSuccessView(any<ResponseModel>())
-            }
+            verify { presenter.prepareSuccessView(any<ResponseModel>()) }
         }
     }
 
@@ -133,6 +131,8 @@ class CreateSearchSessionServiceImplTest {
         @Test
         fun `createSession should fail authentication`() {
             val presenter = mockk<CreateSearchSessionPresenter>(relaxed = true)
+            val bibFileContent = "bib_file_content".toByteArray()
+            val mockMultipartFile = MultipartFileUtil.createMockMultipartFile("bibFile", bibFileContent)
             val request = RequestModel(
                 researcherId = UUID.randomUUID(),
                 systematicStudyId = UUID.randomUUID(),
@@ -174,9 +174,7 @@ class CreateSearchSessionServiceImplTest {
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
-            verify {
-                presenter.prepareFailView(match { it is UnauthenticatedUserException })
-            }
+            verify {presenter.prepareFailView(match { it is UnauthenticatedUserException }) }
         }
 
         @Test
@@ -225,9 +223,7 @@ class CreateSearchSessionServiceImplTest {
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
-            verify {
-                presenter.prepareFailView(match { it is UnauthorizedUserException })
-            }
+            verify { presenter.prepareFailView(match { it is UnauthorizedUserException }) }
         }
 
         @Test
@@ -254,7 +250,6 @@ class CreateSearchSessionServiceImplTest {
             every { credentialsService.isAuthenticated(ResearcherId(request.researcherId)) } returns true
             every { credentialsService.hasAuthority(ResearcherId(request.researcherId)) } returns true
             every { systematicStudyRepository.existsById(systematicStudyId.value()) } returns false
-
             every { uuidGeneratorService.next() } returns sessionId.value
 
             every { systematicStudyRepository.findById(request.systematicStudyId) } returns null
@@ -270,9 +265,7 @@ class CreateSearchSessionServiceImplTest {
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
-            verify {
-                presenter.prepareFailView(match { it is EntityNotFoundException })
-            }
+            verify {presenter.prepareFailView(match { it is EntityNotFoundException }) }
         }
 
         @Test
@@ -328,27 +321,4 @@ class CreateSearchSessionServiceImplTest {
 
         }
     }
-
-
-    /*var systematicStudy = UUID.randomUUID();
-
-    @Ignore
-    @Test
-    fun `Should create search session`() {
-        val requestModel = SearchSessionRequestModel(
-            systematicStudy,
-            source = SearchSource("Example source"),
-            searchString = "Search string",
-            additionalInfo = "Additional information"
-        )
-        val sessionId = UUID.randomUUID()
-        val protocolId = UUID.randomUUID()
-
-        every { idGenerator.next() } returns sessionId
-        every { repository.create(any())} returns Unit
-
-        sut.createSession(requestModel)
-
-        verify(exactly = 1) { repository.create(SearchSession.fromRequestModel(SearchSessionID(sessionId), ProtocolId(protocolId), requestModel)) }
-    }*/
 }
