@@ -1,9 +1,15 @@
 package br.all.application.protocol.util
 
+import br.all.application.protocol.repository.ProtocolDto
+import br.all.application.protocol.repository.fromRequestModel
+import br.all.application.protocol.repository.toDto
+import br.all.domain.model.protocol.Protocol
 import br.all.domain.shared.utils.wordsList
 import io.github.serpro69.kfaker.Faker
 import java.util.*
 import br.all.application.protocol.create.CreateProtocolService.RequestModel as CreateRequestModel
+import br.all.application.protocol.find.FindOneProtocolService.RequestModel as FindRequestModel
+import br.all.application.protocol.find.FindOneProtocolService.ResponseModel as FindOneResponseModel
 
 class TestDataFactory {
     val researcher: UUID = UUID.randomUUID()
@@ -51,6 +57,19 @@ class TestDataFactory {
     )
 
     fun text() = faker.wordsList(minSize = 1, maxSize = 5).joinToString(" ")
+
+    fun findRequestModel(
+        researcher: UUID = this.researcher,
+        systematicStudy: UUID = this.systematicStudy
+    ) = FindRequestModel(researcher, systematicStudy)
+
+    fun findResponseModel(
+        researcher: UUID = this.researcher,
+        systematicStudy: UUID = this.systematicStudy,
+        dto: ProtocolDto = createProtocolDto(),
+    ) = FindOneResponseModel(researcher, systematicStudy, dto)
+
+    fun createProtocolDto() = Protocol.fromRequestModel(createRequestModel()).toDto()
 
     operator fun component1() = researcher
 

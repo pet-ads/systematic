@@ -1,17 +1,21 @@
 package br.all.protocol.controller
 
 import br.all.application.protocol.create.CreateProtocolServiceImpl
+import br.all.application.protocol.find.FindOneProtocolServiceImpl
 import br.all.protocol.presenter.RestfulCreateProtocolPresenter
+import br.all.protocol.presenter.RestfulFindOneProtocolPresenter
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 import br.all.application.protocol.create.CreateProtocolService.RequestModel as CreateRequestModel
+import br.all.application.protocol.find.FindOneProtocolService.RequestModel as FindOneRequestModel
 
 @RestController
 @RequestMapping("/researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol")
 class ProtocolController(
     private val createProtocolService: CreateProtocolServiceImpl,
+    private val findOneProtocolService: FindOneProtocolServiceImpl,
 ) {
     @PostMapping
     fun postProtocol(
@@ -64,6 +68,10 @@ class ProtocolController(
 
     @GetMapping
     fun findById(@PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID): ResponseEntity<*> {
-        return ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED)
+        val presenter = RestfulFindOneProtocolPresenter()
+        val request = FindOneRequestModel(researcherId, systematicStudyId)
+
+        findOneProtocolService.findById(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
