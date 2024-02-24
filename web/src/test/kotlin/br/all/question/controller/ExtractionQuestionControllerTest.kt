@@ -1,8 +1,6 @@
 package br.all.question.controller
 
-import br.all.domain.model.question.QuestionId
 import br.all.infrastructure.question.MongoQuestionRepository
-import br.all.infrastructure.question.QuestionDocument
 import br.all.question.utils.TestDataFactory
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
