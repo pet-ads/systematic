@@ -36,29 +36,4 @@ class CreateStudyReviewServiceImplTest {
         )
     }
 
-//    @Disabled
-//    @Test
-//    fun `Should create study`() {
-//        val requestModel = RequestModel(
-//            UUID.randomUUID(),
-//            UUID.randomUUID(),
-//            "ARTICLE",
-//            "Title",
-//            2020,
-//            "Authors",
-//            "Journal",
-//            "abstract",
-//            emptySet(),
-//            "source"
-//        )
-//        val studyId = 1L
-//        val reviewId = UUID.randomUUID()
-//        val dto = StudyReview.fromStudyRequestModel(studyId, requestModel).toDto()
-//
-//        every { idGenerator.next() } returns studyId
-//        every { studyReviewRepository.saveOrUpdate(dto) } returns Unit
-//        every { studyReviewRepository.findById(reviewId, studyId) } returns dto
-//
-//        sut.createFromStudy(requestModel)
-//    }
 }

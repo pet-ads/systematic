@@ -118,7 +118,7 @@ class CreateSearchSessionServiceImplTest {
             } returns false
             every { searchSessionRepository.create(searchSession.toDto()) } just Runs
             every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
-            every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } returns emptyList()
+            every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } just Runs
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
             verify { presenter.prepareSuccessView(any<ResponseModel>()) }
@@ -170,7 +170,7 @@ class CreateSearchSessionServiceImplTest {
             } returns false
             every { searchSessionRepository.create(searchSession.toDto()) } just Runs
             every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
-            every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } returns emptyList()
+            every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } just Runs
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
@@ -219,7 +219,7 @@ class CreateSearchSessionServiceImplTest {
             } returns false
             every { searchSessionRepository.create(searchSession.toDto()) } just Runs
             every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
-            every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } returns emptyList()
+            every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } just Runs
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
@@ -261,7 +261,7 @@ class CreateSearchSessionServiceImplTest {
             } returns false
             every { searchSessionRepository.create(searchSession.toDto()) } just Runs
             every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
-            every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } returns emptyList()
+            every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } just Runs
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
@@ -310,7 +310,7 @@ class CreateSearchSessionServiceImplTest {
             } returns true
             every { searchSessionRepository.create(searchSession.toDto()) } just Runs
             every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
-            every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } returns emptyList()
+            every { studyReviewRepository.saveOrUpdateBatch(emptyList()) } just Runs
 
             // Act
             sut.createSession(presenter, request, testDataFactory.bibFileContent())

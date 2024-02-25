@@ -19,7 +19,6 @@ import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.services.BibtexConverterService
 import br.all.domain.services.UuidGeneratorService
-import java.util.*
 
 class CreateSearchSessionServiceImpl(
     private val searchSessionRepository: SearchSessionRepository,

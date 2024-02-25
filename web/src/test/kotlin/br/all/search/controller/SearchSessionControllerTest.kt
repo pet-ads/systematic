@@ -2,6 +2,8 @@ package br.all.search.controller
 
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.search.MongoSearchSessionRepository
+import br.all.infrastructure.study.MongoStudyReviewRepository
+import br.all.infrastructure.study.StudyReviewIdGeneratorService
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -17,6 +19,8 @@ import java.util.*
 class SearchSessionControllerTest(
     @Autowired val repository: MongoSearchSessionRepository,
     @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
+    @Autowired val studyReviewRepository: MongoStudyReviewRepository,
+    @Autowired val idService: StudyReviewIdGeneratorService,
     @Autowired val mockMvc: MockMvc,
 ) {
 
@@ -28,13 +32,10 @@ class SearchSessionControllerTest(
 
     @BeforeEach
     fun setUp() {
-        repository.deleteAll()
-
         factory = TestDataFactory()
         systematicStudyId = factory.systematicStudyId
         researcherId = factory.researcherId
 
-        systematicStudyRepository.deleteAll()
         systematicStudyRepository.save(
             br.all.review.shared.TestDataFactory().createSystematicStudyDocument(
                 id = systematicStudyId,
@@ -44,7 +45,12 @@ class SearchSessionControllerTest(
     }
 
     @AfterEach
-    fun teardown() = repository.deleteAll()
+    fun teardown() {
+        repository.deleteAll()
+        systematicStudyRepository.deleteAll()
+        studyReviewRepository.deleteAll()
+        idService.reset()
+    }
 
     @Nested
     @DisplayName("When creating a search session")
