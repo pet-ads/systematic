@@ -1,12 +1,11 @@
 package br.all.search.controller
 
-import br.all.domain.model.study.StudyType
-import br.all.domain.shared.utils.jsonWordsArray
+import br.all.application.search.create.CreateSearchSessionService
 import br.all.domain.shared.utils.paragraph
-import br.all.domain.shared.utils.year
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.serpro69.kfaker.Faker
+import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
-import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
 class TestDataFactory {
@@ -21,12 +20,14 @@ class TestDataFactory {
             "systematicStudyId": "$systematicStudyId",
             "source": "${faker.lorem.words()}",
             "searchString": "${faker.paragraph(5)}",
-            "additionalInfo": ${faker.paragraph(30)},
+            "additionalInfo": "${faker.paragraph(30)}"
         }
-        """
+        """.trimIndent()
 
     fun bibfile() = MockMultipartFile(
+        "file",
         "bibfile.bib",
+        MediaType.TEXT_PLAIN_VALUE,
         """
             @ARTICLE{Gruneberg202458,
             author = {Gruneberg, Elena Solveig and Ramos-Guerrero, Jorge and Pastrana, Tania},
@@ -66,8 +67,6 @@ class TestDataFactory {
             }
         """.toByteArray()
     )
-
-
 
 
 }

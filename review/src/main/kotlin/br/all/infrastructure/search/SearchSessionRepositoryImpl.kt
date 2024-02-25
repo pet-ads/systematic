@@ -20,7 +20,6 @@ open class SearchSessionRepositoryImpl(val repository: MongoSearchSessionReposit
         TODO("Not yet implemented")
     }
 
-    override fun existsBySearchSource(systematicStudyId: UUID, source: String): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun existsBySearchSource(systematicStudyId: UUID, source: String) =
+        repository.existsBySystematicStudyIdAndSource(systematicStudyId, source)
 }
