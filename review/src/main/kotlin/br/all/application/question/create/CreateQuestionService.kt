@@ -6,7 +6,7 @@ import br.all.application.protocol.question.create.numberScale.NumberScaleDTO
 import br.all.application.question.create.numberScale.NumberScaleRequestModel
 import br.all.application.question.create.pickList.PickListDTO
 import br.all.application.question.create.pickList.PickListRequestModel
-import br.all.application.protocol.question.create.textual.TextualDTO
+import br.all.application.question.create.textual.TextualDTO
 import br.all.application.question.create.textual.TextualRequestModel
 import br.all.application.question.repository.*
 import br.all.domain.model.question.QuestionBuilder
@@ -53,7 +53,7 @@ class CreateQuestionService(
         return numberScaleRepository.findById(questionId)
     }
 
-    fun createTextual(data: TextualRequestModel) : TextualDTO{
+    fun createTextual(data: TextualRequestModel) : TextualDTO {
         val questionId = QuestionId(uuidGenerator.next())
         val textual = QuestionBuilder()
             .with(questionId, data.protocolId, data.code, data.description)

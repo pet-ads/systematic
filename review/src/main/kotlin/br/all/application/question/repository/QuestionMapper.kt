@@ -1,7 +1,7 @@
 package br.all.application.question.repository
 
 import br.all.application.protocol.question.create.numberScale.NumberScaleDTO
-import br.all.application.protocol.question.create.textual.TextualDTO
+import br.all.application.question.create.textual.TextualDTO
 import br.all.application.question.create.labeledScale.LabeledScaledDTO
 import br.all.application.question.create.pickList.PickListDTO
 import br.all.domain.model.question.LabeledScale

@@ -1,4 +1,4 @@
-package br.all.application.protocol.question.create.textual
+package br.all.application.question.create.textual
 
 import java.util.*
 

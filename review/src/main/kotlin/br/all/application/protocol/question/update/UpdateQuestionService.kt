@@ -6,7 +6,7 @@
 //import br.all.application.protocol.question.create.numberScale.NumberScaleRequestModel
 //import br.all.application.protocol.question.create.pickList.PickListDTO
 //import br.all.application.protocol.question.create.pickList.PickListRequestModel
-//import br.all.application.protocol.question.create.textual.TextualDTO
+//import br.all.application.question.create.textual.TextualDTO
 //import br.all.application.protocol.question.create.textual.TextualRequestModel
 //import br.all.application.protocol.question.repository.*
 //import br.all.domain.model.protocol.question.QuestionBuilder
