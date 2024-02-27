@@ -3,7 +3,6 @@ package br.all.infrastructure.question.factory
 import br.all.application.question.create.CreateQuestionService.RequestModel
 import br.all.application.question.repository.QuestionDto
 import br.all.application.question.shared.QuestionFactory
-import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.question.PickList
 import br.all.domain.model.question.Question
 import br.all.domain.model.question.QuestionBuilder
@@ -21,7 +20,7 @@ class PickListQuestionFactory(private val mongoRepository: MongoQuestionReposito
     }
 
     override fun toDto(question: Question<*>) = with(question as PickList) {
-        QuestionDto(id.value(), systematicStudyId.value, code, description, "PickList", options = options)
+        QuestionDto(id.value(), systematicStudyId.value(), code, description, "PickList", options = options)
     }
 
     override fun repository() = QuestionRepositoryImpl(mongoRepository)

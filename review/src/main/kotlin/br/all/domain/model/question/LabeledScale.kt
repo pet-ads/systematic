@@ -1,10 +1,9 @@
 package br.all.domain.model.question
 
-import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.Answer
 import br.all.domain.shared.ddd.Notification
-import br.all.domain.shared.utils.requireThatExists
+import br.all.domain.shared.utils.exists
 
 class LabeledScale(
     id: QuestionId,
@@ -36,7 +35,7 @@ class LabeledScale(
     fun addScale(name: String, value: Int) = run { _scales[name] = Label(name, value) }
 
     fun removeScale(name: String) {
-        requireThatExists(name in _scales.keys) { "There is not a scale with name $name in this question!" }
+        exists(name in _scales.keys) { "There is not a scale with name $name in this question!" }
         check(_scales.size > 1) { "Unable to remove the last scale from this question!" }
         _scales.remove(name)
     }
