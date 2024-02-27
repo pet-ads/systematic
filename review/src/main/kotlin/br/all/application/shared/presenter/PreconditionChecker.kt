@@ -1,12 +1,10 @@
 package br.all.application.shared.presenter
 
-import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
-import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 
@@ -36,23 +34,5 @@ class PreconditionChecker(
             presenter.prepareFailView(UnauthorizedUserException("User of id $researcherId is not authorized."))
             return
         }
-    }
-
-    fun prepareIfViolatesPreconditions(
-        presenter: GenericPresenter<*>,
-        researcherId: ResearcherId,
-        systematicStudyId: SystematicStudyId,
-        protocolId: ProtocolId,
-        protocolRepository: ProtocolRepository,
-    ) {
-        prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
-        if (presenter.isDone()) return
-
-        if(!protocolRepository.existsById(protocolId.value())) {
-            presenter.prepareFailView(EntityNotFoundException("Protocol with id $protocolId does not exist!"))
-            return
-        }
-        if (!protocolRepository.belongsToSystematicStudy(protocolId.value(), systematicStudyId.value()))
-            presenter.prepareFailView(IllegalStateException("Protocol $protocolId does not belongs to study $systematicStudyId"))
     }
 }
