@@ -1,45 +1,51 @@
 package br.all.domain.model.question
 
-import br.all.domain.model.protocol.ProtocolId
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.study.Answer
+import io.github.serpro69.kfaker.Faker
+import org.junit.jupiter.api.*
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import java.util.*
+import kotlin.test.assertEquals
 
+@Tag("UnitTest")
 class TextualTest {
+    private val faker = Faker()
+    private lateinit var validTextual: Textual
 
-    @Test
-    fun `should validate non-blank answer`() {
-        val sut = Textual(
+    @BeforeEach
+    fun setUp() {
+        validTextual = Textual(
             QuestionId(UUID.randomUUID()),
-            ProtocolId(UUID.randomUUID()),
-            "T1",
-            "SAMPLE",
+            SystematicStudyId(UUID.randomUUID()),
+            faker.lorem.words(),
+            faker.lorem.words(),
         )
-        assertDoesNotThrow{ sut.answer = "abc" }
     }
 
-    @Test
-    fun `should throw NullPointerException for a null answer`() {
-        val sut = Textual(
-            QuestionId(UUID.randomUUID()),
-            ProtocolId(UUID.randomUUID()),
-            "T1",
-            "SAMPLE",
-        )
+    @Nested
+    @Tag("ValidClasses")
+    @DisplayName("When successfully answering Textual questions")
+    inner class WhenSuccessfullyCreatingTextualQuestions {
 
-        assertThrows<NullPointerException>{sut.answer = null}
+        @Test
+        fun `should answer the question with valid text`() {
+            val value = "TestingAnswer"
+            val expectedAnswer = Answer(validTextual.id.value(), value)
+
+            assertEquals(expectedAnswer, validTextual.answer(value))
+        }
     }
 
-    @Test
-    fun `should throw IllegalArgumentException for blank answer`() {
-        val sut = Textual(
-            QuestionId(UUID.randomUUID()),
-            ProtocolId(UUID.randomUUID()),
-            "T1",
-            "SAMPLE",
-        )
-
-        assertThrows<IllegalArgumentException>{sut.answer = "  "}
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("When unable to answer successfully to Textual Questions")
+    inner class WhenUnableToAnswerSuccessfullyToTextualQuestions {
+        @ParameterizedTest(name = "[{index}]: value = \"{0}\"")
+        @ValueSource(strings = ["", " ", "  "])
+        fun `should throw IllegalArgumentException for blank answer`(value: String) {
+            assertThrows<IllegalArgumentException> { validTextual.answer(value) }
+        }
     }
 }

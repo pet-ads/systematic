@@ -35,23 +35,23 @@ class CreateSearchSessionServiceTest {
 
     var systematicStudy = UUID.randomUUID();
 
-    @Ignore
-    @Test
-    fun `Should create search session`() {
-        val requestModel = SearchSessionRequestModel(
-            systematicStudy,
-            source = SearchSource("Example source"),
-            searchString = "Search string",
-            additionalInfo = "Additional information"
-        )
-        val sessionId = UUID.randomUUID()
-        val protocolId = UUID.randomUUID()
-
-        every { idGenerator.next() } returns sessionId
-        every { repository.create(any())} returns Unit
-
-        sut.createSession(requestModel)
-
-        verify(exactly = 1) { repository.create(SearchSession.fromRequestModel(SearchSessionID(sessionId), ProtocolId(protocolId), requestModel)) }
-    }
+//    @Ignore
+//    @Test
+//    fun `Should create search session`() {
+//        val requestModel = SearchSessionRequestModel(
+//            systematicStudy,
+//            source = SearchSource("Example source"),
+//            searchString = "Search string",
+//            additionalInfo = "Additional information"
+//        )
+//        val sessionId = UUID.randomUUID()
+//        val protocolId = UUID.randomUUID()
+//
+//        every { idGenerator.next() } returns sessionId
+//        every { repository.create(any())} returns Unit
+//
+//        sut.createSession(requestModel)
+//
+//        verify(exactly = 1) { repository.create(SearchSession.fromRequestModel(SearchSessionID(sessionId), ProtocolId(protocolId), requestModel)) }
+//    }
 }

@@ -1,65 +1,27 @@
-package br.all.application.protocol.question.create
+package br.all.application.question.create
 
-import br.all.application.question.create.labeledScale.LabeledScaleRequestModel
-import br.all.application.question.create.labeledScale.LabeledScaledDTO
-import br.all.application.protocol.question.create.numberScale.NumberScaleDTO
-import br.all.application.question.create.numberScale.NumberScaleRequestModel
-import br.all.application.question.create.pickList.PickListDTO
-import br.all.application.question.create.pickList.PickListRequestModel
-import br.all.application.question.create.textual.TextualDTO
-import br.all.application.question.create.textual.TextualRequestModel
-import br.all.application.question.repository.*
-import br.all.domain.model.question.QuestionBuilder
-import br.all.domain.model.question.QuestionId
-import br.all.domain.services.UuidGeneratorService
+import java.util.*
 
-class CreateQuestionService(
-    private val uuidGenerator: UuidGeneratorService,
-    private val labeledScaleRepository: QuestionRepository<LabeledScaledDTO, QuestionId>,
-    private val pickListRepository: QuestionRepository<PickListDTO, QuestionId>,
-    private val numberScaleRepository: QuestionRepository<NumberScaleDTO, QuestionId>,
-    private val textualRepository: QuestionRepository<TextualDTO, QuestionId>
-) {
-    fun createLabeledScale(data: LabeledScaleRequestModel): LabeledScaledDTO {
-        val questionId = QuestionId(uuidGenerator.next())
-        val labeledScale = QuestionBuilder()
-            .with(questionId, data.protocolId, data.code, data.description)
-            .buildLabeledScale(data.scales)
+interface CreateQuestionService {
+    fun create(presenter: CreateQuestionPresenter, request: RequestModel)
 
-        labeledScaleRepository.create(labeledScale.toDto())
+    enum class QuestionType{TEXTUAL, PICK_LIST, NUMBERED_SCALE, LABELED_SCALE}
 
-        return labeledScaleRepository.findById(questionId)
-    }
+    data class RequestModel(
+        val researcherId: UUID,
+        val systematicStudyId: UUID,
+        val questionType: QuestionType,
+        val code: String,
+        val description: String,
+        val scales: Map<String, Int>? = null,
+        val higher: Int? = null,
+        val lower: Int? = null,
+        val options: List<String>? = null,
+    )
 
-    fun createPickList(data: PickListRequestModel): PickListDTO{
-        val questionId = QuestionId(uuidGenerator.next())
-        val pickList = QuestionBuilder()
-            .with(questionId, data.protocolId, data.code, data.description)
-            .buildPickList(data.options)
-
-        pickListRepository.create(pickList.toDto())
-
-        return pickListRepository.findById(questionId)
-    }
-
-    fun createNumberScale(data: NumberScaleRequestModel) : NumberScaleDTO{
-        val questionId = QuestionId(uuidGenerator.next())
-        val numberScale = QuestionBuilder()
-            .with(questionId, data.protocolId, data.code, data.description)
-            .buildNumberScale(data.lower, data.higher)
-
-        numberScaleRepository.create(numberScale.toDto())
-
-        return numberScaleRepository.findById(questionId)
-    }
-
-    fun createTextual(data: TextualRequestModel) : TextualDTO {
-        val questionId = QuestionId(uuidGenerator.next())
-        val textual = QuestionBuilder()
-            .with(questionId, data.protocolId, data.code, data.description)
-            .buildTextual()
-        textualRepository.create(textual.toDto())
-
-        return textualRepository.findById(questionId)
-    }
+    data class ResponseModel(
+        val researcherId: UUID,
+        val systematicStudyId: UUID,
+        val questionId: UUID,
+    )
 }

@@ -82,7 +82,7 @@ class StudyReviewControllerTest(
         }
 
         @Test
-        fun `should not create study with valid input and return 400`() {
+        fun `should not create study with invalid input and return 400`() {
             val json = factory.invalidPostRequest()
             mockMvc.perform(
                 post(postUrl())
@@ -164,8 +164,10 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            mockMvc.perform(patch(updateStatusStatus("selection-status", studyId.toString()))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isOk)
+            mockMvc.perform(
+                patch(updateStatusStatus("selection-status", studyId.toString()))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+            ).andExpect(status().isOk)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
             val updatedReview = repository.findById(studyReviewId).toNullable()
@@ -183,8 +185,10 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            mockMvc.perform(patch(updateStatusStatus("selection-status", studyId.toString()))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isBadRequest)
+            mockMvc.perform(
+                patch(updateStatusStatus("selection-status", studyId.toString()))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+            ).andExpect(status().isBadRequest)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
             val updatedReview = repository.findById(studyReviewId).toNullable()
@@ -240,8 +244,10 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            mockMvc.perform(patch(updateStatusStatus("reading-priority", studyId.toString()))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isOk)
+            mockMvc.perform(
+                patch(updateStatusStatus("reading-priority", studyId.toString()))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+            ).andExpect(status().isOk)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
             val updatedReview = repository.findById(studyReviewId).toNullable()

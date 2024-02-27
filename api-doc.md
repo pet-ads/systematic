@@ -13,44 +13,58 @@
 - **[OK]**[**GET**] */researcher/{researcherId}/systematic-study/*]:  get all systematic studies
 
 ### Protocol:
-- [**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol*]: create a protocol for a given systematic study
+- **[OK]**[**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol*]: create a protocol for a given systematic study
 - [**PUT**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/{protocolId}*]: update the protocol of a systematic study
-- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/{protocolId}*]: get the protocol of a systematic study
+- **[OK]**[**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/{protocolId}*]: get the protocol of a systematic study
 
-##### Research Question:
-- [**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/research-question*]: create a research question in the protocol
-- [**PUT**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/research-question/{code}*]: update an existing research question in the protocol
-- [**DELETE**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/research-question/{code}*]: delete an existing research question in the protocol
-- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/research-question/{code}*]: get a research question of a given protocol by code
-- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/research-question*]: get all research questions in the protocol
+[//]: # (##### Research Question:)
 
-##### Eligibility criteria
-- [**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/criteria*]: create a selection criterion in the protocol
-- [**PUT**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/criteria/{code}*]: update an existing selection criterion in the  protocol
-- [**DELETE**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/criteria/{code}*]: delete an existing selection criterion in the  protocol
-- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/criteria/{code}*]: get a selection criterion in a given protocol by code
-- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/criteria*]: get all selection criteria in the  protocol
+[//]: # (- [**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/research-question*]: create a research question in the protocol)
 
-##### PICOC
-- [**PUT**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/picoc*]: create or update the picoc of the protocol
-- [**DELETE**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/picoc*]: delete an existing picoc of the protocol
-- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/picoc*]: get the picoc of the protocol
+[//]: # (- [**PUT**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/research-question/{code}*]: update an existing research question in the protocol)
+
+[//]: # (- [**DELETE**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/research-question/{code}*]: delete an existing research question in the protocol)
+
+[//]: # (- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/research-question/{code}*]: get a research question of a given protocol by code)
+
+[//]: # (- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/research-question*]: get all research questions in the protocol)
+
+[//]: # ()
+[//]: # (##### Eligibility criteria)
+
+[//]: # (- [**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/criteria*]: create a selection criterion in the protocol)
+
+[//]: # (- [**PUT**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/criteria/{code}*]: update an existing selection criterion in the  protocol)
+
+[//]: # (- [**DELETE**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/criteria/{code}*]: delete an existing selection criterion in the  protocol)
+
+[//]: # (- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/criteria/{code}*]: get a selection criterion in a given protocol by code)
+
+[//]: # (- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/criteria*]: get all selection criteria in the  protocol)
+
+[//]: # ()
+[//]: # (##### PICOC)
+
+[//]: # (- [**PUT**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/picoc*]: create or update the picoc of the protocol)
+
+[//]: # (- [**DELETE**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/picoc*]: delete an existing picoc of the protocol)
+
+[//]: # (- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/picoc*]: get the picoc of the protocol)
 
 ##### Extraction Question:
-- [**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question*]: create an extraction question in the protocol
+- **[OK]**[**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question/{questionType}*]: create an extraction question in the protocol
 - [**PUT**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question/{code}*]: update an existing extraction question in the protocol
 - [**DELETE**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question/{code}*]: delete an existing extraction question in the protocol
-- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question/{code}*]: get an extraction question of a given protocol by code
-- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question*]: get all extraction questions in the protocol
+- **[OK]**[**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question/{code}*]: get an extraction question of a given protocol by code
+- **[OK]**[**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question*]: get all extraction questions in the protocol
 
 
 ##### Risk of Bias Question:
-- [**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/rob-question*]: create a risk of bias (rob) question in the protocol
+- **[OK]**[**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/rob-question/{questionType}*]: create a risk of bias (rob) question in the protocol
 - [**PUT**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/rob-question/{code}*]: update an existing risk of bias (rob) question in the protocol
 - [**DELETE**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/rob-question/{code}*]: delete an existing risk of bias (rob) question in the protocol
-- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/rob-question/{code}*]: get a risk of bias (rob) question of a given protocol by code
-- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/rob-question*]: get all risk of bias (rob) questions in the protocol
-
+- **[OK]**[**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/rob-question/{code}*]: get a risk of bias (rob) question of a given protocol by code
+- **[OK]**[**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/rob-question*]: get all risk of bias (rob) questions in the protocol
 
 ### Search Session:
 - [**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/search-session/*]: create a search session in the systematic study
@@ -62,11 +76,11 @@
 - **[OK]**[**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/*]: create a study review in the systematic study
 - [**PUT**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}*]: update an existing study review of a systematic study
 - [**DELETE**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}*]: delete an existing study review of a systematic study
-- **[OK]**[**PATCH**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewIdToKeep}/duplicated/{studyReviewIdtoIgnore}*]: mark an existing study as duplicated in the systematic study
+- **[OK]**[**PATCH**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewIdToKeep}/duplicated/{studyReviewIdToIgnore}*]: mark an existing study as duplicated in the systematic study
 
 - **[OK]**[**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}*]: get an existing study review of a systematic study
 - **[OK]**[**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/*]: get all existing studies of a systematic review
-- [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/search-session/{sessionId}/study-review/*]: get all existing studies of a systematic review search session
+- **[OK]**[**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/search-session/{sessionId}/study-review/*]: get all existing studies of a systematic review search source 
 
 - [**PATCH**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}/extraction-answer*]: update the answer of a given extraction question defined in the protocol
 - [**PATCH**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/study-review/{studyReviewId}/rob-answer*]: update the answer of a given risk of bias question defined in the protocol

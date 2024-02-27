@@ -1,42 +1,19 @@
 package br.all.application.question.repository
-
-import br.all.application.protocol.question.create.numberScale.NumberScaleDTO
-import br.all.application.question.create.textual.TextualDTO
-import br.all.application.question.create.labeledScale.LabeledScaledDTO
-import br.all.application.question.create.pickList.PickListDTO
+import br.all.application.question.create.CreateQuestionService.QuestionType
 import br.all.domain.model.question.LabeledScale
 import br.all.domain.model.question.NumberScale
 import br.all.domain.model.question.PickList
-import br.all.domain.model.question.Textual
+import br.all.domain.model.question.Question
 
-fun LabeledScale.toDto() = LabeledScaledDTO(
-    id.value(),
-    protocolId.value,
-    code,
-    description,
-    getScales()
+fun Question<*>.toDto(type: QuestionType) = QuestionDto(
+    this.id.value(),
+    this.systematicStudyId.value(),
+    this.code,
+    this.description,
+    type.toString(),
+    (this as? LabeledScale)?.scales?.mapValues { it.value.value },
+    (this as? NumberScale)?.lower,
+    (this as? NumberScale)?.higher,
+    (this as? PickList)?.options
 )
 
-fun NumberScale.toDto() = NumberScaleDTO(
-    id.value(),
-    protocolId.value,
-    code,
-    description,
-    higher,
-    lower
-)
-
-fun Textual.toDto() = TextualDTO(
-    id.value(),
-    protocolId.value,
-    code,
-    description
-)
-
-fun PickList.toDto() = PickListDTO(
-    id.value(),
-    protocolId.value,
-    code,
-    description,
-    options
-)
