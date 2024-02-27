@@ -28,7 +28,7 @@ data class StudyReviewDocument (
 ){
     companion object{
         @Transient
-        val SEQUENCE_NAME = "study_review_sequence";
+        val SEQUENCE_NAME = "study_review_sequence"
     }
 }
 

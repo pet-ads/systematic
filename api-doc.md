@@ -37,7 +37,7 @@
 - [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/picoc*]: get the picoc of the protocol
 
 ##### Extraction Question:
-- [**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question*]: create an extraction question in the protocol
+- [**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question/{questionType}*]: create an extraction question in the protocol
 - [**PUT**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question/{code}*]: update an existing extraction question in the protocol
 - [**DELETE**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question/{code}*]: delete an existing extraction question in the protocol
 - [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question/{code}*]: get an extraction question of a given protocol by code
@@ -45,7 +45,7 @@
 
 
 ##### Risk of Bias Question:
-- [**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/rob-question*]: create a risk of bias (rob) question in the protocol
+- [**POST**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/rob-question/{questionType}*]: create a risk of bias (rob) question in the protocol
 - [**PUT**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/rob-question/{code}*]: update an existing risk of bias (rob) question in the protocol
 - [**DELETE**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/rob-question/{code}*]: delete an existing risk of bias (rob) question in the protocol
 - [**GET**]  */researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/rob-question/{code}*]: get a risk of bias (rob) question of a given protocol by code
