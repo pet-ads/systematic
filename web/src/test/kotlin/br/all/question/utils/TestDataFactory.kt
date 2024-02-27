@@ -8,6 +8,7 @@ import java.util.*
 class TestDataFactory {
     val researcherId: UUID = UUID.randomUUID()
     val systematicStudyId: UUID = UUID.randomUUID()
+    val questionId: UUID = UUID.randomUUID()
     private val faker = Faker()
 
     fun validCreateTextualRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId) =
@@ -114,19 +115,76 @@ class TestDataFactory {
         }
         """
 
-//    fun questionDocument(
-//        questionId: UUID,
-//        systematicStudyId: UUID,
-//        code: String = faker.lorem.words(),
-//        description: String = faker.lorem.words(),
-//
-//    ): QuestionDocument {
-//        return QuestionDocument(
-//            questionId,
-//            systematicStudyId,
-//            code,
-//            description,
-//
-//        )
-//    }
+    fun validCreateTextualQuestionDocument(
+        questionId: UUID,
+        systematicStudyId: UUID,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+
+    ) = QuestionDocument(
+            questionId,
+            systematicStudyId,
+            code,
+            description,
+            "TEXTUAL",
+            null,
+            null,
+            null,
+            null
+        )
+
+    fun validCreatePickListQuestionDocument(
+        questionId: UUID,
+        systematicStudyId: UUID,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+
+        ) = QuestionDocument(
+        questionId,
+        systematicStudyId,
+        code,
+        description,
+        "PICK_LIST",
+        null,
+        null,
+        null,
+        listOf(faker.lorem.words(), faker.lorem.words())
+    )
+
+    fun validCreateLabeledScaleQuestionDocument(
+        questionId: UUID,
+        systematicStudyId: UUID,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+
+        ) = QuestionDocument(
+        questionId,
+        systematicStudyId,
+        code,
+        description,
+        "LABELED_SCALE",
+        mapOf(faker.lorem.words() to 1, faker.lorem.words() to 2),
+        null,
+        null,
+        null
+    )
+
+    fun validCreateNumberedScaleQuestionDocument(
+        questionId: UUID,
+        systematicStudyId: UUID,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+
+        ) = QuestionDocument(
+        questionId,
+        systematicStudyId,
+        code,
+        description,
+        "NUMBERED_SCALE",
+        null,
+        10,
+        1,
+        null
+    )
+
 }

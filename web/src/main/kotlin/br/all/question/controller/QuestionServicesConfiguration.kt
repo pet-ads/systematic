@@ -2,6 +2,7 @@ package br.all.question.controller
 
 import br.all.application.question.create.CreateQuestionServiceImpl
 import br.all.application.question.find.FindQuestionServiceImpl
+import br.all.application.question.findAll.FindAllBySystematicStudyIdServiceImpl
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
@@ -21,7 +22,8 @@ class QuestionServicesConfiguration {
         systematicStudyRepository,
         questionRepository,
         idGenerator,
-        credentialsService)
+        credentialsService
+    )
 
     @Bean
     fun findQuestionService(
@@ -29,6 +31,15 @@ class QuestionServicesConfiguration {
         questionRepository: QuestionRepository,
         credentialsService: ResearcherCredentialsService
     ) = FindQuestionServiceImpl(
+        systematicStudyRepository, questionRepository, credentialsService
+    )
+
+    @Bean
+    fun findAllBySystematicStudyIdService(
+        systematicStudyRepository: SystematicStudyRepository,
+        questionRepository: QuestionRepository,
+        credentialsService: ResearcherCredentialsService
+    ) = FindAllBySystematicStudyIdServiceImpl(
         systematicStudyRepository, questionRepository, credentialsService
     )
 }

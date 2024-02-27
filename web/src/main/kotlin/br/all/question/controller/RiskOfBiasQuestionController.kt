@@ -1,7 +1,11 @@
 package br.all.question.controller
 
 import br.all.application.question.create.CreateQuestionService
+import br.all.application.question.create.CreateQuestionService.QuestionType.*
+import br.all.application.question.create.CreateQuestionService.RequestModel
 import br.all.application.question.find.FindQuestionService
+import br.all.application.question.findAll.FindAllBySystematicStudyIdService
+import br.all.question.presenter.extraction.RestfulFindAllExtractionQuestionPresenter
 import br.all.question.presenter.riskOfBias.RestfulCreateRoBQuestionPresenter
 import br.all.question.presenter.riskOfBias.RestfulFindRoBQuestionPresenter
 import org.springframework.http.HttpStatus
@@ -9,30 +13,33 @@ import br.all.application.question.create.CreateQuestionService.RequestModel as 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
+
 @RestController
 @RequestMapping("/api/v1/researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/rob-question")
 class RiskOfBiasQuestionController(
-    val createQuestionService: CreateQuestionService, val findOneService: FindQuestionService
+    val createQuestionService: CreateQuestionService,
+    val findOneService: FindQuestionService,
+    val findAllService: FindAllBySystematicStudyIdService
 ) {
     data class TextualRequest(val code: String, val description: String)
     data class PickListRequest(val code: String, val description: String, val options: List<String>)
     data class LabeledScaleRequest(val code: String, val description: String, val scales: Map<String, Int>)
     data class NumberScaleRequest(val code: String, val description: String, val lower: Int, val higher: Int)
 
-     fun createQuestion(request: CreateRequest): ResponseEntity<*> {
+    fun createQuestion(request: CreateRequest): ResponseEntity<*> {
         val presenter = RestfulCreateRoBQuestionPresenter()
         createQuestionService.create(presenter, request)
-        return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @PostMapping("/textual")
     fun createTextualQuestion(
         @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: TextualRequest,
     ): ResponseEntity<*> = createQuestion(
-        CreateQuestionService.RequestModel(
+        RequestModel(
             researcherId,
             systematicStudyId,
-            CreateQuestionService.QuestionType.TEXTUAL,
+            TEXTUAL,
             request.code,
             request.description
         )
@@ -42,10 +49,10 @@ class RiskOfBiasQuestionController(
     fun createPickListQuestion(
         @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: PickListRequest,
     ): ResponseEntity<*> = createQuestion(
-        CreateQuestionService.RequestModel(
+        RequestModel(
             researcherId,
             systematicStudyId,
-            CreateQuestionService.QuestionType.PICK_LIST,
+            PICK_LIST,
             request.code,
             request.description,
             options = request.options
@@ -58,10 +65,10 @@ class RiskOfBiasQuestionController(
         @PathVariable systematicStudyId: UUID,
         @RequestBody request: LabeledScaleRequest,
     ): ResponseEntity<*> = createQuestion(
-        CreateQuestionService.RequestModel(
+        RequestModel(
             researcherId,
             systematicStudyId,
-            CreateQuestionService.QuestionType.LABELED_SCALE,
+            LABELED_SCALE,
             request.code,
             request.description,
             scales = request.scales
@@ -74,10 +81,10 @@ class RiskOfBiasQuestionController(
         @PathVariable systematicStudyId: UUID,
         @RequestBody request: NumberScaleRequest,
     ): ResponseEntity<*> = createQuestion(
-        CreateQuestionService.RequestModel(
+        RequestModel(
             researcherId,
             systematicStudyId,
-            CreateQuestionService.QuestionType.NUMBERED_SCALE,
+            NUMBERED_SCALE,
             request.code,
             request.description,
             higher = request.higher,
@@ -94,6 +101,17 @@ class RiskOfBiasQuestionController(
         val presenter = RestfulFindRoBQuestionPresenter()
         val request = FindQuestionService.RequestModel(researcherId, systematicStudyId, questionId)
         findOneService.findOne(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping
+    fun findAllBySystematicStudyId(
+        @PathVariable researcherId: UUID,
+        @PathVariable systematicStudyId: UUID
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindAllExtractionQuestionPresenter()
+        val request = FindAllBySystematicStudyIdService.RequestModel(researcherId, systematicStudyId)
+        findAllService.findAllBySystematicStudyId(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

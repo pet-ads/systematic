@@ -2,8 +2,6 @@ package br.all.infrastructure.question
 
 import br.all.application.question.repository.QuestionDto
 import br.all.application.question.repository.QuestionRepository
-import br.all.domain.model.protocol.ProtocolId
-import br.all.domain.model.question.QuestionId
 import br.all.infrastructure.shared.toNullable
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -14,6 +12,6 @@ open class QuestionRepositoryImpl(private val repository: MongoQuestionRepositor
 
     override fun findById(systematicStudyId: UUID, id: UUID) = repository.findById(id).toNullable()?.toDto()
 
-//    override fun findAllByProtocol(systematicStudyId: UUID, protocolId: ProtocolId) =
-//        repository.findAll()
+    override fun findAllBySystematicStudyId(systematicStudyId: UUID): List<QuestionDto> =
+        repository.findAllBySystematicStudyId(systematicStudyId).map { it.toDto() }
 }
