@@ -66,7 +66,7 @@ class TestDataFactory {
         keywords: Set<String> = faker.wordsList(5).toSet(),
         references: List<String> = faker.paragraphList(4, 5),
         doi: String? = null,
-        sources: Set<String> = faker.wordsList(5).toSet(),
+        sources: Set<String> = faker.wordsList(minSize = 1, maxSize = 5).toSet(),
         criteria: Map<String,String> = mapOf("Criteria A" to "INCLUSION", "Criteria B" to "EXCLUSION"),
         formAnswers: Map<UUID, String> = mapOf(Pair(UUID.randomUUID(), "Form")),
         robAnswers: Map<UUID, String> = mapOf(Pair(UUID.randomUUID(), "Form")),

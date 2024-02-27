@@ -16,6 +16,10 @@ open class  StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRe
     override fun findAllFromReview(reviewId: UUID): List<StudyReviewDto> =
         repository.findAllById_SystematicStudyId(reviewId).map { it.toDto() }
 
+    override fun findAllBySource(reviewId: UUID, source: String): List<StudyReviewDto> =
+//        repository.findAllById_SystematicStudyId(reviewId).map { it.toDto() }
+        repository.findAllById_SystematicStudyIdAndSearchSourcesContaining(reviewId, source).map { it.toDto() }
+
     override fun updateSelectionStatus(reviewId: UUID, studyId: Long, attributeName: String, newStatus: Any) {
         repository.findAndUpdateAttributeById(StudyReviewId(reviewId, studyId), attributeName, newStatus)
     }

@@ -1,23 +1,22 @@
 package br.all.application.protocol.repository
 
-import br.all.application.protocol.create.ProtocolRequestModel
+import br.all.application.protocol.create.CreateProtocolService.RequestModel
 import br.all.domain.model.protocol.*
-import br.all.domain.model.protocol.Criteria.CriteriaType
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.valueobject.Language
-import java.util.*
+import br.all.domain.shared.valueobject.Language.LangType
 
 fun Protocol.toDto() = ProtocolDto(
     id = id.value(),
-    systematicStudy = systematicStudyId.value,
+    systematicStudy = systematicStudyId.value(),
 
     goal = goal,
     justification = justification,
 
-    researchQuestions = researchQuestions.map { it.description }.toSet(),
+    researchQuestions = researchQuestions.map { it.toString() }.toSet(),
     keywords = keywords,
     searchString = searchString,
-    informationSources = informationSources.map { it.searchSource }.toSet(),
+    informationSources = informationSources.map { it.toString() }.toSet(),
     sourcesSelectionCriteria = sourcesSelectionCriteria,
 
     searchMethod = searchMethod,
@@ -25,7 +24,7 @@ fun Protocol.toDto() = ProtocolDto(
     studyTypeDefinition = studyTypeDefinition,
 
     selectionProcess = selectionProcess,
-    selectionCriteria = selectionCriteria.map { it.description to it.type.name }
+    selectionCriteria = eligibilityCriteria.map { it.description to it.type.name }
         .toSet(),
 
     dataCollectionProcess = dataCollectionProcess,
@@ -39,29 +38,21 @@ fun Protocol.toDto() = ProtocolDto(
         it.intervention,
         it.control,
         it.outcome,
-        it.context.toString(),
+        it.context,
     )},
 )
 
-fun Protocol.Companion.fromRequestModel(
-    reviewId: UUID,
-    requestModel: ProtocolRequestModel,
-) = with(requestModel) {
-    with(SystematicStudyId(reviewId), keywords)
+fun Protocol.Companion.fromRequestModel(request: RequestModel) = with(request) {
+    write(SystematicStudyId(systematicStudyId), keywords)
         .researchesFor(goal)
         .because(justification)
-        .toAnswer(researchQuestions.map { ResearchQuestion(it) }.toSet())
         .followingSearchProcess(searchMethod, searchString)
-        .inSearchSources( informationSources.map { SearchSource(it) }.toSet()).selectedBecause(sourcesSelectionCriteria)
-        .searchingStudiesIn( studiesLanguages.map { Language(Language.LangType.valueOf(it)) }.toSet(),studyTypeDefinition)
+        .inSearchSources( informationSources.map { it.toSearchSource() }.toSet())
+        .selectedBecause(sourcesSelectionCriteria)
+        .searchingStudiesIn(studiesLanguages.map { Language(LangType.valueOf(it)) }.toSet(), studyTypeDefinition)
         .followingSelectionProcess(selectionProcess)
-        .withElegibilityCriteria(
-            selectionCriteria
-            .map { (description, type) -> Criteria(description, CriteriaType.valueOf(type)) }
-            .toSet())
         .followingDataCollectionProcess(dataCollectionProcess)
         .followingSynthesisProcess(analysisAndSynthesisProcess)
-        .withPICOC(picoc?.let { Picoc(it.population, it.intervention, it.control, it.outcome, it.context) })
         .build()
 }
 

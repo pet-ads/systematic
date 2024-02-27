@@ -8,7 +8,7 @@ import br.all.domain.model.question.Question
 
 fun Question<*>.toDto(type: QuestionType) = QuestionDto(
     this.id.value(),
-    this.systematicStudyId.value,
+    this.systematicStudyId.value(),
     this.code,
     this.description,
     type.toString(),

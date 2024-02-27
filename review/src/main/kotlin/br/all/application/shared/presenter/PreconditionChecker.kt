@@ -16,6 +16,18 @@ class PreconditionChecker(
 ) {
 
     fun prepareIfViolatesPreconditions(presenter: GenericPresenter<*>, researcherId: ResearcherId, systematicStudyId: SystematicStudyId) {
+        prepareIfUnauthenticatedOrUnauthorized(presenter, researcherId)
+        if (presenter.isDone())
+            return
+        if (!reviewRepository.existsById(systematicStudyId.value())) {
+            presenter.prepareFailView(EntityNotFoundException("Review of id $systematicStudyId do not exists."))
+            return
+        }
+        if (!reviewRepository.hasReviewer(systematicStudyId.value(), researcherId.value))
+            presenter.prepareFailView(UnauthorizedUserException("User of id $researcherId is not a reviewer."))
+    }
+
+    fun prepareIfUnauthenticatedOrUnauthorized(presenter: GenericPresenter<*>, researcherId: ResearcherId) {
         if (!credentialsService.isAuthenticated(researcherId)) {
             presenter.prepareFailView(UnauthenticatedUserException("User of id $researcherId is not authenticated."))
             return
@@ -24,12 +36,6 @@ class PreconditionChecker(
             presenter.prepareFailView(UnauthorizedUserException("User of id $researcherId is not authorized."))
             return
         }
-        if (!reviewRepository.existsById(systematicStudyId.value)) {
-            presenter.prepareFailView(EntityNotFoundException("Review of id $systematicStudyId do not exists."))
-            return
-        }
-        if (!reviewRepository.hasReviewer(systematicStudyId.value, researcherId.value))
-            presenter.prepareFailView(UnauthorizedUserException("User of id $researcherId is not a reviewer."))
     }
 
     fun prepareIfViolatesPreconditions(

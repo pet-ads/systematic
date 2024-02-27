@@ -3,9 +3,13 @@ package br.all.application.review.repository
 import java.util.*
 
 interface SystematicStudyRepository {
-    fun create(dto: SystematicStudyDto)
+    fun saveOrUpdate(dto: SystematicStudyDto)
 
     fun findById(id : UUID) : SystematicStudyDto?
+
+    fun findAllByCollaborator(researcherId: UUID): List<SystematicStudyDto>
+
+    fun findAllByCollaboratorAndOwner(collaborator: UUID, owner: UUID): List<SystematicStudyDto>
 
     fun findAll() : List<SystematicStudyDto>
 

@@ -1,27 +1,18 @@
 package br.all.application.review.create
 
-import br.all.application.researcher.repository.ResearcherRepository
-import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.review.repository.fromRequestModel
-import br.all.application.review.repository.toDto
-import br.all.application.review.shared.SystematicStudyResponseModel
-import br.all.domain.model.review.SystematicStudy
-import br.all.domain.services.UuidGeneratorService
+import java.util.*
 
-class CreateSystematicStudyService(
-    private val systematicStudyRepository: SystematicStudyRepository,
-    private val researcherRepository: ResearcherRepository,
-    private val uuidGeneratorService: UuidGeneratorService,
-) {
-    fun create(requestModel: SystematicStudyRequestModel): SystematicStudyResponseModel {
+interface CreateSystematicStudyService {
+    fun create(presenter: CreateSystematicStudyPresenter, researcher: UUID, request: RequestModel)
 
-        if(!researcherRepository.existsById(requestModel.owner))
-            throw NoSuchElementException("Could not find a researcher ID for the owner: ${requestModel.owner}!")
+    data class RequestModel(
+        val title : String,
+        val description : String,
+        val collaborators : Set<UUID>,
+    )
 
-        val id = uuidGeneratorService.next()
-        val systematicStudyDto = SystematicStudy.fromRequestModel(id, requestModel).toDto()
-        systematicStudyRepository.create(systematicStudyDto)
-
-        return SystematicStudyResponseModel(id)
-    }
+    data class ResponseModel(
+        val researcherId: UUID,
+        val systematicStudyId: UUID,
+    )
 }

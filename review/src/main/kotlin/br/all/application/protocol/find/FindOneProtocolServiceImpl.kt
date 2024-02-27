@@ -1,28 +1,38 @@
 package br.all.application.protocol.find
 
-import br.all.application.protocol.repository.ProtocolDto
+import br.all.application.protocol.find.FindOneProtocolService.RequestModel
+import br.all.application.protocol.find.FindOneProtocolService.ResponseModel
 import br.all.application.protocol.repository.ProtocolRepository
+import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.domain.shared.utils.requireThatExists
-import java.util.*
+import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.application.shared.presenter.PreconditionChecker
+import br.all.domain.model.researcher.toResearcherId
+import br.all.domain.model.review.toSystematicStudyId
 
 class FindOneProtocolServiceImpl(
     private val protocolRepository: ProtocolRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
+    private val credentialsService: ResearcherCredentialsService,
 ): FindOneProtocolService {
-    override fun findById(id: UUID) = protocolRepository.findById(id)
+    override fun findById(presenter: FindOneProtocolPresenter, request: RequestModel) {
+        val (researcher, systematicStudy) = request
+        PreconditionChecker(systematicStudyRepository, credentialsService).also {
+            it.prepareIfViolatesPreconditions(presenter, researcher.toResearcherId(), systematicStudy.toSystematicStudyId())
+        }
+        if (presenter.isDone()) return
 
-    override fun findBySystematicStudy(reviewId: UUID): ProtocolDto? {
-        requireThatExists(systematicStudyRepository.existsById(reviewId))
-            { "Cannot find a protocol because there is not a SystematicStudy with id: $reviewId" }
-        return protocolRepository.findBySystematicStudy(reviewId)
-    }
+        val dto = protocolRepository.findById(systematicStudy)
 
-    override fun existsById(id: UUID) = protocolRepository.existsById(id)
+        if (dto == null) {
+            presenter.prepareFailView(
+                EntityNotFoundException("The protocol for systematic study $systematicStudy hasn't been written yet!"),
+            )
+            return
+        }
 
-    override fun existsBySystematicStudy(reviewId: UUID): Boolean {
-        requireThatExists(systematicStudyRepository.existsById(reviewId))
-            { "There is not a SystematicStudy with id: $reviewId" }
-        return protocolRepository.existsBySystematicStudy(reviewId)
+        ResponseModel(researcher, systematicStudy, dto).also {
+            presenter.prepareSuccessView(it)
+        }
     }
 }

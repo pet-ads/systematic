@@ -59,6 +59,6 @@ class CreateQuestionServiceImpl(
         }
 
         questionRepository.createOrUpdate(question.toDto(type))
-        presenter.prepareSuccessView(ResponseModel(researcherId.value, systematicStudyId.value, questionId.value))
+        presenter.prepareSuccessView(ResponseModel(researcherId.value, systematicStudyId.value(), questionId.value))
     }
 }
