@@ -20,7 +20,7 @@ fun ProtocolDto.toDocument() = ProtocolDocument(
     studyTypeDefinition,
 
     selectionProcess,
-    selectionCriteria,
+    eligibilityCriteria,
 
     dataCollectionProcess,
     analysisAndSynthesisProcess,

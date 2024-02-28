@@ -20,7 +20,7 @@ data class ProtocolDto(
     val studyTypeDefinition: String?,
 
     val selectionProcess: String?,
-    val selectionCriteria: Set<Pair<String, String>>,
+    val eligibilityCriteria: Set<Pair<String, String>>,
 
     val dataCollectionProcess: String?,
     val analysisAndSynthesisProcess: String?,
