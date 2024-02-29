@@ -47,27 +47,19 @@ class MongoQuestionRepositoryTest(
         val updatedDescription = factory.fakerWord
         val updatedQuestion = when (questionToUpdate.questionType) {
             TEXTUAL.toString() -> factory.validCreateTextualQuestionDocument(
-                questionId,
-                systematicStudyId,
-                description = updatedDescription
+                questionId, systematicStudyId, description = updatedDescription
             )
 
             PICK_LIST.toString() -> factory.validCreatePickListQuestionDocument(
-                questionId,
-                systematicStudyId,
-                description = updatedDescription
+                questionId, systematicStudyId, description = updatedDescription
             )
 
             LABELED_SCALE.toString() -> factory.validCreateLabeledScaleQuestionDocument(
-                questionId,
-                systematicStudyId,
-                description = updatedDescription
+                questionId, systematicStudyId, description = updatedDescription
             )
 
             NUMBERED_SCALE.toString() -> factory.validCreateNumberedScaleQuestionDocument(
-                questionId,
-                systematicStudyId,
-                description = updatedDescription
+                questionId, systematicStudyId, description = updatedDescription
             )
 
             else -> throw IllegalArgumentException("Question type ${questionToUpdate.questionType} does not exist.")
