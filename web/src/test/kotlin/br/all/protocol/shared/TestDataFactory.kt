@@ -3,6 +3,7 @@ package br.all.protocol.shared
 import br.all.domain.shared.utils.paragraph
 import br.all.domain.shared.utils.paragraphList
 import br.all.infrastructure.protocol.ProtocolDocument
+import br.all.protocol.controller.ProtocolController.PostRequest.PicocRequest
 import io.github.serpro69.kfaker.Faker
 import java.util.*
 
@@ -70,6 +71,7 @@ class TestDataFactory {
     fun validPostRequest(
         goal: String? = faker.paragraph(5),
         justification: String? = faker.paragraph(5),
+        researchQuestions: Set<String> = emptySet(),
         keywords: Set<String> = emptySet(),
 
         searchString: String? = faker.paragraph(5),
@@ -81,12 +83,17 @@ class TestDataFactory {
         studyTypeDefinition: String? = faker.paragraph(5),
 
         selectionProcess: String? = faker.paragraph(5),
+        eligibilityCriteria: Set<Pair<String, String>> = emptySet(),
+
         dataCollectionProcess: String? = faker.paragraph(5),
         analysisAndSynthesisProcess: String? = faker.paragraph(5),
+
+        picoc: PicocRequest? = null,
     ) = """ 
         {
             "goal": "$goal",
             "justification": "$justification",
+            "researchQuestions": $researchQuestions,
             "keywords": $keywords,
     
             "searchString": "$searchString",
@@ -98,8 +105,11 @@ class TestDataFactory {
             "studyTypeDefinition": "$studyTypeDefinition",
     
             "selectionProcess": "$selectionProcess",
+            "eligibilityCriteria": $eligibilityCriteria,
+            
             "dataCollectionProcess": "$dataCollectionProcess",
-            "analysisAndSynthesisProcess": "$analysisAndSynthesisProcess"
+            "analysisAndSynthesisProcess": "$analysisAndSynthesisProcess"${ if (picoc != null) "," else "" }
+            ${ if (picoc != null) "\"picoc\": $picoc" else "" }
         }
     """.trimIndent()
 
