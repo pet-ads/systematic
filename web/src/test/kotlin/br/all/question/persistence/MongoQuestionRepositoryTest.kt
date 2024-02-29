@@ -1,6 +1,7 @@
 package br.all.question.persistence
 
 import br.all.infrastructure.question.MongoQuestionRepository
+import br.all.infrastructure.question.QuestionDocument
 import br.all.infrastructure.shared.toNullable
 import br.all.question.utils.TestDataFactory
 import org.junit.jupiter.api.*
@@ -29,35 +30,32 @@ class MongoQuestionRepositoryTest(
     @AfterEach
     fun teardown() = sut.deleteAll()
 
+    private fun insertAndCheck(question: QuestionDocument) {
+        sut.insert(question)
+        assertTrue(sut.findById(question.questionId).toNullable() != null)
+    }
+
     @Nested
     @DisplayName("when successfully inserting questions")
     inner class WhenSuccessfullyInsertingQuestions {
         @Test
         fun `should insert a textual question`() {
-            val textualQuestion = factory.validCreateTextualQuestionDocument(questionId, systematicStudyId)
-            sut.insert(textualQuestion)
-            assertTrue(sut.findById(textualQuestion.questionId).toNullable() != null)
+            insertAndCheck(factory.validCreateTextualQuestionDocument(questionId, systematicStudyId))
         }
 
         @Test
         fun `should insert a picklist question`() {
-            val pickListQuestion = factory.validCreatePickListQuestionDocument(questionId, systematicStudyId)
-            sut.insert(pickListQuestion)
-            assertTrue(sut.findById(pickListQuestion.questionId).toNullable() != null)
+            insertAndCheck(factory.validCreatePickListQuestionDocument(questionId, systematicStudyId))
         }
 
         @Test
         fun `should insert a labeledScale question`() {
-            val labeledScaleQuestion = factory.validCreateLabeledScaleQuestionDocument(questionId, systematicStudyId)
-            sut.insert(labeledScaleQuestion)
-            assertTrue(sut.findById(labeledScaleQuestion.questionId).toNullable() != null)
+            insertAndCheck(factory.validCreateLabeledScaleQuestionDocument(questionId, systematicStudyId))
         }
 
         @Test
         fun `should insert a numberScale question`() {
-            val numberScaleQuestion = factory.validCreateNumberedScaleQuestionDocument(questionId, systematicStudyId)
-            sut.insert(numberScaleQuestion)
-            assertTrue(sut.findById(numberScaleQuestion.questionId).toNullable() != null)
+            insertAndCheck(factory.validCreateNumberedScaleQuestionDocument(questionId, systematicStudyId))
         }
     }
 
