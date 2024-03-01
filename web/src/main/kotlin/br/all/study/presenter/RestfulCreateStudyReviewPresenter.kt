@@ -2,6 +2,7 @@ package br.all.study.presenter
 
 import br.all.application.study.create.CreateStudyReviewPresenter
 import br.all.application.study.create.CreateStudyReviewService.ResponseModel
+import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.shared.error.createErrorResponseFrom
 import br.all.study.controller.StudyReviewController
 import org.springframework.hateoas.RepresentationModel
@@ -25,14 +26,49 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
             findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
         }.withSelfRel()
 
-        linkTo<StudyReviewController> {
+        /*linkTo<StudyReviewController> {
             findAllStudyReviews(response.researcherId, response.systematicStudyId);
-        }.withRel("_all")
+        }.withRel("_all")*/
+
+        val findAll = linkTo<StudyReviewController> {
+            findAllStudyReviews(response.researcherId, response.systematicStudyId)
+        }.withRel("findAll")
+
+
+        /*sem searchSource
+        val findAllBySource = linkTo<StudyReviewController> {
+            findAllStudyReviewsBySource(response.researcherId, response.systematicStudyId, response.searchSource
+            )
+        }.withRel("findAllBySource")*/
+
+        val findOne = linkTo<StudyReviewController> {
+            findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
+        }.withRel("findOne")
+
+
+        /*sem status
+        val updateSelectionStatus = linkTo<StudyReviewController> {
+            updateStudyReviewSelectionStatus(response.researcherId, response.systematicStudyId, response.studyReviewId, status)
+        }.withRel("updateSelectionStatus")
+
+        val updateExtractionStatus = linkTo<StudyReviewController> {
+            updateStudyReviewExtractionStatus(response.researcherId, response.systematicStudyId, response.studyReviewId, status)
+        }.withRel("updateExtractionStatus")
+
+        val updateReadingPriority = linkTo<StudyReviewController> {
+            updateStudyReviewReadingPriority(response.researcherId, response.systematicStudyId, response.studyReviewId, status)
+        }.withRel("updateReadingPriority")*/
+
+        /* sem os dois últimos response
+        val markAsDuplicated = linkTo<StudyReviewController> {
+            markAsDuplicated(response.researcherId, response.systematicStudyId, response.studyReviewIdToKeep, response.studyReviewToMarkAsDuplicated)
+        }.withRel("markAsDuplicated")*/
+
 
         // TODO add link to update study review
         // TODO add link to update study review
 
-        restfulResponse.add(self)
+        restfulResponse.add(self,findAll,findOne)
         responseEntity = status(HttpStatus.CREATED).body(restfulResponse)
     }
 
