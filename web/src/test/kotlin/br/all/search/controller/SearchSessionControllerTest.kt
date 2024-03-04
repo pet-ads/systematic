@@ -8,7 +8,9 @@ import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -62,6 +64,34 @@ class SearchSessionControllerTest(
                 .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.researcherId").value(researcherId.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.sessionId").exists())
+                .andReturn()
+        }
+        @Test
+        fun `should return 400 when BibTeX format is invalid`() {
+
+            mockMvc.perform(
+                multipart(postUrl())
+                    .file("bibFile", factory.invalidBibFile())
+                    .param("data", factory.validPostRequest())
+            )
+                .andExpect(status().isBadRequest)
+                .andReturn()
+        }
+
+        @Test
+        fun `should return 403 when researcher is not authorized`() {
+            val unauthorizedResearcherId = UUID.randomUUID()
+
+            mockMvc.perform(multipart(postUrl()).file(factory.bibfile()).param("data", factory.validPostRequest(unauthorizedResearcherId)))
+                .andExpect(status().isForbidden)
+                .andReturn()
+        }
+
+        @Test
+        fun `should return 404 for invalid request body`() {
+
+            mockMvc.perform(multipart(postUrl()).file(factory.bibfile()).param("data", factory.invalidPostRequest()))
+                .andExpect(status().isNotFound)
                 .andReturn()
         }
     }

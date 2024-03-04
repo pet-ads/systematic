@@ -24,6 +24,19 @@ class TestDataFactory {
         }
         """.trimIndent()
 
+    fun invalidPostRequest(
+        researcherId: UUID = UUID.randomUUID(),
+        systematicStudyId: UUID = UUID.randomUUID()
+    ) = """
+        {
+            "researcherId": "$researcherId",
+            "systematicStudyId": "$systematicStudyId",
+            "source": "",
+            "searchString": "",
+            "additionalInfo": ""
+        }
+        """.trimIndent()
+
     fun bibfile() = MockMultipartFile(
         "file",
         "bibfile.bib",
@@ -68,5 +81,6 @@ class TestDataFactory {
         """.toByteArray()
     )
 
+    fun invalidBibFile() = "Invalid BibTeX file".toByteArray()
 
 }
