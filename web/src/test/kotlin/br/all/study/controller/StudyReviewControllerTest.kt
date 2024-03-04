@@ -1,5 +1,6 @@
 package br.all.study.controller
 
+import br.all.application.protocol.repository.ProtocolRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
@@ -25,6 +26,7 @@ import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 class StudyReviewControllerTest(
     @Autowired val repository: MongoStudyReviewRepository,
     @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
+//    @Autowired val protocolRepository: ProtocolRepository,
     @Autowired val idService: StudyReviewIdGeneratorService,
     @Autowired val mockMvc: MockMvc,
 ) {
@@ -36,6 +38,9 @@ class StudyReviewControllerTest(
     fun postUrl() = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review"
     fun findUrl(studyId: String = "") =
         "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review${studyId}"
+
+    fun findBySourceUrl(searchSource: String = "") =
+        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-source/${searchSource}"
 
     fun updateStatusStatus(attributeName: String, studyId: String) =
         "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyId}/${attributeName}"
@@ -77,7 +82,7 @@ class StudyReviewControllerTest(
         }
 
         @Test
-        fun `should not create study with valid input and return 400`() {
+        fun `should not create study with invalid input and return 400`() {
             val json = factory.invalidPostRequest()
             mockMvc.perform(
                 post(postUrl())
@@ -130,6 +135,20 @@ class StudyReviewControllerTest(
                 .andExpect(jsonPath("$.size").value(0))
                 .andExpect(jsonPath("$.studyReviews").isEmpty())
         }
+
+        @Test
+        fun `should find all studies by source and return 200`() {
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), "study",
+                sources = setOf("ACM")))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), "study"))
+            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), "study",
+                sources = setOf("ACM")))
+
+            mockMvc.perform(get(findBySourceUrl("ACM")).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$.size").value(1))
+        }
     }
 
     @Nested
@@ -145,8 +164,10 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            mockMvc.perform(patch(updateStatusStatus("selection-status", studyId.toString()))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isOk)
+            mockMvc.perform(
+                patch(updateStatusStatus("selection-status", studyId.toString()))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+            ).andExpect(status().isOk)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
             val updatedReview = repository.findById(studyReviewId).toNullable()
@@ -164,8 +185,10 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            mockMvc.perform(patch(updateStatusStatus("selection-status", studyId.toString()))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isBadRequest)
+            mockMvc.perform(
+                patch(updateStatusStatus("selection-status", studyId.toString()))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+            ).andExpect(status().isBadRequest)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
             val updatedReview = repository.findById(studyReviewId).toNullable()
@@ -221,8 +244,10 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            mockMvc.perform(patch(updateStatusStatus("reading-priority", studyId.toString()))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isOk)
+            mockMvc.perform(
+                patch(updateStatusStatus("reading-priority", studyId.toString()))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+            ).andExpect(status().isOk)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
             val updatedReview = repository.findById(studyReviewId).toNullable()

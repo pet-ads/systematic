@@ -6,6 +6,7 @@ import br.all.shared.error.createErrorResponseFrom
 import br.all.study.controller.StudyReviewController
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
+import org.springframework.hateoas.server.mvc.withRel
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.status
@@ -23,6 +24,13 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
         val self = linkTo<StudyReviewController> {
             findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
         }.withSelfRel()
+
+        linkTo<StudyReviewController> {
+            findAllStudyReviews(response.researcherId, response.systematicStudyId);
+        }.withRel("_all")
+
+        // TODO add link to update study review
+        // TODO add link to update study review
 
         restfulResponse.add(self)
         responseEntity = status(HttpStatus.CREATED).body(restfulResponse)

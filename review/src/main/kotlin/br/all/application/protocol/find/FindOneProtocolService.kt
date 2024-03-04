@@ -4,11 +4,16 @@ import br.all.application.protocol.repository.ProtocolDto
 import java.util.*
 
 interface FindOneProtocolService {
-    fun findById(id: UUID): ProtocolDto?
+    fun findById(presenter: FindOneProtocolPresenter, request: RequestModel)
 
-    fun findBySystematicStudy(reviewId: UUID): ProtocolDto?
+    data class RequestModel(
+        val researcherId: UUID,
+        val systematicStudyId: UUID,
+    )
 
-    fun existsById(id: UUID): Boolean
-
-    fun existsBySystematicStudy(reviewId: UUID): Boolean
+    data class ResponseModel(
+        val researcherId: UUID,
+        val systematicStudyId: UUID,
+        val content: ProtocolDto,
+    )
 }

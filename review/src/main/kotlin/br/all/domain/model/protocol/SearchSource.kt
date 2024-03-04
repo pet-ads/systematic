@@ -4,6 +4,7 @@ import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.ddd.ValueObject
 
 data class SearchSource(private var value: String) : ValueObject() {
+
     init {
         value = value.replace("(^|\\s)[a-z]".toRegex()) { it.value.uppercase() }
         val notification = validate()

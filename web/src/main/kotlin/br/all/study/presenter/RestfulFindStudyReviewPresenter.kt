@@ -20,7 +20,7 @@ class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
         val restfulResponse = ViewModel(response.content)
 
         val self = linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId, response.researcherId, response.content.studyReviewId)
+            findStudyReview(response.researcherId, response.content.systematicStudyId, response.content.studyReviewId)
         }.withSelfRel()
 
         restfulResponse.add(self)
