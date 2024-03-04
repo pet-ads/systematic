@@ -11,6 +11,9 @@ class TestDataFactory {
     val questionId: UUID = UUID.randomUUID()
     private val faker = Faker()
 
+    val fakerWord: String
+        get() = faker.lorem.words()
+
     fun validCreateTextualRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId) =
         """
         {
@@ -186,5 +189,4 @@ class TestDataFactory {
         1,
         null
     )
-
 }
