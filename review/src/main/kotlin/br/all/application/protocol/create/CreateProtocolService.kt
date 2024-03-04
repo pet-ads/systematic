@@ -1,5 +1,6 @@
 package br.all.application.protocol.create
 
+import br.all.application.protocol.repository.PicocDto
 import java.util.*
 
 interface CreateProtocolService {
@@ -11,6 +12,7 @@ interface CreateProtocolService {
 
         val goal: String? = null,
         val justification: String? = null,
+        val researchQuestions: Set<String> = emptySet(),
         val keywords: Set<String> = emptySet(),
 
         val searchString: String? = null,
@@ -22,8 +24,12 @@ interface CreateProtocolService {
         val studyTypeDefinition: String? = null,
 
         val selectionProcess: String? = null,
+        val eligibilityCriteria: Set<Pair<String, String>> = emptySet(),
+
         val dataCollectionProcess: String? = null,
         val analysisAndSynthesisProcess: String? = null,
+
+        val picoc: PicocDto? = null,
     )
 
     data class ResponseModel(

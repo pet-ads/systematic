@@ -2,6 +2,7 @@ package br.all.protocol.controller
 
 import br.all.application.protocol.create.CreateProtocolServiceImpl
 import br.all.application.protocol.find.FindOneProtocolServiceImpl
+import br.all.application.protocol.repository.PicocDto
 import br.all.protocol.presenter.RestfulCreateProtocolPresenter
 import br.all.protocol.presenter.RestfulFindOneProtocolPresenter
 import org.springframework.http.HttpStatus
@@ -34,6 +35,7 @@ class ProtocolController(
     data class PostRequest(
         val goal: String? = null,
         val justification: String? = null,
+        val researchQuestions: Set<String>,
         val keywords: Set<String> = emptySet(),
 
         val searchString: String? = null,
@@ -45,14 +47,19 @@ class ProtocolController(
         val studyTypeDefinition: String? = null,
 
         val selectionProcess: String? = null,
+        val eligibilityCriteria: Set<Pair<String, String>> = emptySet(),
+
         val dataCollectionProcess: String? = null,
         val analysisAndSynthesisProcess: String? = null,
+
+        val picoc: PicocRequest? = null,
     ) {
         fun toCreateRequestModel(researcher: UUID, systematicStudy: UUID) = CreateRequestModel(
             researcher,
             systematicStudy,
             goal,
             justification,
+            researchQuestions,
             keywords,
             searchString,
             informationSources,
@@ -61,8 +68,18 @@ class ProtocolController(
             studiesLanguages,
             studyTypeDefinition,
             selectionProcess,
+            eligibilityCriteria,
             dataCollectionProcess,
             analysisAndSynthesisProcess,
+            picoc?.let { PicocDto(it.population, it.intervention, it.control, it.outcome, it.context) },
+        )
+
+        data class PicocRequest(
+            val population: String,
+            val intervention: String,
+            val control: String,
+            val outcome: String,
+            val context: String? = null,
         )
     }
 

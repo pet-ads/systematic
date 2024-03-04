@@ -22,6 +22,7 @@ class TestDataFactory {
         systematicStudy: UUID = this.systematicStudy,
         goal: String? = text(),
         justification: String? = text(),
+        researchQuestions: Set<String> = emptySet(),
         keywords: Set<String> = emptySet(),
 
         searchString: String? = null,
@@ -33,6 +34,8 @@ class TestDataFactory {
         studyTypeDefinition: String? = null,
 
         selectionProcess: String? = null,
+        eligibilityCriteria: Set<Pair<String, String>> = emptySet(),
+
         dataCollectionProcess: String? = null,
         analysisAndSynthesisProcess: String? = null,
     ) = CreateRequestModel(
@@ -41,6 +44,7 @@ class TestDataFactory {
 
         goal,
         justification,
+        researchQuestions,
         keywords,
 
         searchString,
@@ -52,6 +56,8 @@ class TestDataFactory {
         studyTypeDefinition,
 
         selectionProcess,
+        eligibilityCriteria,
+
         dataCollectionProcess,
         analysisAndSynthesisProcess,
     )
