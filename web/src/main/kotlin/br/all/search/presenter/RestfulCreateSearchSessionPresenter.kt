@@ -2,8 +2,6 @@ package br.all.search.presenter
 
 import br.all.application.search.create.CreateSearchSessionPresenter
 import br.all.application.search.create.CreateSearchSessionService.ResponseModel
-import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.SystematicStudyId
 import br.all.search.controller.SearchSessionController
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
@@ -20,16 +18,16 @@ class RestfulCreateSearchSessionPresenter : CreateSearchSessionPresenter {
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(
-            response.sessionId,
+            response.researcherId,
             response.systematicStudyId,
-            response.researcherId
+            response.sessionId,
         )
 
-/*        val self = linkTo<SearchSessionController> {
-            findSearchSession(response.sessionId)
+        val self = linkTo<SearchSessionController> {
+            findSearchSession(response.researcherId, response.systematicStudyId, response.sessionId)
         }.withSelfRel()
 
-        restfulResponse.add(self)*/
+        restfulResponse.add(self)
 
         responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(restfulResponse)
     }
@@ -39,8 +37,8 @@ class RestfulCreateSearchSessionPresenter : CreateSearchSessionPresenter {
     override fun isDone() = responseEntity != null
 
     private data class ViewModel(
+        val researcherId: UUID,
+        val systematicStudyId: UUID,
         val sessionId: UUID,
-        val systematicStudyId: SystematicStudyId,
-        val researcherId: ResearcherId
     ) : RepresentationModel<ViewModel>()
 }

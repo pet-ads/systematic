@@ -1,12 +1,56 @@
 package br.all.application.search.create
 
+import br.all.domain.model.protocol.SearchSource
+import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.search.SearchSession
+import br.all.domain.model.search.SearchSessionID
+import br.all.domain.shared.utils.paragraph
 import io.github.serpro69.kfaker.Faker
+import java.time.LocalDateTime
 import java.util.*
+import br.all.application.search.create.CreateSearchSessionService.RequestModel as CreateRequestModel
+import br.all.application.search.create.CreateSearchSessionService.ResponseModel as CreateResponseModel
 
 class TestDataFactory {
     val researcherId: UUID = UUID.randomUUID()
     val systematicStudyId: UUID = UUID.randomUUID()
+    val searchSessionId: UUID = UUID.randomUUID()
 
+    private val faker = Faker()
+
+    fun createRequestModel(
+        researcherId: UUID = this.researcherId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        source: String = faker.paragraph(5),
+        searchString: String = faker.paragraph(5),
+        additionalInfo: String? = faker.paragraph(5),
+    ) = CreateRequestModel(
+        researcherId,
+        systematicStudyId,
+        source,
+        searchString,
+        additionalInfo,
+    )
+
+    fun searchSessionFromCreateRequest(
+        request: CreateRequestModel,
+        sessionId: UUID = this.searchSessionId,
+        timestamp: LocalDateTime = LocalDateTime.now(),
+    ) = SearchSession(
+        SearchSessionID(sessionId),
+        SystematicStudyId(request.systematicStudyId),
+        request.searchString,
+        request.additionalInfo ?: "",
+        timestamp,
+        SearchSource(request.source)
+    )
+
+    fun createResponseModel(
+        researcherId: UUID = this.researcherId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        sessionId: UUID = this.searchSessionId,
+    ) = CreateResponseModel(researcherId, systematicStudyId, sessionId)
+    
     fun bibFileContent() =
         """
             @ARTICLE{Gruneberg202458,
@@ -46,4 +90,10 @@ class TestDataFactory {
             note = {Cited by: 3; All Open Access, Green Open Access, Hybrid Gold Open Access}
             }
         """
+
+    operator fun component1() = researcherId
+
+    operator fun component2() = systematicStudyId
+
+    operator fun component3() = searchSessionId
 }

@@ -7,14 +7,14 @@ import br.all.application.search.create.CreateSearchSessionService
 import br.all.application.search.create.CreateSearchSessionService.RequestModel
 import br.all.application.search.create.CreateSearchSessionService.ResponseModel
 import br.all.application.search.repository.SearchSessionRepository
+import br.all.application.search.repository.fromRequestModel
 import br.all.application.search.repository.toDto
 import br.all.application.shared.exceptions.UniquenessViolationException
 import br.all.application.shared.presenter.PreconditionChecker
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.toDto
-import br.all.domain.model.protocol.SearchSource
-import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.researcher.toResearcherId
+import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.services.BibtexConverterService
@@ -31,34 +31,27 @@ class CreateSearchSessionServiceImpl(
 
 
     override fun createSession(presenter: CreateSearchSessionPresenter, request: RequestModel, file: String) {
-        val researcherId = ResearcherId(request.researcherId)
-        val systematicStudy = SystematicStudyId(request.systematicStudyId)
-        val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudy)
+        val (researcher, systematicStudy) = request
 
+        PreconditionChecker(systematicStudyRepository, credentialsService).also {
+            it.prepareIfViolatesPreconditions(presenter, researcher.toResearcherId(), systematicStudy.toSystematicStudyId())
+        }
         if (presenter.isDone()) return
 
-        require(request.searchString.isNotBlank()) { "Search string must not be blank" }
-
         if (searchSessionRepository.existsBySearchSource(request.systematicStudyId, request.source)) {
-            presenter.prepareFailView((UniquenessViolationException("Search session already exists for source: ${request.source}")))
+            presenter.prepareFailView(
+                UniquenessViolationException("Search session already exists for source: ${request.source}")
+            )
+            return
         }
 
         val sessionId = SearchSessionID(uuidGeneratorService.next())
-        val searchSession = SearchSession(
-            sessionId,
-            systematicStudyId = systematicStudy,
-            request.searchString,
-            request.additionalInfo ?: "",
-            source = SearchSource(request.source)
-        )
+        val searchSession = SearchSession.fromRequestModel(sessionId, request)
 
-        val studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudy, file)
-
+        val studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudy.toSystematicStudyId(), file)
         studyReviewRepository.saveOrUpdateBatch(studyReviews.map { it.toDto() })
 
         searchSessionRepository.create(searchSession.toDto())
-        presenter.prepareSuccessView(ResponseModel(sessionId.value, systematicStudy, researcherId))
-
+        presenter.prepareSuccessView(ResponseModel(researcher, systematicStudy, sessionId.value))
     }
 }
