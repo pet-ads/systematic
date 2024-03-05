@@ -21,7 +21,7 @@ class SearchSession(
         require(notification.hasNoErrors()) { notification.message() }
     }
 
-    private fun validate() = Notification().also {
+    fun validate() = Notification().also {
         if (searchString.isBlank()) it.addError("The search string must not be blank!")
     }
 
