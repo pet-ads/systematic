@@ -86,7 +86,7 @@ class RiskOfBiasQuestionControllerTest(
         }
 
         @Test
-        fun `should create numberscale question and return 201`() {
+        fun `should create number scale question and return 201`() {
             val json = factory.validCreateNumberScaleRequest()
             mockMvc.perform(
                 post(postUrl() + "/number-scale").contentType(MediaType.APPLICATION_JSON).content(json)

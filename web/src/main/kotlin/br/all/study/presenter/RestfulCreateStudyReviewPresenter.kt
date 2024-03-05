@@ -2,30 +2,40 @@ package br.all.study.presenter
 
 import br.all.application.study.create.CreateStudyReviewPresenter
 import br.all.application.study.create.CreateStudyReviewService.ResponseModel
-import br.all.application.study.update.interfaces.MarkAsDuplicatedPresenter
-import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.shared.error.createErrorResponseFrom
 import br.all.study.controller.StudyReviewController
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
-import org.springframework.hateoas.server.mvc.withRel
-import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.status
 import org.springframework.stereotype.Component
-import java.util.UUID
+import java.util.*
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.RequestModel as UpdateStatusRequest
 
 @Component
 class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
 
-
     var responseEntity: ResponseEntity<*>? = null
-
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, response.studyReviewId)
+        prepareHateoas(response, restfulResponse)
+        responseEntity = status(HttpStatus.CREATED).body(restfulResponse)
+    }
+
+    override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
+
+    override fun isDone() = responseEntity != null
+
+    private data class ViewModel(
+        val researcherId: UUID,
+        val systematicStudyId: UUID,
+        val studyReviewId: Long
+    ) : RepresentationModel<ViewModel>()
+
+    // mantenha a classe limpa.
+    private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
 
         val self = linkTo<StudyReviewController> {
             findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
@@ -39,51 +49,67 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
             findAllStudyReviews(response.researcherId, response.systematicStudyId)
         }.withRel("findAll")
 
+        //esse eu tiraria
         val findAllBySource = linkTo<StudyReviewController> {
-            findAllStudyReviewsBySource(response.researcherId, response.systematicStudyId, searchSource = ""
-            )
+            findAllStudyReviewsBySource(response.researcherId, response.systematicStudyId, searchSource = "")
         }.withRel("findAllBySource")
 
+        // isso é o próprio self, não é?
         val findOne = linkTo<StudyReviewController> {
             findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
         }.withRel("findOne")
 
         val updateSelectionStatus = linkTo<StudyReviewController> {
-            updateStudyReviewSelectionStatus(response.researcherId, response.systematicStudyId, response.studyReviewId, request = UpdateStatusRequest(
-                response.researcherId, response.systematicStudyId, response.studyReviewId, status = "status"
-            ))
+            updateStudyReviewSelectionStatus(
+                response.researcherId,
+                response.systematicStudyId,
+                response.studyReviewId,
+                request = UpdateStatusRequest(
+                    response.researcherId, response.systematicStudyId, response.studyReviewId, status = "status"
+                )
+            )
         }.withRel("updateSelectionStatus")
 
         val updateExtractionStatus = linkTo<StudyReviewController> {
-            updateStudyReviewExtractionStatus(response.researcherId, response.systematicStudyId, response.studyReviewId, request = UpdateStatusRequest(
-                response.researcherId, response.systematicStudyId, response.studyReviewId, status = "status"
-            ))
+            updateStudyReviewExtractionStatus(
+                response.researcherId,
+                response.systematicStudyId,
+                response.studyReviewId,
+                request = UpdateStatusRequest(
+                    response.researcherId, response.systematicStudyId, response.studyReviewId, status = "status"
+                )
+            )
         }.withRel("updateExtractionStatus")
 
         val updateReadingPriority = linkTo<StudyReviewController> {
-            updateStudyReviewReadingPriority(response.researcherId, response.systematicStudyId, response.studyReviewId, request = UpdateStatusRequest(
-                response.researcherId, response.systematicStudyId, response.studyReviewId, status = "status")
+            updateStudyReviewReadingPriority(
+                response.researcherId,
+                response.systematicStudyId,
+                response.studyReviewId,
+                request = UpdateStatusRequest(
+                    response.researcherId, response.systematicStudyId, response.studyReviewId, status = "status"
+                )
             )
         }.withRel("updateReadingPriority")
 
         val markAsDuplicated = linkTo<StudyReviewController> {
-            markAsDuplicated(response.researcherId, response.systematicStudyId, response.studyReviewId, response.studyReviewId)
+            markAsDuplicated(
+                response.researcherId,
+                response.systematicStudyId,
+                response.studyReviewId,
+                response.studyReviewId
+            )
         }.withRel("markAsDuplicated")
 
-
-        restfulResponse.add(self,findAll,findAllBySource, findOne, updateSelectionStatus, updateExtractionStatus, updateReadingPriority,
-            markAsDuplicated)
-        responseEntity = status(HttpStatus.CREATED).body(restfulResponse)
+        restfulResponse.add(
+            self,
+            findAll,
+            findAllBySource,
+            findOne,
+            updateSelectionStatus,
+            updateExtractionStatus,
+            updateReadingPriority,
+            markAsDuplicated
+        )
     }
-
-    override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
-
-    override fun isDone() = responseEntity != null
-
-    private data class ViewModel(
-        val researcherId: UUID,
-        val systematicStudyId: UUID,
-        val studyReviewId: Long
-    ) : RepresentationModel<ViewModel>()
-
 }
