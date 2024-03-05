@@ -145,5 +145,18 @@ class UpdateProtocolServiceImplTest {
                 presenter.isDone()
             }
         }
+
+        @Test
+        fun `should not allow unauthorized researchers to update any protocol`() {
+            val request = factory.updateRequestModel()
+
+            preconditionCheckerMocking.makeResearcherUnauthorized()
+            sut.update(presenter, request)
+
+            verifyOrder {
+                presenter.prepareFailView(any<UnauthorizedUserException>())
+                presenter.isDone()
+            }
+        }
     }
 }
