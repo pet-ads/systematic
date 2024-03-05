@@ -5,6 +5,7 @@ import br.all.application.protocol.util.TestDataFactory
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.util.PreconditionCheckerMocking
 import io.mockk.every
@@ -128,6 +129,19 @@ class UpdateProtocolServiceImplTest {
 
             verifyOrder {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
+                presenter.isDone()
+            }
+        }
+
+        @Test
+        fun `should not allow unauthenticated researchers update any protocol`() {
+            val request = factory.updateRequestModel()
+
+            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            sut.update(presenter, request)
+
+            verifyOrder {
+                presenter.prepareFailView(any<UnauthenticatedUserException>())
                 presenter.isDone()
             }
         }
