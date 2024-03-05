@@ -12,7 +12,7 @@ class SearchSession(
     searchSessionId: SearchSessionID,
     val systematicStudyId: SystematicStudyId,
     val searchString: String,
-    val additionalInfo: String = "",
+    val additionalInfo: String?,
     val timestamp: LocalDateTime = LocalDateTime.now(),
     val source: SearchSource
 ) : Entity<UUID>(searchSessionId){
@@ -24,6 +24,4 @@ class SearchSession(
     private fun validate() = Notification().also {
         if (searchString.isBlank()) it.addError("The search string must not be blank!")
     }
-
-    companion object
 }
