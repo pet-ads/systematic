@@ -338,6 +338,23 @@ class ProtocolTest {
                 sut.removeKeyword(removingKeyword)
                 assertEquals(0, sut.keywords.size)
             }
+
+            @Test
+            fun `should replace all keywords of the protocol`() {
+                val keepingKeyword = factory.text()
+                val oldKeywords = mutableSetOf(keepingKeyword).also { it.addAll(factory.keywords(5)) }
+                val newKeywords = mutableSetOf(keepingKeyword).also { it.addAll(factory.keywords(5)) }
+                val removingElements = oldKeywords - newKeywords
+                val sut = factory.createProtocol(keywords = oldKeywords)
+
+                sut.replaceKeywords(newKeywords)
+
+                assertAll(
+                    { assertContains(sut.keywords, keepingKeyword) },
+                    { assertTrue(sut.keywords.containsAll(newKeywords)) },
+                    { assertFalse(sut.keywords.containsAll(oldKeywords)) },
+                )
+            }
         }
 
         @Nested
