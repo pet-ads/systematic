@@ -418,6 +418,23 @@ class ProtocolTest {
                 sut.removeInformationSource(removingSource)
                 assertEquals(0, sut.informationSources.size)
             }
+
+            @Test
+            fun `should replaced every information source in the protocol`() {
+                val keepingSource = SearchSource(factory.text())
+                val oldSources = mutableSetOf(keepingSource).also { it.addAll(factory.informationSources()) }
+                val newSources = mutableSetOf(keepingSource).also { it.addAll(factory.informationSources()) }
+                val removingElements = oldSources - newSources
+                val sut = factory.createProtocol(informationSources = oldSources)
+
+                sut.replaceInformationSources(newSources)
+
+                assertAll(
+                    { assertContains(sut.informationSources, keepingSource) },
+                    { assertTrue { sut.informationSources.containsAll(newSources) } },
+                    { assertFalse { sut.informationSources.containsAll(removingElements) } },
+                )
+            }
         }
 
         @Nested
