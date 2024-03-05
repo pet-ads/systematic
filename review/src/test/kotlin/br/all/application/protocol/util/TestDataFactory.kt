@@ -131,6 +131,20 @@ class TestDataFactory {
         .copyUpdates(request)
         .toDto()
 
+    fun emptyUpdateRequest(
+        dto: ProtocolDto,
+        researcher: UUID = this.researcher,
+        systematicStudy: UUID = this.systematicStudy,
+    ) = UpdateRequestModel(
+        researcher,
+        systematicStudy,
+        researchQuestions = dto.researchQuestions,
+        keywords = dto.keywords,
+        informationSources = dto.informationSources,
+        studiesLanguages = dto.studiesLanguages,
+        eligibilityCriteria = dto.eligibilityCriteria,
+    )
+
     operator fun component1() = researcher
 
     operator fun component2() = systematicStudy

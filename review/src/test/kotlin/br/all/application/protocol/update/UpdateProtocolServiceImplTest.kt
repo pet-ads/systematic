@@ -9,6 +9,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
@@ -66,6 +67,20 @@ class UpdateProtocolServiceImplTest {
                 protocolRepository.saveOrUpdate(updatedDto)
                 presenter.prepareSuccessView(response)
             }
+        }
+
+        @Test
+        fun `should not save when no updates are provided`() {
+            val (_, systematicStudy) = factory
+            val dto = factory.createProtocolDto()
+            val request = factory.emptyUpdateRequest(dto)
+            val response = factory.updateResponseModel()
+
+            every { protocolRepository.findById(systematicStudy) } returns dto
+            sut.update(presenter, request)
+
+            verify(exactly = 0) { protocolRepository.saveOrUpdate(any()) }
+            verify { presenter.prepareSuccessView(response) }
         }
     }
 }
