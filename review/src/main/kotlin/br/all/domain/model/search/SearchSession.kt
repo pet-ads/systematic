@@ -1,22 +1,29 @@
 package br.all.domain.model.search
 
-import br.all.application.search.create.SearchSessionRequestModel
-import br.all.application.search.find.SearchSessionResponseModel
-import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.protocol.SearchSource
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.ddd.Entity
+import br.all.domain.shared.ddd.Notification
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 
 class SearchSession(
     searchSessionId: SearchSessionID,
-    val protocolId: ProtocolId,
+    val systematicStudyId: SystematicStudyId,
     val searchString: String,
     val additionalInfo: String = "",
     val timestamp: LocalDateTime = LocalDateTime.now(),
     val source: SearchSource
 ) : Entity<UUID>(searchSessionId){
+    init {
+        val notification = validate()
+        require(notification.hasNoErrors()) { notification.message() }
+    }
+
+    fun validate() = Notification().also {
+        if (searchString.isBlank()) it.addError("The search string must not be blank!")
+    }
 
     companion object
 }
