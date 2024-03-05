@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import java.util.*
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @Tag("UnitTest")
@@ -261,6 +262,23 @@ class ProtocolTest {
 
                 sut.removeResearchQuestion(question)
                 assertEquals(0, sut.researchQuestions.size)
+            }
+
+            @Test
+            fun `should replace all research questions of the protocol`() {
+                val keepingQuestion = ResearchQuestion(factory.text())
+                val oldQuestions = mutableSetOf(keepingQuestion).also { it.addAll(factory.researchQuestions()) }
+                val newQuestions = mutableSetOf(keepingQuestion).also { it.addAll(factory.researchQuestions()) }
+                val removingElements = oldQuestions - newQuestions
+                val sut = factory.createProtocol(researchQuestions = oldQuestions)
+
+                sut.replaceResearchQuestions(newQuestions)
+
+                assertAll(
+                    { assertContains(sut.researchQuestions, keepingQuestion) },
+                    { assertTrue(sut.researchQuestions.containsAll(newQuestions)) },
+                    { assertFalse(sut.researchQuestions.containsAll(removingElements) ) },
+                )
             }
         }
 
