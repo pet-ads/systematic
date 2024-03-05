@@ -352,7 +352,7 @@ class ProtocolTest {
                 assertAll(
                     { assertContains(sut.keywords, keepingKeyword) },
                     { assertTrue(sut.keywords.containsAll(newKeywords)) },
-                    { assertFalse(sut.keywords.containsAll(oldKeywords)) },
+                    { assertFalse(sut.keywords.containsAll(removingElements)) },
                 )
             }
         }
