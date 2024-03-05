@@ -5,6 +5,7 @@ import br.all.application.protocol.util.TestDataFactory
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.util.PreconditionCheckerMocking
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -114,6 +115,19 @@ class UpdateProtocolServiceImplTest {
 
             verifyOrder {
                 presenter.prepareFailView(any<EntityNotFoundException>())
+                presenter.isDone()
+            }
+        }
+
+        @Test
+        fun `should prepare fail view with UnauthorizedUserException when the researcher is not a collaborator`() {
+            val request = factory.updateRequestModel()
+
+            preconditionCheckerMocking.makeResearcherNotACollaborator()
+            sut.update(presenter, request)
+
+            verifyOrder {
+                presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()
             }
         }
