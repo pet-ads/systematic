@@ -9,6 +9,7 @@ import br.all.study.controller.StudyReviewController
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.hateoas.server.mvc.withRel
+import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.status
@@ -19,7 +20,9 @@ import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 @Component
 class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
 
+
     var responseEntity: ResponseEntity<*>? = null
+
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, response.studyReviewId)
@@ -47,29 +50,29 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
 
         val updateSelectionStatus = linkTo<StudyReviewController> {
             updateStudyReviewSelectionStatus(response.researcherId, response.systematicStudyId, response.studyReviewId, request = UpdateStatusRequest(
-                response.researcherId, response.systematicStudyId, response.studyReviewId, status = ""
+                response.researcherId, response.systematicStudyId, response.studyReviewId, status = "status"
             ))
         }.withRel("updateSelectionStatus")
 
         val updateExtractionStatus = linkTo<StudyReviewController> {
             updateStudyReviewExtractionStatus(response.researcherId, response.systematicStudyId, response.studyReviewId, request = UpdateStatusRequest(
-                response.researcherId, response.systematicStudyId, response.studyReviewId, status = ""
+                response.researcherId, response.systematicStudyId, response.studyReviewId, status = "status"
             ))
         }.withRel("updateExtractionStatus")
 
         val updateReadingPriority = linkTo<StudyReviewController> {
             updateStudyReviewReadingPriority(response.researcherId, response.systematicStudyId, response.studyReviewId, request = UpdateStatusRequest(
-                response.researcherId, response.systematicStudyId, response.studyReviewId, status = ""
-            ))
+                response.researcherId, response.systematicStudyId, response.studyReviewId, status = "status")
+            )
         }.withRel("updateReadingPriority")
 
-        /*
         val markAsDuplicated = linkTo<StudyReviewController> {
-            markAsDuplicated(response.researcherId, response.systematicStudyId, studyReviewIdToKeep, studyReviewToMarkAsDuplicated)
-        }.withRel("markAsDuplicated")*/
+            markAsDuplicated(response.researcherId, response.systematicStudyId, response.studyReviewId, response.studyReviewId)
+        }.withRel("markAsDuplicated")
 
 
-        restfulResponse.add(self,findAll,findAllBySource, findOne, updateSelectionStatus, updateExtractionStatus, updateReadingPriority)
+        restfulResponse.add(self,findAll,findAllBySource, findOne, updateSelectionStatus, updateExtractionStatus, updateReadingPriority,
+            markAsDuplicated)
         responseEntity = status(HttpStatus.CREATED).body(restfulResponse)
     }
 
