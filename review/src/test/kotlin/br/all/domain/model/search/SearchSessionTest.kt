@@ -116,4 +116,30 @@ class SearchSessionTest {
 
         assertEquals(source, searchSession.source)
     }
+
+    @Test
+    fun `Should create a valid SearchSession`() {
+        val searchSessionId = SearchSessionID(UUID.randomUUID())
+        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
+        val searchString = "Search string"
+        val additionalInfo = "Additional info"
+        val timestamp = LocalDateTime.now()
+        val source = SearchSource("Search source")
+
+        val searchSession = SearchSession(
+            searchSessionId,
+            systematicStudyId,
+            searchString,
+            additionalInfo,
+            timestamp,
+            source
+        )
+
+        assertEquals(searchSessionId, searchSession.id)
+        assertEquals(systematicStudyId, searchSession.systematicStudyId)
+        assertEquals(searchString, searchSession.searchString)
+        assertEquals(additionalInfo, searchSession.additionalInfo)
+        assertEquals(timestamp, searchSession.timestamp)
+        assertEquals(source, searchSession.source)
+    }
 }
