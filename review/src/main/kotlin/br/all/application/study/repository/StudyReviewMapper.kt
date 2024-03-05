@@ -1,6 +1,7 @@
 package br.all.application.study.repository
 
 import br.all.application.study.create.CreateStudyReviewService.RequestModel
+import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.domain.model.protocol.Criterion
 import br.all.domain.model.protocol.Criterion.CriterionType
 import br.all.domain.model.review.SystematicStudyId
@@ -51,6 +52,19 @@ fun StudyReview.Companion.fromDto(dto: StudyReviewDto) = StudyReview(
 )
 
 fun StudyReview.Companion.fromStudyRequestModel(studyId: Long, request: RequestModel) = StudyReview(
+    StudyReviewId(studyId),
+    SystematicStudyId(request.systematicStudyId),
+    StudyType.valueOf(request.type.uppercase()),
+    request.title,
+    request.year,
+    request.authors,
+    request.venue,
+    request.abstract,
+    keywords = request.keywords,
+    searchSources = mutableSetOf(request.source)
+)
+
+fun StudyReview.Companion.fromStudyUpdateRequestModel(studyId: Long, request: UpdateStudyReviewService.RequestModel) = StudyReview(
     StudyReviewId(studyId),
     SystematicStudyId(request.systematicStudyId),
     StudyType.valueOf(request.type.uppercase()),
