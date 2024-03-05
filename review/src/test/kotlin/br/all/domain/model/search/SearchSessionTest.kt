@@ -4,10 +4,12 @@ import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.protocol.SearchSource
 import br.all.domain.model.review.SystematicStudyId
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.time.LocalDateTime
 import java.util.*
 
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class SearchSessionTest {
 
@@ -141,5 +143,27 @@ class SearchSessionTest {
         assertEquals(additionalInfo, searchSession.additionalInfo)
         assertEquals(timestamp, searchSession.timestamp)
         assertEquals(source, searchSession.source)
+    }
+
+    @Test
+    fun `Should fail due blank string on searchString`() {
+
+        assertThrows<IllegalArgumentException> {
+            val searchSessionId = SearchSessionID(UUID.randomUUID())
+            val systematicStudyId = SystematicStudyId(UUID.randomUUID())
+            val searchString = ""
+            val additionalInfo = "Additional info"
+            val timestamp = LocalDateTime.now()
+            val source = SearchSource("Search Source")
+
+            val searchSession = SearchSession(
+                searchSessionId,
+                systematicStudyId,
+                searchString,
+                additionalInfo,
+                timestamp,
+                source
+            )
+        }
     }
 }
