@@ -185,5 +185,22 @@ class ProtocolControllerTest(
                     .andExpect(jsonPath("$._links").exists())
             }
         }
+
+        @Nested
+        @Tag("InvalidClasses")
+        @DisplayName("And failing to perform changes")
+        inner class AndFailingToPerformChanges {
+            @Test
+            fun `should not be possible to update the protocol of a nonexistent systematic study`() {
+                val nonexistentStudy = UUID.randomUUID()
+                val json = factory.validPutRequest()
+
+                mockMvc.perform(
+                    put(putUrl(systematicStudyId = nonexistentStudy))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                ).andExpect(status().isNotFound)
+            }
+        }
     }
 }
