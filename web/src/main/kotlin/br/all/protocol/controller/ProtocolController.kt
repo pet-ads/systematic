@@ -44,6 +44,7 @@ class ProtocolController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
+    @PutMapping
     fun putProtocol(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
