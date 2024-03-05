@@ -22,7 +22,7 @@ class ProtocolController(
     fun postProtocol(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
-        @RequestBody request: PostRequest,
+        @RequestBody request: ProtocolRequest,
     ): ResponseEntity<*> {
         val presenter = RestfulCreateProtocolPresenter()
         val requestModel = request.toCreateRequestModel(researcherId, systematicStudyId)
@@ -32,7 +32,16 @@ class ProtocolController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    data class PostRequest(
+    @GetMapping
+    fun findById(@PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID): ResponseEntity<*> {
+        val presenter = RestfulFindOneProtocolPresenter()
+        val request = FindOneRequestModel(researcherId, systematicStudyId)
+
+        findOneProtocolService.findById(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    data class ProtocolRequest(
         val goal: String? = null,
         val justification: String? = null,
         val researchQuestions: Set<String>,
@@ -73,7 +82,7 @@ class ProtocolController(
             analysisAndSynthesisProcess,
             picoc?.let { PicocDto(it.population, it.intervention, it.control, it.outcome, it.context) },
         )
-
+        
         data class PicocRequest(
             val population: String,
             val intervention: String,
@@ -81,14 +90,5 @@ class ProtocolController(
             val outcome: String,
             val context: String? = null,
         )
-    }
-
-    @GetMapping
-    fun findById(@PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID): ResponseEntity<*> {
-        val presenter = RestfulFindOneProtocolPresenter()
-        val request = FindOneRequestModel(researcherId, systematicStudyId)
-
-        findOneProtocolService.findById(presenter, request)
-        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

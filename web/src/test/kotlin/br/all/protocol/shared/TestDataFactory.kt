@@ -3,7 +3,7 @@ package br.all.protocol.shared
 import br.all.domain.shared.utils.paragraph
 import br.all.domain.shared.utils.paragraphList
 import br.all.infrastructure.protocol.ProtocolDocument
-import br.all.protocol.controller.ProtocolController.PostRequest.PicocRequest
+import br.all.protocol.controller.ProtocolController.ProtocolRequest.PicocRequest
 import io.github.serpro69.kfaker.Faker
 import java.util.*
 
