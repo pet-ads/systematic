@@ -61,7 +61,7 @@ fun Protocol.Companion.fromRequestModel(request: RequestModel) = with(request) {
                 .toSet(),
         ).followingDataCollectionProcess(dataCollectionProcess)
         .followingSynthesisProcess(analysisAndSynthesisProcess)
-        .withPICOC(picoc?.let { Picoc(it.population, it.intervention, it.control, it.outcome, it.context) })
+        .withPICOC(picoc?.let { Picoc.fromDto(it) })
         .build()
 }
 
@@ -96,5 +96,13 @@ fun Protocol.Companion.fromDto(dto: ProtocolDto) = write(SystematicStudyId(dto.s
         dto.robQuestions
             .map { QuestionId(dto.id) }
             .toSet(),
-    ).withPICOC(dto.picoc?.let { Picoc(it.population, it.intervention, it.control, it.outcome, it.context) })
+    ).withPICOC(dto.picoc?.let { Picoc.fromDto(it) })
     .build()
+
+fun Picoc.Companion.fromDto(dto: PicocDto) = Picoc(
+    dto.population,
+    dto.intervention,
+    dto.control,
+    dto.outcome,
+    dto.context,
+)

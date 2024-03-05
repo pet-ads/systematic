@@ -27,4 +27,6 @@ data class Picoc(
         if (context != null && context.isBlank())
             it.addError("The context, when provided, must not be blank!")
     }
+
+    companion object
 }
