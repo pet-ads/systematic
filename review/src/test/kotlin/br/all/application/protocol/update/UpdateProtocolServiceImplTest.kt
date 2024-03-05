@@ -4,6 +4,7 @@ import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.util.TestDataFactory
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.util.PreconditionCheckerMocking
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -96,6 +97,24 @@ class UpdateProtocolServiceImplTest {
             verifyOrder {
                 protocolRepository.saveOrUpdate(dto)
                 presenter.prepareSuccessView(response)
+            }
+        }
+    }
+    
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("When preconditions fail")
+    inner class WhenPreconditionsFail {
+        @Test
+        fun `should prepare fail view when the systematic study does not exist`() {
+            val request = factory.updateRequestModel()
+
+            preconditionCheckerMocking.makeSystematicStudyNonexistent()
+            sut.update(presenter, request)
+
+            verifyOrder {
+                presenter.prepareFailView(any<EntityNotFoundException>())
+                presenter.isDone()
             }
         }
     }
