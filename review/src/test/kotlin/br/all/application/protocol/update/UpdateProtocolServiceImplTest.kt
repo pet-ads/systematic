@@ -82,5 +82,21 @@ class UpdateProtocolServiceImplTest {
             verify(exactly = 0) { protocolRepository.saveOrUpdate(any()) }
             verify { presenter.prepareSuccessView(response) }
         }
+
+        @Test
+        fun `should create the protocol with the updates when it did not exist before`() {
+            val (_, systematicStudy) = factory
+            val request = factory.updateRequestModel()
+            val response = factory.updateResponseModel()
+            val dto = factory.protocolCreatedWithUpdates(request)
+
+            every { protocolRepository.findById(systematicStudy) } returns null
+            sut.update(presenter, request)
+
+            verifyOrder {
+                protocolRepository.saveOrUpdate(dto)
+                presenter.prepareSuccessView(response)
+            }
+        }
     }
 }

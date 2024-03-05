@@ -2,6 +2,7 @@ package br.all.application.protocol.util
 
 import br.all.application.protocol.repository.*
 import br.all.domain.model.protocol.Protocol
+import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.shared.utils.wordsList
 import io.github.serpro69.kfaker.Faker
 import java.util.*
@@ -144,6 +145,14 @@ class TestDataFactory {
         studiesLanguages = dto.studiesLanguages,
         eligibilityCriteria = dto.eligibilityCriteria,
     )
+
+    fun protocolCreatedWithUpdates(
+        request: UpdateRequestModel,
+        systematicStudy: UUID = this.systematicStudy,
+    ) = Protocol.write(systematicStudy.toSystematicStudyId(), emptySet())
+        .build()
+        .copyUpdates(request)
+        .toDto()
 
     operator fun component1() = researcher
 
