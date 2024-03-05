@@ -495,6 +495,22 @@ class ProtocolTest {
                 assertEquals(0, sut.studiesLanguages.size)
             }
 
+            @Test
+            fun `should replace all languages defined in the protocol`() {
+                val keepingLanguage = Language(LangType.ENGLISH)
+                val oldLanguages = mutableSetOf(keepingLanguage).also { it.addAll(factory.languages()) }
+                val newLanguages = mutableSetOf(keepingLanguage).also { it.addAll(factory.languages(10)) }
+                val removingLanguages = oldLanguages - newLanguages
+                val sut = factory.createProtocol(languages = oldLanguages)
+
+                sut.replaceLanguages(newLanguages)
+
+                assertAll(
+                    { assertContains(sut.studiesLanguages, keepingLanguage) },
+                    { assertTrue { sut.studiesLanguages.containsAll(newLanguages) } },
+                    { assertFalse { sut.studiesLanguages.containsAll(removingLanguages) } },
+                )
+            }
         }
 
         @Nested
