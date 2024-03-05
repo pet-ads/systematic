@@ -570,6 +570,23 @@ class ProtocolTest {
                 sut.removeEligibilityCriterion(criterion)
                 assertTrue(sut.eligibilityCriteria.isEmpty())
             }
+
+            @Test
+            fun `should replace all eligibility criteria in the protocol`() {
+                val keepingCriterion = Criterion.toInclude(factory.text())
+                val oldCriteria = mutableSetOf(keepingCriterion).also { it.addAll(factory.eligibilityCriteria()) }
+                val newCriteria = mutableSetOf(keepingCriterion).also { it.addAll(factory.eligibilityCriteria()) }
+                val removingCriteria = oldCriteria - newCriteria
+                val sut = factory.createProtocol(eligibilityCriteria = oldCriteria)
+
+                sut.replaceEligibilityCriteria(newCriteria)
+
+                assertAll(
+                    { assertContains(sut.eligibilityCriteria, keepingCriterion) },
+                    { assertTrue { sut.eligibilityCriteria.containsAll(newCriteria) } },
+                    { assertFalse { sut.eligibilityCriteria.containsAll(removingCriteria) } },
+                )
+            }
         }
 
         @Nested
