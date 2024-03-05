@@ -201,6 +201,18 @@ class ProtocolControllerTest(
                         .content(json)
                 ).andExpect(status().isNotFound)
             }
+
+            @Test
+            fun `should not allow researchers that are not collaborators to update the protocol`() {
+                val nonCollaborator = UUID.randomUUID()
+                val json = factory.validPutRequest()
+
+                mockMvc.perform(
+                    put(putUrl(researcherId = nonCollaborator))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                ).andExpect(status().isForbidden)
+            }
         }
     }
 }
