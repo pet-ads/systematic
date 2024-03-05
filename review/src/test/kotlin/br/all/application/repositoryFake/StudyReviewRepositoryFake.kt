@@ -26,4 +26,8 @@ class StudyReviewRepositoryFake : StudyReviewRepository {
     override fun updateSelectionStatus(reviewId: UUID, studyId: Long, attributeName: String, newStatus: Any) {
         TODO("Not yet implemented")
     }
+
+    override fun saveOrUpdateBatch(dtos: List<StudyReviewDto>) {
+        TODO("Not yet implemented")
+    }
 }

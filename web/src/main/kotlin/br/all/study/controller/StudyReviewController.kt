@@ -8,13 +8,16 @@ import br.all.application.study.update.implementation.UpdateStudyReviewExtractio
 import br.all.application.study.update.implementation.UpdateStudyReviewPriorityService
 import br.all.application.study.update.implementation.UpdateStudyReviewSelectionService
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService
+import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.study.presenter.*
+import org.springframework.data.mongodb.core.query.Update
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService.RequestModel as DuplicatedRequest
 import br.all.application.study.create.CreateStudyReviewService.RequestModel as CreateRequest
+import br.all.application.study.update.interfaces.UpdateStudyReviewService.RequestModel as UpdateRequest
 import br.all.application.study.find.service.FindAllStudyReviewsService.RequestModel as FindAllRequest
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService.RequestModel as FindAllBySourceRequest
 import br.all.application.study.find.service.FindStudyReviewService.RequestModel as FindOneRequest
@@ -24,6 +27,7 @@ import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 @RequestMapping("/api/v1/researcher/{researcher}/systematic-study/{systematicStudy}")
 class StudyReviewController(
     val createService: CreateStudyReviewService,
+    val updateService: UpdateStudyReviewService,
     val findAllService: FindAllStudyReviewsService,
     val findAllBySourceService: FindAllStudyReviewsBySourceService,
     val findOneService: FindStudyReviewService,
@@ -41,6 +45,17 @@ class StudyReviewController(
     ): ResponseEntity<*> {
         val presenter = RestfulCreateStudyReviewPresenter()
         createService.createFromStudy(presenter, request)
+        return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @PutMapping("/study-review")
+    fun updateStudyReview(
+        @PathVariable researcher: UUID,
+        @PathVariable systematicStudy: UUID,
+        @RequestBody request: UpdateRequest
+    ): ResponseEntity<*> {
+        val presenter = RestfulUpdateStudyReviewPresenter()
+        updateService.updateFromStudy(presenter, request)
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
