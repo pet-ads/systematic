@@ -34,9 +34,8 @@ class UpdateProtocolServiceImpl(
         protocol.copyUpdates(request)
 
         val updatedDto = protocol.toDto()
-        if (updatedDto == dto) return
+        if (updatedDto != dto) protocolRepository.saveOrUpdate(updatedDto)
 
-        protocolRepository.saveOrUpdate(updatedDto)
         presenter.prepareSuccessView(ResponseModel(researcher, systematicStudy))
     }
 }
