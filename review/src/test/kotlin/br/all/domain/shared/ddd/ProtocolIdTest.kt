@@ -1,8 +1,9 @@
 package br.all.domain.shared.ddd
 
 import br.all.domain.model.protocol.ProtocolId
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 
@@ -11,7 +12,7 @@ internal class ProtocolIdTest{
     fun `valid ProtocolId`() {
         val uuid = UUID.randomUUID()
         val protocolId = ProtocolId(uuid)
-        assertEquals(uuid, protocolId.value)
+        assertEquals(uuid, protocolId.value())
     }
 
     @Test
