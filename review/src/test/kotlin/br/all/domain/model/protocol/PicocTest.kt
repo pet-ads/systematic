@@ -14,12 +14,7 @@ class PicocTest {
         @Test
         fun `should create a valid PICOC without context`() {
             assertDoesNotThrow {
-                Picoc(
-                    "Population",
-                    "Intervention",
-                    "Control",
-                    "Outcome",
-                )
+                Picoc("Population", "Intervention", "Control", "Outcome")
             }
         }
 
@@ -27,11 +22,11 @@ class PicocTest {
         fun `should create a valid PICOC with a specified context`() {
             assertDoesNotThrow {
                 Picoc(
-                    "Population",
-                    "Intervention",
-                    "Control",
-                    "Outcome",
-                    "Context",
+                    population = "Population",
+                    intervention = "Intervention",
+                    control = "Control",
+                    outcome = "Outcome",
+                    context = "Context",
                 )
             }
         }
@@ -45,13 +40,7 @@ class PicocTest {
         @ValueSource(strings = ["", " ", "   "])
         fun `should not create a PICOC with blank population`(population: String) {
             val exception = assertThrows<IllegalArgumentException> {
-                Picoc(
-                    population,
-                    "Intervention",
-                    "Control",
-                    "Outcome",
-                    "Context",
-                )
+                Picoc(population, "Intervention", "Control", "Outcome", "Context")
             }
             assertEquals("The population described in the PICOC must not be blank!", exception.message)
         }
@@ -60,13 +49,7 @@ class PicocTest {
         @ValueSource(strings = ["", " ", "   "])
         fun `should not create a PICOC with blank intervention`(intervention: String) {
             val exception = assertThrows<IllegalArgumentException> {
-                Picoc(
-                    "Population",
-                    intervention,
-                    "Control",
-                    "Outcome",
-                    "Context",
-                )
+                Picoc("Population", intervention, "Control", "Outcome", "Context")
             }
             assertEquals("The intervention described in the PICOC must not be blank!", exception.message)
         }
@@ -75,13 +58,7 @@ class PicocTest {
         @ValueSource(strings = ["", " ", "   "])
         fun `should not create a PICOC with blank control`(control: String) {
             val exception = assertThrows<IllegalArgumentException> {
-                Picoc(
-                    "Population",
-                    "Intervention",
-                    control,
-                    "Outcome",
-                    "Context",
-                )
+                Picoc("Population", "Intervention", control, "Outcome", "Context")
             }
             assertEquals("The control described in the PICOC must not be blank!", exception.message)
         }
@@ -90,13 +67,7 @@ class PicocTest {
         @ValueSource(strings = ["", " ", "   "])
         fun `should not create a PICOC with blank outcome`(outcome: String) {
             val exception = assertThrows<IllegalArgumentException> {
-                Picoc(
-                    "Population",
-                    "Intervention",
-                    "Control",
-                    outcome,
-                    "Context",
-                )
+                Picoc("Population", "Intervention", "Control", outcome, "Context")
             }
             assertEquals("The outcome described in the PICOC must not be blank!", exception.message)
         }
@@ -105,13 +76,7 @@ class PicocTest {
         @ValueSource(strings = ["", " ", "   "])
         fun `should not create a PICOC providing a invalid context`(context: String) {
             val exception = assertThrows<IllegalArgumentException> {
-                Picoc(
-                    "Population",
-                    "Intervention",
-                    "Control",
-                    "Outcome",
-                    context,
-                )
+                Picoc("Population", "Intervention", "Control", "Outcome", context)
             }
             assertEquals("The context, when provided, must not be blank!", exception.message)
         }
