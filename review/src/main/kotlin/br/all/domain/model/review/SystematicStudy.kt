@@ -46,8 +46,6 @@ class SystematicStudy(
         return notification
     }
 
-    companion object
-
     fun addCollaborator(researcherId: ResearcherId) = _collaborators.add(researcherId)
 
     fun changeOwner(researcherId: ResearcherId){
@@ -63,7 +61,8 @@ class SystematicStudy(
         _collaborators.remove(researcherId)
     }
 
+    override fun toString() = "SystematicStudy(reviewId=$id, title='$title', description='$description', owner=$owner," +
+            " researchers=$_collaborators)"
 
-    override fun toString() = "SystematicStudy(reviewId=$id, title='$title', " +
-            "description='$description', owner=$owner, researchers=$_collaborators)"
+    companion object
 }
