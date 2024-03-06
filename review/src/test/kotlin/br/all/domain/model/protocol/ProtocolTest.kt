@@ -40,7 +40,8 @@ class ProtocolTest {
             @ParameterizedTest(name = "[{index}] goal=\"{0}\"")
             @ValueSource(strings = ["", " ", "   "])
             fun `should throw when the goal is blank`(goal: String) {
-                assertThrows<IllegalArgumentException> { factory.createProtocol(goal = goal) }
+                val e = assertThrows<IllegalArgumentException> { factory.createProtocol(goal = goal) }
+                assertEquals("The goal cannot be an empty string", e.message)
             }
 
             @ParameterizedTest(name = "[{index}] justification=\"{0}\"")
