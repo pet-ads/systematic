@@ -1,5 +1,6 @@
 package br.all.application.review.create
 
+import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.TestDataFactory
@@ -20,7 +21,9 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(MockKExtension::class)
 class CreateSystematicStudyServiceImplTest {
     @MockK(relaxUnitFun = true)
-    private lateinit var repository: SystematicStudyRepository
+    private lateinit var systematicStudyRepository: SystematicStudyRepository
+    @MockK(relaxUnitFun = true)
+    private lateinit var protocolRepository: ProtocolRepository
     @MockK
     private lateinit var uuidGeneratorService: UuidGeneratorService
     @MockK
@@ -39,7 +42,7 @@ class CreateSystematicStudyServiceImplTest {
         preconditionCheckerMocking = PreconditionCheckerMocking(
             presenter,
             credentialsService,
-            repository,
+            systematicStudyRepository,
             factory.researcher,
             factory.systematicStudy
         )
@@ -55,14 +58,17 @@ class CreateSystematicStudyServiceImplTest {
             val request = factory.createRequestModel()
             val response = factory.createResponseModel()
             val dto = factory.dtoFromCreateRequest(request)
+            val protocolDto = factory.protocolDto()
 
             preconditionCheckerMocking.makeEverythingWork()
             every { uuidGeneratorService.next() } returns systematicStudy
 
             sut.create(presenter, researcher, request)
+
             verify(exactly = 1) {
                 uuidGeneratorService.next()
-                repository.saveOrUpdate(dto)
+                systematicStudyRepository.saveOrUpdate(dto)
+                protocolRepository.saveOrUpdate(protocolDto)
                 presenter.prepareSuccessView(response)
             }
         }

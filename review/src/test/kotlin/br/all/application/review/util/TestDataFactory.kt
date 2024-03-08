@@ -1,10 +1,13 @@
 package br.all.application.review.util
 
+import br.all.application.protocol.repository.toDto
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
 import br.all.application.review.update.services.UpdateSystematicStudyService.ResponseModel
+import br.all.domain.model.protocol.Protocol
 import br.all.domain.model.review.SystematicStudy
+import br.all.domain.model.review.toSystematicStudyId
 import io.github.serpro69.kfaker.Faker
 import java.util.*
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel as CreateRequestModel
@@ -32,6 +35,11 @@ class TestDataFactory {
         ownerId,
         mutableSetOf(ownerId).also { it.addAll(collaborators) },
     )
+
+    fun protocolDto(systematicStudyId: UUID = systematicStudy) = Protocol
+        .write(systematicStudyId.toSystematicStudyId(), emptySet())
+        .build()
+        .toDto()
 
     fun createRequestModel(
         title: String = faker.book.title(),
