@@ -75,11 +75,12 @@ class FindAllSystematicStudiesServiceImplTest {
         @Test
         fun `should find all the systematic studies of a owner`() {
             val (researcher, _, owner) = factory
+            val request = factory.findByOwnerRequest()
             val response = factory.findAllByOwnerResponseModel(1)
 
             every { repository.findAllByCollaboratorAndOwner(researcher, owner) } returns response.systematicStudies
 
-            sut.findAllByOwner(presenter, researcher, owner)
+            sut.findAllByOwner(presenter, request)
             verify { presenter.prepareSuccessView(response) }
         }
     }
@@ -102,13 +103,14 @@ class FindAllSystematicStudiesServiceImplTest {
 
         @Test
         fun `should not find any systematic study when a owner has no one`() {
-            val (researcher, owner) = factory
+            val (researcher, _, owner) = factory
+            val request = factory.findByOwnerRequest()
             val response = factory.emptyFindAllResponseModel(owner = owner)
 
             preconditionCheckerMocking.makeEverythingWork()
             every { repository.findAllByCollaboratorAndOwner(researcher, owner) } returns emptyList()
 
-            sut.findAllByOwner(presenter, researcher, owner)
+            sut.findAllByOwner(presenter, request)
             verify { presenter.prepareSuccessView(response) }
         }
 

@@ -7,7 +7,12 @@ import java.util.*
 interface FindAllSystematicStudiesService {
     fun findAllByCollaborator(presenter: FindAllSystematicStudyPresenter, researcher: UUID)
 
-    fun findAllByOwner(presenter: FindAllSystematicStudyPresenter, researcher: UUID, owner: UUID)
+    fun findAllByOwner(presenter: FindAllSystematicStudyPresenter, request: FindByOwnerRequest)
+
+    data class FindByOwnerRequest(
+        val researcherId: UUID,
+        val ownerId: UUID,
+    )
 
     data class ResponseModel(
         val researcherId: UUID,

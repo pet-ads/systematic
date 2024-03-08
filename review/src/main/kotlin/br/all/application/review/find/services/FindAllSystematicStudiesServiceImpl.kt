@@ -2,6 +2,7 @@ package br.all.application.review.find.services
 
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.find.presenter.FindAllSystematicStudyPresenter
+import br.all.application.review.find.services.FindAllSystematicStudiesService.FindByOwnerRequest
 import br.all.application.review.find.services.FindAllSystematicStudiesService.ResponseModel
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.presenter.PreconditionChecker
@@ -20,7 +21,8 @@ class FindAllSystematicStudiesServiceImpl(
         }
     }
 
-    override fun findAllByOwner(presenter: FindAllSystematicStudyPresenter, researcher: UUID, owner: UUID) {
+    override fun findAllByOwner(presenter: FindAllSystematicStudyPresenter, request: FindByOwnerRequest) {
+        val (researcher, owner) = request
         if (researcherNotAllowed(presenter, researcher)) return
 
         repository.findAllByCollaboratorAndOwner(researcher, owner).let {

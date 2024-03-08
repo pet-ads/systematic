@@ -1,6 +1,7 @@
 package br.all.application.review.util
 
 import br.all.application.protocol.repository.toDto
+import br.all.application.review.find.services.FindAllSystematicStudiesService.FindByOwnerRequest
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
@@ -69,6 +70,11 @@ class TestDataFactory {
         systematicStudyId: UUID = this.systematicStudy,
         dto: SystematicStudyDto = generateDto(),
     ) = FindOneResponseModel(researcherId, systematicStudyId, dto)
+
+    fun findByOwnerRequest(
+        researcherId: UUID = researcher,
+        ownerId: UUID = owner,
+    ) = FindByOwnerRequest(researcherId, ownerId)
 
     fun findAllResponseModel(
         amountOfStudies: Int,

@@ -2,6 +2,7 @@ package br.all.review.controller
 
 import br.all.application.review.create.CreateSystematicStudyService
 import br.all.application.review.find.services.FindAllSystematicStudiesService
+import br.all.application.review.find.services.FindAllSystematicStudiesService.FindByOwnerRequest
 import br.all.application.review.find.services.FindOneSystematicStudyService
 import br.all.application.review.update.services.UpdateSystematicStudyService
 import br.all.review.presenter.RestfulCreateSystematicStudyPresenter
@@ -68,7 +69,9 @@ class SystematicStudyController(
         @PathVariable ownerId: UUID,
     ): ResponseEntity<*> {
         val presenter = RestfulFindAllSystematicStudiesPresenter()
-        findAllSystematicStudiesService.findAllByOwner(presenter, researcherId, ownerId)
+        val request = FindByOwnerRequest(researcherId, ownerId)
+
+        findAllSystematicStudiesService.findAllByOwner(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
