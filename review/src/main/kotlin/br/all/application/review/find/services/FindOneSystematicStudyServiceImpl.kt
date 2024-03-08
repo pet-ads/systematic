@@ -12,7 +12,7 @@ import java.util.*
 class FindOneSystematicStudyServiceImpl(
     private val repository: SystematicStudyRepository,
     private val credentialsService: ResearcherCredentialsService,
-): FindOneSystematicStudyService {
+) : FindOneSystematicStudyService {
     override fun findById(presenter: FindOneSystematicStudyPresenter, researcher: UUID, systematicStudy: UUID) {
         PreconditionChecker(repository, credentialsService).also {
             it.prepareIfViolatesPreconditions(presenter, ResearcherId(researcher), SystematicStudyId(systematicStudy))

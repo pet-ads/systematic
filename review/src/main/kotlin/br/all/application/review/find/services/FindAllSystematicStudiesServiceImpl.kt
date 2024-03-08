@@ -11,7 +11,7 @@ import java.util.*
 class FindAllSystematicStudiesServiceImpl(
     private val repository: SystematicStudyRepository,
     private val credentialsService: ResearcherCredentialsService,
-): FindAllSystematicStudiesService {
+) : FindAllSystematicStudiesService {
     override fun findAll(presenter: FindAllSystematicStudyPresenter, researcher: UUID) {
         if (researcherNotAllowed(presenter, researcher)) return
 
