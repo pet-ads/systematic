@@ -87,7 +87,7 @@ class FindOneSystematicStudyServiceImplTest {
             preconditionCheckerMocking.makeResearcherNotACollaborator()
 
             sut.findById(presenter, request)
-            verify {
+            verifyOrder {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()
             }
