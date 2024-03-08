@@ -14,7 +14,7 @@ class FindOneProtocolServiceImpl(
     private val protocolRepository: ProtocolRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val credentialsService: ResearcherCredentialsService,
-): FindOneProtocolService {
+) : FindOneProtocolService {
     override fun findById(presenter: FindOneProtocolPresenter, request: RequestModel) {
         val (researcher, systematicStudy) = request
         PreconditionChecker(systematicStudyRepository, credentialsService).also {
