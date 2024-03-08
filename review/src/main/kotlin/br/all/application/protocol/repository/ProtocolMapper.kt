@@ -35,14 +35,10 @@ fun Protocol.toDto() = ProtocolDto(
     extractionQuestions = extractionQuestions.map { it.value }.toSet(),
     robQuestions = robQuestions.map { it.value}.toSet(),
 
-    picoc = picoc?.let { PicocDto(
-        it.population,
-        it.intervention,
-        it.control,
-        it.outcome,
-        it.context,
-    )},
+    picoc = picoc?.toDto(),
 )
+
+fun Picoc.toDto() = PicocDto(population, intervention, control, outcome, context)
 
 fun Protocol.Companion.fromDto(dto: ProtocolDto) = write(SystematicStudyId(dto.systematicStudy), dto.keywords)
     .researchesFor(dto.goal).because(dto.justification)
