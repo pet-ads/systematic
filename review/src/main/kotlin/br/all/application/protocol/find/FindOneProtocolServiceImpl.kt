@@ -25,9 +25,8 @@ class FindOneProtocolServiceImpl(
         val dto = protocolRepository.findById(systematicStudy)
 
         if (dto == null) {
-            presenter.prepareFailView(
-                EntityNotFoundException("The protocol for systematic study $systematicStudy hasn't been written yet!"),
-            )
+            val message = "The protocol for systematic study $systematicStudy hasn't been written yet!"
+            presenter.prepareFailView(EntityNotFoundException(message))
             return
         }
 
