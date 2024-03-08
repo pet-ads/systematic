@@ -169,7 +169,7 @@ class UpdateSystematicStudyServiceImplTest {
             preconditionCheckerMocking.makeResearcherUnauthorized()
             sut.update(presenter, request)
 
-            verify {
+            verifyOrder {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()
             }
