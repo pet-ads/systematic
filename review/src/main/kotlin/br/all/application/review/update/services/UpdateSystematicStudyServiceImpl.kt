@@ -11,18 +11,13 @@ import br.all.application.shared.presenter.PreconditionChecker
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.SystematicStudyId
-import java.util.*
 
 class UpdateSystematicStudyServiceImpl(
     private val repository: SystematicStudyRepository,
     private val credentialsService: ResearcherCredentialsService,
 ) : UpdateSystematicStudyService {
-    override fun update(
-        presenter: UpdateSystematicStudyPresenter,
-        researcher: UUID,
-        systematicStudy: UUID,
-        request: RequestModel,
-    ) {
+    override fun update(presenter: UpdateSystematicStudyPresenter, request: RequestModel) {
+        val (researcher, systematicStudy) = request
         PreconditionChecker(repository, credentialsService).also {
             it.prepareIfViolatesPreconditions(presenter, ResearcherId(researcher), SystematicStudyId(systematicStudy))
         }

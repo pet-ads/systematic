@@ -106,9 +106,11 @@ class TestDataFactory {
     )
 
     fun updateRequestModel(
+        researcherId: UUID = researcher,
+        systematicStudyId: UUID = systematicStudy,
         title: String? = null,
         description: String? = null,
-    ) = UpdateRequestModel(title, description)
+    ) = UpdateRequestModel(researcherId, systematicStudyId, title, description)
 
     fun updateResponseModel(
         researcherId: UUID = this.researcher,
