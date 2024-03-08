@@ -16,7 +16,7 @@ import java.util.*
 class UpdateSystematicStudyServiceImpl(
     private val repository: SystematicStudyRepository,
     private val credentialsService: ResearcherCredentialsService,
-): UpdateSystematicStudyService {
+) : UpdateSystematicStudyService {
     override fun update(
         presenter: UpdateSystematicStudyPresenter,
         researcher: UUID,
