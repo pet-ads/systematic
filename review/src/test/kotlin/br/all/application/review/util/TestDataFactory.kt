@@ -13,6 +13,7 @@ import java.util.*
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel as CreateRequestModel
 import br.all.application.review.create.CreateSystematicStudyService.ResponseModel as CreateResponseModel
 import br.all.application.review.find.services.FindAllSystematicStudiesService.ResponseModel as FindAllResponseModel
+import br.all.application.review.find.services.FindOneSystematicStudyService.RequestModel as FindOneRequestModel
 import br.all.application.review.find.services.FindOneSystematicStudyService.ResponseModel as FindOneResponseModel
 import br.all.application.review.update.services.UpdateSystematicStudyService.RequestModel as UpdateRequestModel
 
@@ -57,6 +58,11 @@ class TestDataFactory {
         request: CreateRequestModel,
         systematicStudyId: UUID = systematicStudy,
     ) = SystematicStudy.fromRequestModel(systematicStudyId, request).toDto()
+
+    fun findOneRequestModel(
+        researcherId: UUID = researcher,
+        systematicStudyId: UUID = systematicStudy,
+    ) = FindOneRequestModel(researcherId, systematicStudyId)
 
     fun findOneResponseModel(
         researcherId: UUID = this.researcher,

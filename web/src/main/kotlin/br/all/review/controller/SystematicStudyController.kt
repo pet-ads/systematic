@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel as CreateRequestModel
+import br.all.application.review.find.services.FindOneSystematicStudyService.RequestModel as FindOneRequestModel
 import br.all.application.review.update.services.UpdateSystematicStudyService.RequestModel as UpdateRequestModel
 
 @RestController
@@ -49,7 +50,8 @@ class SystematicStudyController(
         @PathVariable systematicStudyId: UUID,
     ): ResponseEntity<*> {
         val presenter = RestfulFindOneSystematicStudyPresenter()
-        findOneSystematicStudyServiceImpl.findById(presenter, researcherId, systematicStudyId)
+        val request = FindOneRequestModel(researcherId, systematicStudyId)
+        findOneSystematicStudyServiceImpl.findById(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
