@@ -28,15 +28,13 @@ class UpdateSystematicStudyServiceImpl(
         }
         if (presenter.isDone()) return
 
-        val dto = repository.findById(systematicStudy)
-        val updated = dto?.let {
-            SystematicStudy.fromDto(it).apply {
+        val dto = repository.findById(systematicStudy) ?: return
+        val updated = SystematicStudy.fromDto(dto).apply {
                 title = request.title ?: title
                 description = request.description ?: description
             }.toDto()
-        }
 
-        if (updated != null && updated != dto) repository.saveOrUpdate(updated)
+        if (updated != dto) repository.saveOrUpdate(updated)
         presenter.prepareSuccessView(ResponseModel(researcher, systematicStudy))
     }
 }
