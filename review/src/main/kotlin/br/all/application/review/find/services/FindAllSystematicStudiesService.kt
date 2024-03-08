@@ -5,7 +5,7 @@ import br.all.application.review.repository.SystematicStudyDto
 import java.util.*
 
 interface FindAllSystematicStudiesService {
-    fun findAll(presenter: FindAllSystematicStudyPresenter, researcher: UUID)
+    fun findAllByCollaborator(presenter: FindAllSystematicStudyPresenter, researcher: UUID)
 
     fun findAllByOwner(presenter: FindAllSystematicStudyPresenter, researcher: UUID, owner: UUID)
 

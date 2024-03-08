@@ -57,7 +57,7 @@ class FindAllSystematicStudiesServiceImplTest {
 
             every { repository.findAllByCollaborator(researcher) } returns response.systematicStudies
 
-            sut.findAll(presenter, researcher)
+            sut.findAllByCollaborator(presenter, researcher)
             verify(exactly = 1) { presenter.prepareSuccessView(response) }
         }
 
@@ -68,7 +68,7 @@ class FindAllSystematicStudiesServiceImplTest {
 
             every { repository.findAllByCollaborator(researcher) } returns response.systematicStudies
 
-            sut.findAll(presenter, researcher)
+            sut.findAllByCollaborator(presenter, researcher)
             verify { presenter.prepareSuccessView(response) }
         }
 
@@ -96,7 +96,7 @@ class FindAllSystematicStudiesServiceImplTest {
             preconditionCheckerMocking.makeEverythingWork()
             every { repository.findAllByCollaborator(researcher) } returns emptyList()
 
-            sut.findAll(presenter, researcher)
+            sut.findAllByCollaborator(presenter, researcher)
             verify { presenter.prepareSuccessView(response) }
         }
 
@@ -118,7 +118,7 @@ class FindAllSystematicStudiesServiceImplTest {
 
             preconditionCheckerMocking.makeResearcherUnauthenticated()
 
-            sut.findAll(presenter, researcher)
+            sut.findAllByCollaborator(presenter, researcher)
             verify {
                 presenter.isDone()
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
@@ -131,7 +131,7 @@ class FindAllSystematicStudiesServiceImplTest {
 
             preconditionCheckerMocking.makeResearcherUnauthorized()
 
-            sut.findAll(presenter, researcher)
+            sut.findAllByCollaborator(presenter, researcher)
             verify {
                 presenter.isDone()
                 presenter.prepareFailView(any<UnauthorizedUserException>())

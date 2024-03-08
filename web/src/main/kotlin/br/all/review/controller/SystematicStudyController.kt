@@ -58,7 +58,7 @@ class SystematicStudyController(
     @GetMapping
     fun findAllSystematicStudies(@PathVariable researcherId: UUID): ResponseEntity<*> {
         val presenter = RestfulFindAllSystematicStudiesPresenter()
-        findAllSystematicStudiesService.findAll(presenter, researcherId)
+        findAllSystematicStudiesService.findAllByCollaborator(presenter, researcherId)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
     
