@@ -30,11 +30,11 @@ class CreateSystematicStudyServiceImplTest {
     private lateinit var credentialsService: ResearcherCredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: CreateSystematicStudyPresenter
-
-    private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
     @InjectMockKs
     private lateinit var sut: CreateSystematicStudyServiceImpl
+    
+    private lateinit var factory: TestDataFactory
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
 
     @BeforeEach
     fun setUp() {
