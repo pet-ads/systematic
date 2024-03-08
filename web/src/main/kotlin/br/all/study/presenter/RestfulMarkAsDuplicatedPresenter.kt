@@ -22,12 +22,21 @@ class RestfulMarkAsDuplicatedPresenter : MarkAsDuplicatedPresenter {
             response.researcherId,
             response.systematicStudyId,
             response.updatedStudyReview,
-            response.duplicatedStudyReview
+            response.duplicatedStudyReview,
         )
 
         val self = linkTo<StudyReviewController> {
             findStudyReview(response.researcherId, response.systematicStudyId, response.duplicatedStudyReview)
         }.withSelfRel()
+
+        val studyReview1Link = linkTo<StudyReviewController> {
+            findStudyReview(response.researcherId, response.systematicStudyId, response.duplicatedStudyReview)
+        }.withRel("studyReview1")
+
+        val studyReview2Link = linkTo<StudyReviewController> {
+            findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
+        }.withRel("studyReview2")
+
 
         restfulResponse.add(self)
         responseEntity = status(HttpStatus.OK).body(restfulResponse)

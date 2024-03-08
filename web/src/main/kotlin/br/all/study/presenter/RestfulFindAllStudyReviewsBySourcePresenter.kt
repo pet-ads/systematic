@@ -1,5 +1,6 @@
 package br.all.study.presenter
 
+import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresenter
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService.ResponseModel
 import br.all.application.study.repository.StudyReviewDto
@@ -10,6 +11,9 @@ import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import java.util.*
 
 @Component
@@ -25,7 +29,43 @@ class RestfulFindAllStudyReviewsBySourcePresenter : FindAllStudyReviewsBySourceP
             findAllStudyReviewsBySource(researcherId, systematicStudyId, searchSource)
         }.withSelfRel()
 
-        restfulResponse.add(self)
+        val findAll = linkTo<StudyReviewController> {
+            findAllStudyReviews(response.researcherId, response.systematicStudyId)
+        }.withRel("findAll")
+
+
+        val createStudyReview = linkTo<StudyReviewController> {
+            createStudyReview(
+                researcherId,
+                systematicStudyId,
+                request = CreateStudyReviewService.RequestModel(
+                    researcherId = researcherId,
+                    systematicStudyId = systematicStudyId,
+                    type = "",
+                    title = "",
+                    year = 2024,
+                    authors = "",
+                    venue = "",
+                    abstract = "",
+                    keywords = emptySet(),
+                    source = ""
+                )
+            )
+        }.withRel("createStudyReview")
+
+
+        /*
+        val linkToFindSearchSession = linkTo<YourController> {
+            findSearchSession(researcherId, systematicStudyId, searchSource)
+        }.withRel("findSearchSession")
+
+        val linkToFindAllSearchSession = linkTo<YourController> {
+            findAllSearchSession(researcherId, systematicStudyId)
+        }.withRel("findAllSearchSession")
+
+        restfulResponse.add(linkToFindSearchSession, linkToFindAllSearchSession)*/
+
+        restfulResponse.add(self, findAll, createStudyReview)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 

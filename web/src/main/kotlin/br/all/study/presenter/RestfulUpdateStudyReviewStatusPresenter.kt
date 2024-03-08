@@ -23,6 +23,7 @@ class RestfulUpdateStudyReviewStatusPresenter : UpdateStudyReviewStatusPresenter
             findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
         }.withSelfRel()
 
+
         restfulResponse.add(self)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }

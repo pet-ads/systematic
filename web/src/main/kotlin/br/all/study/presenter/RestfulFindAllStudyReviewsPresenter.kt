@@ -1,5 +1,6 @@
 package br.all.study.presenter
 
+import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
 import br.all.application.study.find.service.FindAllStudyReviewsService.ResponseModel
 import br.all.application.study.repository.StudyReviewDto
@@ -11,6 +12,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import java.util.*
+
+//O que faz sentido para mim:
+//findAllStudyReviewsBySource - OK
+//createStudyReview - OK
 
 @Component
 class RestfulFindAllStudyReviewsPresenter : FindAllStudyReviewsPresenter {
@@ -24,7 +29,32 @@ class RestfulFindAllStudyReviewsPresenter : FindAllStudyReviewsPresenter {
             findAllStudyReviews(response.researcherId, response.systematicStudyId)
         }.withSelfRel()
 
-        restfulResponse.add(self)
+
+        val findAllBySource = linkTo<StudyReviewController> {
+            findAllStudyReviewsBySource(response.researcherId, response.systematicStudyId, searchSource = "")
+        }.withRel("findAllBySource")
+
+
+        val createStudyReview = linkTo<StudyReviewController> {
+            createStudyReview(
+                response.researcherId,
+                response.systematicStudyId,
+                request = CreateStudyReviewService.RequestModel(
+                    researcherId = response.researcherId,
+                    systematicStudyId = response.systematicStudyId,
+                    type = "",
+                    title = "",
+                    year = 2024,
+                    authors = "",
+                    venue = "",
+                    abstract = "",
+                    keywords = emptySet(),
+                    source = ""
+                )
+            )
+        }.withRel("createStudyReview")
+
+        restfulResponse.add(self, findAllBySource, createStudyReview)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 

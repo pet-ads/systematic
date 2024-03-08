@@ -1,5 +1,6 @@
 package br.all.study.presenter
 
+import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.find.presenter.FindStudyReviewPresenter
 import br.all.application.study.find.service.FindStudyReviewService.ResponseModel
 import br.all.application.study.repository.StudyReviewDto
@@ -10,6 +11,13 @@ import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
+
+
+
+// O que faz sentido para mim:
+//findAllStudyReviews
+//findAllStudyReviewsBySource
+//createStudyReview
 
 @Component
 class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
@@ -23,7 +31,30 @@ class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
             findStudyReview(response.researcherId, response.content.systematicStudyId, response.content.studyReviewId)
         }.withSelfRel()
 
-        restfulResponse.add(self)
+        val findAll = linkTo<StudyReviewController> {
+            findAllStudyReviews(response.researcherId, systematicStudy = response.content.systematicStudyId)
+        }.withRel("findAll")
+
+        val createStudyReview = linkTo<StudyReviewController> {
+            createStudyReview(
+                response.researcherId,
+                response.content.systematicStudyId,
+                request = CreateStudyReviewService.RequestModel(
+                    researcherId = response.researcherId,
+                    systematicStudyId = response.content.systematicStudyId,
+                    type = "",
+                    title = "",
+                    year = 2024,
+                    authors = "",
+                    venue = "",
+                    abstract = "",
+                    keywords = emptySet(),
+                    source = ""
+                )
+            )
+        }.withRel("createStudyReview")
+
+        restfulResponse.add(self, findAll, createStudyReview)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
