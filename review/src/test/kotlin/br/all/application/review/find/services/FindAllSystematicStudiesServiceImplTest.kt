@@ -135,9 +135,9 @@ class FindAllSystematicStudiesServiceImplTest {
             preconditionCheckerMocking.makeResearcherUnauthorized()
 
             sut.findAllByCollaborator(presenter, researcher)
-            verify {
-                presenter.isDone()
+            verifyOrder {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
+                presenter.isDone()
             }
         }
     }
