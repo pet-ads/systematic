@@ -12,6 +12,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -121,9 +122,9 @@ class FindAllSystematicStudiesServiceImplTest {
             preconditionCheckerMocking.makeResearcherUnauthenticated()
 
             sut.findAllByCollaborator(presenter, researcher)
-            verify {
-                presenter.isDone()
+            verifyOrder {
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
+                presenter.isDone()
             }
         }
 
