@@ -42,10 +42,11 @@ class TestDataFactory {
         .toDto()
 
     fun createRequestModel(
+        researcherId: UUID = researcher,
         title: String = faker.book.title(),
         description: String = faker.lorem.words(),
         collaborators: Set<UUID> = emptySet()
-    ) = CreateRequestModel(title, description, collaborators)
+    ) = CreateRequestModel(researcherId, title, description, collaborators)
 
     fun createResponseModel(
         researcherId: UUID = researcher,
@@ -54,9 +55,8 @@ class TestDataFactory {
 
     fun dtoFromCreateRequest(
         request: CreateRequestModel,
-        researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
-    ) = SystematicStudy.fromRequestModel(systematicStudyId, researcherId, request).toDto()
+    ) = SystematicStudy.fromRequestModel(systematicStudyId, request).toDto()
 
     fun findOneResponseModel(
         researcherId: UUID = this.researcher,

@@ -10,11 +10,10 @@ import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
 import br.all.application.shared.presenter.PreconditionChecker
 import br.all.domain.model.protocol.Protocol
-import br.all.domain.model.researcher.ResearcherId
+import br.all.domain.model.researcher.toResearcherId
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.services.UuidGeneratorService
-import java.util.*
 
 class CreateSystematicStudyServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
@@ -22,14 +21,15 @@ class CreateSystematicStudyServiceImpl(
     private val uuidGeneratorService: UuidGeneratorService,
     private val credentialsService: ResearcherCredentialsService,
 ) : CreateSystematicStudyService {
-    override fun create(presenter: CreateSystematicStudyPresenter, researcher: UUID, request: RequestModel) {
+    override fun create(presenter: CreateSystematicStudyPresenter, request: RequestModel) {
+        val (researcher) = request
         PreconditionChecker(systematicStudyRepository, credentialsService).also {
-            it.prepareIfUnauthenticatedOrUnauthorized(presenter, ResearcherId(researcher))
+            it.prepareIfUnauthenticatedOrUnauthorized(presenter, researcher.toResearcherId())
         }
         if (presenter.isDone()) return
 
         val id = uuidGeneratorService.next()
-        SystematicStudy.fromRequestModel(id, researcher, request).also {
+        SystematicStudy.fromRequestModel(id, request).also {
             systematicStudyRepository.saveOrUpdate(it.toDto())
         }
 

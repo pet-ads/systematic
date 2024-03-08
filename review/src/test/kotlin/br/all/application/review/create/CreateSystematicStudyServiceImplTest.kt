@@ -55,7 +55,7 @@ class CreateSystematicStudyServiceImplTest {
     inner class WhenSuccessfullyCreatingASystematicStudy {
         @Test
         fun `should successfully create a systematic study`() {
-            val (researcher, systematicStudy) = factory
+            val (_, systematicStudy) = factory
             val request = factory.createRequestModel()
             val response = factory.createResponseModel()
             val dto = factory.dtoFromCreateRequest(request)
@@ -64,7 +64,7 @@ class CreateSystematicStudyServiceImplTest {
             preconditionCheckerMocking.makeEverythingWork()
             every { uuidGeneratorService.next() } returns systematicStudy
 
-            sut.create(presenter, researcher, request)
+            sut.create(presenter, request)
 
             verify(exactly = 1) {
                 uuidGeneratorService.next()
@@ -81,11 +81,10 @@ class CreateSystematicStudyServiceImplTest {
     inner class WhenUnableToCreateANewSystematicStudy {
         @Test
         fun `should not the researcher be allowed to create a new study when unauthenticated`() {
-            val (researcher) = factory
             val request = factory.createRequestModel()
 
             preconditionCheckerMocking.makeResearcherUnauthenticated()
-            sut.create(presenter, researcher, request)
+            sut.create(presenter, request)
 
             verifyOrder {
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
@@ -95,11 +94,10 @@ class CreateSystematicStudyServiceImplTest {
 
         @Test
         fun `should not the researcher be allowed to create a study when unauthorized`() {
-            val (researcher) = factory
             val request = factory.createRequestModel()
 
             preconditionCheckerMocking.makeResearcherUnauthorized()
-            sut.create(presenter, researcher, request)
+            sut.create(presenter, request)
 
             verifyOrder {
                 presenter.prepareFailView(any<UnauthorizedUserException>())

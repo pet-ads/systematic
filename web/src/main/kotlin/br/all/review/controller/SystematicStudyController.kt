@@ -26,11 +26,21 @@ class SystematicStudyController(
     @PostMapping
     fun postSystematicStudy(
         @PathVariable researcherId: UUID,
-        @RequestBody request: CreateRequestModel
+        @RequestBody request: PostRequest,
     ): ResponseEntity<*> {
         val presenter = RestfulCreateSystematicStudyPresenter()
-        createSystematicStudyService.create(presenter, researcherId, request)
+        val requestModel = request.toCreateRequestModel(researcherId)
+
+        createSystematicStudyService.create(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    data class PostRequest(
+        val title: String,
+        val description: String,
+        val collaborators: Set<UUID>,
+    ) {
+        fun toCreateRequestModel(researcherId: UUID) = CreateRequestModel(researcherId, title, description, collaborators)
     }
 
     @GetMapping("/{systematicStudyId}")
