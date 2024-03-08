@@ -142,7 +142,7 @@ class UpdateSystematicStudyServiceImplTest {
             preconditionCheckerMocking.makeResearcherNotACollaborator()
             sut.update(presenter, request)
 
-            verify {
+            verifyOrder {
                 repository.hasReviewer(factory.systematicStudy, factory.researcher)
                 presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()
