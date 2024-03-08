@@ -68,51 +68,6 @@ class TestDataFactory {
         context,
     )
 
-    fun validPostRequest(
-        goal: String? = faker.paragraph(5),
-        justification: String? = faker.paragraph(5),
-        researchQuestions: Set<String> = emptySet(),
-        keywords: Set<String> = emptySet(),
-
-        searchString: String? = faker.paragraph(5),
-        informationSources: Set<String> = emptySet(),
-        sourcesSelectionCriteria: String? = faker.paragraph(5),
-        searchMethod: String? = faker.paragraph(5),
-
-        studiesLanguages: Set<String> = emptySet(),
-        studyTypeDefinition: String? = faker.paragraph(5),
-
-        selectionProcess: String? = faker.paragraph(5),
-        eligibilityCriteria: Set<Pair<String, String>> = emptySet(),
-
-        dataCollectionProcess: String? = faker.paragraph(5),
-        analysisAndSynthesisProcess: String? = faker.paragraph(5),
-
-        picoc: PicocRequest? = null,
-    ) = """ 
-        {
-            "goal": "$goal",
-            "justification": "$justification",
-            "researchQuestions": $researchQuestions,
-            "keywords": $keywords,
-    
-            "searchString": "$searchString",
-            "informationSources": $informationSources,
-            "sourcesSelectionCriteria": "$sourcesSelectionCriteria",
-            "searchMethod": "$searchMethod",
-    
-            "studiesLanguages": $studiesLanguages,
-            "studyTypeDefinition": "$studyTypeDefinition",
-    
-            "selectionProcess": "$selectionProcess",
-            "eligibilityCriteria": $eligibilityCriteria,
-            
-            "dataCollectionProcess": "$dataCollectionProcess",
-            "analysisAndSynthesisProcess": "$analysisAndSynthesisProcess"${ if (picoc != null) "," else "" }
-            ${ if (picoc != null) "\"picoc\": $picoc" else "" }
-        }
-    """.trimIndent()
-
     fun validPutRequest(
         goal: String? = faker.paragraph(10),
         justification: String? = faker.paragraph(10),

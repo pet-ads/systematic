@@ -58,7 +58,7 @@ class UpdateProtocolServiceImplTest {
         @Test
         fun `should update a existent protocol`() {
             val (_, systematicStudy) = factory
-            val dto = factory.createProtocolDto()
+            val dto = factory.protocolDto()
             val request = factory.updateRequestModel()
             val response = factory.updateResponseModel()
             val updatedDto = factory.updatedDto(dto, request)
@@ -75,7 +75,7 @@ class UpdateProtocolServiceImplTest {
         @Test
         fun `should not save when no updates are provided`() {
             val (_, systematicStudy) = factory
-            val dto = factory.createProtocolDto()
+            val dto = factory.protocolDto()
             val request = factory.emptyUpdateRequest(dto)
             val response = factory.updateResponseModel()
 

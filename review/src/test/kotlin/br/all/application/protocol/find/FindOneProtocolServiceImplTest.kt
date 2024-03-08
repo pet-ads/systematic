@@ -55,7 +55,7 @@ class FindOneProtocolServiceImplTest {
         fun `should find a existent protocol`() {
             val (_, protocolId) = factory
             val request = factory.findRequestModel()
-            val dto = factory.createProtocolDto()
+            val dto = factory.protocolDto()
             val response = factory.findResponseModel(dto = dto)
 
             preconditionCheckerMocking.makeEverythingWork()

@@ -1,12 +1,10 @@
 package br.all.application.protocol.repository
 
-import br.all.application.protocol.create.CreateProtocolService.RequestModel
 import br.all.application.protocol.update.UpdateProtocolService
 import br.all.domain.model.protocol.*
 import br.all.domain.model.protocol.Criterion.CriterionType
 import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.SystematicStudyId
-import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.shared.valueobject.Language
 import br.all.domain.shared.valueobject.Language.LangType
 
@@ -45,26 +43,6 @@ fun Protocol.toDto() = ProtocolDto(
         it.context,
     )},
 )
-
-fun Protocol.Companion.fromRequestModel(request: RequestModel) = with(request) {
-    write(systematicStudyId.toSystematicStudyId(), keywords)
-        .researchesFor(goal).because(justification)
-        .toAnswer(
-            researchQuestions.map { it.toResearchQuestion() }
-                .toSet(),
-        ).followingSearchProcess(searchMethod, searchString)
-        .inSearchSources( informationSources.map { it.toSearchSource() }.toSet())
-        .selectedBecause(sourcesSelectionCriteria)
-        .searchingStudiesIn(studiesLanguages.map { Language(LangType.valueOf(it)) }.toSet(), studyTypeDefinition)
-        .followingSelectionProcess(selectionProcess)
-        .withEligibilityCriteria(
-            eligibilityCriteria.map { (description, type) -> Criterion(description, CriterionType.valueOf(type)) }
-                .toSet(),
-        ).followingDataCollectionProcess(dataCollectionProcess)
-        .followingSynthesisProcess(analysisAndSynthesisProcess)
-        .withPICOC(picoc?.let { Picoc.fromDto(it) })
-        .build()
-}
 
 fun Protocol.Companion.fromDto(dto: ProtocolDto) = write(SystematicStudyId(dto.systematicStudy), dto.keywords)
     .researchesFor(dto.goal).because(dto.justification)

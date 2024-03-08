@@ -6,7 +6,6 @@ import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.shared.utils.wordsList
 import io.github.serpro69.kfaker.Faker
 import java.util.*
-import br.all.application.protocol.create.CreateProtocolService.RequestModel as CreateRequestModel
 import br.all.application.protocol.find.FindOneProtocolService.RequestModel as FindRequestModel
 import br.all.application.protocol.find.FindOneProtocolService.ResponseModel as FindOneResponseModel
 import br.all.application.protocol.update.UpdateProtocolService.RequestModel as UpdateRequestModel
@@ -18,8 +17,7 @@ class TestDataFactory {
 
     private val faker = Faker()
 
-    fun createRequestModel(
-        researcher: UUID = this.researcher,
+    fun protocolDto(
         systematicStudy: UUID = this.systematicStudy,
         goal: String? = text(),
         justification: String? = text(),
@@ -38,9 +36,14 @@ class TestDataFactory {
         eligibilityCriteria: Set<Pair<String, String>> = emptySet(),
 
         dataCollectionProcess: String? = null,
+        extractionQuestions: Set<UUID> = emptySet(),
+
         analysisAndSynthesisProcess: String? = null,
-    ) = CreateRequestModel(
-        researcher,
+        robQuestions: Set<UUID> = emptySet(),
+
+        picoc: PicocDto? = null,
+    ) = ProtocolDto(
+        systematicStudy,
         systematicStudy,
 
         goal,
@@ -61,6 +64,11 @@ class TestDataFactory {
 
         dataCollectionProcess,
         analysisAndSynthesisProcess,
+
+        extractionQuestions,
+        robQuestions,
+
+        picoc,
     )
 
     fun text() = faker.wordsList(minSize = 1, maxSize = 5).joinToString(" ")
@@ -73,10 +81,8 @@ class TestDataFactory {
     fun findResponseModel(
         researcher: UUID = this.researcher,
         systematicStudy: UUID = this.systematicStudy,
-        dto: ProtocolDto = createProtocolDto(),
+        dto: ProtocolDto = protocolDto(),
     ) = FindOneResponseModel(researcher, systematicStudy, dto)
-
-    fun createProtocolDto() = Protocol.fromRequestModel(createRequestModel()).toDto()
 
     fun updateRequestModel(
         researcher: UUID = this.researcher,
