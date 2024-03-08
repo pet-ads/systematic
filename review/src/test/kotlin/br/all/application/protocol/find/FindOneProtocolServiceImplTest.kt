@@ -97,7 +97,7 @@ class FindOneProtocolServiceImplTest {
             preconditionCheckerMocking.makeSystematicStudyNonexistent()
             sut.findById(presenter, request)
 
-            verify {
+            verifyOrder {
                 presenter.prepareFailView(any<EntityNotFoundException>())
                 presenter.isDone()
             }
