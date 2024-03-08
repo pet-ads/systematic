@@ -13,6 +13,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -32,7 +33,7 @@ class CreateSystematicStudyServiceImplTest {
     private lateinit var presenter: CreateSystematicStudyPresenter
     @InjectMockKs
     private lateinit var sut: CreateSystematicStudyServiceImpl
-    
+
     private lateinit var factory: TestDataFactory
     private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
 
@@ -86,7 +87,7 @@ class CreateSystematicStudyServiceImplTest {
             preconditionCheckerMocking.makeResearcherUnauthenticated()
             sut.create(presenter, researcher, request)
 
-            verify(exactly = 1) {
+            verifyOrder {
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
                 presenter.isDone()
             }
@@ -100,7 +101,7 @@ class CreateSystematicStudyServiceImplTest {
             preconditionCheckerMocking.makeResearcherUnauthorized()
             sut.create(presenter, researcher, request)
 
-            verify(exactly = 1) {
+            verifyOrder {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()
             }
