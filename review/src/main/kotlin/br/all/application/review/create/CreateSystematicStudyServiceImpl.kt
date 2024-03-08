@@ -21,7 +21,7 @@ class CreateSystematicStudyServiceImpl(
     private val protocolRepository: ProtocolRepository,
     private val uuidGeneratorService: UuidGeneratorService,
     private val credentialsService: ResearcherCredentialsService,
-): CreateSystematicStudyService {
+) : CreateSystematicStudyService {
     override fun create(presenter: CreateSystematicStudyPresenter, researcher: UUID, request: RequestModel) {
         PreconditionChecker(systematicStudyRepository, credentialsService).also {
             it.prepareIfUnauthenticatedOrUnauthorized(presenter, ResearcherId(researcher))
