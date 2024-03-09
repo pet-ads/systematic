@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
 
-
 // O que faz sentido para mim:
 //findAllStudyReviews
 //findAllStudyReviewsBySource
@@ -26,7 +25,36 @@ class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.content)
+    }
 
+    override fun prepareFailView(throwable: Throwable)= run { responseEntity = createErrorResponseFrom(throwable) }
+
+    override fun isDone() = responseEntity != null
+
+    private data class ViewModel(private val content: StudyReviewDto) : RepresentationModel<ViewModel>() {
+        val studyReviewId = content.studyReviewId
+        val systematicStudyId = content.systematicStudyId
+        val studyType = content.studyType
+        val title = content.title
+        val year = content.year
+        val authors = content.authors
+        val venue = content.venue
+        val abstract = content.abstract
+        val keywords = content.keywords
+        val references = content.references
+        val doi = content.doi
+        val searchSources = content.searchSources
+        val criteria = content.criteria
+        val formAnswers = content.formAnswers
+        val qualityAnswers = content.robAnswers
+        val comments = content.comments
+        val readingPriority = content.readingPriority
+        val extractionStatus = content.extractionStatus
+        val selectionStatus = content.selectionStatus
+    }
+
+
+    private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
         val self = linkTo<StudyReviewController> {
             findStudyReview(response.researcherId, response.content.systematicStudyId, response.content.studyReviewId)
         }.withSelfRel()
@@ -56,31 +84,5 @@ class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
 
         restfulResponse.add(self, findAll, createStudyReview)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
-    }
-
-    override fun prepareFailView(throwable: Throwable)= run { responseEntity = createErrorResponseFrom(throwable) }
-
-    override fun isDone() = responseEntity != null
-
-    private data class ViewModel(private val content: StudyReviewDto) : RepresentationModel<ViewModel>() {
-        val studyReviewId = content.studyReviewId
-        val systematicStudyId = content.systematicStudyId
-        val studyType = content.studyType
-        val title = content.title
-        val year = content.year
-        val authors = content.authors
-        val venue = content.venue
-        val abstract = content.abstract
-        val keywords = content.keywords
-        val references = content.references
-        val doi = content.doi
-        val searchSources = content.searchSources
-        val criteria = content.criteria
-        val formAnswers = content.formAnswers
-        val qualityAnswers = content.robAnswers
-        val comments = content.comments
-        val readingPriority = content.readingPriority
-        val extractionStatus = content.extractionStatus
-        val selectionStatus = content.selectionStatus
     }
 }

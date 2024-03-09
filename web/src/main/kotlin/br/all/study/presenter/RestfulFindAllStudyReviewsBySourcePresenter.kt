@@ -24,23 +24,37 @@ class RestfulFindAllStudyReviewsBySourcePresenter : FindAllStudyReviewsBySourceP
     override fun prepareSuccessView(response: ResponseModel) {
         val (researcherId, systematicStudyId, searchSource, studyReviews) = response
         val restfulResponse = ViewModel(systematicStudyId, searchSource, studyReviews.size, studyReviews)
+    }
+
+    override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
+
+    override fun isDone() = responseEntity != null
+
+    private data class ViewModel(
+        val systematicStudyId: UUID,
+        val searchSource: String,
+        val size: Int,
+        val studyReviews: List<StudyReviewDto>,
+    ) : RepresentationModel<ViewModel>()
+
+
+    private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
 
         val self = linkTo<StudyReviewController> {
-            findAllStudyReviewsBySource(researcherId, systematicStudyId, searchSource)
+            findAllStudyReviewsBySource(response.researcherId, response.systematicStudyId, response.searchSource)
         }.withSelfRel()
 
         val findAll = linkTo<StudyReviewController> {
             findAllStudyReviews(response.researcherId, response.systematicStudyId)
         }.withRel("findAll")
 
-
         val createStudyReview = linkTo<StudyReviewController> {
             createStudyReview(
-                researcherId,
-                systematicStudyId,
+                response.researcherId,
+                response.systematicStudyId,
                 request = CreateStudyReviewService.RequestModel(
-                    researcherId = researcherId,
-                    systematicStudyId = systematicStudyId,
+                    researcherId = response.researcherId,
+                    systematicStudyId = response.systematicStudyId,
                     type = "",
                     title = "",
                     year = 2024,
@@ -68,15 +82,4 @@ class RestfulFindAllStudyReviewsBySourcePresenter : FindAllStudyReviewsBySourceP
         restfulResponse.add(self, findAll, createStudyReview)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
-
-    override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
-
-    override fun isDone() = responseEntity != null
-
-    private data class ViewModel (
-        val systematicStudyId : UUID,
-        val searchSource: String,
-        val size: Int,
-        val studyReviews: List<StudyReviewDto>,
-    ) : RepresentationModel<ViewModel>()
 }

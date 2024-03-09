@@ -1,5 +1,6 @@
 package br.all.study.presenter
 
+import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresenter
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.ResponseModel
 import br.all.shared.error.createErrorResponseFrom
@@ -18,14 +19,6 @@ class RestfulUpdateStudyReviewStatusPresenter : UpdateStudyReviewStatusPresenter
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel()
-
-        val self = linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
-        }.withSelfRel()
-
-
-        restfulResponse.add(self)
-        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
     override fun prepareFailView(throwable: Throwable) =
@@ -36,4 +29,14 @@ class RestfulUpdateStudyReviewStatusPresenter : UpdateStudyReviewStatusPresenter
     private data class ViewModel(
         val timestamp: String = generateTimestamp()
     ) : RepresentationModel<ViewModel>()
+
+
+    private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
+        val self = linkTo<StudyReviewController> {
+            findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
+        }.withSelfRel()
+
+        restfulResponse.add(self)
+        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
+    }
 }

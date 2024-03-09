@@ -24,6 +24,20 @@ class RestfulFindAllStudyReviewsPresenter : FindAllStudyReviewsPresenter {
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.systematicStudyId, response.studyReviews.size, response.studyReviews)
+    }
+
+    override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
+
+    override fun isDone() = responseEntity != null
+
+    private data class ViewModel (
+        val systematicStudyId : UUID,
+        val size: Int,
+        val studyReviews: List<StudyReviewDto>,
+    ) : RepresentationModel<ViewModel>()
+
+
+    private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
 
         val self = linkTo<StudyReviewController> {
             findAllStudyReviews(response.researcherId, response.systematicStudyId)
@@ -57,14 +71,4 @@ class RestfulFindAllStudyReviewsPresenter : FindAllStudyReviewsPresenter {
         restfulResponse.add(self, findAllBySource, createStudyReview)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
-
-    override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
-
-    override fun isDone() = responseEntity != null
-
-    private data class ViewModel (
-        val systematicStudyId : UUID,
-        val size: Int,
-        val studyReviews: List<StudyReviewDto>,
-    ) : RepresentationModel<ViewModel>()
 }

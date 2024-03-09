@@ -1,5 +1,6 @@
 package br.all.study.presenter
 
+import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.update.interfaces.MarkAsDuplicatedPresenter
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService.*
 import br.all.shared.error.createErrorResponseFrom
@@ -24,22 +25,6 @@ class RestfulMarkAsDuplicatedPresenter : MarkAsDuplicatedPresenter {
             response.updatedStudyReview,
             response.duplicatedStudyReview,
         )
-
-        val self = linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId, response.systematicStudyId, response.duplicatedStudyReview)
-        }.withSelfRel()
-
-        val studyReview1Link = linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId, response.systematicStudyId, response.duplicatedStudyReview)
-        }.withRel("studyReview1")
-
-        val studyReview2Link = linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
-        }.withRel("studyReview2")
-
-
-        restfulResponse.add(self)
-        responseEntity = status(HttpStatus.OK).body(restfulResponse)
     }
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
@@ -52,5 +37,26 @@ class RestfulMarkAsDuplicatedPresenter : MarkAsDuplicatedPresenter {
         val updatedStudyReviewId: Long,
         val duplicatedStudyReviewId: Long,
     ) : RepresentationModel<ViewModel>()
+
+    private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
+
+        val self = linkTo<StudyReviewController> {
+            findStudyReview(response.researcherId, response.systematicStudyId, response.duplicatedStudyReview)
+        }.withSelfRel()
+
+        val studyReview1Link = linkTo<StudyReviewController> {
+            findStudyReview(response.researcherId, response.systematicStudyId, response.duplicatedStudyReview)
+        }.withRel("studyReview1")
+
+        /*
+        val studyReview2Link = linkTo<StudyReviewController> {
+            findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
+        }.withRel("studyReview2")*/
+
+        restfulResponse.add(self)
+        responseEntity = status(HttpStatus.OK).body(restfulResponse)
+    }
+
+
 
 }
