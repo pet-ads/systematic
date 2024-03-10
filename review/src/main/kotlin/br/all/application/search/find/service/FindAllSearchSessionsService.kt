@@ -5,7 +5,7 @@ import br.all.application.search.repository.SearchSessionDto
 import java.util.*
 
 interface FindAllSearchSessionsService {
-    fun findAllSearchSessionsPresenter(presenter: FindAllSearchSessionsPresenter, request: RequestModel)
+    fun findAllSearchSessions(presenter: FindAllSearchSessionsPresenter, request: RequestModel)
 
     data class RequestModel(
         val researcherId: UUID,
