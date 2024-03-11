@@ -14,7 +14,7 @@ open class SearchSessionRepositoryImpl(val repository: MongoSearchSessionReposit
     }
 
     override fun findAllFromSystematicStudy(systematicStudyId: UUID): List<SearchSessionDto> =
-        repository.findAllById_SystematicStudyId(systematicStudyId).map { it.toDto() }
+        repository.findAllBySystematicStudyId(systematicStudyId).map { it.toDto() }
 
     override fun findById(searchSessionId: UUID): SearchSessionDto? {
         TODO("Not yet implemented")

@@ -7,5 +7,5 @@ import java.util.UUID
 
 interface MongoSearchSessionRepository : MongoRepository<SearchSessionDocument, UUID>{
     fun existsBySystematicStudyIdAndSource(systematicStudyId: UUID, source: String): Boolean
-    fun findAllById_SystematicStudyId(systematicStudyId: UUID): List<SearchSessionDocument>
+    fun findAllBySystematicStudyId(systematicStudyId: UUID): List<SearchSessionDocument>
 }
