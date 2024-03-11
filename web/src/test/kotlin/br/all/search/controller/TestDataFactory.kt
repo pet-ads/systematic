@@ -1,11 +1,14 @@
 package br.all.search.controller
 
 import br.all.application.search.create.CreateSearchSessionService
+import br.all.domain.model.protocol.SearchSource
 import br.all.domain.shared.utils.paragraph
+import br.all.infrastructure.search.SearchSessionDocument
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.serpro69.kfaker.Faker
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
+import java.time.LocalDateTime
 import java.util.*
 
 class TestDataFactory {
@@ -82,5 +85,23 @@ class TestDataFactory {
     )
 
     fun invalidBibFile() = "Invalid BibTeX file".toByteArray()
+
+    fun searchSessionDocument(
+        id: UUID,
+        systematicStudyId: UUID,
+        searchSource: String = "SearchSource",
+        searchString: String = "SearchString",
+        timeStamp: LocalDateTime = LocalDateTime.of(2022, 1, 1, 0, 0),
+        additionalInfo: String = "AdditionalInfo"
+    ): SearchSessionDocument {
+        return SearchSessionDocument(
+            id,
+            systematicStudyId,
+            searchString,
+            additionalInfo,
+            timeStamp,
+            searchSource,
+        )
+    }
 
 }
