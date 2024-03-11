@@ -7,6 +7,9 @@ import br.all.application.protocol.update.UpdateProtocolService
 import br.all.protocol.presenter.RestfulCreateProtocolPresenter
 import br.all.protocol.presenter.RestfulFindOneProtocolPresenter
 import br.all.protocol.presenter.RestfulUpdateProtocolPresenter
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -22,6 +25,12 @@ class ProtocolController(
     private val updateProtocolService: UpdateProtocolService,
 ) {
     @PostMapping
+    @Operation(summary = "Create a protocol")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Successful Operation"),
+        ApiResponse(responseCode = "404", description = "Failed Operation for nonexistent systematic study"),
+        ApiResponse(responseCode = "403", description = "Failed Operation for non collaborator researcher writing protocols")
+    ])
     fun postProtocol(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -36,6 +45,12 @@ class ProtocolController(
     }
 
     @GetMapping
+    @Operation(summary = "Find a protocol using its SystematicStudy Id")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation"),
+        ApiResponse(responseCode = "404", description = "Failed Operation for nonexistent protocol or systematic study"),
+        ApiResponse(responseCode = "403", description = "Failed Operation for non collaborator researcher finding protocols")
+    ])
     fun findById(@PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID): ResponseEntity<*> {
         val presenter = RestfulFindOneProtocolPresenter()
         val request = FindOneRequestModel(researcherId, systematicStudyId)
@@ -45,6 +60,12 @@ class ProtocolController(
     }
 
     @PutMapping
+    @Operation(summary = "Update an existing protocol")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation"),
+        ApiResponse(responseCode = "404", description = "Failed Operation for nonexistent systematic study"),
+        ApiResponse(responseCode = "403", description = "Failed Operation for non collaborator researcher updating protocols")
+    ])
     fun putProtocol(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,

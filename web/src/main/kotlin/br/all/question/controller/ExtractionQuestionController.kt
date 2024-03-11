@@ -9,6 +9,9 @@ import br.all.application.question.findAll.FindAllBySystematicStudyIdService.Req
 import br.all.question.presenter.extraction.RestfulFindExtractionQuestionPresenter
 import br.all.question.presenter.extraction.RestfulCreateExtractionQuestionPresenter
 import br.all.question.presenter.extraction.RestfulFindAllExtractionQuestionPresenter
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -34,6 +37,11 @@ class ExtractionQuestionController(
     }
 
     @PostMapping("/textual")
+    @Operation(summary = "Create a textual question")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Successful Operation"),
+        ApiResponse(responseCode = "400", description = "Failed Operation for invalid input"),
+    ])
     fun createTextualQuestion(
         @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: TextualRequest,
     ): ResponseEntity<*> = createQuestion(
@@ -47,6 +55,11 @@ class ExtractionQuestionController(
     )
 
     @PostMapping("/pick-list")
+    @Operation(summary = "Create a pick-list question")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Successful Operation"),
+        ApiResponse(responseCode = "400", description = "Failed Operation for invalid input"),
+    ])
     fun createPickListQuestion(
         @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: PickListRequest,
     ): ResponseEntity<*> = createQuestion(
@@ -61,6 +74,11 @@ class ExtractionQuestionController(
     )
 
     @PostMapping("/labeled-scale")
+    @Operation(summary = "Create a labeled-scale question")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Successful Operation"),
+        ApiResponse(responseCode = "400", description = "Failed Operation for invalid input"),
+    ])
     fun createLabeledScaleQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -77,6 +95,11 @@ class ExtractionQuestionController(
     )
 
     @PostMapping("/number-scale")
+    @Operation(summary = "Create a number-scale question")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Successful Operation"),
+        ApiResponse(responseCode = "400", description = "Failed Operation for invalid input"),
+    ])
     fun createNumberScaleQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -94,6 +117,11 @@ class ExtractionQuestionController(
     )
 
     @GetMapping("/{questionId}")
+    @Operation(summary = "Find a question using its Id")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation"),
+        ApiResponse(responseCode = "404", description = "Failed Operation"),
+    ])
     fun findQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -106,6 +134,10 @@ class ExtractionQuestionController(
     }
 
     @GetMapping
+    @Operation(summary = "Find all questions of a systematic study")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation. Either returns the questions of a systematic study or an empty list if no systematic study found."),
+    ])
     fun findAllBySystematicStudyId(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID
