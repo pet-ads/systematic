@@ -9,9 +9,10 @@ import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Component
 import java.util.UUID
 
-
+@Component
 class RestfulFindAllSearchSessionsPresenter : FindAllSearchSessionsPresenter {
 
     var responseEntity: ResponseEntity<*>? = null
