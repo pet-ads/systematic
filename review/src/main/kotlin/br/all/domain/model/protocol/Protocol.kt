@@ -134,6 +134,11 @@ class Protocol internal constructor(
         _researchQuestions.remove(question)
     }
 
+    fun replaceResearchQuestions(newQuestions: Set<ResearchQuestion>) {
+        _researchQuestions.addAll(newQuestions)
+        _researchQuestions.removeIf { it !in newQuestions }
+    }
+
     fun addKeyword(keyword: String) {
         require(keyword.isNotBlank()) { "Protocol must not have blank keywords" }
         _keywords.add(keyword)
@@ -145,6 +150,11 @@ class Protocol internal constructor(
             "Unable to remove a keyword that are in the protocol! Provided: $keyword"
         }
         _keywords.remove(keyword)
+    }
+
+    fun replaceKeywords(keywords: Set<String>) {
+        _keywords.addAll(keywords)
+        _keywords.removeIf { it !in keywords }
     }
 
     fun addInformationSource(searchSource: SearchSource) = _informationSources.add(searchSource)
@@ -159,6 +169,11 @@ class Protocol internal constructor(
         _informationSources.remove(informationSource)
     }
 
+    fun replaceInformationSources(informationSources: Set<SearchSource>) {
+        _informationSources.addAll(informationSources)
+        _informationSources.removeIf { it !in informationSources }
+    }
+
     fun addLanguage(language: Language) = _studiesLanguages.add(language)
 
     fun removeLanguage(language: Language) {
@@ -168,6 +183,12 @@ class Protocol internal constructor(
         }
         _studiesLanguages.remove(language)
     }
+
+    fun replaceLanguages(languages: Set<Language>) {
+        _studiesLanguages.addAll(languages)
+        _studiesLanguages.removeIf { it !in languages }
+    }
+
     fun addEligibilityCriterion(criterion: Criterion) = _eligibilityCriteria.add(criterion)
 
     fun removeEligibilityCriterion(criterion: Criterion) {
@@ -176,6 +197,11 @@ class Protocol internal constructor(
             "Unable to remove a criteria that has never been  defined in the protocol! Provided: $criterion"
         }
         _eligibilityCriteria.remove(criterion)
+    }
+
+    fun replaceEligibilityCriteria(criteria: Set<Criterion>) {
+        _eligibilityCriteria.addAll(criteria)
+        _eligibilityCriteria.removeIf { it !in criteria }
     }
 
     fun addExtractionQuestion(questionId: QuestionId) = _extractionQuestions.add(questionId)

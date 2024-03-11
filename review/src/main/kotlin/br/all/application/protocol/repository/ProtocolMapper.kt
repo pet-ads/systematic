@@ -1,6 +1,7 @@
 package br.all.application.protocol.repository
 
 import br.all.application.protocol.create.CreateProtocolService.RequestModel
+import br.all.application.protocol.update.UpdateProtocolService
 import br.all.domain.model.protocol.*
 import br.all.domain.model.protocol.Criterion.CriterionType
 import br.all.domain.model.question.QuestionId
@@ -61,7 +62,7 @@ fun Protocol.Companion.fromRequestModel(request: RequestModel) = with(request) {
                 .toSet(),
         ).followingDataCollectionProcess(dataCollectionProcess)
         .followingSynthesisProcess(analysisAndSynthesisProcess)
-        .withPICOC(picoc?.let { Picoc(it.population, it.intervention, it.control, it.outcome, it.context) })
+        .withPICOC(picoc?.let { Picoc.fromDto(it) })
         .build()
 }
 
@@ -96,5 +97,48 @@ fun Protocol.Companion.fromDto(dto: ProtocolDto) = write(SystematicStudyId(dto.s
         dto.robQuestions
             .map { QuestionId(dto.id) }
             .toSet(),
-    ).withPICOC(dto.picoc?.let { Picoc(it.population, it.intervention, it.control, it.outcome, it.context) })
+    ).withPICOC(dto.picoc?.let { Picoc.fromDto(it) })
     .build()
+
+fun Picoc.Companion.fromDto(dto: PicocDto) = Picoc(
+    dto.population,
+    dto.intervention,
+    dto.control,
+    dto.outcome,
+    dto.context,
+)
+
+fun Protocol.copyUpdates(request: UpdateProtocolService.RequestModel) = apply {
+    goal = request.goal ?: goal
+    justification = request.justification ?: justification
+    request.researchQuestions
+        .map { it.toResearchQuestion() }
+        .toSet()
+        .let { replaceResearchQuestions(it) }
+    replaceKeywords(request.keywords)
+
+    searchString = request.searchString ?: searchString
+    request.informationSources
+        .map { it.toSearchSource() }
+        .toSet()
+        .let { replaceInformationSources(it) }
+    sourcesSelectionCriteria = request.sourcesSelectionCriteria ?: sourcesSelectionCriteria
+    searchMethod = request.searchMethod ?: searchMethod
+
+    request.studiesLanguages
+        .map { Language(LangType.valueOf(it)) }
+        .toSet()
+        .let { replaceLanguages(it) }
+    studyTypeDefinition = request.studyTypeDefinition ?: studyTypeDefinition
+
+    selectionProcess = request.selectionProcess ?: selectionProcess
+    request.eligibilityCriteria
+        .map { (description, type) -> Criterion(description, CriterionType.valueOf(type)) }
+        .toSet()
+        .let { replaceEligibilityCriteria(it) }
+
+    dataCollectionProcess = request.dataCollectionProcess ?: dataCollectionProcess
+    analysisAndSynthesisProcess = request.analysisAndSynthesisProcess ?: analysisAndSynthesisProcess
+
+    picoc = request.picoc?.let { Picoc.fromDto(it) }
+}

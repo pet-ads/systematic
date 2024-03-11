@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import java.util.*
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @Tag("UnitTest")
@@ -262,6 +263,23 @@ class ProtocolTest {
                 sut.removeResearchQuestion(question)
                 assertEquals(0, sut.researchQuestions.size)
             }
+
+            @Test
+            fun `should replace all research questions of the protocol`() {
+                val keepingQuestion = ResearchQuestion(factory.text())
+                val oldQuestions = mutableSetOf(keepingQuestion).also { it.addAll(factory.researchQuestions()) }
+                val newQuestions = mutableSetOf(keepingQuestion).also { it.addAll(factory.researchQuestions()) }
+                val removingElements = oldQuestions - newQuestions
+                val sut = factory.createProtocol(researchQuestions = oldQuestions)
+
+                sut.replaceResearchQuestions(newQuestions)
+
+                assertAll(
+                    { assertContains(sut.researchQuestions, keepingQuestion) },
+                    { assertTrue(sut.researchQuestions.containsAll(newQuestions)) },
+                    { assertFalse(sut.researchQuestions.containsAll(removingElements) ) },
+                )
+            }
         }
 
         @Nested
@@ -319,6 +337,23 @@ class ProtocolTest {
 
                 sut.removeKeyword(removingKeyword)
                 assertEquals(0, sut.keywords.size)
+            }
+
+            @Test
+            fun `should replace all keywords of the protocol`() {
+                val keepingKeyword = factory.text()
+                val oldKeywords = mutableSetOf(keepingKeyword).also { it.addAll(factory.keywords(5)) }
+                val newKeywords = mutableSetOf(keepingKeyword).also { it.addAll(factory.keywords(5)) }
+                val removingElements = oldKeywords - newKeywords
+                val sut = factory.createProtocol(keywords = oldKeywords)
+
+                sut.replaceKeywords(newKeywords)
+
+                assertAll(
+                    { assertContains(sut.keywords, keepingKeyword) },
+                    { assertTrue(sut.keywords.containsAll(newKeywords)) },
+                    { assertFalse(sut.keywords.containsAll(removingElements)) },
+                )
             }
         }
 
@@ -383,6 +418,23 @@ class ProtocolTest {
                 sut.removeInformationSource(removingSource)
                 assertEquals(0, sut.informationSources.size)
             }
+
+            @Test
+            fun `should replaced every information source in the protocol`() {
+                val keepingSource = SearchSource(factory.text())
+                val oldSources = mutableSetOf(keepingSource).also { it.addAll(factory.informationSources()) }
+                val newSources = mutableSetOf(keepingSource).also { it.addAll(factory.informationSources()) }
+                val removingElements = oldSources - newSources
+                val sut = factory.createProtocol(informationSources = oldSources)
+
+                sut.replaceInformationSources(newSources)
+
+                assertAll(
+                    { assertContains(sut.informationSources, keepingSource) },
+                    { assertTrue { sut.informationSources.containsAll(newSources) } },
+                    { assertFalse { sut.informationSources.containsAll(removingElements) } },
+                )
+            }
         }
 
         @Nested
@@ -443,6 +495,22 @@ class ProtocolTest {
                 assertEquals(0, sut.studiesLanguages.size)
             }
 
+            @Test
+            fun `should replace all languages defined in the protocol`() {
+                val keepingLanguage = Language(LangType.ENGLISH)
+                val oldLanguages = mutableSetOf(keepingLanguage).also { it.addAll(factory.languages()) }
+                val newLanguages = mutableSetOf(keepingLanguage).also { it.addAll(factory.languages(10)) }
+                val removingLanguages = oldLanguages - newLanguages
+                val sut = factory.createProtocol(languages = oldLanguages)
+
+                sut.replaceLanguages(newLanguages)
+
+                assertAll(
+                    { assertContains(sut.studiesLanguages, keepingLanguage) },
+                    { assertTrue { sut.studiesLanguages.containsAll(newLanguages) } },
+                    { assertFalse { sut.studiesLanguages.containsAll(removingLanguages) } },
+                )
+            }
         }
 
         @Nested
@@ -501,6 +569,23 @@ class ProtocolTest {
 
                 sut.removeEligibilityCriterion(criterion)
                 assertTrue(sut.eligibilityCriteria.isEmpty())
+            }
+
+            @Test
+            fun `should replace all eligibility criteria in the protocol`() {
+                val keepingCriterion = Criterion.toInclude(factory.text())
+                val oldCriteria = mutableSetOf(keepingCriterion).also { it.addAll(factory.eligibilityCriteria()) }
+                val newCriteria = mutableSetOf(keepingCriterion).also { it.addAll(factory.eligibilityCriteria()) }
+                val removingCriteria = oldCriteria - newCriteria
+                val sut = factory.createProtocol(eligibilityCriteria = oldCriteria)
+
+                sut.replaceEligibilityCriteria(newCriteria)
+
+                assertAll(
+                    { assertContains(sut.eligibilityCriteria, keepingCriterion) },
+                    { assertTrue { sut.eligibilityCriteria.containsAll(newCriteria) } },
+                    { assertFalse { sut.eligibilityCriteria.containsAll(removingCriteria) } },
+                )
             }
         }
 
