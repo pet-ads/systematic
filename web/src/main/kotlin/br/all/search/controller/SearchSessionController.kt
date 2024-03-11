@@ -34,7 +34,7 @@ class SearchSessionController(
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping("/search-session")
+    @GetMapping
     fun findAllSearchSessions(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,

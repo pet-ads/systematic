@@ -40,8 +40,8 @@ class SearchSessionServicesConfiguration {
     fun findAllSessionService(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService,
-        findAllSearchSessionsPresenter: RestfulFindAllSearchSessionsPresenter
+        findAllSearchSessionsPresenter: RestfulFindAllSearchSessionsPresenter,
+        credentialsService: ResearcherCredentialsService
     ) = FindAllSearchSessionsServiceImpl (
         systematicStudyRepository, searchSessionRepository, credentialsService
     )
