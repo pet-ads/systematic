@@ -3,6 +3,7 @@ package br.all.infrastructure.search
 import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.domain.model.search.SearchSession
+import br.all.infrastructure.shared.toNullable
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -12,9 +13,9 @@ open class SearchSessionRepositoryImpl(val repository: MongoSearchSessionReposit
         repository.save(dto.toDocument())
     }
 
-    override fun findById(searchSessionId: UUID): SearchSessionDto? {
-        TODO("Not yet implemented")
-    }
+    override fun findById(searchSessionId: UUID): SearchSessionDto? =
+        repository.findById(searchSessionId).toNullable()?.toDto()
+
 
     override fun getSearchSessionBySource(systematicStudyId: UUID, source: String): SearchSession? {
         TODO("Not yet implemented")
