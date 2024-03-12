@@ -79,10 +79,17 @@ class SystematicStudyController(
     fun updateSystematicStudy(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
-        @RequestBody request: UpdateRequestModel,
+        @RequestBody request: PutRequest,
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateSystematicStudyPresenter()
-        updateSystematicStudyService.update(presenter, researcherId, systematicStudyId, request)
+        val requestModel = request.toUpdateRequestModel(researcherId, systematicStudyId)
+
+        updateSystematicStudyService.update(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    data class PutRequest(val title: String?, val description: String?) {
+        fun toUpdateRequestModel(researcherId: UUID, systematicStudyId: UUID) =
+            UpdateRequestModel(researcherId, systematicStudyId, title, description)
     }
 }
