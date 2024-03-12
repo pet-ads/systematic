@@ -14,7 +14,7 @@ interface FindSearchSessionService {
     )
 
     data class ResponseModel(
-        val sessionId: UUID,
+        val researcherId: UUID,
         val content: SearchSessionDto
     )
 }
