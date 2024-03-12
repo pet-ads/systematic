@@ -1,4 +1,4 @@
-package br.all.application.search.create
+package br.all.application.search
 
 import br.all.domain.model.protocol.SearchSource
 import br.all.domain.model.review.SystematicStudyId
