@@ -18,8 +18,7 @@ open class SystematicStudyRepositoryImpl(
         .toNullable()
         ?.toDto()
 
-    override fun findAllByCollaborator(researcherId: UUID) = innerRepository.findAll()
-        .filter { researcherId in it.collaborators }
+    override fun findAllByCollaborator(researcherId: UUID) = innerRepository.findAllByCollaboratorsContaining(researcherId)
         .map { it.toDto() }
 
     override fun findAllByCollaboratorAndOwner(collaborator: UUID, owner: UUID) = findAllByCollaborator(collaborator)
