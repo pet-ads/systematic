@@ -21,6 +21,10 @@ class MongoSystematicStudyRepositoryTest(
         testDataFactory = TestDataFactory()
         sut.deleteAll()
     }
+
+    @AfterEach
+    fun tearDown() = sut.deleteAll()
+
     @Nested
     @Tag("ValidClasses")
     @DisplayName("When the CRUD is succeed")
