@@ -10,3 +10,12 @@ fun SearchSessionDto.toDocument() = SearchSessionDocument(
     timestamp,
     source
 )
+
+fun SearchSessionDocument.toDto() = SearchSessionDto(
+    id,
+    systematicStudyId,
+    searchString,
+    additionalInfo,
+    timestamp,
+    source
+)
