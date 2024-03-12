@@ -84,6 +84,25 @@ class MongoSystematicStudyRepositoryTest(
         }
 
         @Test
+        fun `should find all systematic studies of a collaborator and a owner`() {
+            val (owner, _, collaborator) = testDataFactory
+
+            sut.save(
+                testDataFactory.createSystematicStudyDocument(id = UUID.randomUUID(), collaborators = mutableSetOf(collaborator))
+            )
+            sut.save(
+                testDataFactory.createSystematicStudyDocument(id = UUID.randomUUID(), collaborators = mutableSetOf(collaborator))
+            )
+            sut.save(
+                testDataFactory.createSystematicStudyDocument(id = UUID.randomUUID(), collaborators = mutableSetOf(collaborator))
+            )
+            sut.save(testDataFactory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = owner))
+            sut.save(testDataFactory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = collaborator))
+
+            assertEquals(3, sut.findAllByCollaboratorsContainingAndOwner(collaborator, owner).size)
+        }
+
+        @Test
         fun `should delete a systematic study`() {
             val systematicStudyId = UUID.randomUUID()
             val document = testDataFactory.createSystematicStudyDocument(systematicStudyId)
