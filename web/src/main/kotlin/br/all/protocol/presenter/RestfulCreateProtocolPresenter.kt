@@ -17,7 +17,8 @@ class RestfulCreateProtocolPresenter: CreateProtocolPresenter {
         val (researcher, systematicStudy) = response
         val viewModel = ViewModel(researcher, systematicStudy)
 
-        val link = linkTo<ProtocolController> { findById(researcher, systematicStudy) }.withSelfRel()
+        val link = linkTo<ProtocolController> {
+            findById(researcher, systematicStudy) }.withSelfRel()
         viewModel.add(link)
 
         responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(viewModel)
