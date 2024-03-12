@@ -8,7 +8,9 @@ import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -29,6 +31,8 @@ class SearchSessionControllerTest(
     private lateinit var researcherId: UUID
 
     fun postUrl() = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-session"
+    fun findUrl(sessionId: String = "") =
+        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-session${sessionId}"
 
     @BeforeEach
     fun setUp() {
@@ -92,6 +96,34 @@ class SearchSessionControllerTest(
             mockMvc.perform(multipart(postUrl()).file(factory.bibfile()).param("data", factory.invalidPostRequest()))
                 .andExpect(status().isNotFound)
                 .andReturn()
+        }
+    }
+
+    @Nested
+    @DisplayName("When finding a search session")
+    inner class FindTests {
+        @Test
+        fun `should find the search session and return 200`() {
+
+            val searchSession = factory.searchSessionDocument(factory.sessionId, systematicStudyId)
+            repository.insert(searchSession)
+
+            val sessionId = "/${searchSession.id}"
+            mockMvc.perform(MockMvcRequestBuilders.get(findUrl(sessionId)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(searchSession.id.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+        }
+
+        @Test
+        fun `should return 404 if don't find the search session`() {
+            mockMvc.perform(MockMvcRequestBuilders.get(findUrl(factory.nonExistentSessionId.toString())).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound)
+        }
+        @Test
+        fun `should return 400 if search session id is in a invalid format`() {
+            mockMvc.perform(MockMvcRequestBuilders.get(findUrl("/-1")).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest)
         }
     }
 }
