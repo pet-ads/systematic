@@ -7,4 +7,6 @@ interface MongoSystematicStudyRepository: MongoRepository<SystematicStudyDocumen
     fun findAllByCollaboratorsContaining(collaborator: UUID): List<SystematicStudyDocument>
 
     fun findAllByCollaboratorsContainingAndOwner(collaborator: UUID, owner: UUID): List<SystematicStudyDocument>
+
+    fun existsByIdAndCollaboratorsContaining(id: UUID, collaborator: UUID): Boolean
 }

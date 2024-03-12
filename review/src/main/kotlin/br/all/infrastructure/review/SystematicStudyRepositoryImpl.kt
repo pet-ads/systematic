@@ -30,7 +30,6 @@ open class SystematicStudyRepositoryImpl(
 
     override fun existsById(id: UUID) = innerRepository.existsById(id)
 
-    override fun hasReviewer(reviewId: UUID, researcherId: UUID) = innerRepository.findById(reviewId)
-        .toNullable()
-        ?.let { researcherId in it.collaborators } ?: false
+    override fun hasReviewer(reviewId: UUID, researcherId: UUID) =
+        innerRepository.existsByIdAndCollaboratorsContaining(reviewId, researcherId)
 }
