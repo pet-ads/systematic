@@ -1,7 +1,9 @@
 package br.all.search.controller
 
 import br.all.application.search.create.CreateSearchSessionService
+import br.all.application.search.find.service.FindSearchSessionService
 import br.all.search.presenter.RestfulCreateSearchSessionPresenter
+import br.all.search.presenter.RestfulFindSearchSessionPresenter
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,6 +16,7 @@ import br.all.application.search.create.CreateSearchSessionService.RequestModel 
 @RequestMapping("api/v1/researcher/{researcherId}/systematic-study/{systematicStudyId}/search-session")
 class SearchSessionController(
     val createService : CreateSearchSessionService,
+    val findOneService: FindSearchSessionService,
     val mapper: ObjectMapper
 ) {
 
@@ -36,6 +39,9 @@ class SearchSessionController(
         @PathVariable systematicStudyId: UUID,
         @PathVariable sessionId: UUID,
     ): ResponseEntity<*> {
-        return ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED)
+        val presenter = RestfulFindSearchSessionPresenter()
+        val request = FindSearchSessionService.RequestModel(researcherId, systematicStudyId, sessionId)
+        findOneService.findOneSession(presenter, request)
+        return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
