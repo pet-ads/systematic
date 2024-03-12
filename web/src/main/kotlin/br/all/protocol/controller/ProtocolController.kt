@@ -1,6 +1,7 @@
 package br.all.protocol.controller
 
 import br.all.application.protocol.find.FindOneProtocolService
+import br.all.application.protocol.repository.CriterionDto
 import br.all.application.protocol.repository.PicocDto
 import br.all.application.protocol.update.UpdateProtocolService
 import br.all.protocol.presenter.RestfulFindOneProtocolPresenter
@@ -54,7 +55,7 @@ class ProtocolController(
         val studyTypeDefinition: String? = null,
 
         val selectionProcess: String? = null,
-        val eligibilityCriteria: Set<Pair<String, String>> = emptySet(),
+        val eligibilityCriteria: Set<CriterionDto> = emptySet(),
 
         val dataCollectionProcess: String? = null,
         val analysisAndSynthesisProcess: String? = null,

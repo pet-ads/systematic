@@ -26,7 +26,7 @@ fun Protocol.toDto() = ProtocolDto(
     studyTypeDefinition = studyTypeDefinition,
 
     selectionProcess = selectionProcess,
-    eligibilityCriteria = eligibilityCriteria.map { it.description to it.type.name }
+    eligibilityCriteria = eligibilityCriteria.map { it.toDto() }
         .toSet(),
 
     dataCollectionProcess = dataCollectionProcess,
@@ -39,6 +39,8 @@ fun Protocol.toDto() = ProtocolDto(
 )
 
 fun Picoc.toDto() = PicocDto(population, intervention, control, outcome, context)
+
+fun Criterion.toDto() = CriterionDto(description, type.name)
 
 fun Protocol.Companion.fromDto(dto: ProtocolDto) = write(SystematicStudyId(dto.systematicStudy), dto.keywords)
     .researchesFor(dto.goal).because(dto.justification)
@@ -59,7 +61,7 @@ fun Protocol.Companion.fromDto(dto: ProtocolDto) = write(SystematicStudyId(dto.s
     ).followingSelectionProcess(dto.selectionProcess)
     .withEligibilityCriteria(
         dto.eligibilityCriteria
-            .map { (description, type) -> Criterion(description, CriterionType.valueOf(type)) }
+            .map { Criterion.fromDto(it) }
             .toSet(),
     ).followingDataCollectionProcess(dto.dataCollectionProcess)
     .extractDataByAnswering(
@@ -81,6 +83,8 @@ fun Picoc.Companion.fromDto(dto: PicocDto) = Picoc(
     dto.outcome,
     dto.context,
 )
+
+fun Criterion.Companion.fromDto(dto: CriterionDto) = Criterion(dto.description, CriterionType.valueOf(dto.type))
 
 fun Protocol.copyUpdates(request: UpdateProtocolService.RequestModel) = apply {
     goal = request.goal ?: goal
@@ -107,7 +111,7 @@ fun Protocol.copyUpdates(request: UpdateProtocolService.RequestModel) = apply {
 
     selectionProcess = request.selectionProcess ?: selectionProcess
     request.eligibilityCriteria
-        .map { (description, type) -> Criterion(description, CriterionType.valueOf(type)) }
+        .map { Criterion.fromDto(it) }
         .toSet()
         .let { replaceEligibilityCriteria(it) }
 

@@ -33,7 +33,7 @@ class TestDataFactory {
         studyTypeDefinition: String? = null,
 
         selectionProcess: String? = null,
-        eligibilityCriteria: Set<Pair<String, String>> = emptySet(),
+        eligibilityCriteria: Set<CriterionDto> = emptySet(),
 
         dataCollectionProcess: String? = null,
         extractionQuestions: Set<UUID> = emptySet(),
@@ -101,7 +101,7 @@ class TestDataFactory {
         studyTypeDefinition: String? = text(),
 
         selectionProcess: String? = text(),
-        eligibilityCriteria: Set<Pair<String, String>> = emptySet(),
+        eligibilityCriteria: Set<CriterionDto> = emptySet(),
 
         dataCollectionProcess: String? = text(),
         analysisAndSynthesisProcess: String? = text(),

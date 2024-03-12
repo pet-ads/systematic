@@ -1,5 +1,7 @@
 package br.all.protocol.shared
 
+import br.all.application.protocol.repository.CriterionDto
+import br.all.application.protocol.repository.PicocDto
 import br.all.domain.shared.utils.paragraph
 import br.all.domain.shared.utils.paragraphList
 import br.all.infrastructure.protocol.ProtocolDocument
@@ -26,16 +28,12 @@ class TestDataFactory {
         studiesLanguages: Set<String> = emptySet(),
         studyTypeDefinition: String? = faker.paragraph(5),
         selectionProcess: String? = faker.paragraph(5),
-        selectionCriteria: Set<Pair<String, String>> = List(5) { faker.paragraph(5) to "INCLUSION" }.toSet(),
+        selectionCriteria: Set<CriterionDto> = eligibilityCriteria(),
         dataCollectionProcess: String? = faker.paragraph(5),
         analysisAndSynthesisProcess: String? = faker.paragraph(5),
         extractionQuestions: Set<UUID> = List(5) { UUID.randomUUID() }.toSet(),
         robQuestions: Set<UUID> = List(5) { UUID.randomUUID() }.toSet(),
-        population: String? = null,
-        intervention: String? = null,
-        control: String? = null,
-        outcome: String? = null,
-        context: String? = null,
+        picoc: PicocDto? = null,
     ) = ProtocolDocument(
         id,
 
@@ -61,12 +59,12 @@ class TestDataFactory {
         extractionQuestions,
         robQuestions,
     
-        population,
-        intervention,
-        control,
-        outcome,
-        context,
+        picoc,
     )
+
+    private fun eligibilityCriteria() = List(5) {
+        CriterionDto(faker.paragraph(5), faker.random.randomValue(listOf("INCLUSION", "EXCLUSION")))
+    }.toSet()
 
     fun validPutRequest(
         goal: String? = faker.paragraph(10),
@@ -83,7 +81,7 @@ class TestDataFactory {
         studyTypeDefinition: String? = faker.paragraph(10),
 
         selectionProcess: String? = faker.paragraph(10),
-        eligibilityCriteria: Set<Pair<String, String>> = emptySet(),
+        eligibilityCriteria: Set<CriterionDto> = emptySet(),
 
         dataCollectionProcess: String? = faker.paragraph(10),
         analysisAndSynthesisProcess: String? = faker.paragraph(10),
