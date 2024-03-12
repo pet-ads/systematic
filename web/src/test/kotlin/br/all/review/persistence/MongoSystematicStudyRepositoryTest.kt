@@ -26,7 +26,7 @@ class MongoSystematicStudyRepositoryTest(
     @DisplayName("When the CRUD is succeed")
     inner class WhenTheCrudIsSucceed {
         @Test
-        fun `Should save a new systematic study`() {
+        fun `should save a new systematic study`() {
             val systematicStudyId = UUID.randomUUID()
             val document = testDataFactory.createSystematicStudyDocument(systematicStudyId)
 
@@ -35,7 +35,7 @@ class MongoSystematicStudyRepositoryTest(
         }
 
         @Test
-        fun `Should update an existent systematic study`() {
+        fun `should update an existent systematic study`() {
             val systematicStudyId = UUID.randomUUID()
             val ownerId = UUID.randomUUID()
             val oldDocument = testDataFactory.createSystematicStudyDocument(id = systematicStudyId, owner = ownerId)
@@ -54,7 +54,7 @@ class MongoSystematicStudyRepositoryTest(
         }
 
         @Test
-        fun `Should find a existent systematic study`() {
+        fun `should find a existent systematic study`() {
             val systematicStudyId = UUID.randomUUID()
             val document = testDataFactory.createSystematicStudyDocument(systematicStudyId)
 
@@ -63,7 +63,7 @@ class MongoSystematicStudyRepositoryTest(
         }
 
         @Test
-        fun `Should find all existent systematic study`() {
+        fun `should find all existent systematic study`() {
             sut.save(testDataFactory.createSystematicStudyDocument(id = UUID.randomUUID()))
             sut.save(testDataFactory.createSystematicStudyDocument(id = UUID.randomUUID()))
             sut.save(testDataFactory.createSystematicStudyDocument(id = UUID.randomUUID()))
@@ -72,7 +72,7 @@ class MongoSystematicStudyRepositoryTest(
         }
 
         @Test
-        fun `Should delete a systematic study`() {
+        fun `should delete a systematic study`() {
             val systematicStudyId = UUID.randomUUID()
             val document = testDataFactory.createSystematicStudyDocument(systematicStudyId)
 
@@ -88,12 +88,12 @@ class MongoSystematicStudyRepositoryTest(
     @DisplayName("When being unable to retrieve data from the repository")
     inner class WhenBeingUnableToRetrieveDataFromTheRepository {
         @Test
-        fun `Should not find a systematic study that does not exist`() {
+        fun `should not find a systematic study that does not exist`() {
             assertNull(sut.findById(UUID.randomUUID()).toNullable())
         }
 
         @Test
-        fun `Should not find any systematic study`() {
+        fun `should not find any systematic study`() {
             assertEquals(0, sut.findAll().size)
         }
     }
