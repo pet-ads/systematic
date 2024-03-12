@@ -149,5 +149,16 @@ class MongoSystematicStudyRepositoryTest(
 
             assertEquals(0, sut.findAllByCollaboratorsContaining(researcher).size)
         }
+        
+        @Test
+        fun `should not find any systematic study if there is none with such collaborator and owner`() {
+            val (owner, _, collaborator) = testDataFactory
+
+            sut.save(testDataFactory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = owner))
+            sut.save(testDataFactory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = collaborator))
+            sut.save(testDataFactory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
+
+            assertEquals(0, sut.findAllByCollaboratorsContainingAndOwner(collaborator, owner).size)
+        }
     }
 }
