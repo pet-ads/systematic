@@ -103,6 +103,13 @@ class MongoSystematicStudyRepositoryTest(
         }
 
         @Test
+        fun `should find out that a study with a collaborator and id exists`() {
+            val (researcher, systematicStudy) = testDataFactory
+            sut.save(testDataFactory.createSystematicStudyDocument())
+            assertTrue(sut.existsByIdAndCollaboratorsContaining(systematicStudy, researcher))
+        }
+
+        @Test
         fun `should delete a systematic study`() {
             val systematicStudyId = UUID.randomUUID()
             val document = testDataFactory.createSystematicStudyDocument(systematicStudyId)
