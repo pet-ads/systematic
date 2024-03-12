@@ -1,5 +1,7 @@
-package br.all.application.search
+package br.all.application.search.util
 
+import br.all.application.search.find.service.FindSearchSessionService
+import br.all.application.search.repository.SearchSessionDto
 import br.all.domain.model.protocol.SearchSource
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSession
@@ -50,7 +52,40 @@ class TestDataFactory {
         systematicStudyId: UUID = this.systematicStudyId,
         sessionId: UUID = this.searchSessionId,
     ) = CreateResponseModel(researcherId, systematicStudyId, sessionId)
-    
+
+    fun findOneRequestModel(
+        researcherId: UUID = this.researcherId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        sessionId: UUID = this.searchSessionId
+    ) = FindSearchSessionService.RequestModel(
+        researcherId,
+        systematicStudyId,
+        sessionId
+    )
+
+    fun generateDto(
+        id: UUID,
+        systematicStudyId: UUID = this.systematicStudyId,
+        searchString: String = "SearchString",
+        additionalInfo: String = "Additional Info",
+        timeStamp: LocalDateTime = LocalDateTime.of(2022, 1, 1, 0, 0),
+        source: String = "SearchSource"
+    ) = SearchSessionDto(
+        id,
+        systematicStudyId,
+        searchString,
+        additionalInfo,
+        timeStamp,
+        source
+    )
+
+    fun findOneResponseModel(
+        researcherId: UUID = this.researcherId,
+    ) = FindSearchSessionService.ResponseModel(
+        researcherId,
+        (generateDto(id = this.searchSessionId, timeStamp = LocalDateTime.of(2022, 1, 1, 0, 0)))
+    )
+
     fun bibFileContent() =
         """
             @ARTICLE{Gruneberg202458,
