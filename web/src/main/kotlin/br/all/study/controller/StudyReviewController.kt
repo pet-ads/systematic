@@ -10,6 +10,9 @@ import br.all.application.study.update.implementation.UpdateStudyReviewSelection
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.study.presenter.*
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.data.mongodb.core.query.Update
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -38,6 +41,11 @@ class StudyReviewController(
 ) {
 
     @PostMapping("/study-review")
+    @Operation(summary = "Create a study review")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Successful Operation"),
+        ApiResponse(responseCode = "400", description = "Failed Operation for invalid study review"),
+    ])
     fun createStudyReview(
         @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
@@ -49,6 +57,11 @@ class StudyReviewController(
     }
 
     @PutMapping("/study-review")
+    @Operation(summary = "Update a study review")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation"),
+        ApiResponse(responseCode = "400", description = "Failed Operation for invalid status"),
+    ])
     fun updateStudyReview(
         @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
@@ -60,6 +73,10 @@ class StudyReviewController(
     }
 
     @GetMapping("/study-review")
+    @Operation(summary = "Find all study reviews")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation, either found all studies or found none"),
+    ])
     fun findAllStudyReviews(
         @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
@@ -71,6 +88,10 @@ class StudyReviewController(
     }
 
     @GetMapping("/search-source/{searchSource}")
+    @Operation(summary = "Find all study reviews using the searchSource")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation"),
+    ])
     fun findAllStudyReviewsBySource(
         @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
@@ -83,6 +104,11 @@ class StudyReviewController(
     }
 
     @GetMapping("/study-review/{studyReview}")
+    @Operation(summary = "Find a study review")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation"),
+        ApiResponse(responseCode = "404", description = "Could not find study review"),
+    ])
     fun findStudyReview(
         @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
@@ -95,6 +121,11 @@ class StudyReviewController(
     }
 
     @PatchMapping("/study-review/{studyReview}/selection-status")
+    @Operation(summary = "Update a study review selection status")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation"),
+        ApiResponse(responseCode = "400", description = "Failed Operation for invalid status"),
+    ])
     fun updateStudyReviewSelectionStatus(
         @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
@@ -107,6 +138,11 @@ class StudyReviewController(
     }
 
     @PatchMapping("/study-review/{studyReview}/extraction-status")
+    @Operation(summary = "Update a study review extraction status")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation"),
+        ApiResponse(responseCode = "400", description = "Failed Operation for invalid status"),
+    ])
     fun updateStudyReviewExtractionStatus(
         @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
@@ -119,6 +155,11 @@ class StudyReviewController(
     }
 
     @PatchMapping("/study-review/{studyReview}/reading-priority")
+    @Operation(summary = "Update a study review reading priority")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation"),
+        ApiResponse(responseCode = "400", description = "Failed Operation for invalid status"),
+    ])
     fun updateStudyReviewReadingPriority(
         @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
@@ -131,6 +172,11 @@ class StudyReviewController(
     }
 
     @PatchMapping("/study-review/{studyReviewIdToKeep}/duplicated/{studyReviewToMarkAsDuplicated}")
+    @Operation(summary = "Mark a study review as duplicated")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation"),
+        ApiResponse(responseCode = "404", description = "Failed Operation for could not find study review to mark as duplicated or to be updated"),
+    ])
     fun markAsDuplicated(
         @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,

@@ -9,6 +9,9 @@ import br.all.review.presenter.RestfulCreateSystematicStudyPresenter
 import br.all.review.presenter.RestfulFindAllSystematicStudiesPresenter
 import br.all.review.presenter.RestfulFindOneSystematicStudyPresenter
 import br.all.review.presenter.RestfulUpdateSystematicStudyPresenter
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -25,7 +28,27 @@ class SystematicStudyController(
     private val findAllSystematicStudiesService: FindAllSystematicStudiesService,
     private val updateSystematicStudyService: UpdateSystematicStudyService,
 ) {
+
+    data class PostRequest(
+        val title: String,
+        val description: String,
+        val collaborators: Set<UUID>,
+    ) {
+        fun toCreateRequestModel(researcherId: UUID) =
+            CreateRequestModel(researcherId, title, description, collaborators)
+    }
+
+    data class PutRequest(val title: String?, val description: String?) {
+        fun toUpdateRequestModel(researcherId: UUID, systematicStudyId: UUID) =
+            UpdateRequestModel(researcherId, systematicStudyId, title, description)
+    }
+
     @PostMapping
+    @Operation(summary = "Create a systematic study")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Successful Operation"),
+        ApiResponse(responseCode = "400", description = "Failed Operation for invalid systematic study"),
+    ])
     fun postSystematicStudy(
         @PathVariable researcherId: UUID,
         @RequestBody request: PostRequest,
@@ -37,15 +60,13 @@ class SystematicStudyController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    data class PostRequest(
-        val title: String,
-        val description: String,
-        val collaborators: Set<UUID>,
-    ) {
-        fun toCreateRequestModel(researcherId: UUID) = CreateRequestModel(researcherId, title, description, collaborators)
-    }
-
     @GetMapping("/{systematicStudyId}")
+    @Operation(summary = "Find a systematic study")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation"),
+        ApiResponse(responseCode = "404", description = "Failed Operation for nonexistent systematic study"),
+        ApiResponse(responseCode = "403", description = "Failed Operation for not authorized researcher")
+    ])
     fun findSystematicStudy(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -57,13 +78,25 @@ class SystematicStudyController(
     }
 
     @GetMapping
+    @Operation(summary = "Find all systematic studies of a researcher")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation"),
+        ApiResponse(responseCode = "404", description = "Failed Operation for nonexistent systematic study"),
+        ApiResponse(responseCode = "403", description = "Failed Operation for not authorized researcher")
+    ])
     fun findAllSystematicStudies(@PathVariable researcherId: UUID): ResponseEntity<*> {
         val presenter = RestfulFindAllSystematicStudiesPresenter()
         findAllSystematicStudiesService.findAllByCollaborator(presenter, researcherId)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
-    
+
     @GetMapping("/owner/{ownerId}")
+    @Operation(summary = "Find all systematic studies of a owner")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation"),
+        ApiResponse(responseCode = "404", description = "Failed Operation for nonexistent systematic study"),
+        ApiResponse(responseCode = "403", description = "Failed Operation for not authorized owner")
+    ])
     fun findAllSystematicStudiesByOwner(
         @PathVariable researcherId: UUID,
         @PathVariable ownerId: UUID,
@@ -76,6 +109,11 @@ class SystematicStudyController(
     }
 
     @PutMapping("/{systematicStudyId}")
+    @Operation(summary = "Update a systematic study")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful Operation"),
+        ApiResponse(responseCode = "404", description = "Failed Operation for nonexistent systematic study"),
+    ])
     fun updateSystematicStudy(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -86,10 +124,5 @@ class SystematicStudyController(
 
         updateSystematicStudyService.update(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
-    }
-
-    data class PutRequest(val title: String?, val description: String?) {
-        fun toUpdateRequestModel(researcherId: UUID, systematicStudyId: UUID) =
-            UpdateRequestModel(researcherId, systematicStudyId, title, description)
     }
 }
