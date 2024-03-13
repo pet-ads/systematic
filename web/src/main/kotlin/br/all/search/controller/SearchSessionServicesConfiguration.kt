@@ -3,13 +3,13 @@ package br.all.search.controller
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.CreateSearchSessionServiceImpl
+import br.all.application.search.find.service.FindSearchSessionServiceImpl
 import br.all.application.search.find.service.FindAllSearchSessionsServiceImpl
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.domain.services.BibtexConverterService
 import br.all.domain.services.IdGeneratorService
 import br.all.domain.services.UuidGeneratorService
-import br.all.search.presenter.RestfulFindAllSearchSessionsPresenter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -37,10 +37,20 @@ class SearchSessionServicesConfiguration {
     )
 
     @Bean
+    fun findSearchSession(
+        searchSessionRepository: SearchSessionRepository,
+        systematicStudyRepository: SystematicStudyRepository,
+        credentialsService: ResearcherCredentialsService
+    ) = FindSearchSessionServiceImpl (
+        systematicStudyRepository,
+        searchSessionRepository,
+        credentialsService
+    )
+
+    @Bean
     fun findAllSessionService(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        findAllSearchSessionsPresenter: RestfulFindAllSearchSessionsPresenter,
         credentialsService: ResearcherCredentialsService
     ) = FindAllSearchSessionsServiceImpl (
         systematicStudyRepository, searchSessionRepository, credentialsService

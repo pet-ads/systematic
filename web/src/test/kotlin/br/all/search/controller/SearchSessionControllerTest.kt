@@ -1,19 +1,14 @@
 package br.all.search.controller
 
-import br.all.application.search.find.service.FindAllSearchSessionsService
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.search.MongoSearchSessionRepository
 import br.all.infrastructure.study.MongoStudyReviewRepository
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
-import br.all.search.presenter.RestfulFindAllSearchSessionsPresenter
 import org.junit.jupiter.api.*
-import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
@@ -108,6 +103,30 @@ class SearchSessionControllerTest(
     @Nested
     @DisplayName("When finding a search session")
     inner class FindTests {
+        @Test
+        fun `should find the search session and return 200`() {
+
+            val searchSession = factory.searchSessionDocument(factory.sessionId, systematicStudyId)
+            repository.insert(searchSession)
+
+            val sessionId = "/${searchSession.id}"
+            mockMvc.perform(MockMvcRequestBuilders.get(findUrl(sessionId)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(searchSession.id.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+        }
+
+        @Test
+        fun `should return 404 if don't find the search session`() {
+            mockMvc.perform(MockMvcRequestBuilders.get(findUrl(factory.nonExistentSessionId.toString())).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound)
+        }
+        @Test
+        fun `should return 400 if search session id is in a invalid format`() {
+            mockMvc.perform(MockMvcRequestBuilders.get(findUrl("/-1")).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest)
+        }
+
         @Test
         fun `should find all the search sessions and return 200`(){
             val id1= UUID.randomUUID()

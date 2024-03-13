@@ -1,8 +1,7 @@
 package br.all.application.search.util
 
-import br.all.application.review.find.services.FindAllSystematicStudiesService
-import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.search.find.service.FindAllSearchSessionsService
+import br.all.application.search.find.service.FindSearchSessionService
 import br.all.application.search.repository.SearchSessionDto
 import br.all.domain.model.protocol.SearchSource
 import br.all.domain.model.review.SystematicStudyId
@@ -55,13 +54,20 @@ class TestDataFactory {
         sessionId: UUID = this.searchSessionId,
     ) = CreateResponseModel(researcherId, systematicStudyId, sessionId)
 
+    fun findOneRequestModel(
+        researcherId: UUID = this.researcherId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        sessionId: UUID = this.searchSessionId
+    ) = FindSearchSessionService.RequestModel(
+        researcherId,
+        systematicStudyId,
+        sessionId
+    )
+
     fun findAllRequestModel(
         researcherId: UUID = this.researcherId,
         systematicStudyId: UUID = this.systematicStudyId,
-    ) = FindAllSearchSessionsService.RequestModel(
-        researcherId,
-        systematicStudyId
-    )
+    ) = FindAllSearchSessionsService.RequestModel(researcherId, systematicStudyId)
 
     fun generateDto(
         id: UUID,
@@ -79,13 +85,25 @@ class TestDataFactory {
         source
     )
 
+    fun findOneResponseModel(
+        researcherId: UUID = this.researcherId,
+    ) = FindSearchSessionService.ResponseModel(
+        researcherId,
+        (generateDto(id = this.searchSessionId, timeStamp = LocalDateTime.of(2022, 1, 1, 0, 0)))
+    )
+
     fun findAllResponseModel(
         amountOfSearchSessions: Int,
         researcherId: UUID = this.researcherId,
     ) = FindAllSearchSessionsService.ResponseModel(
         researcherId,
         systematicStudyId,
-        List(amountOfSearchSessions) { generateDto(id = UUID.randomUUID(), timeStamp = LocalDateTime.of(2022, 1, 1, 0, 0))}
+        List(amountOfSearchSessions) {
+            generateDto(
+                id = UUID.randomUUID(),
+                timeStamp = LocalDateTime.of(2022, 1, 1, 0, 0)
+            )
+        }
     )
 
     fun emptyFindAllResponseModel(
@@ -95,7 +113,7 @@ class TestDataFactory {
         systematicStudyId,
         searchSessions = emptyList(),
     )
-    
+
     fun bibFileContent() =
         """
             @ARTICLE{Gruneberg202458,

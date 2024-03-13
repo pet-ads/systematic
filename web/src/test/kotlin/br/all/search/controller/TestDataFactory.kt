@@ -14,6 +14,8 @@ import java.util.*
 class TestDataFactory {
     val researcherId: UUID = UUID.randomUUID()
     val systematicStudyId: UUID = UUID.randomUUID()
+    val sessionId: UUID = UUID.randomUUID()
+    val nonExistentSessionId: UUID = UUID.randomUUID()
     private val faker = Faker()
 
     fun validPostRequest(researcher: UUID = this.researcherId, systematicStudyId: UUID = this.systematicStudyId) =
@@ -103,5 +105,4 @@ class TestDataFactory {
             searchSource,
         )
     }
-
 }
