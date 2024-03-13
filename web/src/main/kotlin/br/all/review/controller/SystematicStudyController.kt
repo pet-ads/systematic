@@ -25,6 +25,21 @@ class SystematicStudyController(
     private val findAllSystematicStudiesService: FindAllSystematicStudiesService,
     private val updateSystematicStudyService: UpdateSystematicStudyService,
 ) {
+
+    data class PostRequest(
+        val title: String,
+        val description: String,
+        val collaborators: Set<UUID>,
+    ) {
+        fun toCreateRequestModel(researcherId: UUID) =
+            CreateRequestModel(researcherId, title, description, collaborators)
+    }
+
+    data class PutRequest(val title: String?, val description: String?) {
+        fun toUpdateRequestModel(researcherId: UUID, systematicStudyId: UUID) =
+            UpdateRequestModel(researcherId, systematicStudyId, title, description)
+    }
+
     @PostMapping
     fun postSystematicStudy(
         @PathVariable researcherId: UUID,
@@ -35,14 +50,6 @@ class SystematicStudyController(
 
         createSystematicStudyService.create(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
-    }
-
-    data class PostRequest(
-        val title: String,
-        val description: String,
-        val collaborators: Set<UUID>,
-    ) {
-        fun toCreateRequestModel(researcherId: UUID) = CreateRequestModel(researcherId, title, description, collaborators)
     }
 
     @GetMapping("/{systematicStudyId}")
@@ -62,7 +69,7 @@ class SystematicStudyController(
         findAllSystematicStudiesService.findAllByCollaborator(presenter, researcherId)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
-    
+
     @GetMapping("/owner/{ownerId}")
     fun findAllSystematicStudiesByOwner(
         @PathVariable researcherId: UUID,
@@ -86,10 +93,5 @@ class SystematicStudyController(
 
         updateSystematicStudyService.update(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
-    }
-
-    data class PutRequest(val title: String?, val description: String?) {
-        fun toUpdateRequestModel(researcherId: UUID, systematicStudyId: UUID) =
-            UpdateRequestModel(researcherId, systematicStudyId, title, description)
     }
 }
