@@ -12,6 +12,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.*
@@ -124,6 +125,33 @@ class SearchSessionControllerTest(
         fun `should return 400 if search session id is in a invalid format`() {
             mockMvc.perform(MockMvcRequestBuilders.get(findUrl("/-1")).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest)
+        }
+
+        @Test
+        fun `should find all the search sessions and return 200`(){
+            val id1= UUID.randomUUID()
+            val id2= UUID.randomUUID()
+            val id3= UUID.randomUUID()
+            val wrongSystematicStudyId = UUID.randomUUID()
+
+            repository.insert(factory.searchSessionDocument(id1, systematicStudyId))
+            repository.insert(factory.searchSessionDocument(id2, systematicStudyId))
+            repository.insert(factory.searchSessionDocument(id3, wrongSystematicStudyId))
+
+            mockMvc.perform(MockMvcRequestBuilders.get(findUrl()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(2))
+        }
+
+        @Test
+        fun `should return empty list and return 200 if no search session is found`() {
+            mockMvc.perform(MockMvcRequestBuilders.get(findUrl()).contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.searchSessions").isEmpty())
         }
     }
 }

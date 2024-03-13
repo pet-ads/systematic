@@ -3,8 +3,8 @@ package br.all.search.controller
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.CreateSearchSessionServiceImpl
-import br.all.application.search.find.presenter.FindSearchSessionPresenter
 import br.all.application.search.find.service.FindSearchSessionServiceImpl
+import br.all.application.search.find.service.FindAllSearchSessionsServiceImpl
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.domain.services.BibtexConverterService
@@ -40,9 +40,19 @@ class SearchSessionServicesConfiguration {
     fun findSearchSession(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        findSearchSessionPresenter: FindSearchSessionPresenter,
         credentialsService: ResearcherCredentialsService
     ) = FindSearchSessionServiceImpl (
+        systematicStudyRepository,
+        searchSessionRepository,
+        credentialsService
+    )
+
+    @Bean
+    fun findAllSessionService(
+        searchSessionRepository: SearchSessionRepository,
+        systematicStudyRepository: SystematicStudyRepository,
+        credentialsService: ResearcherCredentialsService
+    ) = FindAllSearchSessionsServiceImpl (
         systematicStudyRepository, searchSessionRepository, credentialsService
     )
 }

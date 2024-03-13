@@ -1,5 +1,6 @@
 package br.all.application.search.util
 
+import br.all.application.search.find.service.FindAllSearchSessionsService
 import br.all.application.search.find.service.FindSearchSessionService
 import br.all.application.search.repository.SearchSessionDto
 import br.all.domain.model.protocol.SearchSource
@@ -63,6 +64,11 @@ class TestDataFactory {
         sessionId
     )
 
+    fun findAllRequestModel(
+        researcherId: UUID = this.researcherId,
+        systematicStudyId: UUID = this.systematicStudyId,
+    ) = FindAllSearchSessionsService.RequestModel(researcherId, systematicStudyId)
+
     fun generateDto(
         id: UUID,
         systematicStudyId: UUID = this.systematicStudyId,
@@ -84,6 +90,28 @@ class TestDataFactory {
     ) = FindSearchSessionService.ResponseModel(
         researcherId,
         (generateDto(id = this.searchSessionId, timeStamp = LocalDateTime.of(2022, 1, 1, 0, 0)))
+    )
+
+    fun findAllResponseModel(
+        amountOfSearchSessions: Int,
+        researcherId: UUID = this.researcherId,
+    ) = FindAllSearchSessionsService.ResponseModel(
+        researcherId,
+        systematicStudyId,
+        List(amountOfSearchSessions) {
+            generateDto(
+                id = UUID.randomUUID(),
+                timeStamp = LocalDateTime.of(2022, 1, 1, 0, 0)
+            )
+        }
+    )
+
+    fun emptyFindAllResponseModel(
+        researcherId: UUID = this.researcherId,
+    ) = FindAllSearchSessionsService.ResponseModel(
+        researcherId,
+        systematicStudyId,
+        searchSessions = emptyList(),
     )
 
     fun bibFileContent() =
