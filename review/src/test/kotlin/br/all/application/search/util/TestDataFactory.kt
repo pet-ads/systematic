@@ -1,5 +1,9 @@
-package br.all.application.search.create
+package br.all.application.search.util
 
+import br.all.application.review.find.services.FindAllSystematicStudiesService
+import br.all.application.review.repository.SystematicStudyDto
+import br.all.application.search.find.service.FindAllSearchSessionsService
+import br.all.application.search.repository.SearchSessionDto
 import br.all.domain.model.protocol.SearchSource
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSession
@@ -50,6 +54,47 @@ class TestDataFactory {
         systematicStudyId: UUID = this.systematicStudyId,
         sessionId: UUID = this.searchSessionId,
     ) = CreateResponseModel(researcherId, systematicStudyId, sessionId)
+
+    fun findAllRequestModel(
+        researcherId: UUID = this.researcherId,
+        systematicStudyId: UUID = this.systematicStudyId,
+    ) = FindAllSearchSessionsService.RequestModel(
+        researcherId,
+        systematicStudyId
+    )
+
+    fun generateDto(
+        id: UUID,
+        systematicStudyId: UUID = this.systematicStudyId,
+        searchString: String = "SearchString",
+        additionalInfo: String = "Additional Info",
+        timeStamp: LocalDateTime = LocalDateTime.of(2022, 1, 1, 0, 0),
+        source: String = "SearchSource"
+    ) = SearchSessionDto(
+        id,
+        systematicStudyId,
+        searchString,
+        additionalInfo,
+        timeStamp,
+        source
+    )
+
+    fun findAllResponseModel(
+        amountOfSearchSessions: Int,
+        researcherId: UUID = this.researcherId,
+    ) = FindAllSearchSessionsService.ResponseModel(
+        researcherId,
+        systematicStudyId,
+        List(amountOfSearchSessions) { generateDto(id = UUID.randomUUID(), timeStamp = LocalDateTime.of(2022, 1, 1, 0, 0))}
+    )
+
+    fun emptyFindAllResponseModel(
+        researcherId: UUID = this.researcherId,
+    ) = FindAllSearchSessionsService.ResponseModel(
+        researcherId,
+        systematicStudyId,
+        searchSessions = emptyList(),
+    )
     
     fun bibFileContent() =
         """

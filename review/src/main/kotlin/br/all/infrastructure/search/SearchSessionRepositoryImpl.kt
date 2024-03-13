@@ -1,5 +1,6 @@
 package br.all.infrastructure.search
 
+
 import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.domain.model.search.SearchSession
@@ -11,6 +12,9 @@ open class SearchSessionRepositoryImpl(val repository: MongoSearchSessionReposit
     override fun create(dto: SearchSessionDto) {
         repository.save(dto.toDocument())
     }
+
+    override fun findAllFromSystematicStudy(systematicStudyId: UUID): List<SearchSessionDto> =
+        repository.findAllBySystematicStudyId(systematicStudyId).map { it.toDto() }
 
     override fun findById(searchSessionId: UUID): SearchSessionDto? {
         TODO("Not yet implemented")
