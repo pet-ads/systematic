@@ -6,9 +6,9 @@ import java.util.*
 
 class TestDataFactory {
     private val faker = Faker()
-    val researcherId = UUID.randomUUID()
-    val systematicStudyId = UUID.randomUUID()
-    val ownerId = UUID.randomUUID()
+    val researcherId: UUID = UUID.randomUUID()
+    val systematicStudyId: UUID = UUID.randomUUID()
+    val ownerId: UUID = UUID.randomUUID()
 
     fun createSystematicStudyDocument(
         id: UUID = this.systematicStudyId,
@@ -47,4 +47,10 @@ class TestDataFactory {
             ${if (description == null) "" else "\"description\": \"$description\""}
         }
     """.trimIndent()
+
+    operator fun component1() = researcherId
+
+    operator fun component2() = systematicStudyId
+
+    operator fun component3() = ownerId
 }

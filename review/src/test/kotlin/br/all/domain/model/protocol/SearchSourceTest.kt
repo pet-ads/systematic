@@ -54,4 +54,16 @@ class SearchSourceTest {
             assertThrows<IllegalArgumentException> { blankString.toSearchSource() }
         }
     }
+
+    @Nested
+    @DisplayName("When converting search sources back to string")
+    inner class WhenConvertingSearchSourcesBackToString {
+        @Test
+        @Tag("ValidClasses")
+        fun `should a search source turn into a string using its name`() {
+            val sourceName = "Valid Search Source"
+            val convertedSource = SearchSource(sourceName).toString()
+            assertEquals(sourceName, convertedSource)
+        }
+    }
 }

@@ -11,47 +11,41 @@ class SystematicStudy(
     title: String,
     description: String,
     owner: ResearcherId,
-    collaborators: MutableSet<ResearcherId> = mutableSetOf(),
+    collaborators: Set<ResearcherId> = emptySet(),
 ) : Entity<UUID>(id) {
 
-    private val _collaborators = collaborators
+    private val _collaborators = collaborators.toMutableSet()
     val collaborators get() = _collaborators.toSet()
     var owner = owner
         private set
     var title: String = title
         set(value) {
-            require(value.isNotBlank()) { "Title must not be blank." }
+            require(value.isNotBlank()) { "Systematic study title must not be blank." }
             field = value
         }
     var description = description
         set(value) {
-            require(value.isNotBlank()) { "Description must not be blank." }
+            require(value.isNotBlank()) { "Systematic study description must not be blank." }
             field = value
         }
 
     init {
         val notification = validate()
         require(notification.hasNoErrors()) { notification.message() }
-        collaborators.add(owner)
+        _collaborators.add(owner)
     }
 
-    private fun validate(): Notification {
-        val notification = Notification()
-
+    private fun validate() = Notification().also {
         if (title.isBlank())
-            notification.addError("Systematic Study title must not be blank!")
+            it.addError("Systematic Study title must not be blank!")
         if (description.isBlank())
-            notification.addError("Systematic Study description must not be blank!")
-
-        return notification
+            it.addError("Systematic Study description must not be blank!")
     }
-
-    companion object
 
     fun addCollaborator(researcherId: ResearcherId) = _collaborators.add(researcherId)
 
-    fun changeOwner(researcherId: ResearcherId){
-        if (researcherId !in _collaborators) _collaborators.add(researcherId)
+    fun changeOwner(researcherId: ResearcherId) {
+        _collaborators.add(researcherId)
         owner = researcherId
     }
 
@@ -63,7 +57,8 @@ class SystematicStudy(
         _collaborators.remove(researcherId)
     }
 
+    override fun toString() = "SystematicStudy(reviewId=$id, title='$title', description='$description', owner=$owner," +
+            " researchers=$_collaborators)"
 
-    override fun toString() = "SystematicStudy(reviewId=$id, title='$title', " +
-            "description='$description', owner=$owner, researchers=$_collaborators)"
+    companion object
 }

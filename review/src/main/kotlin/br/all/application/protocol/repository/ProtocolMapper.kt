@@ -1,12 +1,10 @@
 package br.all.application.protocol.repository
 
-import br.all.application.protocol.create.CreateProtocolService.RequestModel
 import br.all.application.protocol.update.UpdateProtocolService
 import br.all.domain.model.protocol.*
 import br.all.domain.model.protocol.Criterion.CriterionType
 import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.SystematicStudyId
-import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.shared.valueobject.Language
 import br.all.domain.shared.valueobject.Language.LangType
 
@@ -28,7 +26,7 @@ fun Protocol.toDto() = ProtocolDto(
     studyTypeDefinition = studyTypeDefinition,
 
     selectionProcess = selectionProcess,
-    eligibilityCriteria = eligibilityCriteria.map { it.description to it.type.name }
+    eligibilityCriteria = eligibilityCriteria.map { it.toDto() }
         .toSet(),
 
     dataCollectionProcess = dataCollectionProcess,
@@ -37,34 +35,12 @@ fun Protocol.toDto() = ProtocolDto(
     extractionQuestions = extractionQuestions.map { it.value }.toSet(),
     robQuestions = robQuestions.map { it.value}.toSet(),
 
-    picoc = picoc?.let { PicocDto(
-        it.population,
-        it.intervention,
-        it.control,
-        it.outcome,
-        it.context,
-    )},
+    picoc = picoc?.toDto(),
 )
 
-fun Protocol.Companion.fromRequestModel(request: RequestModel) = with(request) {
-    write(systematicStudyId.toSystematicStudyId(), keywords)
-        .researchesFor(goal).because(justification)
-        .toAnswer(
-            researchQuestions.map { it.toResearchQuestion() }
-                .toSet(),
-        ).followingSearchProcess(searchMethod, searchString)
-        .inSearchSources( informationSources.map { it.toSearchSource() }.toSet())
-        .selectedBecause(sourcesSelectionCriteria)
-        .searchingStudiesIn(studiesLanguages.map { Language(LangType.valueOf(it)) }.toSet(), studyTypeDefinition)
-        .followingSelectionProcess(selectionProcess)
-        .withEligibilityCriteria(
-            eligibilityCriteria.map { (description, type) -> Criterion(description, CriterionType.valueOf(type)) }
-                .toSet(),
-        ).followingDataCollectionProcess(dataCollectionProcess)
-        .followingSynthesisProcess(analysisAndSynthesisProcess)
-        .withPICOC(picoc?.let { Picoc.fromDto(it) })
-        .build()
-}
+fun Picoc.toDto() = PicocDto(population, intervention, control, outcome, context)
+
+fun Criterion.toDto() = CriterionDto(description, type.name)
 
 fun Protocol.Companion.fromDto(dto: ProtocolDto) = write(SystematicStudyId(dto.systematicStudy), dto.keywords)
     .researchesFor(dto.goal).because(dto.justification)
@@ -85,7 +61,7 @@ fun Protocol.Companion.fromDto(dto: ProtocolDto) = write(SystematicStudyId(dto.s
     ).followingSelectionProcess(dto.selectionProcess)
     .withEligibilityCriteria(
         dto.eligibilityCriteria
-            .map { (description, type) -> Criterion(description, CriterionType.valueOf(type)) }
+            .map { Criterion.fromDto(it) }
             .toSet(),
     ).followingDataCollectionProcess(dto.dataCollectionProcess)
     .extractDataByAnswering(
@@ -107,6 +83,8 @@ fun Picoc.Companion.fromDto(dto: PicocDto) = Picoc(
     dto.outcome,
     dto.context,
 )
+
+fun Criterion.Companion.fromDto(dto: CriterionDto) = Criterion(dto.description, CriterionType.valueOf(dto.type))
 
 fun Protocol.copyUpdates(request: UpdateProtocolService.RequestModel) = apply {
     goal = request.goal ?: goal
@@ -133,7 +111,7 @@ fun Protocol.copyUpdates(request: UpdateProtocolService.RequestModel) = apply {
 
     selectionProcess = request.selectionProcess ?: selectionProcess
     request.eligibilityCriteria
-        .map { (description, type) -> Criterion(description, CriterionType.valueOf(type)) }
+        .map { Criterion.fromDto(it) }
         .toSet()
         .let { replaceEligibilityCriteria(it) }
 

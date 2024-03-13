@@ -17,7 +17,7 @@ class UpdateProtocolServiceImpl(
     private val protocolRepository: ProtocolRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val credentialsService: ResearcherCredentialsService,
-): UpdateProtocolService {
+) : UpdateProtocolService {
     override fun update(presenter: UpdateProtocolPresenter, request: RequestModel) {
         val (researcher, systematicStudy) = request
 
