@@ -3,7 +3,7 @@ import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.CreateSearchSessionServiceImpl
 import br.all.application.search.create.CreateSearchSessionPresenter
-import br.all.application.search.create.TestDataFactory
+import br.all.application.search.util.TestDataFactory
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException

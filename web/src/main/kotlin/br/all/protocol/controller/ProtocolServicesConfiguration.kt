@@ -1,6 +1,5 @@
 package br.all.protocol.controller
 
-import br.all.application.protocol.create.CreateProtocolServiceImpl
 import br.all.application.protocol.find.FindOneProtocolServiceImpl
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.update.UpdateProtocolServiceImpl
@@ -11,13 +10,6 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class ProtocolServicesConfiguration {
-    @Bean
-    fun createProtocolService(
-        protocolRepository: ProtocolRepository,
-        systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService,
-    ) = CreateProtocolServiceImpl(protocolRepository, systematicStudyRepository, credentialsService)
-
     @Bean
     fun createFindOneProtocolService(
         protocolRepository: ProtocolRepository,

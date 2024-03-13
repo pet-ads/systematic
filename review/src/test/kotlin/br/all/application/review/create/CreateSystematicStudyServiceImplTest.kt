@@ -1,5 +1,6 @@
 package br.all.application.review.create
 
+import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.TestDataFactory
@@ -12,6 +13,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -20,18 +22,20 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(MockKExtension::class)
 class CreateSystematicStudyServiceImplTest {
     @MockK(relaxUnitFun = true)
-    private lateinit var repository: SystematicStudyRepository
+    private lateinit var systematicStudyRepository: SystematicStudyRepository
+    @MockK(relaxUnitFun = true)
+    private lateinit var protocolRepository: ProtocolRepository
     @MockK
     private lateinit var uuidGeneratorService: UuidGeneratorService
     @MockK
     private lateinit var credentialsService: ResearcherCredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: CreateSystematicStudyPresenter
+    @InjectMockKs
+    private lateinit var sut: CreateSystematicStudyServiceImpl
 
     private lateinit var factory: TestDataFactory
     private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
-    @InjectMockKs
-    private lateinit var sut: CreateSystematicStudyServiceImpl
 
     @BeforeEach
     fun setUp() {
@@ -39,7 +43,7 @@ class CreateSystematicStudyServiceImplTest {
         preconditionCheckerMocking = PreconditionCheckerMocking(
             presenter,
             credentialsService,
-            repository,
+            systematicStudyRepository,
             factory.researcher,
             factory.systematicStudy
         )
@@ -51,18 +55,21 @@ class CreateSystematicStudyServiceImplTest {
     inner class WhenSuccessfullyCreatingASystematicStudy {
         @Test
         fun `should successfully create a systematic study`() {
-            val (researcher, systematicStudy) = factory
+            val (_, systematicStudy) = factory
             val request = factory.createRequestModel()
             val response = factory.createResponseModel()
             val dto = factory.dtoFromCreateRequest(request)
+            val protocolDto = factory.protocolDto()
 
             preconditionCheckerMocking.makeEverythingWork()
             every { uuidGeneratorService.next() } returns systematicStudy
 
-            sut.create(presenter, researcher, request)
+            sut.create(presenter, request)
+
             verify(exactly = 1) {
                 uuidGeneratorService.next()
-                repository.saveOrUpdate(dto)
+                systematicStudyRepository.saveOrUpdate(dto)
+                protocolRepository.saveOrUpdate(protocolDto)
                 presenter.prepareSuccessView(response)
             }
         }
@@ -74,13 +81,12 @@ class CreateSystematicStudyServiceImplTest {
     inner class WhenUnableToCreateANewSystematicStudy {
         @Test
         fun `should not the researcher be allowed to create a new study when unauthenticated`() {
-            val (researcher) = factory
             val request = factory.createRequestModel()
 
             preconditionCheckerMocking.makeResearcherUnauthenticated()
-            sut.create(presenter, researcher, request)
+            sut.create(presenter, request)
 
-            verify(exactly = 1) {
+            verifyOrder {
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
                 presenter.isDone()
             }
@@ -88,13 +94,12 @@ class CreateSystematicStudyServiceImplTest {
 
         @Test
         fun `should not the researcher be allowed to create a study when unauthorized`() {
-            val (researcher) = factory
             val request = factory.createRequestModel()
 
             preconditionCheckerMocking.makeResearcherUnauthorized()
-            sut.create(presenter, researcher, request)
+            sut.create(presenter, request)
 
-            verify(exactly = 1) {
+            verifyOrder {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()
             }

@@ -1,7 +1,11 @@
 package br.all.search.controller
 
 import br.all.application.search.create.CreateSearchSessionService
+import br.all.application.search.find.service.FindSearchSessionService
 import br.all.search.presenter.RestfulCreateSearchSessionPresenter
+import br.all.search.presenter.RestfulFindSearchSessionPresenter
+import br.all.application.search.find.service.FindAllSearchSessionsService
+import br.all.search.presenter.RestfulFindAllSearchSessionsPresenter
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -12,11 +16,14 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
 import br.all.application.search.create.CreateSearchSessionService.RequestModel as CreateRequest
+import br.all.application.search.find.service.FindAllSearchSessionsService.RequestModel as FindAllRequest
 
 @RestController
 @RequestMapping("api/v1/researcher/{researcherId}/systematic-study/{systematicStudyId}/search-session")
 class SearchSessionController(
     val createService : CreateSearchSessionService,
+    val findOneService: FindSearchSessionService,
+    val findAllService: FindAllSearchSessionsService,
     val mapper: ObjectMapper
 ) {
 
@@ -40,6 +47,17 @@ class SearchSessionController(
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
+    @GetMapping
+    fun findAllSearchSessions(
+        @PathVariable researcherId: UUID,
+        @PathVariable systematicStudyId: UUID,
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindAllSearchSessionsPresenter()
+        val request = FindAllRequest(researcherId, systematicStudyId)
+        findAllService.findAllSearchSessions(presenter, request)
+        return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
     @GetMapping("/{sessionId}")
     @Operation(summary = "Find a search session using its Id")
     @ApiResponses(value = [
@@ -50,6 +68,9 @@ class SearchSessionController(
         @PathVariable systematicStudyId: UUID,
         @PathVariable sessionId: UUID,
     ): ResponseEntity<*> {
-        return ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED)
+        val presenter = RestfulFindSearchSessionPresenter()
+        val request = FindSearchSessionService.RequestModel(researcherId, systematicStudyId, sessionId)
+        findOneService.findOneSession(presenter, request)
+        return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

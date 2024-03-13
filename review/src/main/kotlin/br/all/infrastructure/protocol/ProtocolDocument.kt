@@ -1,5 +1,7 @@
 package br.all.infrastructure.protocol
 
+import br.all.application.protocol.repository.CriterionDto
+import br.all.application.protocol.repository.PicocDto
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
@@ -22,7 +24,7 @@ data class ProtocolDocument(
     val studyTypeDefinition: String?,
 
     val selectionProcess: String?,
-    val selectionCriteria: Set<Pair<String, String>>,
+    val selectionCriteria: Set<CriterionDto>,
 
     val dataCollectionProcess: String?,
     val analysisAndSynthesisProcess: String?,
@@ -30,9 +32,5 @@ data class ProtocolDocument(
     val extractionQuestions: Set<UUID>,
     val robQuestions: Set<UUID>,
 
-    val population: String?,
-    val intervention: String?,
-    val control: String?,
-    val outcome: String?,
-    val context: String?,
+    val picoc: PicocDto?,
 )

@@ -1,15 +1,20 @@
 package br.all.application.review.util
 
+import br.all.application.protocol.repository.toDto
+import br.all.application.review.find.services.FindAllSystematicStudiesService.FindByOwnerRequest
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
 import br.all.application.review.update.services.UpdateSystematicStudyService.ResponseModel
+import br.all.domain.model.protocol.Protocol
 import br.all.domain.model.review.SystematicStudy
+import br.all.domain.model.review.toSystematicStudyId
 import io.github.serpro69.kfaker.Faker
 import java.util.*
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel as CreateRequestModel
 import br.all.application.review.create.CreateSystematicStudyService.ResponseModel as CreateResponseModel
 import br.all.application.review.find.services.FindAllSystematicStudiesService.ResponseModel as FindAllResponseModel
+import br.all.application.review.find.services.FindOneSystematicStudyService.RequestModel as FindOneRequestModel
 import br.all.application.review.find.services.FindOneSystematicStudyService.ResponseModel as FindOneResponseModel
 import br.all.application.review.update.services.UpdateSystematicStudyService.RequestModel as UpdateRequestModel
 
@@ -33,11 +38,17 @@ class TestDataFactory {
         mutableSetOf(ownerId).also { it.addAll(collaborators) },
     )
 
+    fun protocolDto(systematicStudyId: UUID = systematicStudy) = Protocol
+        .write(systematicStudyId.toSystematicStudyId(), emptySet())
+        .build()
+        .toDto()
+
     fun createRequestModel(
+        researcherId: UUID = researcher,
         title: String = faker.book.title(),
         description: String = faker.lorem.words(),
         collaborators: Set<UUID> = emptySet()
-    ) = CreateRequestModel(title, description, collaborators)
+    ) = CreateRequestModel(researcherId, title, description, collaborators)
 
     fun createResponseModel(
         researcherId: UUID = researcher,
@@ -46,15 +57,24 @@ class TestDataFactory {
 
     fun dtoFromCreateRequest(
         request: CreateRequestModel,
+        systematicStudyId: UUID = systematicStudy,
+    ) = SystematicStudy.fromRequestModel(systematicStudyId, request).toDto()
+
+    fun findOneRequestModel(
         researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
-    ) = SystematicStudy.fromRequestModel(systematicStudyId, researcherId, request).toDto()
+    ) = FindOneRequestModel(researcherId, systematicStudyId)
 
     fun findOneResponseModel(
         researcherId: UUID = this.researcher,
         systematicStudyId: UUID = this.systematicStudy,
         dto: SystematicStudyDto = generateDto(),
     ) = FindOneResponseModel(researcherId, systematicStudyId, dto)
+
+    fun findByOwnerRequest(
+        researcherId: UUID = researcher,
+        ownerId: UUID = owner,
+    ) = FindByOwnerRequest(researcherId, ownerId)
 
     fun findAllResponseModel(
         amountOfStudies: Int,
@@ -86,9 +106,11 @@ class TestDataFactory {
     )
 
     fun updateRequestModel(
+        researcherId: UUID = researcher,
+        systematicStudyId: UUID = systematicStudy,
         title: String? = null,
         description: String? = null,
-    ) = UpdateRequestModel(title, description)
+    ) = UpdateRequestModel(researcherId, systematicStudyId, title, description)
 
     fun updateResponseModel(
         researcherId: UUID = this.researcher,

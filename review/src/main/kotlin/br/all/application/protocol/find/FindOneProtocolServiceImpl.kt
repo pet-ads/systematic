@@ -14,7 +14,7 @@ class FindOneProtocolServiceImpl(
     private val protocolRepository: ProtocolRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val credentialsService: ResearcherCredentialsService,
-): FindOneProtocolService {
+) : FindOneProtocolService {
     override fun findById(presenter: FindOneProtocolPresenter, request: RequestModel) {
         val (researcher, systematicStudy) = request
         PreconditionChecker(systematicStudyRepository, credentialsService).also {
@@ -25,9 +25,8 @@ class FindOneProtocolServiceImpl(
         val dto = protocolRepository.findById(systematicStudy)
 
         if (dto == null) {
-            presenter.prepareFailView(
-                EntityNotFoundException("The protocol for systematic study $systematicStudy hasn't been written yet!"),
-            )
+            val message = "The protocol for systematic study $systematicStudy hasn't been written yet!"
+            presenter.prepareFailView(EntityNotFoundException(message))
             return
         }
 

@@ -7,6 +7,7 @@ import br.all.domain.shared.valueobject.Language
 import br.all.domain.shared.valueobject.Language.LangType
 import io.github.serpro69.kfaker.Faker
 import java.util.*
+import kotlin.math.min
 
 class TestDataFactory {
     private val faker = Faker()
@@ -61,15 +62,9 @@ class TestDataFactory {
         text().toSearchSource()
     }.toSet()
 
-    fun languages(length: Int = 5): Set<Language> {
-        val languages = mutableSetOf<Language>()
-
-        for (lang in LangType.entries.shuffled()) {
-            if (languages.size == length) break
-            languages.add(Language(lang))
-        }
-
-        return languages
+    fun languages(length: Int = 5) = mutableSetOf<Language>().also {
+        while (it.size < min(length, LangType.entries.size))
+            it.add(Language(faker.random.nextEnum()))
     }
 
     fun eligibilityCriteria(length: Int = 5) = List(length) {

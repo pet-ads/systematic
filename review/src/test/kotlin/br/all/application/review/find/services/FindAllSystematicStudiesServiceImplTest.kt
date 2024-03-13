@@ -12,6 +12,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -57,7 +58,7 @@ class FindAllSystematicStudiesServiceImplTest {
 
             every { repository.findAllByCollaborator(researcher) } returns response.systematicStudies
 
-            sut.findAll(presenter, researcher)
+            sut.findAllByCollaborator(presenter, researcher)
             verify(exactly = 1) { presenter.prepareSuccessView(response) }
         }
 
@@ -68,18 +69,19 @@ class FindAllSystematicStudiesServiceImplTest {
 
             every { repository.findAllByCollaborator(researcher) } returns response.systematicStudies
 
-            sut.findAll(presenter, researcher)
+            sut.findAllByCollaborator(presenter, researcher)
             verify { presenter.prepareSuccessView(response) }
         }
 
         @Test
         fun `should find all the systematic studies of a owner`() {
             val (researcher, _, owner) = factory
+            val request = factory.findByOwnerRequest()
             val response = factory.findAllByOwnerResponseModel(1)
 
             every { repository.findAllByCollaboratorAndOwner(researcher, owner) } returns response.systematicStudies
 
-            sut.findAllByOwner(presenter, researcher, owner)
+            sut.findAllByOwner(presenter, request)
             verify { presenter.prepareSuccessView(response) }
         }
     }
@@ -96,19 +98,20 @@ class FindAllSystematicStudiesServiceImplTest {
             preconditionCheckerMocking.makeEverythingWork()
             every { repository.findAllByCollaborator(researcher) } returns emptyList()
 
-            sut.findAll(presenter, researcher)
+            sut.findAllByCollaborator(presenter, researcher)
             verify { presenter.prepareSuccessView(response) }
         }
 
         @Test
         fun `should not find any systematic study when a owner has no one`() {
-            val (researcher, owner) = factory
+            val (researcher, _, owner) = factory
+            val request = factory.findByOwnerRequest()
             val response = factory.emptyFindAllResponseModel(owner = owner)
 
             preconditionCheckerMocking.makeEverythingWork()
             every { repository.findAllByCollaboratorAndOwner(researcher, owner) } returns emptyList()
 
-            sut.findAllByOwner(presenter, researcher, owner)
+            sut.findAllByOwner(presenter, request)
             verify { presenter.prepareSuccessView(response) }
         }
 
@@ -118,10 +121,10 @@ class FindAllSystematicStudiesServiceImplTest {
 
             preconditionCheckerMocking.makeResearcherUnauthenticated()
 
-            sut.findAll(presenter, researcher)
-            verify {
-                presenter.isDone()
+            sut.findAllByCollaborator(presenter, researcher)
+            verifyOrder {
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
+                presenter.isDone()
             }
         }
 
@@ -131,10 +134,10 @@ class FindAllSystematicStudiesServiceImplTest {
 
             preconditionCheckerMocking.makeResearcherUnauthorized()
 
-            sut.findAll(presenter, researcher)
-            verify {
-                presenter.isDone()
+            sut.findAllByCollaborator(presenter, researcher)
+            verifyOrder {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
+                presenter.isDone()
             }
         }
     }

@@ -1,5 +1,6 @@
 package br.all.application.protocol.update
 
+import br.all.application.protocol.repository.CriterionDto
 import br.all.application.protocol.repository.PicocDto
 import java.util.*
 
@@ -24,7 +25,7 @@ interface UpdateProtocolService {
         val studyTypeDefinition: String? = null,
 
         val selectionProcess: String? = null,
-        val eligibilityCriteria: Set<Pair<String, String>> = emptySet(),
+        val eligibilityCriteria: Set<CriterionDto> = emptySet(),
 
         val dataCollectionProcess: String? = null,
         val analysisAndSynthesisProcess: String? = null,
