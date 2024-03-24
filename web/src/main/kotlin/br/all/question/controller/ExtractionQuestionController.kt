@@ -37,10 +37,10 @@ class ExtractionQuestionController(
     }
 
     @PostMapping("/textual")
-    @Operation(summary = "Create a textual question")
+    @Operation(summary = "Create a extraction textual question in the protocol")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Successful Operation"),
-        ApiResponse(responseCode = "400", description = "Failed Operation for invalid input"),
+        ApiResponse(responseCode = "201", description = "Success creating a textual question in the protocol"),
+        ApiResponse(responseCode = "400", description = "Fail creating a textual question in the protocol - invalid input"),
     ])
     fun createTextualQuestion(
         @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: TextualRequest,
@@ -55,10 +55,10 @@ class ExtractionQuestionController(
     )
 
     @PostMapping("/pick-list")
-    @Operation(summary = "Create a pick-list question")
+    @Operation(summary = "Create a extraction pick-list question in the protocol")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Successful Operation"),
-        ApiResponse(responseCode = "400", description = "Failed Operation for invalid input"),
+        ApiResponse(responseCode = "201", description = "Success creating a pick-list question in the protocol"),
+        ApiResponse(responseCode = "400", description = "Fail creating a pick-list question in the protocol - invalid input"),
     ])
     fun createPickListQuestion(
         @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: PickListRequest,
@@ -74,10 +74,10 @@ class ExtractionQuestionController(
     )
 
     @PostMapping("/labeled-scale")
-    @Operation(summary = "Create a labeled-scale question")
+    @Operation(summary = "Create a extraction labeled-scale question in the protocol")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Successful Operation"),
-        ApiResponse(responseCode = "400", description = "Failed Operation for invalid input"),
+        ApiResponse(responseCode = "201", description = "Success creating a labeled-scale question in the protocol"),
+        ApiResponse(responseCode = "400", description = "Fail creating a labeled-scale question in the protocol - invalid input"),
     ])
     fun createLabeledScaleQuestion(
         @PathVariable researcherId: UUID,
@@ -95,10 +95,10 @@ class ExtractionQuestionController(
     )
 
     @PostMapping("/number-scale")
-    @Operation(summary = "Create a number-scale question")
+    @Operation(summary = "Create a extraction number-scale question in the protocol")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Successful Operation"),
-        ApiResponse(responseCode = "400", description = "Failed Operation for invalid input"),
+        ApiResponse(responseCode = "201", description = "Success creating a number-scale question in the protocol"),
+        ApiResponse(responseCode = "400", description = "Fail creating a number-scale question in the protocol - invalid input"),
     ])
     fun createNumberScaleQuestion(
         @PathVariable researcherId: UUID,
@@ -117,10 +117,10 @@ class ExtractionQuestionController(
     )
 
     @GetMapping("/{questionId}")
-    @Operation(summary = "Find a question using its Id")
+    @Operation(summary = "Get an extraction question of a given protocol by code")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Successful Operation"),
-        ApiResponse(responseCode = "404", description = "Failed Operation"),
+        ApiResponse(responseCode = "200", description = "Success getting an extraction question of a given protocol by code"),
+        ApiResponse(responseCode = "404", description = "Fail getting an extraction question of a given protocol by code - not found"),
     ])
     fun findQuestion(
         @PathVariable researcherId: UUID,
@@ -134,9 +134,9 @@ class ExtractionQuestionController(
     }
 
     @GetMapping
-    @Operation(summary = "Find all questions of a systematic study")
+    @Operation(summary = "Get all extraction questions in the protocol")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Successful Operation. Either returns the questions of a systematic study or an empty list if no systematic study found."),
+        ApiResponse(responseCode = "200", description = "Success getting all extraction questions in the protocol. Either returns the questions of a systematic study or an empty list if no systematic study is found."),
     ])
     fun findAllBySystematicStudyId(
         @PathVariable researcherId: UUID,
