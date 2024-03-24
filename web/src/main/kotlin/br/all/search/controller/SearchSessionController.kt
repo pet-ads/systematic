@@ -28,12 +28,12 @@ class SearchSessionController(
 ) {
 
     @PostMapping
-    @Operation(summary = "Create a search session")
+    @Operation(summary = "create a search session in the systematic study")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Successful Operation"),
-        ApiResponse(responseCode = "404", description = "Failed Operation for invalid request body"),
-        ApiResponse(responseCode = "400", description = "Failed Operation for invalid BibTex format"),
-        ApiResponse(responseCode = "403", description = "Failed Operation for not authorized researcher")
+        ApiResponse(responseCode = "201", description = "Success creating a search session in the systematic study"),
+        ApiResponse(responseCode = "400", description = "Fail creating a search session in the systematic study - invalid BibTeX format"),
+        ApiResponse(responseCode = "404", description = "Fail creating a search session in the systematic study - invalid request body"),
+        ApiResponse(responseCode = "403", description = "Fail creating a search session in the systematic study - unauthorized researcher")
     ])
     fun createSearchSession(
         @PathVariable researcherId: UUID,
@@ -48,6 +48,10 @@ class SearchSessionController(
     }
 
     @GetMapping
+    @Operation(summary = "Get all search sessions of a systematic review")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Success getting all search sessions in the systematic study. Either found all search sessions or none"),
+    ])
     fun findAllSearchSessions(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -59,9 +63,11 @@ class SearchSessionController(
     }
 
     @GetMapping("/{sessionId}")
-    @Operation(summary = "Find a search session using its Id")
+    @Operation(summary = "Get an existing search session of a systematic review")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Successful Operation"),
+        ApiResponse(responseCode = "200", description = "Success getting an existing search session in the systematic study"),
+        ApiResponse(responseCode = "404", description = "Fail getting an existing search session in the systematic study - not found"),
+        ApiResponse(responseCode = "400", description = "Fail getting an existing search session in the systematic study - invalid id format"),
     ])
     fun findSearchSession(
         @PathVariable researcherId: UUID,
