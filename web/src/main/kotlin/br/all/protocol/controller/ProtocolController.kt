@@ -23,11 +23,11 @@ class ProtocolController(
 ) {
 
     @GetMapping
-    @Operation(summary = "Find a protocol using its SystematicStudy Id")
+    @Operation(summary = "Get the protocol of a systematic study")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Successful Operation"),
-        ApiResponse(responseCode = "404", description = "Failed Operation for nonexistent protocol or systematic study"),
-        ApiResponse(responseCode = "403", description = "Failed Operation for non-collaborator researcher finding protocols")
+        ApiResponse(responseCode = "200", description = "Success getting the protocol of a systematic study"),
+        ApiResponse(responseCode = "404", description = "Fail getting the protocol of a systematic study - nonexistent protocol or systematic study"),
+        ApiResponse(responseCode = "403", description = "Fail getting the protocol of a systematic study - unauthorized collaborator")
     ])
     fun findById(@PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID): ResponseEntity<*> {
         val presenter = RestfulFindOneProtocolPresenter()
@@ -38,11 +38,11 @@ class ProtocolController(
     }
 
     @PutMapping
-    @Operation(summary = "Update an existing protocol")
+    @Operation(summary = "update the protocol of a systematic study")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Successful Operation"),
-        ApiResponse(responseCode = "404", description = "Failed Operation for nonexistent systematic study"),
-        ApiResponse(responseCode = "403", description = "Failed Operation for non collaborator researcher updating protocols")
+        ApiResponse(responseCode = "200", description = "Success updating the protocol of a systematic study"),
+        ApiResponse(responseCode = "404", description = "Fail updating the protocol of a systematic study - nonexistent protocol or systematic study"),
+        ApiResponse(responseCode = "403", description = "Fail updating the protocol of a systematic study - unauthorized collaborator")
     ])
     fun putProtocol(
         @PathVariable researcherId: UUID,
