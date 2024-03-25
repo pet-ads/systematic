@@ -109,7 +109,7 @@ class TestDataFactory {
     fun createValidPutRequest(
         searchString: String?,
         additionalInfo: String?,
-        searchSource: String?
+        source: String?
     ): String {
         val jsonFields = mutableListOf<String>()
 
@@ -121,8 +121,8 @@ class TestDataFactory {
             jsonFields.add("\"additionalInfo\": \"$additionalInfo\"")
         }
 
-        if (searchSource != null) {
-            jsonFields.add("\"searchSource\": \"$searchSource\"")
+        if (source != null) {
+            jsonFields.add("\"source\": \"$source\"")
         }
 
         return "{ ${jsonFields.joinToString(", ")} }"

@@ -208,9 +208,6 @@ class SearchSessionControllerTest(
                 .andExpect(jsonPath("$._links").exists())
 
                 val new = repository.findById(factory.sessionId).toNullable()
-                println("search string" + new?.searchString)
-                println("Additional Info" + new?.additionalInfo)
-                println("Search Source" + new?.source)
 
                 assertNotEquals(original, repository.findById(factory.sessionId).toNullable())
         }
