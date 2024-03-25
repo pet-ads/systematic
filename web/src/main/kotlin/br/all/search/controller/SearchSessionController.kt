@@ -1,11 +1,15 @@
 package br.all.search.controller
 
+import br.all.application.review.update.services.UpdateSystematicStudyService
 import br.all.application.search.create.CreateSearchSessionService
 import br.all.application.search.find.service.FindSearchSessionService
 import br.all.search.presenter.RestfulCreateSearchSessionPresenter
 import br.all.search.presenter.RestfulFindSearchSessionPresenter
 import br.all.application.search.find.service.FindAllSearchSessionsService
+import br.all.application.search.update.UpdateSearchSessionService
+import br.all.domain.model.protocol.SearchSource
 import br.all.search.presenter.RestfulFindAllSearchSessionsPresenter
+import br.all.search.presenter.RestfulUpdateSearchSessionPresenter
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -14,6 +18,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.time.LocalDateTime
 import java.util.*
 import br.all.application.search.create.CreateSearchSessionService.RequestModel as CreateRequest
 import br.all.application.search.find.service.FindAllSearchSessionsService.RequestModel as FindAllRequest
@@ -24,8 +29,20 @@ class SearchSessionController(
     val createService : CreateSearchSessionService,
     val findOneService: FindSearchSessionService,
     val findAllService: FindAllSearchSessionsService,
+    val updateService: UpdateSearchSessionService,
     val mapper: ObjectMapper
 ) {
+
+    data class PutRequest(
+        val searchString: String?,
+        val additionalInfo: String?,
+        val source: String?
+    ) {
+        fun toUpdateRequestModel(researcherId: UUID, systematicStudyId: UUID, sessionId: UUID) =
+            UpdateSearchSessionService.RequestModel(
+                researcherId, systematicStudyId, sessionId, searchString, additionalInfo, source
+            )
+    }
 
     @PostMapping
     @Operation(summary = "Create a search session")
@@ -72,5 +89,19 @@ class SearchSessionController(
         val request = FindSearchSessionService.RequestModel(researcherId, systematicStudyId, sessionId)
         findOneService.findOneSession(presenter, request)
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @PutMapping("/{sessionId}")
+    fun updateSearchSession(
+        @PathVariable researcherId: UUID,
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable sessionId: UUID,
+        @RequestBody request: PutRequest
+    ): ResponseEntity<*> {
+        val presenter = RestfulUpdateSearchSessionPresenter()
+        val requestModel = request.toUpdateRequestModel(researcherId, systematicStudyId, sessionId)
+
+        updateService.updateSession(presenter, requestModel)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

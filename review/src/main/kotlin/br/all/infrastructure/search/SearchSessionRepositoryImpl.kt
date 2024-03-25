@@ -17,13 +17,17 @@ open class SearchSessionRepositoryImpl(val repository: MongoSearchSessionReposit
     override fun findById(searchSessionId: UUID): SearchSessionDto? =
         repository.findById(searchSessionId).toNullable()?.toDto()
 
+    override fun existsById(searchSessionId: UUID) = repository.existsById(searchSessionId)
+
     override fun findAllFromSystematicStudy(systematicStudyId: UUID): List<SearchSessionDto> =
         repository.findAllBySystematicStudyId(systematicStudyId).map { it.toDto() }
 
     override fun getSearchSessionBySource(systematicStudyId: UUID, source: String): SearchSession? {
         TODO("Not yet implemented")
     }
-
     override fun existsBySearchSource(systematicStudyId: UUID, source: String) =
         repository.existsBySystematicStudyIdAndSource(systematicStudyId, source)
+    override fun saveOrUpdate(dto: SearchSessionDto) {
+        repository.save(dto.toDocument())
+    }
 }

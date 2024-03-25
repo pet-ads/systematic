@@ -3,6 +3,8 @@ package br.all.application.search.util
 import br.all.application.search.find.service.FindAllSearchSessionsService
 import br.all.application.search.find.service.FindSearchSessionService
 import br.all.application.search.repository.SearchSessionDto
+import br.all.application.search.update.UpdateSearchSessionService
+import br.all.application.search.update.UpdateSearchSessionService.RequestModel
 import br.all.domain.model.protocol.SearchSource
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSession
@@ -70,11 +72,11 @@ class TestDataFactory {
     ) = FindAllSearchSessionsService.RequestModel(researcherId, systematicStudyId)
 
     fun generateDto(
-        id: UUID,
+        id: UUID = searchSessionId,
         systematicStudyId: UUID = this.systematicStudyId,
         searchString: String = "SearchString",
-        additionalInfo: String = "Additional Info",
-        timeStamp: LocalDateTime = LocalDateTime.of(2022, 1, 1, 0, 0),
+        additionalInfo: String = "",
+        timeStamp: LocalDateTime = LocalDateTime.now(),
         source: String = "SearchSource"
     ) = SearchSessionDto(
         id,
@@ -89,7 +91,7 @@ class TestDataFactory {
         researcherId: UUID = this.researcherId,
     ) = FindSearchSessionService.ResponseModel(
         researcherId,
-        (generateDto(id = this.searchSessionId, timeStamp = LocalDateTime.of(2022, 1, 1, 0, 0)))
+        (generateDto(id = this.searchSessionId, timeStamp = LocalDateTime.now()))
     )
 
     fun findAllResponseModel(
@@ -101,7 +103,7 @@ class TestDataFactory {
         List(amountOfSearchSessions) {
             generateDto(
                 id = UUID.randomUUID(),
-                timeStamp = LocalDateTime.of(2022, 1, 1, 0, 0)
+                timeStamp = LocalDateTime.now()
             )
         }
     )
@@ -113,6 +115,21 @@ class TestDataFactory {
         systematicStudyId,
         searchSessions = emptyList(),
     )
+
+    fun updateRequestModel(
+        researcher: UUID = researcherId,
+        systematicStudy: UUID = systematicStudyId,
+        session: UUID = searchSessionId,
+        searchString: String = "SearchString",
+        additionalInfo: String = "",
+        source: String = "SearchSource"
+    ) = RequestModel(researcher, systematicStudy, session, searchString, additionalInfo, source)
+
+    fun updateResponseModel(
+        researcherId: UUID = this.researcherId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        sessionId: UUID = this.searchSessionId,
+    ) = UpdateSearchSessionService.ResponseModel(researcherId, systematicStudyId, sessionId)
 
     fun bibFileContent() =
         """
