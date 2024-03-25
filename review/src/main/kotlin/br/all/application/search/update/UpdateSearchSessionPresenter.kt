@@ -1,4 +1,6 @@
 package br.all.application.search.update
 
-interface UpdateSearchSessionPresenter {
-}
+import br.all.application.search.update.UpdateSearchSessionService.ResponseModel
+import br.all.application.shared.presenter.GenericPresenter
+
+interface UpdateSearchSessionPresenter : GenericPresenter<ResponseModel>
