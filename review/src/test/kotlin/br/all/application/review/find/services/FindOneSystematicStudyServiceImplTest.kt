@@ -13,6 +13,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -50,13 +51,14 @@ class FindOneSystematicStudyServiceImplTest {
     inner class WhenSuccessfullyFindingOneExistentSystematicStudy {
         @Test
         fun `should correctly find a systematic study and prepare a success view`() {
-            val (researcher, systematicStudy) = factory
+            val (_, systematicStudy) = factory
+            val request = factory.findOneRequestModel()
             val response = factory.findOneResponseModel()
 
             preconditionCheckerMocking.makeEverythingWork()
             every { repository.findById(systematicStudy) } returns response.content
 
-            sut.findById(presenter, researcher, systematicStudy)
+            sut.findById(presenter, request)
             verify { presenter.prepareSuccessView(response) }
         }
     }
@@ -67,12 +69,12 @@ class FindOneSystematicStudyServiceImplTest {
     inner class WhenBeingUnableToFindASystematicStudy {
         @Test
         fun `should prepare a fail view when trying to find a nonexistent systematic study`() {
-            val (researcher, systematicStudy) = factory
+            val request = factory.findOneRequestModel()
 
             preconditionCheckerMocking.makeSystematicStudyNonexistent()
 
-            sut.findById(presenter, researcher, systematicStudy)
-            verify {
+            sut.findById(presenter, request)
+            verifyOrder {
                 presenter.prepareFailView(any<EntityNotFoundException>())
                 presenter.isDone()
             }
@@ -80,12 +82,12 @@ class FindOneSystematicStudyServiceImplTest {
 
         @Test
         fun `should prepare a fail view if the researcher is not a collaborator`() {
-            val (researcher, systematicStudy) = factory
+            val request = factory.findOneRequestModel()
 
             preconditionCheckerMocking.makeResearcherNotACollaborator()
 
-            sut.findById(presenter, researcher, systematicStudy)
-            verify {
+            sut.findById(presenter, request)
+            verifyOrder {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()
             }
@@ -93,27 +95,27 @@ class FindOneSystematicStudyServiceImplTest {
 
         @Test
         fun `should a unauthenticated researcher be unable to find any systematic study`() {
-            val (researcher, systematicStudy) = factory
+            val request = factory.findOneRequestModel()
 
             preconditionCheckerMocking.makeResearcherUnauthenticated()
 
-            sut.findById(presenter, researcher, systematicStudy)
-            verify {
-                presenter.isDone()
+            sut.findById(presenter, request)
+            verifyOrder {
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
+                presenter.isDone()
             }
         }
 
         @Test
         fun `should a unauthorized researcher be unable to find any systematic study`() {
-            val (researcher, systematicStudy) = factory
+            val request = factory.findOneRequestModel()
 
             preconditionCheckerMocking.makeResearcherUnauthorized()
 
-            sut.findById(presenter, researcher, systematicStudy)
-            verify {
-                presenter.isDone()
+            sut.findById(presenter, request)
+            verifyOrder {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
+                presenter.isDone()
             }
         }
     }

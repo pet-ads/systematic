@@ -11,32 +11,25 @@ import br.all.application.shared.presenter.PreconditionChecker
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.SystematicStudyId
-import java.util.*
 
 class UpdateSystematicStudyServiceImpl(
     private val repository: SystematicStudyRepository,
     private val credentialsService: ResearcherCredentialsService,
-): UpdateSystematicStudyService {
-    override fun update(
-        presenter: UpdateSystematicStudyPresenter,
-        researcher: UUID,
-        systematicStudy: UUID,
-        request: RequestModel,
-    ) {
+) : UpdateSystematicStudyService {
+    override fun update(presenter: UpdateSystematicStudyPresenter, request: RequestModel) {
+        val (researcher, systematicStudy) = request
         PreconditionChecker(repository, credentialsService).also {
             it.prepareIfViolatesPreconditions(presenter, ResearcherId(researcher), SystematicStudyId(systematicStudy))
         }
         if (presenter.isDone()) return
 
-        val dto = repository.findById(systematicStudy)
-        val updated = dto?.let {
-            SystematicStudy.fromDto(it).apply {
+        val dto = repository.findById(systematicStudy) ?: return
+        val updated = SystematicStudy.fromDto(dto).apply {
                 title = request.title ?: title
                 description = request.description ?: description
             }.toDto()
-        }
 
-        if (updated != null && updated != dto) repository.saveOrUpdate(updated)
+        if (updated != dto) repository.saveOrUpdate(updated)
         presenter.prepareSuccessView(ResponseModel(researcher, systematicStudy))
     }
 }

@@ -1,6 +1,5 @@
 package br.all.infrastructure.protocol
 
-import br.all.application.protocol.repository.PicocDto
 import br.all.application.protocol.repository.ProtocolDto
 
 fun ProtocolDto.toDocument() = ProtocolDocument(
@@ -20,7 +19,7 @@ fun ProtocolDto.toDocument() = ProtocolDocument(
     studyTypeDefinition,
 
     selectionProcess,
-    selectionCriteria,
+    eligibilityCriteria,
 
     dataCollectionProcess,
     analysisAndSynthesisProcess,
@@ -28,11 +27,7 @@ fun ProtocolDto.toDocument() = ProtocolDocument(
     extractionQuestions,
     robQuestions,
 
-    picoc?.population,
-    picoc?.intervention,
-    picoc?.control,
-    picoc?.outcome,
-    picoc?.context,
+    picoc,
 )
 
 fun ProtocolDocument.toDto() = ProtocolDto(
@@ -61,11 +56,5 @@ fun ProtocolDocument.toDto() = ProtocolDto(
     extractionQuestions,
     robQuestions,
 
-    getPicoc(),
+    picoc,
 )
-
-private fun ProtocolDocument.getPicoc(): PicocDto? {
-    if (population == null || intervention == null || control == null || outcome == null)
-        return null
-    return PicocDto(population, intervention, control, outcome, context)
-}

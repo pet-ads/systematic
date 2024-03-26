@@ -1,16 +1,34 @@
 package br.all.application.search.repository
-
-import br.all.application.search.create.SearchSessionRequestModel
-import br.all.domain.model.protocol.ProtocolId
+import br.all.application.search.create.CreateSearchSessionService.RequestModel
+import br.all.application.search.update.UpdateSearchSessionService
+import br.all.domain.model.protocol.SearchSource
+import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
+import java.time.LocalDateTime
 
-fun SearchSession.Companion.fromRequestModel(sessionId: SearchSessionID, protocolId: ProtocolId, requestModel: SearchSessionRequestModel): SearchSession {
-    return SearchSession(
-        sessionId,
-        protocolId,
-        requestModel.searchString,
-        requestModel.additionalInfo ?: "",
-        source = requestModel.source
-    )
-}
+fun SearchSession.toDto() = SearchSessionDto(
+    id.value(),
+    systematicStudyId.value(),
+    searchString,
+    additionalInfo,
+    timestamp,
+    source.toString()
+)
+
+fun SearchSession.Companion.fromRequestModel(id: SearchSessionID, request: RequestModel) = SearchSession(
+    id,
+    SystematicStudyId(request.systematicStudyId),
+    request.searchString,
+    request.additionalInfo ?: "",
+    source = SearchSource(request.source),
+)
+
+fun SearchSession.Companion.fromDto(dto: SearchSessionDto) = SearchSession(
+    SearchSessionID(dto.id),
+    SystematicStudyId(dto.systematicStudyId),
+    dto.searchString,
+    dto.additionalInfo,
+    dto.timestamp,
+    SearchSource(dto.source)
+)

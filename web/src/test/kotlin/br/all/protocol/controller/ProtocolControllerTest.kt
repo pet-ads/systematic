@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.*
@@ -47,59 +47,6 @@ class ProtocolControllerTest(
     fun tearDown() {
         protocolRepository.deleteAll()
         systematicStudyRepository.deleteAll()
-    }
-
-    @Nested
-    @DisplayName("When posting protocols")
-    inner class WhenPostingProtocols {
-        private fun postUrl(
-            researcher: UUID = factory.researcher,
-            systematicStudy: UUID = factory.protocol,
-        ) = "/researcher/$researcher/systematic-study/$systematicStudy/protocol"
-
-        @Nested
-        @Tag("ValidClasses")
-        @DisplayName("And being succeed")
-        inner class AndBeingSucceed {
-            @Test
-            fun `should post a new protocol`() {
-                val (researcher, systematicStudy) = factory
-                val json = factory.validPostRequest()
-
-                mockMvc.perform(post(postUrl()).contentType(MediaType.APPLICATION_JSON).content(json))
-                    .andExpect(status().isCreated)
-                    .andExpect(jsonPath("$.researcherId").value(researcher.toString()))
-                    .andExpect(jsonPath("$.systematicStudyId").value(systematicStudy.toString()))
-                    .andExpect(jsonPath("$._links").exists())
-            }
-        }
-
-        @Nested
-        @Tag("InvalidClasses")
-        @DisplayName("And failing to create it")
-        inner class AndFailingToCreateIt {
-            @Test
-            fun `should not write a protocol for nonexistent systematic study and return 404`() {
-                val json = factory.validPostRequest()
-
-                mockMvc.perform(
-                    post(postUrl(systematicStudy = UUID.randomUUID()))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                ).andExpect(status().isNotFound)
-            }
-
-            @Test
-            fun `should not allow non collaborator researcher to write protocols`() {
-                val json = factory.validPostRequest()
-
-                mockMvc.perform(
-                    post(postUrl(researcher = UUID.randomUUID()))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                ).andExpect(status().isForbidden)
-            }
-        }
     }
 
     @Nested
@@ -156,6 +103,63 @@ class ProtocolControllerTest(
                 ).andExpect(status().isForbidden)
                     .andExpect(jsonPath("$.message").exists())
                     .andExpect(jsonPath("$.detail").exists())
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("When putting protocols")
+    inner class WhenPuttingProtocols {
+        fun putUrl(
+            researcherId: UUID = factory.researcher,
+            systematicStudyId: UUID = factory.protocol,
+        ) = "/researcher/$researcherId/systematic-study/$systematicStudyId/protocol"
+
+        @Nested
+        @Tag("ValidClasses")
+        @DisplayName("And updating the protocol successfully")
+        inner class AndUpdatingTheProtocolSuccessfully {
+            @Test
+            fun `should update a existent protocol`() {
+                val document = factory.createProtocolDocument()
+                val json = factory.validPutRequest()
+
+                protocolRepository.save(document)
+
+                mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(json))
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.researcherId").exists())
+                    .andExpect(jsonPath("$.systematicStudyId").exists())
+                    .andExpect(jsonPath("$._links").exists())
+            }
+        }
+
+        @Nested
+        @Tag("InvalidClasses")
+        @DisplayName("And failing to perform changes")
+        inner class AndFailingToPerformChanges {
+            @Test
+            fun `should not be possible to update the protocol of a nonexistent systematic study`() {
+                val nonexistentStudy = UUID.randomUUID()
+                val json = factory.validPutRequest()
+
+                mockMvc.perform(
+                    put(putUrl(systematicStudyId = nonexistentStudy))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                ).andExpect(status().isNotFound)
+            }
+
+            @Test
+            fun `should not allow researchers that are not collaborators to update the protocol`() {
+                val nonCollaborator = UUID.randomUUID()
+                val json = factory.validPutRequest()
+
+                mockMvc.perform(
+                    put(putUrl(researcherId = nonCollaborator))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                ).andExpect(status().isForbidden)
             }
         }
     }

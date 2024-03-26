@@ -1,6 +1,8 @@
 package br.all.question.persistence
 
+import br.all.application.question.create.CreateQuestionService.QuestionType.*
 import br.all.infrastructure.question.MongoQuestionRepository
+import br.all.infrastructure.question.QuestionDocument
 import br.all.infrastructure.shared.toNullable
 import br.all.question.utils.TestDataFactory
 import org.junit.jupiter.api.*
@@ -29,35 +31,65 @@ class MongoQuestionRepositoryTest(
     @AfterEach
     fun teardown() = sut.deleteAll()
 
+    private fun insertAndCheck(question: QuestionDocument) {
+        sut.insert(question)
+        assertTrue(sut.findById(question.questionId).toNullable() != null)
+    }
+
+    private fun findAndCheck(question: QuestionDocument) {
+        sut.insert(question)
+        val result = sut.findById(question.questionId)
+        assertEquals(question.questionId, result.toNullable()?.questionId)
+    }
+
+    private fun updateAndCheck(questionToUpdate: QuestionDocument) {
+        sut.insert(questionToUpdate)
+        val updatedDescription = factory.fakerWord
+        val updatedQuestion = when (questionToUpdate.questionType) {
+            TEXTUAL.toString() -> factory.validCreateTextualQuestionDocument(
+                questionId, systematicStudyId, description = updatedDescription
+            )
+
+            PICK_LIST.toString() -> factory.validCreatePickListQuestionDocument(
+                questionId, systematicStudyId, description = updatedDescription
+            )
+
+            LABELED_SCALE.toString() -> factory.validCreateLabeledScaleQuestionDocument(
+                questionId, systematicStudyId, description = updatedDescription
+            )
+
+            NUMBERED_SCALE.toString() -> factory.validCreateNumberedScaleQuestionDocument(
+                questionId, systematicStudyId, description = updatedDescription
+            )
+
+            else -> throw IllegalArgumentException("Question type ${questionToUpdate.questionType} does not exist.")
+        }
+        sut.save(updatedQuestion)
+
+        assertEquals(updatedDescription, sut.findById(questionId).toNullable()?.description)
+    }
+
     @Nested
     @DisplayName("when successfully inserting questions")
     inner class WhenSuccessfullyInsertingQuestions {
         @Test
         fun `should insert a textual question`() {
-            val textualQuestion = factory.validCreateTextualQuestionDocument(questionId, systematicStudyId)
-            sut.insert(textualQuestion)
-            assertTrue(sut.findById(textualQuestion.questionId).toNullable() != null)
+            insertAndCheck(factory.validCreateTextualQuestionDocument(questionId, systematicStudyId))
         }
 
         @Test
         fun `should insert a picklist question`() {
-            val pickListQuestion = factory.validCreatePickListQuestionDocument(questionId, systematicStudyId)
-            sut.insert(pickListQuestion)
-            assertTrue(sut.findById(pickListQuestion.questionId).toNullable() != null)
+            insertAndCheck(factory.validCreatePickListQuestionDocument(questionId, systematicStudyId))
         }
 
         @Test
         fun `should insert a labeledScale question`() {
-            val labeledScaleQuestion = factory.validCreateLabeledScaleQuestionDocument(questionId, systematicStudyId)
-            sut.insert(labeledScaleQuestion)
-            assertTrue(sut.findById(labeledScaleQuestion.questionId).toNullable() != null)
+            insertAndCheck(factory.validCreateLabeledScaleQuestionDocument(questionId, systematicStudyId))
         }
 
         @Test
         fun `should insert a numberScale question`() {
-            val numberScaleQuestion = factory.validCreateNumberedScaleQuestionDocument(questionId, systematicStudyId)
-            sut.insert(numberScaleQuestion)
-            assertTrue(sut.findById(numberScaleQuestion.questionId).toNullable() != null)
+            insertAndCheck(factory.validCreateNumberedScaleQuestionDocument(questionId, systematicStudyId))
         }
     }
 
@@ -67,65 +99,25 @@ class MongoQuestionRepositoryTest(
         @Test
         fun `should update a textual question`() {
             val textualQuestion = factory.validCreateTextualQuestionDocument(questionId, systematicStudyId)
-            sut.insert(textualQuestion)
-
-            val updatedDescription = "teste"
-            val updatedTextualQuestion = factory.validCreateTextualQuestionDocument(
-                questionId,
-                systematicStudyId,
-                description = updatedDescription
-            )
-            sut.save(updatedTextualQuestion)
-
-            assertEquals(updatedDescription, sut.findById(questionId).toNullable()?.description)
+            updateAndCheck(textualQuestion)
         }
 
         @Test
         fun `should update a picklist question`() {
             val pickListQuestion = factory.validCreatePickListQuestionDocument(questionId, systematicStudyId)
-            sut.insert(pickListQuestion)
-
-            val updatedDescription = "teste"
-            val updatedTextualQuestion = factory.validCreateTextualQuestionDocument(
-                questionId,
-                systematicStudyId,
-                description = updatedDescription
-            )
-            sut.save(updatedTextualQuestion)
-
-            assertEquals(updatedDescription, sut.findById(questionId).toNullable()?.description)
+            updateAndCheck(pickListQuestion)
         }
 
         @Test
         fun `should update a labeledScale question`() {
             val labeledScaleQuestion = factory.validCreateLabeledScaleQuestionDocument(questionId, systematicStudyId)
-            sut.insert(labeledScaleQuestion)
-
-            val updatedDescription = "teste"
-            val updatedTextualQuestion = factory.validCreateTextualQuestionDocument(
-                questionId,
-                systematicStudyId,
-                description = updatedDescription
-            )
-            sut.save(updatedTextualQuestion)
-
-            assertEquals(updatedDescription, sut.findById(questionId).toNullable()?.description)
+            updateAndCheck(labeledScaleQuestion)
         }
 
         @Test
         fun `should update a numberScale question`() {
             val numberScaleQuestion = factory.validCreateNumberedScaleQuestionDocument(questionId, systematicStudyId)
-            sut.insert(numberScaleQuestion)
-
-            val updatedDescription = "teste"
-            val updatedTextualQuestion = factory.validCreateTextualQuestionDocument(
-                questionId,
-                systematicStudyId,
-                description = updatedDescription
-            )
-            sut.save(updatedTextualQuestion)
-
-            assertEquals(updatedDescription, sut.findById(questionId).toNullable()?.description)
+            updateAndCheck(numberScaleQuestion)
         }
     }
 
@@ -134,53 +126,30 @@ class MongoQuestionRepositoryTest(
     inner class WhenSuccessfullyFindingQuestions {
         @Test
         fun `should find a textual question`() {
-            val textualQuestion = factory.validCreateTextualQuestionDocument(questionId, systematicStudyId)
-            sut.insert(textualQuestion)
-            val result = sut.findById(textualQuestion.questionId)
-
-            assertEquals(textualQuestion.questionId, result.toNullable()?.questionId)
+            findAndCheck(factory.validCreateTextualQuestionDocument(questionId, systematicStudyId))
         }
 
         @Test
         fun `should find a picklist question`() {
-            val pickListQuestion = factory.validCreatePickListQuestionDocument(questionId, systematicStudyId)
-            sut.insert(pickListQuestion)
-            val result = sut.findById(pickListQuestion.questionId)
-
-            assertEquals(pickListQuestion.questionId, result.toNullable()?.questionId)
+            findAndCheck(factory.validCreatePickListQuestionDocument(questionId, systematicStudyId))
         }
 
         @Test
         fun `should find a labeledScale question`() {
-            val labeledScaleQuestion = factory.validCreateLabeledScaleQuestionDocument(questionId, systematicStudyId)
-            sut.insert(labeledScaleQuestion)
-            val result = sut.findById(labeledScaleQuestion.questionId)
-
-            assertEquals(labeledScaleQuestion.questionId, result.toNullable()?.questionId)
+            findAndCheck(factory.validCreateLabeledScaleQuestionDocument(questionId, systematicStudyId))
         }
 
         @Test
         fun `should find a numberScale question`() {
-            val numberScaleQuestion = factory.validCreateNumberedScaleQuestionDocument(questionId, systematicStudyId)
-            sut.insert(numberScaleQuestion)
-            val result = sut.findById(numberScaleQuestion.questionId)
-
-            assertEquals(numberScaleQuestion.questionId, result.toNullable()?.questionId)
+            findAndCheck(factory.validCreateNumberedScaleQuestionDocument(questionId, systematicStudyId))
         }
 
         @Test
         fun `should find all questions of a systematicStudy`() {
-            val textualQuestion = factory.validCreateTextualQuestionDocument(questionId, systematicStudyId)
-            val pickListQuestion = factory.validCreatePickListQuestionDocument(UUID.randomUUID(), systematicStudyId)
-            val numberedScaleQuestion =
-                factory.validCreateNumberedScaleQuestionDocument(UUID.randomUUID(), systematicStudyId)
-            val labeledScaleQuestion =
-                factory.validCreateLabeledScaleQuestionDocument(UUID.randomUUID(), systematicStudyId)
-
-            sut.insert(textualQuestion)
-            sut.insert(pickListQuestion)
-            sut.insert(numberedScaleQuestion)
-            sut.insert(labeledScaleQuestion)
+            sut.insert(factory.validCreateTextualQuestionDocument(questionId, systematicStudyId))
+            sut.insert(factory.validCreatePickListQuestionDocument(UUID.randomUUID(), systematicStudyId))
+            sut.insert(factory.validCreateNumberedScaleQuestionDocument(UUID.randomUUID(), systematicStudyId))
+            sut.insert(factory.validCreateLabeledScaleQuestionDocument(UUID.randomUUID(), systematicStudyId))
 
             val result = sut.findAllBySystematicStudyId(systematicStudyId)
             assertTrue(result.size == 4)

@@ -4,9 +4,11 @@ import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter
 import java.util.*
 
 interface UpdateSystematicStudyService {
-    fun update(presenter: UpdateSystematicStudyPresenter, researcher: UUID, systematicStudy: UUID, request: RequestModel)
+    fun update(presenter: UpdateSystematicStudyPresenter, request: RequestModel)
 
     data class RequestModel(
+        val researcher: UUID,
+        val systematicStudy: UUID,
         val title: String?,
         val description: String?,
     )

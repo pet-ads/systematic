@@ -1,7 +1,5 @@
 package br.all.application.study.update
 
-import br.all.application.repositoryFake.StudyReviewRepositoryFake
-import br.all.application.study.shared.createStudyReviewDto
 import br.all.application.study.update.implementation.UpdateStudyReviewSelectionService
 import org.junit.jupiter.api.Test
 
@@ -12,7 +10,6 @@ import java.util.*
 
 class UpdateStudyReviewSelectionStatusTest {
 
-    private lateinit var repository: StudyReviewRepositoryFake
     private lateinit var sut: UpdateStudyReviewSelectionService
 
 //    @BeforeEach

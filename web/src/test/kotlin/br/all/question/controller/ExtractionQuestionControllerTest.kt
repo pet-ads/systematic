@@ -1,6 +1,7 @@
 package br.all.question.controller
 
 import br.all.infrastructure.question.MongoQuestionRepository
+import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.question.utils.TestDataFactory
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,6 +20,7 @@ import java.util.*
 @Tag("IntegrationTest")
 class ExtractionQuestionControllerTest(
     @Autowired val repository: MongoQuestionRepository,
+    @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
     @Autowired val mockMvc: MockMvc,
 ) {
     private lateinit var factory: TestDataFactory
@@ -33,6 +35,12 @@ class ExtractionQuestionControllerTest(
         systematicStudyId = factory.systematicStudyId
         researcherId = factory.researcherId
         questionId = factory.questionId
+        systematicStudyRepository.deleteAll()
+        systematicStudyRepository.save(
+            br.all.review.shared.TestDataFactory().createSystematicStudyDocument(
+            id = systematicStudyId,
+            owner = researcherId,
+        ))
     }
 
     @AfterEach

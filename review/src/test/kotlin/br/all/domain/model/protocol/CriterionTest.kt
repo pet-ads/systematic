@@ -38,7 +38,7 @@ class CriterionTest {
     inner class WhenProvidingInvalidDescriptions {
         @ParameterizedTest(name = "[{index}]: description=\"{0}\"")
         @ValueSource(strings = ["", " ", "  "])
-        fun `should not any kind of criteria`(description: String) {
+        fun `should not allow any kind of blank string as criterion descriptions`(description: String) {
             assertAll(
                 { assertThrows<IllegalArgumentException> { Criterion(description, CriterionType.INCLUSION) } },
                 { assertThrows<IllegalArgumentException> { Criterion(description, CriterionType.EXCLUSION) } },
@@ -47,13 +47,13 @@ class CriterionTest {
 
         @ParameterizedTest(name = "[{index}]: description=\"{0}\"")
         @ValueSource(strings = ["", " ", "  "])
-        fun `should not create inclusion criteria`(description: String) {
+        fun `should not create inclusion criteria with blank strings`(description: String) {
             assertThrows<IllegalArgumentException> { Criterion.toInclude(description) }
         }
 
         @ParameterizedTest(name = "[{index}]: description=\"{0}\"")
         @ValueSource(strings = ["", " ", "  "])
-        fun `should not created exclusion criteria`(description: String) {
+        fun `should not created exclusion criteria with blank strings`(description: String) {
             assertThrows<IllegalArgumentException> { Criterion.toExclude(description) }
         }
     }

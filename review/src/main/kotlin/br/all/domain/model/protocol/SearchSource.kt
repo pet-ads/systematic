@@ -4,7 +4,6 @@ import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.ddd.ValueObject
 
 data class SearchSource(private var value: String) : ValueObject() {
-
     init {
         value = value.replace("(^|\\s)[a-z]".toRegex()) { it.value.uppercase() }
         val notification = validate()
@@ -17,9 +16,7 @@ data class SearchSource(private var value: String) : ValueObject() {
         if (value.isBlank())
             it.addError("A search source must not be blank!")
         if (!(regex matches value))
-            it.addError(
-                "A search source must only contain words separated by white spaces. Provided: $value"
-            )
+            it.addError("A search source must only contain words separated by white spaces. Provided: $value")
     }
 
     override fun toString() = value

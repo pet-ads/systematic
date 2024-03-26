@@ -11,10 +11,7 @@ import br.all.application.study.find.presenter.FindStudyReviewPresenter
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceServiceImpl
 import br.all.application.study.find.service.FindStudyReviewServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
-import br.all.application.study.update.implementation.MarkAsDuplicatedServiceImpl
-import br.all.application.study.update.implementation.UpdateStudyReviewExtractionService
-import br.all.application.study.update.implementation.UpdateStudyReviewPriorityService
-import br.all.application.study.update.implementation.UpdateStudyReviewSelectionService
+import br.all.application.study.update.implementation.*
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresenter
 import br.all.domain.services.IdGeneratorService
 import org.springframework.context.annotation.Bean
@@ -31,6 +28,15 @@ class StudyReviewServicesConfiguration {
         idGenerator: IdGeneratorService
     ) = CreateStudyReviewServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService, idGenerator
+    )
+
+    @Bean
+    fun updateStudyReviewService(
+        systematicStudyRepository: SystematicStudyRepository,
+        studyReviewRepository: StudyReviewRepository,
+        credentialsService: ResearcherCredentialsService,
+    ) = UpdateStudyReviewServiceImpl(
+        systematicStudyRepository, studyReviewRepository, credentialsService,
     )
 
     @Bean

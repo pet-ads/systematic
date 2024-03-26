@@ -9,6 +9,9 @@ import br.all.application.question.findAll.FindAllBySystematicStudyIdService.Req
 import br.all.question.presenter.extraction.RestfulFindExtractionQuestionPresenter
 import br.all.question.presenter.extraction.RestfulCreateExtractionQuestionPresenter
 import br.all.question.presenter.extraction.RestfulFindAllExtractionQuestionPresenter
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -34,6 +37,11 @@ class ExtractionQuestionController(
     }
 
     @PostMapping("/textual")
+    @Operation(summary = "Create a extraction textual question in the protocol")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Success creating a textual question in the protocol"),
+        ApiResponse(responseCode = "400", description = "Fail creating a textual question in the protocol - invalid input"),
+    ])
     fun createTextualQuestion(
         @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: TextualRequest,
     ): ResponseEntity<*> = createQuestion(
@@ -47,6 +55,11 @@ class ExtractionQuestionController(
     )
 
     @PostMapping("/pick-list")
+    @Operation(summary = "Create a extraction pick-list question in the protocol")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Success creating a pick-list question in the protocol"),
+        ApiResponse(responseCode = "400", description = "Fail creating a pick-list question in the protocol - invalid input"),
+    ])
     fun createPickListQuestion(
         @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: PickListRequest,
     ): ResponseEntity<*> = createQuestion(
@@ -61,6 +74,11 @@ class ExtractionQuestionController(
     )
 
     @PostMapping("/labeled-scale")
+    @Operation(summary = "Create a extraction labeled-scale question in the protocol")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Success creating a labeled-scale question in the protocol"),
+        ApiResponse(responseCode = "400", description = "Fail creating a labeled-scale question in the protocol - invalid input"),
+    ])
     fun createLabeledScaleQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -77,6 +95,11 @@ class ExtractionQuestionController(
     )
 
     @PostMapping("/number-scale")
+    @Operation(summary = "Create a extraction number-scale question in the protocol")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Success creating a number-scale question in the protocol"),
+        ApiResponse(responseCode = "400", description = "Fail creating a number-scale question in the protocol - invalid input"),
+    ])
     fun createNumberScaleQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -94,6 +117,11 @@ class ExtractionQuestionController(
     )
 
     @GetMapping("/{questionId}")
+    @Operation(summary = "Get an extraction question of a given protocol by code")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Success getting an extraction question of a given protocol by code"),
+        ApiResponse(responseCode = "404", description = "Fail getting an extraction question of a given protocol by code - not found"),
+    ])
     fun findQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -106,6 +134,10 @@ class ExtractionQuestionController(
     }
 
     @GetMapping
+    @Operation(summary = "Get all extraction questions in the protocol")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Success getting all extraction questions in the protocol. Either returns the questions of a systematic study or an empty list if no systematic study is found."),
+    ])
     fun findAllBySystematicStudyId(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID

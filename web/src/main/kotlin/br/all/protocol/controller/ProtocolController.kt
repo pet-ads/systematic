@@ -1,39 +1,65 @@
 package br.all.protocol.controller
 
-import br.all.application.protocol.create.CreateProtocolServiceImpl
-import br.all.application.protocol.find.FindOneProtocolServiceImpl
-import br.all.protocol.presenter.RestfulCreateProtocolPresenter
+import br.all.application.protocol.find.FindOneProtocolService
+import br.all.application.protocol.repository.CriterionDto
+import br.all.application.protocol.repository.PicocDto
+import br.all.application.protocol.update.UpdateProtocolService
 import br.all.protocol.presenter.RestfulFindOneProtocolPresenter
+import br.all.protocol.presenter.RestfulUpdateProtocolPresenter
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import br.all.application.protocol.create.CreateProtocolService.RequestModel as CreateRequestModel
 import br.all.application.protocol.find.FindOneProtocolService.RequestModel as FindOneRequestModel
 
 @RestController
 @RequestMapping("/researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol")
 class ProtocolController(
-    private val createProtocolService: CreateProtocolServiceImpl,
-    private val findOneProtocolService: FindOneProtocolServiceImpl,
+    private val findOneProtocolService: FindOneProtocolService,
+    private val updateProtocolService: UpdateProtocolService,
 ) {
-    @PostMapping
-    fun postProtocol(
-        @PathVariable researcherId: UUID,
-        @PathVariable systematicStudyId: UUID,
-        @RequestBody request: PostRequest,
-    ): ResponseEntity<*> {
-        val presenter = RestfulCreateProtocolPresenter()
-        val requestModel = request.toCreateRequestModel(researcherId, systematicStudyId)
 
-        createProtocolService.create(presenter, requestModel)
+    @GetMapping
+    @Operation(summary = "Get the protocol of a systematic study")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Success getting the protocol of a systematic study"),
+        ApiResponse(responseCode = "404", description = "Fail getting the protocol of a systematic study - nonexistent protocol or systematic study"),
+        ApiResponse(responseCode = "403", description = "Fail getting the protocol of a systematic study - unauthorized collaborator")
+    ])
+    fun findById(@PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID): ResponseEntity<*> {
+        val presenter = RestfulFindOneProtocolPresenter()
+        val request = FindOneRequestModel(researcherId, systematicStudyId)
 
+        findOneProtocolService.findById(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    data class PostRequest(
+    @PutMapping
+    @Operation(summary = "update the protocol of a systematic study")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Success updating the protocol of a systematic study"),
+        ApiResponse(responseCode = "404", description = "Fail updating the protocol of a systematic study - nonexistent protocol or systematic study"),
+        ApiResponse(responseCode = "403", description = "Fail updating the protocol of a systematic study - unauthorized collaborator")
+    ])
+    fun putProtocol(
+        @PathVariable researcherId: UUID,
+        @PathVariable systematicStudyId: UUID,
+        @RequestBody request: ProtocolRequest,
+    ): ResponseEntity<*> {
+        val presenter = RestfulUpdateProtocolPresenter()
+        val requestModel = request.toUpdateRequestModel(researcherId, systematicStudyId)
+
+        updateProtocolService.update(presenter, requestModel)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    data class ProtocolRequest(
         val goal: String? = null,
         val justification: String? = null,
+        val researchQuestions: Set<String>,
         val keywords: Set<String> = emptySet(),
 
         val searchString: String? = null,
@@ -45,14 +71,19 @@ class ProtocolController(
         val studyTypeDefinition: String? = null,
 
         val selectionProcess: String? = null,
+        val eligibilityCriteria: Set<CriterionDto> = emptySet(),
+
         val dataCollectionProcess: String? = null,
         val analysisAndSynthesisProcess: String? = null,
+
+        val picoc: PicocRequest? = null,
     ) {
-        fun toCreateRequestModel(researcher: UUID, systematicStudy: UUID) = CreateRequestModel(
+        fun toUpdateRequestModel(researcher: UUID, systematicStudy: UUID) = UpdateProtocolService.RequestModel(
             researcher,
             systematicStudy,
             goal,
             justification,
+            researchQuestions,
             keywords,
             searchString,
             informationSources,
@@ -61,17 +92,18 @@ class ProtocolController(
             studiesLanguages,
             studyTypeDefinition,
             selectionProcess,
+            eligibilityCriteria,
             dataCollectionProcess,
             analysisAndSynthesisProcess,
+            picoc?.let { PicocDto(it.population, it.intervention, it.control, it.outcome, it.context) },
         )
-    }
 
-    @GetMapping
-    fun findById(@PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID): ResponseEntity<*> {
-        val presenter = RestfulFindOneProtocolPresenter()
-        val request = FindOneRequestModel(researcherId, systematicStudyId)
-
-        findOneProtocolService.findById(presenter, request)
-        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+        data class PicocRequest(
+            val population: String,
+            val intervention: String,
+            val control: String,
+            val outcome: String,
+            val context: String? = null,
+        )
     }
 }
