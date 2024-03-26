@@ -1,5 +1,6 @@
 package br.all.review.presenter
 
+import br.all.application.review.create.CreateSystematicStudyService
 import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter
 import br.all.application.review.update.services.UpdateSystematicStudyService.ResponseModel
 import br.all.review.controller.SystematicStudyController
@@ -23,6 +24,15 @@ class RestfulUpdateSystematicStudyPresenter: UpdateSystematicStudyPresenter {
         restfulResponse.add(self)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
+
+    private fun postSystematicStudy(researcherId: UUID) = linkTo<SystematicStudyController> {
+        postSystematicStudy(
+            researcherId,
+            request = CreateSystematicStudyService.RequestModel(
+                "title",
+                "description",
+                collaborators = setOf(UUID.randomUUID())))
+    }.withSelfRel()
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 
