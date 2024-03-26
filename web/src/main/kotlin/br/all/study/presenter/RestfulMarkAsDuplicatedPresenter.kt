@@ -1,7 +1,10 @@
 package br.all.study.presenter
 
+
 import br.all.application.study.update.interfaces.MarkAsDuplicatedPresenter
+import br.all.application.study.update.interfaces.MarkAsDuplicatedService
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService.*
+import br.all.domain.model.study.StudyReview
 import br.all.shared.error.createErrorResponseFrom
 import br.all.study.controller.StudyReviewController
 import org.springframework.hateoas.RepresentationModel
@@ -12,6 +15,8 @@ import org.springframework.http.ResponseEntity.status
 import org.springframework.stereotype.Component
 import java.util.*
 
+
+//Que tal o link dos dois estudos envolvidos na indicação de duplicação?
 @Component
 class RestfulMarkAsDuplicatedPresenter : MarkAsDuplicatedPresenter {
 
@@ -22,15 +27,8 @@ class RestfulMarkAsDuplicatedPresenter : MarkAsDuplicatedPresenter {
             response.researcherId,
             response.systematicStudyId,
             response.updatedStudyReview,
-            response.duplicatedStudyReview
+            response.duplicatedStudyReview,
         )
-
-        val self = linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId, response.systematicStudyId, response.duplicatedStudyReview)
-        }.withSelfRel()
-
-        restfulResponse.add(self)
-        responseEntity = status(HttpStatus.OK).body(restfulResponse)
     }
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
@@ -44,4 +42,14 @@ class RestfulMarkAsDuplicatedPresenter : MarkAsDuplicatedPresenter {
         val duplicatedStudyReviewId: Long,
     ) : RepresentationModel<ViewModel>()
 
+
+    private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
+
+        val self = linkTo<StudyReviewController> {
+            findStudyReview(response.researcherId, response.systematicStudyId, response.duplicatedStudyReview)
+        }.withSelfRel()
+
+        restfulResponse.add(self)
+        responseEntity = status(HttpStatus.OK).body(restfulResponse)
+    }
 }

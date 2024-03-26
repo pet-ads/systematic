@@ -41,23 +41,11 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
             findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
         }.withSelfRel()
 
-        /*linkTo<StudyReviewController> {
-            findAllStudyReviews(response.researcherId, response.systematicStudyId);
-        }.withRel("_all")*/
 
         val findAll = linkTo<StudyReviewController> {
             findAllStudyReviews(response.researcherId, response.systematicStudyId)
         }.withRel("findAll")
 
-        //esse eu tiraria
-        val findAllBySource = linkTo<StudyReviewController> {
-            findAllStudyReviewsBySource(response.researcherId, response.systematicStudyId, searchSource = "")
-        }.withRel("findAllBySource")
-
-        // isso é o próprio self, não é?
-        val findOne = linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
-        }.withRel("findOne")
 
         val updateSelectionStatus = linkTo<StudyReviewController> {
             updateStudyReviewSelectionStatus(
@@ -104,8 +92,6 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
         restfulResponse.add(
             self,
             findAll,
-            findAllBySource,
-            findOne,
             updateSelectionStatus,
             updateExtractionStatus,
             updateReadingPriority,
