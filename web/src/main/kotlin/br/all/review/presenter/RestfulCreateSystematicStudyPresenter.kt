@@ -20,19 +20,17 @@ class RestfulCreateSystematicStudyPresenter: CreateSystematicStudyPresenter {
     override fun prepareSuccessView(response: ResponseModel) {
         val viewModel = ViewModel(response.researcherId, response.systematicStudyId)
 
-        val selfRef = linkTo<SystematicStudyController> {
-            findSystematicStudy(response.researcherId, response.systematicStudyId)
-        }.withSelfRel()
+        val selfRef = linkSelfRef(response)
+        val allStudies = linkForAllStudies(response)
+        val allStudiesByOwner = linkForAllStudiesByOwner(response)
+        val updateStudy = linkForUpdatingTheStudy(response)
 
-        val allStudies = linkTo<SystematicStudyController> {
-            findAllSystematicStudies(response.researcherId)
-        }.withRel("allStudies")
+        viewModel.add(selfRef, allStudies, allStudiesByOwner, updateStudy)
+        responseEntity = status(HttpStatus.CREATED).body(viewModel)
+    }
 
-        val allStudiesByOwner = linkTo<SystematicStudyController> {
-            findAllSystematicStudiesByOwner(response.researcherId, response.researcherId)
-        }.withRel("allStudiesByOwner")
-
-        val updateStudy = linkTo<SystematicStudyController> {
+    private fun linkForUpdatingTheStudy(response: ResponseModel) =
+        linkTo<SystematicStudyController> {
             updateSystematicStudy(
                 response.researcherId,
                 response.systematicStudyId,
@@ -40,10 +38,20 @@ class RestfulCreateSystematicStudyPresenter: CreateSystematicStudyPresenter {
             )
         }.withRel("updateStudy")
 
+    private fun linkForAllStudiesByOwner(response: ResponseModel) =
+        linkTo<SystematicStudyController> {
+            findAllSystematicStudiesByOwner(response.researcherId, response.researcherId)
+        }.withRel("allStudiesByOwner")
 
-        viewModel.add(selfRef, allStudies, allStudiesByOwner, updateStudy)
-        responseEntity = status(HttpStatus.CREATED).body(viewModel)
-    }
+    private fun linkForAllStudies(response: ResponseModel) =
+        linkTo<SystematicStudyController> {
+            findAllSystematicStudies(response.researcherId)
+        }.withRel("allStudies")
+
+    private fun linkSelfRef(response: ResponseModel) =
+        linkTo<SystematicStudyController> {
+            findSystematicStudy(response.researcherId, response.systematicStudyId)
+        }.withSelfRel()
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 
