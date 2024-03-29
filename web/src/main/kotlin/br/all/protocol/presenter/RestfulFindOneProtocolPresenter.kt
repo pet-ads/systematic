@@ -3,17 +3,12 @@ package br.all.protocol.presenter
 import br.all.application.protocol.find.FindOneProtocolPresenter
 import br.all.application.protocol.find.FindOneProtocolService.ResponseModel
 import br.all.application.protocol.repository.ProtocolDto
-import br.all.application.study.create.CreateStudyReviewService
-import br.all.domain.model.researcher.toResearcherId
 import br.all.protocol.controller.ProtocolController
 import br.all.shared.error.createErrorResponseFrom
-import br.all.study.controller.StudyReviewController
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestBody
 import java.util.*
 
 class RestfulFindOneProtocolPresenter: FindOneProtocolPresenter {
@@ -25,15 +20,16 @@ class RestfulFindOneProtocolPresenter: FindOneProtocolPresenter {
 
         val link = linkTo<ProtocolController> { findById(researcher, systematicStudy) }.withSelfRel()
 
-        val postProtocol = linkTo<ProtocolController> {
-            postProtocol(
-                response.researcherId,
-                response.systematicStudyId,
-                request = ProtocolController.PostRequest()
-            )
-        }.withRel("postProtocol")
+//        TODO: protocol does not have POST endpoint anymore. Maybe you could replace this one by the PUT endpoint.
+//        val postProtocol = linkTo<ProtocolController> {
+//            postProtocol(
+//                response.researcherId,
+//                response.systematicStudyId,
+//                request = ProtocolRequest()
+//            )
+//        }.withRel("postProtocol")
+//        viewModel.add(link,postProtocol)
 
-        viewModel.add(link,postProtocol)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(viewModel)
     }
 

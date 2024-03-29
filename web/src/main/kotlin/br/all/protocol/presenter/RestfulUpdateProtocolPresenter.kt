@@ -18,7 +18,8 @@ class RestfulUpdateProtocolPresenter: UpdateProtocolPresenter {
         val viewModel = ViewModel(researcher, systematicStudy)
 
         val link = linkTo<ProtocolController> {
-            findById(researcher, systematicStudy) }.withSelfRel()
+            findById(researcher, systematicStudy)
+        }.withSelfRel()
         viewModel.add(link)
 
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(viewModel)

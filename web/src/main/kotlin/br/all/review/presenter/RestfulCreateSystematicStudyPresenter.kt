@@ -2,8 +2,8 @@ package br.all.review.presenter
 
 import br.all.application.review.create.CreateSystematicStudyPresenter
 import br.all.application.review.create.CreateSystematicStudyService.ResponseModel
-import br.all.application.review.update.services.UpdateSystematicStudyService
 import br.all.review.controller.SystematicStudyController
+import br.all.review.controller.SystematicStudyController.PutRequest
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
@@ -21,29 +21,23 @@ class RestfulCreateSystematicStudyPresenter: CreateSystematicStudyPresenter {
         val viewModel = ViewModel(response.researcherId, response.systematicStudyId)
 
         val selfRef = linkTo<SystematicStudyController> {
-            findSystematicStudy(
-                response.researcherId,
-                response.systematicStudyId)
+            findSystematicStudy(response.researcherId, response.systematicStudyId)
         }.withSelfRel()
 
         val allStudies = linkTo<SystematicStudyController> {
-            findAllSystematicStudies(
-                response.researcherId)
+            findAllSystematicStudies(response.researcherId)
         }.withRel("allStudies")
 
         val allStudiesByOwner = linkTo<SystematicStudyController> {
-            findAllSystematicStudiesByOwner(
-                response.researcherId,
-                ownerId = response.systematicStudyId)
+            findAllSystematicStudiesByOwner(response.researcherId, response.researcherId)
         }.withRel("allStudiesByOwner")
 
         val updateStudy = linkTo<SystematicStudyController> {
             updateSystematicStudy(
                 response.researcherId,
                 response.systematicStudyId,
-                request = UpdateSystematicStudyService.RequestModel(
-                    "title",
-                    "description"))
+                PutRequest("title", "description"),
+            )
         }.withRel("updateStudy")
 
 

@@ -1,9 +1,9 @@
 package br.all.review.presenter
 
-import br.all.application.review.create.CreateSystematicStudyService
 import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter
 import br.all.application.review.update.services.UpdateSystematicStudyService.ResponseModel
 import br.all.review.controller.SystematicStudyController
+import br.all.review.controller.SystematicStudyController.PostRequest
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
@@ -21,17 +21,12 @@ class RestfulUpdateSystematicStudyPresenter: UpdateSystematicStudyPresenter {
             findSystematicStudy(response.researcherId, response.systematicStudy)
         }.withSelfRel()
 
-        restfulResponse.add(self)
+        restfulResponse.add(self)  // TODO: You've forgotten to add the link you created
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
     private fun postSystematicStudy(researcherId: UUID) = linkTo<SystematicStudyController> {
-        postSystematicStudy(
-            researcherId,
-            request = CreateSystematicStudyService.RequestModel(
-                "title",
-                "description",
-                collaborators = setOf(UUID.randomUUID())))
+        postSystematicStudy(researcherId, PostRequest("title", "description", setOf(UUID.randomUUID())))
     }.withSelfRel()
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }

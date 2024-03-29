@@ -59,7 +59,7 @@ class ProtocolController(
     data class ProtocolRequest(
         val goal: String? = null,
         val justification: String? = null,
-        val researchQuestions: Set<String>,
+        val researchQuestions: Set<String> = emptySet(),
         val keywords: Set<String> = emptySet(),
 
         val searchString: String? = null,
