@@ -7,8 +7,11 @@ import br.all.application.study.find.service.FindStudyReviewService
 import br.all.application.study.update.implementation.UpdateStudyReviewExtractionService
 import br.all.application.study.update.implementation.UpdateStudyReviewPriorityService
 import br.all.application.study.update.implementation.UpdateStudyReviewSelectionService
+import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionPresenter
+import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionService
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
+import br.all.question.controller.RiskOfBiasQuestionController
 import br.all.study.presenter.*
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -25,6 +28,7 @@ import br.all.application.study.find.service.FindAllStudyReviewsService.RequestM
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService.RequestModel as FindAllBySourceRequest
 import br.all.application.study.find.service.FindStudyReviewService.RequestModel as FindOneRequest
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.RequestModel as UpdateStatusRequest
+import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionService.RequestModel as RiskOfBiasRequest
 
 @RestController
 @RequestMapping("/api/v1/researcher/{researcher}/systematic-study/{systematicStudy}")
@@ -37,7 +41,8 @@ class StudyReviewController(
     val updateSelectionService: UpdateStudyReviewSelectionService,
     val updateExtractionService: UpdateStudyReviewExtractionService,
     val updateReadingPriorityService: UpdateStudyReviewPriorityService,
-    val markAsDuplicatedService: MarkAsDuplicatedService
+    val markAsDuplicatedService: MarkAsDuplicatedService,
+    val answerRiskOfBiasQuestionService: AnswerRiskOfBiasQuestionService,
 ) {
 
     @PostMapping("/study-review")
@@ -154,6 +159,52 @@ class StudyReviewController(
         updateExtractionService.changeStatus(presenter, request)
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
+
+    @PutMapping("/study-review/{studyReview}/riskOfBias-answer")
+    fun riskOfBiasAnswer(
+        @PathVariable researcherId: UUID,
+        @PathVariable systematicStudy: UUID,
+        @PathVariable studyReviewId: Long,
+        @RequestBody request: AnswerRequest,
+    ) : ResponseEntity<*> {
+        val presenter = RestfulAnswerRiskOfBiasQuestionPresenter()
+        val requestModel = request.toRiskOfBiasRequest(researcherId, systematicStudy, studyReviewId)
+
+        answerRiskOfBiasQuestionService.answer(presenter, requestModel)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+    abstract class AnswerRequest(
+        val questionId: UUID,
+        val type: String,
+        open val answer: Any,
+    ) {
+        fun toRiskOfBiasRequest(researcher: UUID, systematicStudy: UUID, studyReview: Long) =
+            RiskOfBiasRequest(researcher, systematicStudy, studyReview, questionId, type, answer)
+    }
+    class TextualAnswerRequest(
+        questionId: UUID,
+        type: String,
+        override val answer: String
+    ) : AnswerRequest(questionId, type, answer)
+
+    class PickListAnswerRequest(
+        questionId: UUID,
+        type: String,
+        override val answer: String
+    ) : AnswerRequest(questionId, type, answer)
+
+    class LabeledScaleRequest(
+        questionId: UUID,
+        type: String,
+        override val answer: String,
+    ) : AnswerRequest(questionId, type, answer)
+
+    class NumberScaleRequest(
+        questionId: UUID,
+        type: String,
+        override val answer: String,
+    ) : AnswerRequest(questionId, type, answer)
+
 
     @PatchMapping("/study-review/{studyReview}/reading-priority")
     @Operation(summary = "Update the reading priority of study review")
