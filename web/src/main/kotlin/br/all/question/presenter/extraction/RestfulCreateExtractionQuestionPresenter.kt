@@ -15,9 +15,61 @@ import java.util.*
 @Component
 class RestfulCreateExtractionQuestionPresenter : CreateQuestionPresenter {
     var responseEntity: ResponseEntity<*>? = null
+
     override fun prepareSuccessView(response: ResponseModel) {
-        val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, response.questionId)
+        val viewModel = ViewModel(response.researcherId, response.systematicStudyId, response.questionId)
+
+        val selfRef = linkSelfRef(response)
+        val pickList = linkCreatePickList(response)
+        val labeledScale = linkCreateLabeledScale(response)
+        val numberScale = linkCreateNumberScale(response)
+        val findAll = linkFindAll(response)
+
+        viewModel.add(selfRef, pickList, labeledScale, numberScale, findAll)
+        responseEntity = status(HttpStatus.CREATED).body(viewModel)
     }
+
+    private fun linkSelfRef(response: ResponseModel) =
+        linkTo<ExtractionQuestionController> {
+            findQuestion(response.researcherId, response.systematicStudyId, response.questionId)
+        }.withSelfRel()
+
+    private fun linkCreatePickList(response: ResponseModel) =
+        linkTo<ExtractionQuestionController> {
+            createPickListQuestion(
+                response.researcherId,
+                response.systematicStudyId,
+                request = ExtractionQuestionController.PickListRequest(
+                    "code", "description", listOf("option1")
+                )
+            )
+        }.withRel("pickList")
+
+    private fun linkCreateLabeledScale(response: ResponseModel) =
+        linkTo<ExtractionQuestionController> {
+            createLabeledScaleQuestion(
+                response.researcherId,
+                response.systematicStudyId,
+                request = ExtractionQuestionController.LabeledScaleRequest(
+                    "code", "description", mapOf("scale1" to 1)
+                )
+            )
+        }.withRel("labeledScale")
+
+    private fun linkCreateNumberScale(response: ResponseModel) =
+        linkTo<ExtractionQuestionController> {
+            createNumberScaleQuestion(
+                response.researcherId,
+                response.systematicStudyId,
+                request = ExtractionQuestionController.NumberScaleRequest(
+                    "code", "description", 0, 0
+                )
+            )
+        }.withRel("numberScale")
+    private fun linkFindAll(response: ResponseModel) =
+        linkTo<ExtractionQuestionController> {
+            findAllBySystematicStudyId(response.researcherId, response.systematicStudyId)
+        }.withRel("findAll")
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 
@@ -28,48 +80,4 @@ class RestfulCreateExtractionQuestionPresenter : CreateQuestionPresenter {
         val systematicStudyId: UUID,
         val questionId: UUID
     ) : RepresentationModel<ViewModel>()
-
-    private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
-        val self = linkTo<ExtractionQuestionController> {
-            findQuestion(response.researcherId, response.systematicStudyId, response.questionId)
-        }.withSelfRel()
-
-        val createPickList = linkTo<ExtractionQuestionController> {
-            createPickListQuestion(
-                response.researcherId,
-                response.systematicStudyId,
-                request = ExtractionQuestionController.PickListRequest(
-                    "code", "description", listOf("option1")
-                )
-            )
-        }.withRel("createPickList")
-
-        val createLabeledScale = linkTo<ExtractionQuestionController> {
-            createLabeledScaleQuestion(
-                response.researcherId,
-                response.systematicStudyId,
-                request = ExtractionQuestionController.LabeledScaleRequest(
-                    "code", "description", mapOf("scale1" to 1)
-                )
-            )
-        }.withRel("createLabeledScale")
-
-        val createNumberScale = linkTo<ExtractionQuestionController> {
-            createNumberScaleQuestion(
-                response.researcherId,
-                response.systematicStudyId,
-                request = ExtractionQuestionController.NumberScaleRequest(
-                    "code", "description", 0, 0
-                )
-            )
-        }.withRel("createNumberScale")
-
-        val findAll = linkTo<ExtractionQuestionController> {
-            findAllBySystematicStudyId(response.researcherId, response.systematicStudyId)
-        }.withRel("findAll")
-
-
-        restfulResponse.add(self, createPickList, createLabeledScale, createNumberScale, findAll)
-        responseEntity = status(HttpStatus.CREATED).body(restfulResponse)
-    }
 }

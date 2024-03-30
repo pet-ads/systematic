@@ -27,7 +27,7 @@ class RestfulFindAllSystematicStudiesPresenter: FindAllSystematicStudyPresenter 
             ownerId?.let { linkToFindAllByOwner(researcherId, it) } ?: linkToFindAll(researcherId)
         }
 
-        restfulResponse.add(self) // TODO: You've forgotten to add the other link you created
+        restfulResponse.add(self, postSystematicStudy(response.researcherId))
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 

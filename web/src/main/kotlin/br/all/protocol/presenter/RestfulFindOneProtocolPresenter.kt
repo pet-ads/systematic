@@ -20,16 +20,14 @@ class RestfulFindOneProtocolPresenter: FindOneProtocolPresenter {
 
         val link = linkTo<ProtocolController> { findById(researcher, systematicStudy) }.withSelfRel()
 
-//        TODO: protocol does not have POST endpoint anymore. Maybe you could replace this one by the PUT endpoint.
-//        val postProtocol = linkTo<ProtocolController> {
-//            postProtocol(
-//                response.researcherId,
-//                response.systematicStudyId,
-//                request = ProtocolRequest()
-//            )
-//        }.withRel("postProtocol")
-//        viewModel.add(link,postProtocol)
+        val putProtocol = linkTo<ProtocolController> {
+            putProtocol(response.researcherId,
+                        response.systematicStudyId,
+                        request = ProtocolController.ProtocolRequest()
+            )
+        }.withRel("putProtocol")
 
+        viewModel.add(link, putProtocol)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(viewModel)
     }
 
@@ -41,5 +39,5 @@ class RestfulFindOneProtocolPresenter: FindOneProtocolPresenter {
         val researcherId: UUID,
         val systematicStudyId: UUID,
         val content: ProtocolDto,
-    ): RepresentationModel<ViewModel>()
+    ) : RepresentationModel<ViewModel>()
 }

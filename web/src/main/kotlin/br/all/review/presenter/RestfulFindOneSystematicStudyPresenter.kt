@@ -25,7 +25,8 @@ class RestfulFindOneSystematicStudyPresenter: FindOneSystematicStudyPresenter {
             findSystematicStudy(response.researcherId, response.systematicStudyId)
         }.withSelfRel()
 
-        restfulResponse.add(self)  // TODO: You've forgotten to add the links you created
+        restfulResponse.add(self, postSystematicStudy(response.researcherId), updateSystematicStudy(response.researcherId,
+                                                                                                    response.systematicStudyId))
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 

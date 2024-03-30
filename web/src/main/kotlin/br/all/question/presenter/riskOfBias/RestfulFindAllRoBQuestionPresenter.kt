@@ -17,22 +17,27 @@ class RestfulFindAllRoBQuestionPresenter : FindAllBySystematicStudyIdPresenter {
     var responseEntity: ResponseEntity<*>? = null
     override fun prepareSuccessView(response: FindAllBySystematicStudyIdService.ResponseModel) {
         val restfulResponse = ViewModel(response.systematicStudyId, response.questions.size, response.questions)
+
+        val selfRef = linkSelfRef(response)
+        val createQuestion = linkCreateQuestion(response)
+        val createPickList = linkCreatePickList(response)
+        val createLabeledScale = linkCreateLabeledScale(response)
+        val createNumberScale = linkCreateNumberScale(response)
+
+        restfulResponse.add(selfRef, createQuestion ,createPickList,createLabeledScale,createNumberScale)
+        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
-    override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
-    override fun isDone() = responseEntity != null
-    private data class ViewModel(
-        val systematicStudyId: UUID,
-        val size: Int,
-        val questions: List<QuestionDto>
-    ) : RepresentationModel<ViewModel>()
 
-    private fun prepareHateoas(response: FindAllBySystematicStudyIdService.ResponseModel, restfulResponse:ViewModel) {
 
-        val self = linkTo<RiskOfBiasQuestionController> {
+    private fun linkSelfRef(response: FindAllBySystematicStudyIdService.ResponseModel) =
+        linkTo<RiskOfBiasQuestionController> {
             findAllBySystematicStudyId(response.researcherId, response.systematicStudyId)
         }.withSelfRel()
 
-        val createQuestion = linkTo<RiskOfBiasQuestionController> {
+
+
+    private fun linkCreateQuestion(response: FindAllBySystematicStudyIdService.ResponseModel) =
+        linkTo<RiskOfBiasQuestionController> {
             createTextualQuestion(
                 response.researcherId,
                 response.systematicStudyId,
@@ -41,7 +46,9 @@ class RestfulFindAllRoBQuestionPresenter : FindAllBySystematicStudyIdPresenter {
                 ))
         }.withRel("createQuestion")
 
-        val createPickList = linkTo<RiskOfBiasQuestionController> {
+
+    private fun linkCreatePickList(response: FindAllBySystematicStudyIdService.ResponseModel) =
+        linkTo<RiskOfBiasQuestionController> {
             createPickListQuestion(
                 response.researcherId,
                 response.systematicStudyId,
@@ -51,7 +58,9 @@ class RestfulFindAllRoBQuestionPresenter : FindAllBySystematicStudyIdPresenter {
             )
         }.withRel("createPickList")
 
-        val createLabeledScale = linkTo<RiskOfBiasQuestionController> {
+
+    private fun linkCreateLabeledScale(response: FindAllBySystematicStudyIdService.ResponseModel) =
+        linkTo<RiskOfBiasQuestionController> {
             createLabeledScaleQuestion(
                 response.researcherId,
                 response.systematicStudyId,
@@ -61,7 +70,9 @@ class RestfulFindAllRoBQuestionPresenter : FindAllBySystematicStudyIdPresenter {
             )
         }.withRel("createLabeledScale")
 
-        val createNumberScale = linkTo<RiskOfBiasQuestionController> {
+
+    private fun linkCreateNumberScale(response: FindAllBySystematicStudyIdService.ResponseModel) =
+        linkTo<RiskOfBiasQuestionController> {
             createNumberScaleQuestion(
                 response.researcherId,
                 response.systematicStudyId,
@@ -71,7 +82,12 @@ class RestfulFindAllRoBQuestionPresenter : FindAllBySystematicStudyIdPresenter {
             )
         }.withRel("createNumberScale")
 
-        restfulResponse.add(self, createQuestion,createPickList,createLabeledScale,createNumberScale)
-        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
-    }
+
+    override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
+    override fun isDone() = responseEntity != null
+    private data class ViewModel(
+        val systematicStudyId: UUID,
+        val size: Int,
+        val questions: List<QuestionDto>
+    ) : RepresentationModel<ViewModel>()
 }

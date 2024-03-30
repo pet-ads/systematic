@@ -16,9 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import java.util.*
 
-
-//FindSearchSession
-//FindAllSearchSession
 @Component
 class RestfulFindAllStudyReviewsBySourcePresenter : FindAllStudyReviewsBySourcePresenter {
 
@@ -27,31 +24,27 @@ class RestfulFindAllStudyReviewsBySourcePresenter : FindAllStudyReviewsBySourceP
     override fun prepareSuccessView(response: ResponseModel) {
         val (researcherId, systematicStudyId, searchSource, studyReviews) = response
         val restfulResponse = ViewModel(systematicStudyId, searchSource, studyReviews.size, studyReviews)
+
+        val selfRef = linkSelfRef(response)
+        val allStudyReview = linkFindAllStudiesReviews(response)
+        val createStudyReview = linkCreateStudyReview(response)
+
+        restfulResponse.add(selfRef, allStudyReview, createStudyReview)
+        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
-    override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
-
-    override fun isDone() = responseEntity != null
-
-    private data class ViewModel(
-        val systematicStudyId: UUID,
-        val searchSource: String,
-        val size: Int,
-        val studyReviews: List<StudyReviewDto>,
-    ) : RepresentationModel<ViewModel>()
-
-
-    private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
-
-        val self = linkTo<StudyReviewController> {
+    private fun linkSelfRef(response: ResponseModel) =
+        linkTo<StudyReviewController> {
             findAllStudyReviewsBySource(response.researcherId, response.systematicStudyId, response.searchSource)
         }.withSelfRel()
 
-        val findAll = linkTo<StudyReviewController> {
+    private fun linkFindAllStudiesReviews(response: ResponseModel) =
+        linkTo<StudyReviewController> {
             findAllStudyReviews(response.researcherId, response.systematicStudyId)
-        }.withRel("findAll")
+        }.withRel("allStudyReview")
 
-        val createStudyReview = linkTo<StudyReviewController> {
+    private fun linkCreateStudyReview(response: ResponseModel) =
+        linkTo<StudyReviewController> {
             createStudyReview(
                 response.researcherId,
                 response.systematicStudyId,
@@ -70,19 +63,14 @@ class RestfulFindAllStudyReviewsBySourcePresenter : FindAllStudyReviewsBySourceP
             )
         }.withRel("createStudyReview")
 
+    override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 
-        /*
-        val linkToFindSearchSession = linkTo<YourController> {
-            findSearchSession(researcherId, systematicStudyId, searchSource)
-        }.withRel("findSearchSession")
+    override fun isDone() = responseEntity != null
 
-        val linkToFindAllSearchSession = linkTo<YourController> {
-            findAllSearchSession(researcherId, systematicStudyId)
-        }.withRel("findAllSearchSession")
-
-        restfulResponse.add(linkToFindSearchSession, linkToFindAllSearchSession)*/
-
-        restfulResponse.add(self, findAll, createStudyReview)
-        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
-    }
+    private data class ViewModel(
+        val systematicStudyId: UUID,
+        val searchSource: String,
+        val size: Int,
+        val studyReviews: List<StudyReviewDto>,
+    ) : RepresentationModel<ViewModel>()
 }

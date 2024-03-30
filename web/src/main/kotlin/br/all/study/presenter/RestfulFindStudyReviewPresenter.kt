@@ -12,12 +12,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
-
-// O que faz sentido para mim:
-//findAllStudyReviews
-//findAllStudyReviewsBySource
-//createStudyReview
-
 @Component
 class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
 
@@ -25,7 +19,44 @@ class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.content)
+
+        val selfRef = linkSelfRef(response)
+        val allStudyReview = linkFindAllStudyReviews(response)
+        val createStudy = linkCreateStudyReview(response)
+        restfulResponse.add(selfRef, allStudyReview, createStudy)
+        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
+
+    private fun linkSelfRef(response: ResponseModel) =
+        linkTo<StudyReviewController> {
+            findStudyReview(response.researcherId, response.content.systematicStudyId, response.content.studyReviewId)
+        }.withSelfRel()
+
+    private fun linkFindAllStudyReviews(response: ResponseModel) =
+        linkTo<StudyReviewController> {
+            findAllStudyReviews(response.researcherId, systematicStudy = response.content.systematicStudyId)
+        }.withRel("allStudyReview")
+
+    private fun linkCreateStudyReview(response: ResponseModel) =
+        linkTo<StudyReviewController> {
+            createStudyReview(
+                response.researcherId,
+                response.content.systematicStudyId,
+                request = CreateStudyReviewService.RequestModel(
+                    researcherId = response.researcherId,
+                    systematicStudyId = response.content.systematicStudyId,
+                    type = "",
+                    title = "",
+                    year = 2024,
+                    authors = "",
+                    venue = "",
+                    abstract = "",
+                    keywords = emptySet(),
+                    source = ""
+                )
+            )
+        }.withRel("createStudy")
+
 
     override fun prepareFailView(throwable: Throwable)= run { responseEntity = createErrorResponseFrom(throwable) }
 
@@ -51,38 +82,5 @@ class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
         val readingPriority = content.readingPriority
         val extractionStatus = content.extractionStatus
         val selectionStatus = content.selectionStatus
-    }
-
-
-    private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
-        val self = linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId, response.content.systematicStudyId, response.content.studyReviewId)
-        }.withSelfRel()
-
-        val findAll = linkTo<StudyReviewController> {
-            findAllStudyReviews(response.researcherId, systematicStudy = response.content.systematicStudyId)
-        }.withRel("findAll")
-
-        val createStudyReview = linkTo<StudyReviewController> {
-            createStudyReview(
-                response.researcherId,
-                response.content.systematicStudyId,
-                request = CreateStudyReviewService.RequestModel(
-                    researcherId = response.researcherId,
-                    systematicStudyId = response.content.systematicStudyId,
-                    type = "",
-                    title = "",
-                    year = 2024,
-                    authors = "",
-                    venue = "",
-                    abstract = "",
-                    keywords = emptySet(),
-                    source = ""
-                )
-            )
-        }.withRel("createStudyReview")
-
-        restfulResponse.add(self, findAll, createStudyReview)
-        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 }

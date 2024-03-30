@@ -13,10 +13,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import java.util.*
 
-//O que faz sentido para mim:
-//findAllStudyReviewsBySource - OK
-//createStudyReview - OK
-
 @Component
 class RestfulFindAllStudyReviewsPresenter : FindAllStudyReviewsPresenter {
 
@@ -24,32 +20,28 @@ class RestfulFindAllStudyReviewsPresenter : FindAllStudyReviewsPresenter {
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.systematicStudyId, response.studyReviews.size, response.studyReviews)
+
+        val selfRef = linkSelfRef(response)
+        val allBySource = linkFindAllBySource(response)
+        val createStudyReview = linkCreateStudyReview(response)
+
+        restfulResponse.add(selfRef, allBySource, createStudyReview)
+        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
-    override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
-
-    override fun isDone() = responseEntity != null
-
-    private data class ViewModel (
-        val systematicStudyId : UUID,
-        val size: Int,
-        val studyReviews: List<StudyReviewDto>,
-    ) : RepresentationModel<ViewModel>()
-
-
-    private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
-
-        val self = linkTo<StudyReviewController> {
+    private fun linkSelfRef(response: ResponseModel) =
+        linkTo<StudyReviewController> {
             findAllStudyReviews(response.researcherId, response.systematicStudyId)
         }.withSelfRel()
 
-
-        val findAllBySource = linkTo<StudyReviewController> {
+    private fun linkFindAllBySource(response: ResponseModel) =
+        linkTo<StudyReviewController> {
             findAllStudyReviewsBySource(response.researcherId, response.systematicStudyId, searchSource = "")
-        }.withRel("findAllBySource")
+        }.withRel("allBySource")
 
 
-        val createStudyReview = linkTo<StudyReviewController> {
+    private fun linkCreateStudyReview(response: ResponseModel) =
+        linkTo<StudyReviewController> {
             createStudyReview(
                 response.researcherId,
                 response.systematicStudyId,
@@ -68,7 +60,14 @@ class RestfulFindAllStudyReviewsPresenter : FindAllStudyReviewsPresenter {
             )
         }.withRel("createStudyReview")
 
-        restfulResponse.add(self, findAllBySource, createStudyReview)
-        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
-    }
+
+    override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
+
+    override fun isDone() = responseEntity != null
+
+    private data class ViewModel (
+        val systematicStudyId : UUID,
+        val size: Int,
+        val studyReviews: List<StudyReviewDto>,
+    ) : RepresentationModel<ViewModel>()
 }
