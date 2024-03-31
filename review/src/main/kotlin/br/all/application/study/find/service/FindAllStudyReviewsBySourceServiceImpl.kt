@@ -1,6 +1,5 @@
 package br.all.application.study.find.service
 
-import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.presenter.PreconditionChecker

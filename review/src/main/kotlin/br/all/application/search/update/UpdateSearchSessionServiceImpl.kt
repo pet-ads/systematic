@@ -9,12 +9,10 @@ import br.all.application.search.update.UpdateSearchSessionService.RequestModel
 import br.all.application.search.update.UpdateSearchSessionService.ResponseModel
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.presenter.PreconditionChecker
-import br.all.domain.model.protocol.SearchSource
 import br.all.domain.model.protocol.toSearchSource
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSession
-import br.all.domain.model.search.SearchSessionID
 
 class UpdateSearchSessionServiceImpl (
     private val systematicStudyRepository: SystematicStudyRepository,

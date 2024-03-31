@@ -18,6 +18,8 @@ import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresent
 import br.all.domain.services.IdGeneratorService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import br.all.application.study.update.implementation.AnswerRiskOfBiasQuestionServiceImpl
+
 
 @Configuration
 class StudyReviewServicesConfiguration {
@@ -112,12 +114,12 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
-//    @Bean
-//    fun answerRiskOfBiasQuestionService(
-//        studyReviewRepository: StudyReviewRepository,
-//        questionRepository: QuestionRepository,
-//        systematicStudyRepository: SystematicStudyRepository,
-//        credentialsService: ResearcherCredentialsService
-//    ) = AnswerRiskOfBiasQuestionImpl(studyReviewRepository, questionRepository,
-//        systematicStudyRepository, credentialsService)
+    @Bean
+    fun answerRiskOfBiasQuestionService(
+        studyReviewRepository: StudyReviewRepository,
+        questionRepository: QuestionRepository,
+        systematicStudyRepository: SystematicStudyRepository,
+        credentialsService: ResearcherCredentialsService
+    ) = AnswerRiskOfBiasQuestionServiceImpl(studyReviewRepository, questionRepository,
+        systematicStudyRepository, credentialsService)
 }
