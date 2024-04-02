@@ -9,6 +9,8 @@ import br.all.question.presenter.extraction.RestfulFindAllExtractionQuestionPres
 import br.all.question.presenter.riskOfBias.RestfulCreateRoBQuestionPresenter
 import br.all.question.presenter.riskOfBias.RestfulFindRoBQuestionPresenter
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.HttpStatus
@@ -37,10 +39,15 @@ class RiskOfBiasQuestionController(
 
     @PostMapping("/textual")
     @Operation(summary = "Create a risk of bias textual question in the protocol")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Success creating a textual question in the protocol"),
-        ApiResponse(responseCode = "400", description = "Fail creating a textual question in the protocol - invalid input"),
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "201", description = "Success creating a textual question in the protocol"),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail creating a textual question in the protocol - invalid input"
+            ),
+        ]
+    )
     fun createTextualQuestion(
         @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: TextualRequest,
     ): ResponseEntity<*> = createQuestion(
@@ -55,10 +62,15 @@ class RiskOfBiasQuestionController(
 
     @PostMapping("/pick-list")
     @Operation(summary = "Create a risk of bias pick-list question in the protocol")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Success creating a pick-list question in the protocol"),
-        ApiResponse(responseCode = "400", description = "Fail creating a pick-list question in the protocol - invalid input"),
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "201", description = "Success creating a pick-list question in the protocol"),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail creating a pick-list question in the protocol - invalid input"
+            ),
+        ]
+    )
     fun createPickListQuestion(
         @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: PickListRequest,
     ): ResponseEntity<*> = createQuestion(
@@ -74,10 +86,18 @@ class RiskOfBiasQuestionController(
 
     @PostMapping("/labeled-scale")
     @Operation(summary = "Create a risk of bias labeled-scale question in the protocol")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Success creating a labeled-scale question in the protocol"),
-        ApiResponse(responseCode = "400", description = "Fail creating a labeled-scale question in the protocol - invalid input"),
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "201",
+                description = "Success creating a labeled-scale question in the protocol"
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail creating a labeled-scale question in the protocol - invalid input"
+            ),
+        ]
+    )
     fun createLabeledScaleQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -95,10 +115,15 @@ class RiskOfBiasQuestionController(
 
     @PostMapping("/number-scale")
     @Operation(summary = "Create a risk of bias number-scale question in the protocol")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Success creating a number-scale question in the protocol"),
-        ApiResponse(responseCode = "400", description = "Fail creating a number-scale question in the protocol - invalid input"),
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "201", description = "Success creating a number-scale question in the protocol"),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail creating a number-scale question in the protocol - invalid input"
+            ),
+        ]
+    )
     fun createNumberScaleQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -117,10 +142,23 @@ class RiskOfBiasQuestionController(
 
     @GetMapping("/{questionId}")
     @Operation(summary = "Get an extraction question of a given protocol by code")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Success getting an risk of bias question of a given protocol by code"),
-        ApiResponse(responseCode = "404", description = "Fail getting an risk of bias question of a given protocol by code - not found"),
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success getting an risk of bias question of a given protocol by code",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = FindQuestionService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail getting an risk of bias question of a given protocol by code - not found",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+        ]
+    )
     fun findQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -134,9 +172,18 @@ class RiskOfBiasQuestionController(
 
     @GetMapping
     @Operation(summary = "Get all risk of bias questions in the protocol")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Success getting all risk of bias questions in the protocol. Either returns the questions of a systematic study or an empty list if no systematic study is found."),
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success getting all risk of bias questions in the protocol. Either returns the questions of a systematic study or an empty list if no systematic study is found.",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = FindAllBySystematicStudyIdService.ResponseModel::class)
+                )]
+            ),
+        ]
+    )
     fun findAllBySystematicStudyId(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID
