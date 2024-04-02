@@ -10,6 +10,8 @@ import br.all.review.presenter.RestfulFindAllSystematicStudiesPresenter
 import br.all.review.presenter.RestfulFindOneSystematicStudyPresenter
 import br.all.review.presenter.RestfulUpdateSystematicStudyPresenter
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.HttpStatus
@@ -45,10 +47,15 @@ class SystematicStudyController(
 
     @PostMapping
     @Operation(summary = "Create a systematic study")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Success creating a systematic study"),
-        ApiResponse(responseCode = "400", description = "Fail creating a systematic study - invalid systematic study"),
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "201", description = "Success creating a systematic study"),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail creating a systematic study - invalid systematic study"
+            ),
+        ]
+    )
     fun postSystematicStudy(
         @PathVariable researcherId: UUID,
         @RequestBody request: PostRequest,
@@ -62,11 +69,19 @@ class SystematicStudyController(
 
     @GetMapping("/{systematicStudyId}")
     @Operation(summary = "Get a systematic study by id")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Success getting a systematic study by id"),
-        ApiResponse(responseCode = "404", description = "Fail getting systematic study - not found"),
-        ApiResponse(responseCode = "403", description = "Fail getting systematic study - unauthorized researcher")
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200", description = "Success getting a systematic study by id",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = FindOneSystematicStudyService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(responseCode = "404", description = "Fail getting systematic study - not found"),
+            ApiResponse(responseCode = "403", description = "Fail getting systematic study - unauthorized researcher")
+        ]
+    )
     fun findSystematicStudy(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -79,10 +94,22 @@ class SystematicStudyController(
 
     @GetMapping
     @Operation(summary = "Get all systematic studies of a given reviewer")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Success getting all systematic studies of a given reviewer. Either all systematic studies or none"),
-        ApiResponse(responseCode = "403", description = "Fail getting all systematic studies of a given reviewer - unauthorized researcher")
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success getting all systematic studies of a given reviewer. Either all systematic studies or none",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = FindAllSystematicStudiesService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail getting all systematic studies of a given reviewer - unauthorized researcher"
+            )
+        ]
+    )
     fun findAllSystematicStudies(@PathVariable researcherId: UUID): ResponseEntity<*> {
         val presenter = RestfulFindAllSystematicStudiesPresenter()
         findAllSystematicStudiesService.findAllByCollaborator(presenter, researcherId)
@@ -91,10 +118,22 @@ class SystematicStudyController(
 
     @GetMapping("/owner/{ownerId}")
     @Operation(summary = "Get all systematic studies of a given owner")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Success getting all systematic studies of a given owner. Either all systematic studies or none"),
-        ApiResponse(responseCode = "403", description = "Fail getting all systematic studies of a given owner - unauthorized researcher")
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success getting all systematic studies of a given owner. Either all systematic studies or none",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = FindAllSystematicStudiesService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail getting all systematic studies of a given owner - unauthorized researcher"
+            )
+        ]
+    )
     fun findAllSystematicStudiesByOwner(
         @PathVariable researcherId: UUID,
         @PathVariable ownerId: UUID,
@@ -108,11 +147,16 @@ class SystematicStudyController(
 
     @PutMapping("/{systematicStudyId}")
     @Operation(summary = "Update an existing systematic study")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Success updating an existing systematic study"),
-        ApiResponse(responseCode = "404", description = "Fail updating an existing systematic study - not found"),
-        ApiResponse(responseCode = "400", description = "Fail updating an existing systematic study - invalid systematic study"),
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Success updating an existing systematic study"),
+            ApiResponse(responseCode = "404", description = "Fail updating an existing systematic study - not found"),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail updating an existing systematic study - invalid systematic study"
+            ),
+        ]
+    )
     fun updateSystematicStudy(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,

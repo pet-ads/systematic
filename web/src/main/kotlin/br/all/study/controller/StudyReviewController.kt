@@ -137,11 +137,13 @@ class StudyReviewController(
     @Operation(summary = "Get an existing study review of a systematic study")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Success getting a study review of a systematic study",
+            ApiResponse(
+                responseCode = "200", description = "Success getting a study review of a systematic study",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(implementation = FindStudyReviewService.ResponseModel::class)
-                )]),
+                )]
+            ),
             ApiResponse(responseCode = "404", description = "Fail getting study review - not found"),
         ]
     )
