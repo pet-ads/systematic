@@ -78,8 +78,16 @@ class SystematicStudyController(
                     schema = Schema(implementation = FindOneSystematicStudyService.ResponseModel::class)
                 )]
             ),
-            ApiResponse(responseCode = "404", description = "Fail getting systematic study - not found"),
-            ApiResponse(responseCode = "403", description = "Fail getting systematic study - unauthorized researcher")
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail getting systematic study - not found",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail getting systematic study - unauthorized researcher",
+                content = [Content(schema = Schema(hidden = true))]
+            )
         ]
     )
     fun findSystematicStudy(
@@ -106,7 +114,8 @@ class SystematicStudyController(
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail getting all systematic studies of a given reviewer - unauthorized researcher"
+                description = "Fail getting all systematic studies of a given reviewer - unauthorized researcher",
+                content = [Content(schema = Schema(hidden = true))]
             )
         ]
     )

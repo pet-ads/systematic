@@ -101,11 +101,13 @@ class SearchSessionController(
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "Fail getting an existing search session in the systematic study - not found"
+                description = "Fail getting an existing search session in the systematic study - not found",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail getting an existing search session in the systematic study - invalid id format"
+                description = "Fail getting an existing search session in the systematic study - invalid id format",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )

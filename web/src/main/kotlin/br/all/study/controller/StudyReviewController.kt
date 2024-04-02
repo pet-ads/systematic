@@ -144,7 +144,11 @@ class StudyReviewController(
                     schema = Schema(implementation = FindStudyReviewService.ResponseModel::class)
                 )]
             ),
-            ApiResponse(responseCode = "404", description = "Fail getting study review - not found"),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail getting study review - not found",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
         ]
     )
     fun findStudyReview(
