@@ -139,7 +139,8 @@ class SystematicStudyController(
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail getting all systematic studies of a given owner - unauthorized researcher"
+                description = "Fail getting all systematic studies of a given owner - unauthorized researcher",
+                content = [Content(schema = Schema(hidden = true))]
             )
         ]
     )
