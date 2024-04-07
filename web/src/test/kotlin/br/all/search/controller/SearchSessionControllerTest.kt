@@ -44,6 +44,8 @@ class SearchSessionControllerTest(
     fun postUrl() = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-session"
     fun findUrl(sessionId: String = "") =
         "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-session${sessionId}"
+    fun invalidFindUrl(researcherId: String = "", sessionId: String = "") =
+        "/api/v1/researcher/${researcherId}/systematic-study/$systematicStudyId/search-session${sessionId}"
 
     fun putUrl(
         researcherId: UUID = factory.researcherId,
@@ -135,6 +137,21 @@ class SearchSessionControllerTest(
                 .andExpect(status().isOk)
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(searchSession.id.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+        }
+
+        @Test
+        fun `should return 403 when researcher is not authorized`() {
+
+            val searchSession = factory.searchSessionDocument(factory.sessionId, systematicStudyId)
+            repository.insert(searchSession)
+
+            val sessionId = "/${searchSession.id}"
+            val researcherId = "/${factory.invalidResearcherId}"
+            mockMvc.perform(MockMvcRequestBuilders.get(
+                invalidFindUrl(researcherId, sessionId
+                )).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden)
+                .andReturn()
         }
 
         @Test

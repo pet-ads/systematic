@@ -16,6 +16,7 @@ class TestDataFactory {
     val systematicStudyId: UUID = UUID.randomUUID()
     val sessionId: UUID = UUID.randomUUID()
     val nonExistentSessionId: UUID = UUID.randomUUID()
+    val invalidResearcherId: UUID = UUID.randomUUID()
     private val faker = Faker()
 
     fun validPostRequest(researcher: UUID = this.researcherId, systematicStudyId: UUID = this.systematicStudyId) =
