@@ -8,6 +8,8 @@ import br.all.infrastructure.search.MongoSearchSessionRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
+import io.mockk.verify
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
@@ -16,6 +18,8 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.core.task.SyncTaskExecutor
+import org.springframework.core.task.TaskExecutor
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -25,7 +29,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.util.NestedServletException
 import java.util.*
+import java.util.concurrent.CountDownLatch
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -120,6 +127,19 @@ class SearchSessionControllerTest(
             mockMvc.perform(multipart(postUrl()).file(factory.bibfile()).param("data", factory.invalidPostRequest()))
                 .andExpect(status().isNotFound)
                 .andReturn()
+        }
+
+        @Test
+        fun `should return 409 when there is a uniqueness violation error`() {
+            val searchSession = factory.uniquenessViolationDocument(factory.sessionId, systematicStudyId)
+            repository.insert(searchSession)
+
+            mockMvc.perform(multipart(postUrl()).file(factory.bibfile()).param(
+                "data", factory.uniquenessViolationPostRequest())
+            )
+                .andExpect(status().isConflict)
+                .andReturn()
+
         }
     }
 

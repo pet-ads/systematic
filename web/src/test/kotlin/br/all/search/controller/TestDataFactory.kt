@@ -30,6 +30,17 @@ class TestDataFactory {
         }
         """.trimIndent()
 
+    fun uniquenessViolationPostRequest(researcher: UUID = this.researcherId, systematicStudyId: UUID = this.systematicStudyId) =
+        """
+        {
+            "researcherId": "$researcher",
+            "systematicStudyId": "$systematicStudyId",
+            "source": "Source",
+            "searchString": "${faker.paragraph(5)}",
+            "additionalInfo": "${faker.paragraph(30)}"
+        }
+        """.trimIndent()
+
     fun invalidPostRequest(
         researcherId: UUID = UUID.randomUUID(),
         systematicStudyId: UUID = UUID.randomUUID()
@@ -96,6 +107,24 @@ class TestDataFactory {
         additionalInfo: String = "AdditionalInfo",
         timeStamp: LocalDateTime = LocalDateTime.of(2022, 1, 1, 0, 0),
         searchSource: String = "SearchSource"
+    ): SearchSessionDocument {
+        return SearchSessionDocument(
+            id,
+            systematicStudyId,
+            searchString,
+            additionalInfo,
+            timeStamp,
+            searchSource,
+        )
+    }
+
+    fun uniquenessViolationDocument(
+        id: UUID = this.sessionId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        searchString: String = "SearchString",
+        additionalInfo: String = "AdditionalInfo",
+        timeStamp: LocalDateTime = LocalDateTime.of(2022, 1, 1, 0, 0),
+        searchSource: String = "Source"
     ): SearchSessionDocument {
         return SearchSessionDocument(
             id,
