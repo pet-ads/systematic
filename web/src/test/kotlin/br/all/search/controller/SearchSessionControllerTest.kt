@@ -50,12 +50,6 @@ class SearchSessionControllerTest(
         searchSessionId: UUID = factory.sessionId
     ) = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-session/$searchSessionId"
 
-    fun unauthorizedPutUrl(
-        researcherId: String = "",
-        systematicStudyId: UUID = factory.systematicStudyId,
-        searchSessionId: UUID = factory.sessionId
-    ) = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-session/$searchSessionId"
-
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
