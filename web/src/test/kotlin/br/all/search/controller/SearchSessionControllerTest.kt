@@ -50,6 +50,12 @@ class SearchSessionControllerTest(
         searchSessionId: UUID = factory.sessionId
     ) = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-session/$searchSessionId"
 
+    fun unauthorizedPutUrl(
+        researcherId: String = "",
+        systematicStudyId: UUID = factory.systematicStudyId,
+        searchSessionId: UUID = factory.sessionId
+    ) = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-session/$searchSessionId"
+
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
@@ -260,6 +266,17 @@ class SearchSessionControllerTest(
             )
             mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
                 .andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should return 403 if the researcher is unauthorized`(){
+            val unauthorizedId = UUID.randomUUID()
+
+            val request = factory.createValidPutRequest(
+                "New Search String", "New Additional Info", "New SearchSource"
+            )
+            mockMvc.perform(put(putUrl(unauthorizedId)).contentType(MediaType.APPLICATION_JSON).content(request))
+                .andExpect(status().isForbidden)
         }
 
         @Test
