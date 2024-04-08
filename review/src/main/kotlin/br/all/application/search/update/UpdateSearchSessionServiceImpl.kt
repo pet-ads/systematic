@@ -8,6 +8,7 @@ import br.all.application.search.repository.toDto
 import br.all.application.search.update.UpdateSearchSessionService.RequestModel
 import br.all.application.search.update.UpdateSearchSessionService.ResponseModel
 import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.application.shared.exceptions.UniquenessViolationException
 import br.all.application.shared.presenter.PreconditionChecker
 import br.all.domain.model.protocol.SearchSource
 import br.all.domain.model.protocol.toSearchSource
@@ -39,6 +40,13 @@ class UpdateSearchSessionServiceImpl (
                 additionalInfo = request.additionalInfo ?: additionalInfo
                 source = request.source?.toSearchSource() ?: source
             }.toDto()
+
+            if (request.source?.let { searchSessionRepository.existsBySearchSource(request.systematicStudyId, it) } == true) {
+                presenter.prepareFailView(
+                    UniquenessViolationException("Search session already exists for source: ${request.source}")
+                )
+                return
+            }
 
             if (updated != dto) searchSessionRepository.saveOrUpdate(updated)
 
