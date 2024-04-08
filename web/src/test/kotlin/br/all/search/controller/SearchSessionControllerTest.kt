@@ -1,15 +1,10 @@
 package br.all.search.controller
 
-import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.SystematicStudyId
-import br.all.domain.model.search.SearchSessionID
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.search.MongoSearchSessionRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
-import io.mockk.verify
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
@@ -18,8 +13,6 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.core.task.SyncTaskExecutor
-import org.springframework.core.task.TaskExecutor
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -29,10 +22,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.util.NestedServletException
 import java.util.*
-import java.util.concurrent.CountDownLatch
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -244,8 +234,6 @@ class SearchSessionControllerTest(
                 .andExpect(jsonPath("$.searchSessionID").value(factory.sessionId.toString()))
                 .andExpect(jsonPath("$._links").exists())
 
-                val new = repository.findById(factory.sessionId).toNullable()
-
                 assertNotEquals(original, repository.findById(factory.sessionId).toNullable())
         }
 
@@ -272,6 +260,22 @@ class SearchSessionControllerTest(
             )
             mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
                 .andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should return 409 when there is a conflict due to duplicate searchSource during update`() {
+            val existingSearchSource = "Existing Search Source"
+            val existingSession1 = factory.searchSessionDocument(searchSource = existingSearchSource)
+            val existingSession2 = factory.searchSessionDocument(id = UUID.randomUUID(), searchSource = existingSearchSource)
+            repository.insert(existingSession1)
+            repository.insert(existingSession2)
+
+            val request = factory.createUniquenessViolationPutRequest(existingSearchSource)
+
+            mockMvc.perform(
+                put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request)
+            )
+                .andExpect(status().isConflict)
         }
     }
 }

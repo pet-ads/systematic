@@ -157,4 +157,12 @@ class TestDataFactory {
 
         return "{ ${jsonFields.joinToString(", ")} }"
     }
+
+    fun createUniquenessViolationPutRequest(
+        source: String
+    ): String {
+        val jsonFields = mutableListOf<String>()
+        jsonFields.add("\"source\": \"$source\"")
+        return "{ ${jsonFields.joinToString(", ")} }"
+    }
 }
