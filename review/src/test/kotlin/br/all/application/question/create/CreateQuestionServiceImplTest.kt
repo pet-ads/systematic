@@ -1,21 +1,25 @@
 package br.all.application.question.create
 
 import br.all.application.question.create.CreateQuestionService.*
+import br.all.application.question.create.CreateQuestionService.QuestionType.*
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.util.TestDataFactory
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.shared.exceptions.UnauthenticatedUserException
+import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.util.PreconditionCheckerMocking
 import br.all.domain.services.UuidGeneratorService
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.runs
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.*
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -53,10 +57,17 @@ class CreateQuestionServiceImplTest{
     @Tag("ValidClasses")
     @DisplayName("When successfully creating a question")
     inner class WhenSuccessfullyCreatingAQuestion {
-        @Test
-        fun `should successfully create a textual question`() {
+        @ParameterizedTest
+        @EnumSource(QuestionType::class)
+        fun `should successfully create a question`(questionType: QuestionType) {
+            val request = when(questionType){
+                TEXTUAL -> factory.createTextualRequestModel()
+                NUMBERED_SCALE -> factory.createNumberedScaleRequestModel()
+                PICK_LIST -> factory.createPickListRequestModel()
+                LABELED_SCALE -> factory.createLabeledScaleRequestModel()
+            }
+
             val (researcher, systematicStudy, question) = factory
-            val request = factory.createTextualRequestModel()
             val dto = factory.dtoFromRequest(request)
             val response = ResponseModel(researcher, systematicStudy, question)
 
@@ -69,6 +80,35 @@ class CreateQuestionServiceImplTest{
                 uuidGeneratorService.next()
                 repository.createOrUpdate(dto)
                 presenter.prepareSuccessView(response)
+            }
+        }
+    }
+
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("When unable to create a question")
+    inner class WhenUnableToCreateAQuestion{
+        @Test
+        fun `should not the researcher be allowed to create a new question when unauthenticated`() {
+            val request = factory.createTextualRequestModel()
+            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            sut.create(presenter, request)
+
+            verifyOrder {
+                presenter.prepareFailView(any<UnauthenticatedUserException>())
+                presenter.isDone()
+            }
+        }
+
+        @Test
+        fun `should not the researcher be allowed to create a new question when unauthorized`() {
+            val request = factory.createTextualRequestModel()
+            preconditionCheckerMocking.makeResearcherUnauthorized()
+            sut.create(presenter, request)
+
+            verifyOrder {
+                presenter.prepareFailView(any<UnauthorizedUserException>())
+                presenter.isDone()
             }
         }
     }
