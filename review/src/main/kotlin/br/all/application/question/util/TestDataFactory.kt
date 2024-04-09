@@ -4,6 +4,7 @@ import br.all.application.question.create.CreateQuestionService.*
 import br.all.application.question.repository.QuestionDto
 import io.github.serpro69.kfaker.Faker
 import java.util.*
+import br.all.application.question.find.FindQuestionService as Find
 
 class TestDataFactory {
     private val faker = Faker()
@@ -141,6 +142,32 @@ class TestDataFactory {
         null
     )
 
+    fun findOneQuestionRequestModel(
+        researcherId: UUID = this.researcher,
+        systematicStudyId: UUID = this.systematicStudy,
+        questionId: UUID = this.question
+    ) = Find.RequestModel(researcherId, systematicStudyId, questionId)
+
+    fun findOneTextualResponseModel(
+        researcherId: UUID = this.researcher,
+        questionDto: QuestionDto = generateTextualDto()
+    ) = Find.ResponseModel(researcherId, questionDto)
+
+    fun findOnePickListResponseModel(
+        researcherId: UUID = this.researcher,
+        questionDto: QuestionDto = generatePickListDto()
+    ) = Find.ResponseModel(researcherId, questionDto)
+
+    fun findOneLabeledScaleResponseModel(
+        researcherId: UUID = this.researcher,
+        questionDto: QuestionDto = generateLabeledScaleDto()
+    ) = Find.ResponseModel(researcherId, questionDto)
+
+    fun findOneNumberedScaleResponseModel(
+        researcherId: UUID = this.researcher,
+        questionDto: QuestionDto = generateNumberedScaleDto()
+    ) = Find.ResponseModel(researcherId, questionDto)
+
     fun dtoFromRequest(
         request: RequestModel,
         questionId: UUID = question,
@@ -159,7 +186,6 @@ class TestDataFactory {
 
 
     operator fun component1() = researcher
-
     operator fun component2() = systematicStudy
     operator fun component3() = question
 }
