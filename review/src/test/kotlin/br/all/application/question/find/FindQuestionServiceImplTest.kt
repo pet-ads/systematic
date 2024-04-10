@@ -5,6 +5,7 @@ import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.util.TestDataFactory
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.util.PreconditionCheckerMocking
 import io.mockk.every
@@ -78,7 +79,13 @@ class FindQuestionServiceImplTest{
     inner class WhenBeingUnableToFindAQuestion {
         @Test
         fun `should prepare a fail view when trying to find a nonexistent question`() {
-            TODO("NOT YET IMPLEMENTED")
+            val request = factory.findOneQuestionRequestModel()
+            preconditionCheckerMocking.makeQuestionNonexistent(repository, factory.question)
+
+            sut.findOne(presenter, request)
+            verify {
+                presenter.prepareFailView(any<EntityNotFoundException>())
+            }
         }
         
         @Test
