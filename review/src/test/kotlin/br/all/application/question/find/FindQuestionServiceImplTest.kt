@@ -6,6 +6,7 @@ import br.all.application.question.util.TestDataFactory
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.util.PreconditionCheckerMocking
 import io.mockk.every
@@ -56,7 +57,7 @@ class FindQuestionServiceImplTest{
         @ParameterizedTest
         @EnumSource(QuestionType::class)
         fun `Should correctly find a question and prepare success view`(questionType: QuestionType) {
-            val (researcher, systematicStudy, question) = factory
+            val (_, systematicStudy, question) = factory
             val request = factory.findOneQuestionRequestModel()
             val response = when(questionType){
                 QuestionType.TEXTUAL -> factory.findOneTextualResponseModel()
@@ -92,6 +93,32 @@ class FindQuestionServiceImplTest{
         fun `should prepare a fail view if the researcher is not a collaborator`() {
             val request = factory.findOneQuestionRequestModel()
             preconditionCheckerMocking.makeResearcherNotACollaborator()
+
+            sut.findOne(presenter, request)
+            verifyOrder {
+                presenter.prepareFailView(any<UnauthorizedUserException>())
+                presenter.isDone()
+            }
+        }
+
+        @Test
+        fun `should a unauthenticated researcher be unable to find any question`() {
+            val request = factory.findOneQuestionRequestModel()
+
+            preconditionCheckerMocking.makeResearcherUnauthenticated()
+
+            sut.findOne(presenter, request)
+            verifyOrder {
+                presenter.prepareFailView(any<UnauthenticatedUserException>())
+                presenter.isDone()
+            }
+        }
+
+        @Test
+        fun `should a unauthorized researcher be unable to find any question`() {
+            val request = factory.findOneQuestionRequestModel()
+
+            preconditionCheckerMocking.makeResearcherUnauthorized()
 
             sut.findOne(presenter, request)
             verifyOrder {
