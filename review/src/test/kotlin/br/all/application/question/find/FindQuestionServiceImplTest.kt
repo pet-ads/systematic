@@ -5,12 +5,14 @@ import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.util.TestDataFactory
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.util.PreconditionCheckerMocking
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
@@ -67,6 +69,28 @@ class FindQuestionServiceImplTest{
 
             sut.findOne(presenter, request)
             verify { presenter.prepareSuccessView(response) }
+        }
+    }
+
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("When being unable to find a question")
+    inner class WhenBeingUnableToFindAQuestion {
+        @Test
+        fun `should prepare a fail view when trying to find a nonexistent question`() {
+            TODO("NOT YET IMPLEMENTED")
+        }
+        
+        @Test
+        fun `should prepare a fail view if the researcher is not a collaborator`() {
+            val request = factory.findOneQuestionRequestModel()
+            preconditionCheckerMocking.makeResearcherNotACollaborator()
+
+            sut.findOne(presenter, request)
+            verifyOrder {
+                presenter.prepareFailView(any<UnauthorizedUserException>())
+                presenter.isDone()
+            }
         }
     }
 }
