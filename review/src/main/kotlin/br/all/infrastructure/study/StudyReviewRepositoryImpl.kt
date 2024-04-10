@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-open class StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRepository) : StudyReviewRepository {
+open class  StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRepository) : StudyReviewRepository {
     override fun saveOrUpdate(dto: StudyReviewDto): StudyReviewDocument = repository.save(dto.toDocument())
 
     override fun findById(reviewId: UUID, studyId: Long) =
@@ -16,8 +16,16 @@ open class StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRep
     override fun findAllFromReview(reviewId: UUID): List<StudyReviewDto> =
         repository.findAllById_SystematicStudyId(reviewId).map { it.toDto() }
 
+    override fun findAllBySource(reviewId: UUID, source: String): List<StudyReviewDto> =
+//        repository.findAllById_SystematicStudyId(reviewId).map { it.toDto() }
+        repository.findAllById_SystematicStudyIdAndSearchSourcesContaining(reviewId, source).map { it.toDto() }
+
     override fun updateSelectionStatus(reviewId: UUID, studyId: Long, attributeName: String, newStatus: Any) {
         repository.findAndUpdateAttributeById(StudyReviewId(reviewId, studyId), attributeName, newStatus)
+    }
+
+    override fun saveOrUpdateBatch(dtos: List<StudyReviewDto>) {
+        repository.saveAll(dtos.map { it.toDocument() })
     }
 
 }

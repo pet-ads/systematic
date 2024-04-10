@@ -9,6 +9,8 @@ interface MongoStudyReviewRepository : MongoRepository<StudyReviewDocument, Stud
 
     fun findAllById_SystematicStudyId(reviewID: UUID): List<StudyReviewDocument>
 
+    fun findAllById_SystematicStudyIdAndSearchSourcesContaining(reviewID: UUID, source: String): List<StudyReviewDocument>
+
     @Update("{ '\$set' : { ?1 : ?2 } }")
     fun findAndUpdateAttributeById(id: StudyReviewId, attributeName:String, newStatus: Any)
 

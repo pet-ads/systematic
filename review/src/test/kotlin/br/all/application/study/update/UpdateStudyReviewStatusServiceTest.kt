@@ -1,7 +1,5 @@
 package br.all.application.study.update
 
-import br.all.application.repositoryFake.StudyReviewRepositoryFake
-import br.all.application.study.shared.createStudyReviewDto
 import br.all.application.study.update.implementation.UpdateStudyReviewExtractionService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import org.junit.jupiter.api.Assertions

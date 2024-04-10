@@ -1,60 +1,92 @@
 package br.all.domain.model.question
 
-import br.all.domain.model.protocol.ProtocolId
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.study.Answer
+import io.github.serpro69.kfaker.Faker
+import org.junit.jupiter.api.*
+import java.lang.IllegalStateException
 import java.util.*
 import kotlin.NoSuchElementException
+import kotlin.test.assertEquals
 
+@Tag("UnitTest")
 class LabeledScaleTest {
+    private val faker = Faker()
+    private lateinit var validLabeledScale: LabeledScale
 
-    //TODO em resumo, para tudo que é público e não gerado automaticamente, teste:
-    // uma entrada válida, todas as possíveis entradas inválidas, uma por teste. Além disso, teste listas vazias, listas
-    // com um único elemento, limites iguais (higher,lower), limites quase iguais (lower == higher -1), limites inválidos.
-    @Test
-    fun `should validate non blank answer`() {
-        val questionId = QuestionId(UUID.randomUUID())
-        val protocolId = ProtocolId(UUID.randomUUID())
-        val code = "T1"
-        val description = "Sample labeled scale question"
-        val scales = mapOf(
-            "Label1" to 1,
-            "Label2" to 2,
-            "Label3" to 3
+    private val validScale = mapOf("label1" to 1, "label2" to 2)
+    private val emptyScale = emptyMap<String, Int>()
+
+    @BeforeEach
+    fun setUp() {
+        validLabeledScale = LabeledScale(
+            QuestionId(UUID.randomUUID()),
+            SystematicStudyId(UUID.randomUUID()),
+            faker.lorem.words(),
+            faker.lorem.words(),
+            validScale
         )
-        val labeledScale = LabeledScale(questionId, protocolId, code, description, scales)
-
-        val answer = Label("Label1", 1)
-        assertDoesNotThrow { labeledScale.answer = answer }
     }
 
-    @Test
-    fun `should validate answer not in scales`() {
-        val questionId = QuestionId(UUID.randomUUID())
-        val protocolId = ProtocolId(UUID.randomUUID())
-        val code = "T1"
-        val description = "Sample labeled scale question"
-        val scales = mapOf(
-            "Label1" to 1,
-            "Label2" to 2,
-            "Label3" to 3
-        )
-        val labeledScale = LabeledScale(questionId, protocolId, code, description, scales)
+    @Nested
+    @Tag("ValidClasses")
+    @DisplayName("WhenSuccessfully")
+    inner class WhenSuccessfully {
+        @Test
+        fun `should answer the questions with a valid scale`() {
+            val label = Label("label1", 1)
+            val expectedAnswer = Answer(validLabeledScale.id.value(), label)
 
-        val answer = Label("InvalidLabel", 4)
-        assertThrows<NoSuchElementException> { labeledScale.answer = answer }
+            assertEquals(expectedAnswer, validLabeledScale.answer(label))
+        }
+
+        @Test
+        fun `should a label that is not yet in the scales be added to it`() {
+            validLabeledScale.addScale("label3", 3)
+
+            assertEquals(3, validLabeledScale.scales.size)
+        }
+
+        @Test
+        fun `should a existing label be removed if not the last one in the scales`() {
+            validLabeledScale.removeScale("label2")
+
+            assertEquals(1, validLabeledScale.scales.size)
+        }
     }
 
-    @Test
-    fun `should throw IllegalArgumentException for empty scales`() {
-        val questionId = QuestionId(UUID.randomUUID())
-        val protocolId = ProtocolId(UUID.randomUUID())
-        val code = "T1"
-        val description = "Sample labeled scale question"
-        val scales = emptyMap<String, Int>()
-        assertThrows<IllegalArgumentException> { LabeledScale(questionId, protocolId, code, description, scales) }
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("WhenUnable")
+    inner class WhenUnable {
+        @Test
+        fun `should throw IllegalArgumentException for empty scales`() {
+            assertThrows<IllegalArgumentException> {
+                LabeledScale(
+                    QuestionId(UUID.randomUUID()),
+                    SystematicStudyId(UUID.randomUUID()),
+                    faker.lorem.words(),
+                    faker.lorem.words(),
+                    emptyScale
+                )
+            }
+        }
 
+        @Test
+        fun `should not answer a question if it does not have the label`() {
+            assertThrows<IllegalArgumentException> { validLabeledScale.answer(Label("label3", 3)) }
+        }
+
+        @Test
+        fun `should not remove a Label from scale if it is the last one remaining`() {
+            validLabeledScale.removeScale("label2")
+
+            assertThrows<IllegalStateException> { validLabeledScale.removeScale("label1") }
+        }
+
+        @Test
+        fun `should throw IllegalArgumentException for non-existing Label`() {
+            assertThrows<NoSuchElementException> { validLabeledScale.removeScale("label3") }
+        }
     }
-
 }

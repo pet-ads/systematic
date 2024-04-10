@@ -1,6 +1,9 @@
 package br.all.application.question.repository
-interface QuestionRepository <T, K> {
-    fun create(dto: T)
-    fun findById(id: K): T
-    fun update(dto: T)
+
+import java.util.UUID
+
+interface QuestionRepository {
+    fun createOrUpdate(dto: QuestionDto): Any
+    fun findById(systematicStudyId: UUID, id: UUID): QuestionDto?
+    fun findAllBySystematicStudyId(systematicStudyId: UUID): List<QuestionDto>
 }

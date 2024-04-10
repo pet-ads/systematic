@@ -3,8 +3,8 @@ package br.all.domain.model.question
 import br.all.domain.shared.ddd.Notification
 
 data class Label(
-    private val name: String,
-    private val value: Int
+    val name: String,
+    val value: Int
 ) {
 
     init {
@@ -20,13 +20,4 @@ data class Label(
     }
 
     override fun toString() = "Label(name: $name, value: $value)"
-
-    fun getName(): String{
-        return name
-    }
-
-    fun getValue(): Int{
-        return value
-    }
-
 }

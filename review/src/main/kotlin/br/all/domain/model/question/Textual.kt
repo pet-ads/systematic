@@ -1,18 +1,17 @@
 package br.all.domain.model.question
 
-import br.all.domain.model.protocol.ProtocolId
-import java.lang.NullPointerException
+import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.study.Answer
 
 class Textual(
     id: QuestionId,
-    protocolId: ProtocolId,
+    systematicStudyId: SystematicStudyId,
     code: String,
     description: String
-) : Question<String>(id, protocolId, code, description) {
+) : Question<String>(id, systematicStudyId, code, description) {
 
-    override fun validateAnswer(value: String?): String {
-        if (value == null) throw NullPointerException("Answer must not be null.")
+    override fun answer(value: String): Answer<String> {
         if (value.isBlank()) throw IllegalArgumentException("Answer must not be blank.")
-        return value
+        return Answer(id.value(), value)
     }
 }

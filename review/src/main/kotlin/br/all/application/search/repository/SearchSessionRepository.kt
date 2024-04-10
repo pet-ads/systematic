@@ -1,14 +1,15 @@
 package br.all.application.search.repository
 
 
-import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.search.SearchSession
-import br.all.domain.model.search.SearchSessionID
-import br.all.domain.model.protocol.SearchSource
+import java.util.*
 
 interface SearchSessionRepository {
-    fun create(searchSession: SearchSession)
-    fun findById(searchSessionId: SearchSessionID): SearchSession?
-    fun getSearchSessionBySource(protocolId: ProtocolId, source: SearchSource): SearchSession?
-
+    fun create(dto: SearchSessionDto)
+    fun findAllFromSystematicStudy(systematicStudyId: UUID): List<SearchSessionDto>
+    fun findById(searchSessionId: UUID): SearchSessionDto?
+    fun getSearchSessionBySource(systematicStudyId: UUID, source: String): SearchSession?
+    fun existsBySearchSource(systematicStudyId: UUID, source: String): Boolean
+    fun saveOrUpdate(dto: SearchSessionDto)
+    fun existsById(searchSessionId: UUID): Boolean
 }

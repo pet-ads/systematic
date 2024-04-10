@@ -13,4 +13,4 @@ fun Faker.year() = random.nextInt(1900, 2050)
 fun Faker.jsonWordsArray(size: Int) =
     List(this.random.nextInt(0, size)) { "\"${this.lorem.words()}\"" }.joinToString(",", "[", "]")
 
-fun Faker.wordsList(size: Int) = List(this.random.nextInt(0, size)) { this.lorem.words() }
+fun Faker.wordsList(maxSize:Int, minSize: Int = 0) = List(this.random.nextInt(minSize, maxSize)) { this.lorem.words() }

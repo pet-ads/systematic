@@ -1,14 +1,15 @@
 package br.all.application.study.repository
 
 import br.all.application.study.create.CreateStudyReviewService.RequestModel
-import br.all.domain.model.protocol.Criteria
-import br.all.domain.model.protocol.Criteria.CriteriaType
+import br.all.application.study.update.interfaces.UpdateStudyReviewService
+import br.all.domain.model.protocol.Criterion
+import br.all.domain.model.protocol.Criterion.CriterionType
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.*
 
 fun StudyReview.toDto() = StudyReviewDto(
     id.value(),
-    systematicStudyId.value,
+    systematicStudyId.value(),
     studyType.toString(),
     title,
     year,
@@ -41,7 +42,7 @@ fun StudyReview.Companion.fromDto(dto: StudyReviewDto) = StudyReview(
     dto.keywords.toMutableSet(),
     dto.searchSources.toMutableSet(),
     dto.references.toMutableList(),
-    dto.criteria.map { (description, type) -> Criteria(description, CriteriaType.valueOf(type)) }.toMutableSet(),
+    dto.criteria.map { (description, type) -> Criterion(description, CriterionType.valueOf(type)) }.toMutableSet(),
     dto.formAnswers.map { (questionId, answer) -> Answer(questionId, answer) }.toMutableSet(),
     dto.robAnswers.map { (questionId, answer) -> Answer(questionId, answer) }.toMutableSet(),
     dto.comments,
@@ -51,6 +52,19 @@ fun StudyReview.Companion.fromDto(dto: StudyReviewDto) = StudyReview(
 )
 
 fun StudyReview.Companion.fromStudyRequestModel(studyId: Long, request: RequestModel) = StudyReview(
+    StudyReviewId(studyId),
+    SystematicStudyId(request.systematicStudyId),
+    StudyType.valueOf(request.type.uppercase()),
+    request.title,
+    request.year,
+    request.authors,
+    request.venue,
+    request.abstract,
+    keywords = request.keywords,
+    searchSources = mutableSetOf(request.source)
+)
+
+fun StudyReview.Companion.fromStudyUpdateRequestModel(studyId: Long, request: UpdateStudyReviewService.RequestModel) = StudyReview(
     StudyReviewId(studyId),
     SystematicStudyId(request.systematicStudyId),
     StudyType.valueOf(request.type.uppercase()),

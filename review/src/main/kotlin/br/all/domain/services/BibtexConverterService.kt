@@ -4,10 +4,7 @@ import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.*
 import java.util.*
 
-class BibtexConverterService(
-    val systematicStudyId: SystematicStudyId,
-    private val studyReviewIdGeneratorService: IdGeneratorService
-) {
+class BibtexConverterService(private val studyReviewIdGeneratorService: IdGeneratorService) {
 
     private val authorTypes = listOf("author", "authors", "editor")
     private val venueTypes = listOf("journal", "booktitle", "institution",

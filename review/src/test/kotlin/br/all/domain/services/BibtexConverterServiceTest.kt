@@ -16,7 +16,7 @@ class BibtexConverterServiceTest {
     @BeforeEach fun setup() {
         val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         idGeneratorService = FakeIdGeneratorService
-        sut = BibtexConverterService(systematicStudyId, idGeneratorService)
+        sut = BibtexConverterService(idGeneratorService)
     }
 
     @AfterEach fun teardown() {
