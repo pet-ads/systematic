@@ -3,6 +3,7 @@ package br.all.study.persistence
 import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
+import br.all.domain.shared.utils.*
 import br.all.study.utils.TestDataFactory
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -58,6 +59,18 @@ class MongoStudyReviewRepositoryTest (
         sut.insert(factory.reviewDocument(UUID.randomUUID(), idService.next()))
         val result = sut.findAllById_SystematicStudyId(reviewId)
         assertTrue(result.size == 2)
+    }
+
+    @Test
+    fun `Should find all study reviews in a review by search sources`(){
+        val reviewId = UUID.randomUUID()
+        val sourceToFind = "source to find"
+        val sources: Set<String> = setOf(sourceToFind)
+        sut.insert(factory.reviewDocument(reviewId, idService.next()))
+        sut.insert(factory.reviewDocument(reviewId, idService.next(), sources = sources))
+        sut.insert(factory.reviewDocument(UUID.randomUUID(), idService.next()))
+        val result = sut.findAllById_SystematicStudyIdAndSearchSourcesContaining(reviewId, sourceToFind)
+        assertTrue(result.size == 1)
     }
 
     @Test fun `Should update study reviews selection status`(){
