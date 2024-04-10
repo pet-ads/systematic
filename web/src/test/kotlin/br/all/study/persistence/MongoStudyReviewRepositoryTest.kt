@@ -3,7 +3,6 @@ package br.all.study.persistence
 import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
-import br.all.domain.shared.utils.*
 import br.all.study.utils.TestDataFactory
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
