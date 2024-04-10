@@ -23,9 +23,9 @@ class RestfulFindAllSearchSessionsPresenter : FindAllSearchSessionsPresenter {
         val restfulResponse = ViewModel(response.systematicStudyId, response.searchSessions.size, response.searchSessions)
 
         val selfRef = linkSelfRef(response)
-        val createSession = linkCreateSearchSession(response)
+//      val createSession = linkCreateSearchSession(response)
 
-        restfulResponse.add(selfRef, createSession)
+        restfulResponse.add(selfRef)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
@@ -34,6 +34,7 @@ class RestfulFindAllSearchSessionsPresenter : FindAllSearchSessionsPresenter {
             findAllSearchSessions(response.researcherId, response.systematicStudyId)
         }.withSelfRel()
 
+    /*
     private fun linkCreateSearchSession(response: ResponseModel) =
         linkTo<SearchSessionController> {
             createSearchSession(response.researcherId,
@@ -50,6 +51,7 @@ class RestfulFindAllSearchSessionsPresenter : FindAllSearchSessionsPresenter {
         tempFile.writeText(content)
         return createDummyMultipartFile()
     }
+    */
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
 
