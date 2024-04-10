@@ -27,6 +27,7 @@ class RestfulMarkAsDuplicatedPresenter : MarkAsDuplicatedPresenter {
             response.updatedStudyReview,
             response.duplicatedStudyReview,
         )
+        prepareHateoas(response, restfulResponse)
     }
 
     private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
