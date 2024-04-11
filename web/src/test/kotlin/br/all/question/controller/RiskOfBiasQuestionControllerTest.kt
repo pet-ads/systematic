@@ -252,9 +252,9 @@ class RiskOfBiasQuestionControllerTest(
         @Test
         fun `should return 404 when trying to create a question with a nonexistent systematicStudy`() {
             val json = factory.validCreateTextualRequest()
-            val notAllowed = UUID.randomUUID()
+            val nonexistentId = UUID.randomUUID()
             mockMvc.perform(
-                post(postUrl(systematicStudyId = notAllowed) + "/textual")
+                post(postUrl(systematicStudyId = nonexistentId) + "/textual")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
             ).andExpect(status().isNotFound)
@@ -269,6 +269,23 @@ class RiskOfBiasQuestionControllerTest(
         fun `should return 404 if don't find the question`() {
             mockMvc.perform(
                 get(getUrl(UUID.randomUUID().toString())).contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should return 404 when trying to find question with a nonexistent systematicStudy`() {
+            val question = factory.validCreateTextualQuestionDocument(questionId, systematicStudyId)
+            repository.insert(question)
+            val nonexistentId = UUID.randomUUID()
+            val questionIdUrl = "/${questionId}"
+            mockMvc.perform(
+                get(
+                    getUrl(
+                        questionIdUrl,
+                        systematicStudyId = nonexistentId
+                    )
+                ).contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isNotFound)
         }
