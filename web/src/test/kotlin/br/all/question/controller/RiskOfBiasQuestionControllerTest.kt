@@ -1,5 +1,6 @@
 package br.all.question.controller
 
+import br.all.domain.model.researcher.ResearcherId
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.question.utils.TestDataFactory
@@ -10,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
@@ -40,7 +42,8 @@ class RiskOfBiasQuestionControllerTest(
             br.all.review.shared.TestDataFactory().createSystematicStudyDocument(
                 id = systematicStudyId,
                 owner = researcherId,
-            ))
+            )
+        )
     }
 
     @AfterEach
@@ -49,7 +52,8 @@ class RiskOfBiasQuestionControllerTest(
 
     fun postUrl() = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/rob-question"
 
-    fun getUrl(questionId: String = "") =
+    fun getUrl(questionId: String = "",
+               researcherId: UUID = factory.researcherId) =
         "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/rob-question${questionId}"
 
 
@@ -241,6 +245,17 @@ class RiskOfBiasQuestionControllerTest(
                 MockMvcRequestBuilders.get(getUrl(UUID.randomUUID().toString())).contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should a researcher who is not a collaborator be unauthorized and return 203`() {
+            val question = factory.validCreateTextualQuestionDocument(questionId, systematicStudyId)
+            repository.insert(question)
+            val notAllowed = UUID.randomUUID()
+            val questionIdUrl = "/${questionId}"
+
+            mockMvc.perform(get(getUrl(questionIdUrl, researcherId = notAllowed)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden)
         }
 
     }
