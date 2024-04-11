@@ -49,12 +49,14 @@ class RiskOfBiasQuestionControllerTest(
 
 
     fun postUrl(
-        researcherId: UUID = factory.researcherId
+        researcherId: UUID = factory.researcherId,
+        systematicStudyId: UUID = factory.systematicStudyId
     ) = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/rob-question"
 
     fun getUrl(
         questionId: String = "",
-        researcherId: UUID = factory.researcherId
+        researcherId: UUID = factory.researcherId,
+        systematicStudyId: UUID = factory.systematicStudyId
     ) =
         "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/rob-question${questionId}"
 
@@ -245,6 +247,17 @@ class RiskOfBiasQuestionControllerTest(
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
             ).andExpect(status().isForbidden)
+        }
+
+        @Test
+        fun `should return 404 when trying to create a question with a nonexistent systematicStudy`() {
+            val json = factory.validCreateTextualRequest()
+            val notAllowed = UUID.randomUUID()
+            mockMvc.perform(
+                post(postUrl(systematicStudyId = notAllowed) + "/textual")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+            ).andExpect(status().isNotFound)
         }
     }
 
