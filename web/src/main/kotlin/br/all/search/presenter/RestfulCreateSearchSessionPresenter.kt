@@ -13,7 +13,6 @@ import java.util.*
 
 @Component
 class RestfulCreateSearchSessionPresenter : CreateSearchSessionPresenter {
-
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
@@ -23,14 +22,37 @@ class RestfulCreateSearchSessionPresenter : CreateSearchSessionPresenter {
             response.sessionId,
         )
 
-        val self = linkTo<SearchSessionController> {
+        val selfRef = linkSelfRef(response)
+        val allSessions = linkFindAllSearchSessions(response)
+        val updateSession = linkUpdateSearchSession(response)
+
+        restfulResponse.add(selfRef, allSessions, updateSession)
+        responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(restfulResponse)
+    }
+
+    private fun linkSelfRef(response: ResponseModel) =
+        linkTo<SearchSessionController> {
             findSearchSession(response.researcherId, response.systematicStudyId, response.sessionId)
         }.withSelfRel()
 
-        restfulResponse.add(self)
+    private fun linkFindAllSearchSessions(response: ResponseModel) =
+        linkTo<SearchSessionController> {
+            findAllSearchSessions(
+                response.researcherId,
+                response.systematicStudyId
+            )
+        }.withRel("allSessions")
 
-        responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(restfulResponse)
-    }
+    private fun linkUpdateSearchSession(response: ResponseModel) =
+        linkTo<SearchSessionController> {
+            updateSearchSession(
+                response.researcherId,
+                response.systematicStudyId,
+                response.sessionId,
+                SearchSessionController.PutRequest("searchString",
+                    "additionalInfo", "source")
+            )
+        }.withRel("updateSession")
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 

@@ -1,6 +1,7 @@
 package br.all.study.presenter
 
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresenter
+import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.ResponseModel
 import br.all.shared.error.createErrorResponseFrom
 import br.all.shared.util.generateTimestamp
@@ -19,13 +20,32 @@ class RestfulUpdateStudyReviewStatusPresenter : UpdateStudyReviewStatusPresenter
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel()
 
-        val self = linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
-        }.withSelfRel()
+        val selfRef = linkSelfRef(response)
+        val updateExtractionStatus = linkUpdateExtractionStatus(response)
 
-        restfulResponse.add(self)
+        restfulResponse.add(selfRef, updateExtractionStatus)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
+
+    private fun linkSelfRef(response: ResponseModel) =
+        linkTo<StudyReviewController> {
+            findStudyReview(response.researcherId,
+                response.systematicStudyId,
+                response.studyReviewId)
+        }.withSelfRel()
+
+    private fun linkUpdateExtractionStatus(response: ResponseModel) =
+        linkTo<StudyReviewController> {
+            updateStudyReviewExtractionStatus(
+                response.researcherId,
+                response.systematicStudyId,
+                response.studyReviewId,
+                request = UpdateStudyReviewStatusService.RequestModel(
+                    response.researcherId, response.systematicStudyId, response.studyReviewId, status = "status"
+                )
+            )
+        }.withRel("updateExtractionStatus")
+
 
     override fun prepareFailView(throwable: Throwable) =
         run { responseEntity = createErrorResponseFrom(throwable) }
@@ -35,4 +55,5 @@ class RestfulUpdateStudyReviewStatusPresenter : UpdateStudyReviewStatusPresenter
     private data class ViewModel(
         val timestamp: String = generateTimestamp()
     ) : RepresentationModel<ViewModel>()
+
 }
