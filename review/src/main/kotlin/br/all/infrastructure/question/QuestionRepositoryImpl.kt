@@ -8,7 +8,9 @@ import java.util.*
 
 @Repository
 open class QuestionRepositoryImpl(private val repository: MongoQuestionRepository): QuestionRepository {
-    override fun createOrUpdate(dto: QuestionDto): QuestionDocument = repository.save(dto.toDocument())
+    override fun createOrUpdate(dto: QuestionDto) {
+        repository.save(dto.toDocument())
+    }
 
     override fun findById(systematicStudyId: UUID, id: UUID) = repository.findById(id).toNullable()?.toDto()
 
