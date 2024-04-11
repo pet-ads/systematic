@@ -56,7 +56,7 @@ class StudyReviewController(
         return presenter.responseEntity?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PutMapping("/study-review")
+    @PutMapping("/study-review/{studyReview}")
     @Operation(summary = "Update an existing study review of a systematic study")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Success updating an existing study review of a systematic study"),
