@@ -18,21 +18,69 @@ class RestfulCreateRoBQuestionPresenter : CreateQuestionPresenter {
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, response.questionId)
 
-        val self = linkTo<RiskOfBiasQuestionController> {
-            findQuestion(response.researcherId, response.systematicStudyId, response.questionId)
-        }.withSelfRel()
+        val selfRef = linkSelfRef(response)
+        val pickList = linkCreatePickList(response)
+        val labeledScale = linkCreateLabeledScale(response)
+        val numberScale = linkCreateNumberScale(response)
+        val findAll = linkFindAll(response)
 
-        restfulResponse.add(self)
+        restfulResponse.add(selfRef, pickList, labeledScale, numberScale, findAll)
         responseEntity = status(HttpStatus.CREATED).body(restfulResponse)
     }
 
+
+    private fun linkSelfRef(response: ResponseModel) =
+        linkTo<RiskOfBiasQuestionController> {
+        findQuestion(response.researcherId, response.systematicStudyId, response.questionId)
+    }.withSelfRel()
+
+
+    private fun linkCreatePickList(response: ResponseModel) =
+        linkTo<RiskOfBiasQuestionController> {
+        createPickListQuestion(
+            response.researcherId,
+            response.systematicStudyId,
+            request = RiskOfBiasQuestionController.PickListRequest(
+                "code", "description", listOf("option1")
+            )
+        )
+    }.withRel("pickList")
+
+    private fun linkCreateLabeledScale(response: ResponseModel) =
+        linkTo<RiskOfBiasQuestionController> {
+        createLabeledScaleQuestion(
+            response.researcherId,
+            response.systematicStudyId,
+            request = RiskOfBiasQuestionController.LabeledScaleRequest(
+                "code", "description", mapOf("scale1" to 1)
+            )
+        )
+    }.withRel("labeledScale")
+
+
+    private fun linkCreateNumberScale(response: ResponseModel) =
+        linkTo<RiskOfBiasQuestionController> {
+        createNumberScaleQuestion(
+            response.researcherId,
+            response.systematicStudyId,
+            request = RiskOfBiasQuestionController.NumberScaleRequest(
+                "code", "description", 0, 0
+            )
+        )
+    }.withRel("numberScale")
+
+    private fun linkFindAll(response: ResponseModel) =
+        linkTo<RiskOfBiasQuestionController> {
+        findAllBySystematicStudyId(response.researcherId, response.systematicStudyId)
+    }.withRel("findAll")
+
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
-
     override fun isDone() = responseEntity != null
-
     private data class ViewModel(
         val researcherId: UUID,
         val systematicStudyId: UUID,
         val questionId: UUID
     ): RepresentationModel<ViewModel>()
+
+
 }

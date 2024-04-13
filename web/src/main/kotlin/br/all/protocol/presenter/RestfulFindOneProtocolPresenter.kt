@@ -19,8 +19,15 @@ class RestfulFindOneProtocolPresenter: FindOneProtocolPresenter {
         val viewModel = ViewModel(researcher, systematicStudy, content)
 
         val link = linkTo<ProtocolController> { findById(researcher, systematicStudy) }.withSelfRel()
-        viewModel.add(link)
 
+        val putProtocol = linkTo<ProtocolController> {
+            putProtocol(response.researcherId,
+                        response.systematicStudyId,
+                        request = ProtocolController.ProtocolRequest()
+            )
+        }.withRel("putProtocol")
+
+        viewModel.add(link, putProtocol)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(viewModel)
     }
 
@@ -32,5 +39,5 @@ class RestfulFindOneProtocolPresenter: FindOneProtocolPresenter {
         val researcherId: UUID,
         val systematicStudyId: UUID,
         val content: ProtocolDto,
-    ): RepresentationModel<ViewModel>()
+    ) : RepresentationModel<ViewModel>()
 }

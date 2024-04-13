@@ -10,6 +10,8 @@ import br.all.question.presenter.extraction.RestfulFindExtractionQuestionPresent
 import br.all.question.presenter.extraction.RestfulCreateExtractionQuestionPresenter
 import br.all.question.presenter.extraction.RestfulFindAllExtractionQuestionPresenter
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.HttpStatus
@@ -37,11 +39,16 @@ class ExtractionQuestionController(
     }
 
     @PostMapping("/textual")
-    @Operation(summary = "Create a textual question")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Successful Operation"),
-        ApiResponse(responseCode = "400", description = "Failed Operation for invalid input"),
-    ])
+    @Operation(summary = "Create a extraction textual question in the protocol")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "201", description = "Success creating a textual question in the protocol"),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail creating a textual question in the protocol - invalid input"
+            ),
+        ]
+    )
     fun createTextualQuestion(
         @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: TextualRequest,
     ): ResponseEntity<*> = createQuestion(
@@ -55,11 +62,16 @@ class ExtractionQuestionController(
     )
 
     @PostMapping("/pick-list")
-    @Operation(summary = "Create a pick-list question")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Successful Operation"),
-        ApiResponse(responseCode = "400", description = "Failed Operation for invalid input"),
-    ])
+    @Operation(summary = "Create a extraction pick-list question in the protocol")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "201", description = "Success creating a pick-list question in the protocol"),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail creating a pick-list question in the protocol - invalid input"
+            ),
+        ]
+    )
     fun createPickListQuestion(
         @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: PickListRequest,
     ): ResponseEntity<*> = createQuestion(
@@ -74,11 +86,19 @@ class ExtractionQuestionController(
     )
 
     @PostMapping("/labeled-scale")
-    @Operation(summary = "Create a labeled-scale question")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Successful Operation"),
-        ApiResponse(responseCode = "400", description = "Failed Operation for invalid input"),
-    ])
+    @Operation(summary = "Create a extraction labeled-scale question in the protocol")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "201",
+                description = "Success creating a labeled-scale question in the protocol"
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail creating a labeled-scale question in the protocol - invalid input"
+            ),
+        ]
+    )
     fun createLabeledScaleQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -95,11 +115,16 @@ class ExtractionQuestionController(
     )
 
     @PostMapping("/number-scale")
-    @Operation(summary = "Create a number-scale question")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Successful Operation"),
-        ApiResponse(responseCode = "400", description = "Failed Operation for invalid input"),
-    ])
+    @Operation(summary = "Create a extraction number-scale question in the protocol")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "201", description = "Success creating a number-scale question in the protocol"),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail creating a number-scale question in the protocol - invalid input"
+            ),
+        ]
+    )
     fun createNumberScaleQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -117,11 +142,24 @@ class ExtractionQuestionController(
     )
 
     @GetMapping("/{questionId}")
-    @Operation(summary = "Find a question using its Id")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Successful Operation"),
-        ApiResponse(responseCode = "404", description = "Failed Operation"),
-    ])
+    @Operation(summary = "Get an extraction question of a given protocol by code")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success getting an extraction question of a given protocol by code",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = FindQuestionService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail getting an extraction question of a given protocol by code - not found",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+        ]
+    )
     fun findQuestion(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -134,10 +172,19 @@ class ExtractionQuestionController(
     }
 
     @GetMapping
-    @Operation(summary = "Find all questions of a systematic study")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Successful Operation. Either returns the questions of a systematic study or an empty list if no systematic study found."),
-    ])
+    @Operation(summary = "Get all extraction questions in the protocol")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success getting all extraction questions in the protocol. Either returns the questions of a systematic study or an empty list if no systematic study is found.",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = FindAllBySystematicStudyIdService.ResponseModel::class)
+                )]
+            ),
+        ]
+    )
     fun findAllBySystematicStudyId(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID

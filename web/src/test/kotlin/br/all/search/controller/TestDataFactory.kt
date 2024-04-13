@@ -89,12 +89,12 @@ class TestDataFactory {
     fun invalidBibFile() = "Invalid BibTeX file".toByteArray()
 
     fun searchSessionDocument(
-        id: UUID,
-        systematicStudyId: UUID,
-        searchSource: String = "SearchSource",
+        id: UUID = this.sessionId,
+        systematicStudyId: UUID = this.systematicStudyId,
         searchString: String = "SearchString",
+        additionalInfo: String = "AdditionalInfo",
         timeStamp: LocalDateTime = LocalDateTime.of(2022, 1, 1, 0, 0),
-        additionalInfo: String = "AdditionalInfo"
+        searchSource: String = "SearchSource"
     ): SearchSessionDocument {
         return SearchSessionDocument(
             id,
@@ -104,5 +104,27 @@ class TestDataFactory {
             timeStamp,
             searchSource,
         )
+    }
+
+    fun createValidPutRequest(
+        searchString: String?,
+        additionalInfo: String?,
+        source: String?
+    ): String {
+        val jsonFields = mutableListOf<String>()
+
+        if (searchString != null) {
+            jsonFields.add("\"searchString\": \"$searchString\"")
+        }
+
+        if (additionalInfo != null) {
+            jsonFields.add("\"additionalInfo\": \"$additionalInfo\"")
+        }
+
+        if (source != null) {
+            jsonFields.add("\"source\": \"$source\"")
+        }
+
+        return "{ ${jsonFields.joinToString(", ")} }"
     }
 }

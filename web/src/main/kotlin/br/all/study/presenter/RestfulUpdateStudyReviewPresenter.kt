@@ -23,18 +23,15 @@ class RestfulUpdateStudyReviewPresenter : UpdateStudyReviewPresenter {
     override fun prepareSuccessView(response: UpdateStudyReviewService.ResponseModel) {
         val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, response.studyReviewId)
 
-        val self = linkTo<StudyReviewController> {
+        val linkSelfRef = linkTo<StudyReviewController> {
             findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
         }.withSelfRel()
 
-        linkTo<StudyReviewController> {
+        val linkFindAllStudyReview = linkTo<StudyReviewController> {
             findAllStudyReviews(response.researcherId, response.systematicStudyId);
-        }.withRel("_all")
+        }.withRel("allStudyReview")
 
-        // TODO add link to update study review
-        // TODO add link to update study review
-
-        restfulResponse.add(self)
+        restfulResponse.add(linkSelfRef, linkFindAllStudyReview)
         responseEntity = status(HttpStatus.CREATED).body(restfulResponse)
     }
 

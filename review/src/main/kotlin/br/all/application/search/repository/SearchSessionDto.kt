@@ -7,7 +7,7 @@ data class SearchSessionDto(
     val id: UUID,
     val systematicStudyId: UUID,
     val searchString: String,
-    val additionalInfo: String,
+    val additionalInfo: String?,
     val timestamp: LocalDateTime,
     val source: String
 )
