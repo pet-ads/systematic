@@ -1,14 +1,12 @@
 package br.all.study.presenter
 
-import br.all.application.study.create.CreateStudyReviewPresenter
-import br.all.application.study.create.CreateStudyReviewService.ResponseModel
+
 import br.all.application.study.update.interfaces.UpdateStudyReviewPresenter
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.shared.error.createErrorResponseFrom
 import br.all.study.controller.StudyReviewController
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
-import org.springframework.hateoas.server.mvc.withRel
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.status
@@ -28,7 +26,7 @@ class RestfulUpdateStudyReviewPresenter : UpdateStudyReviewPresenter {
         }.withSelfRel()
 
         linkTo<StudyReviewController> {
-            findAllStudyReviews(response.researcherId, response.systematicStudyId);
+            findAllStudyReviews(response.researcherId, response.systematicStudyId)
         }.withRel("_all")
 
         // TODO add link to update study review
