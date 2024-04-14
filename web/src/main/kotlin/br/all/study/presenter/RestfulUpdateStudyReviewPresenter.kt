@@ -35,7 +35,7 @@ class RestfulUpdateStudyReviewPresenter : UpdateStudyReviewPresenter {
         // TODO add link to update study review
 
         restfulResponse.add(self)
-        responseEntity = status(HttpStatus.CREATED).body(restfulResponse)
+        responseEntity = status(HttpStatus.OK).body(restfulResponse)
     }
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }

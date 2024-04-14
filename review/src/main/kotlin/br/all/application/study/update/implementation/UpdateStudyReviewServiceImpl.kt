@@ -2,6 +2,7 @@ package br.all.application.study.update.implementation
 
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.presenter.PreconditionChecker
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromStudyUpdateRequestModel
@@ -27,6 +28,10 @@ class UpdateStudyReviewServiceImpl(
         if(presenter.isDone()) return
 
         val studyId = request.studyReviewId
+        if(studyReviewRepository.findById(request.systematicStudyId, studyId) == null){
+            presenter.prepareFailView(EntityNotFoundException("Study of id $studyId not found"))
+            return }
+
         val studyReview = StudyReview.fromStudyUpdateRequestModel(studyId, request)
 
         studyReviewRepository.saveOrUpdate(studyReview.toDto())

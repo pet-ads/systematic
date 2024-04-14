@@ -108,13 +108,34 @@ class StudyReviewControllerTest(
 
             val json = factory.validPutRequest(researcherId, systematicStudyId, studyID)
             mockMvc.perform(put(updateStudyUrl(studyID)).contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isCreated)
+                .andExpect(status().isOk)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyID)
             val updatedReview = repository.findById(studyReviewId)
             val updatedTitle = updatedReview.get().title
             assertTrue(initialTitle != updatedTitle)
         }
+        @Test
+        fun `should not update upon invalid request and return 400`(){
+            val studyId = 10L
+            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
+
+            repository.insert(studyReview)
+
+            val json = factory.invalidPutRequest()
+            mockMvc.perform(put(updateStudyUrl(studyId)).contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isBadRequest)
+        }
+
+        @Test
+        fun `should not update if study review does not exist and return 404`(){
+            val studyId = 5L
+
+            val json = factory.validPutRequest(researcherId, systematicStudyId, studyId)
+            mockMvc.perform(put(updateStudyUrl(studyId)).contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isNotFound)
+        }
+
     }
 
     @Nested

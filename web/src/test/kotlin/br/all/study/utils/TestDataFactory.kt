@@ -59,6 +59,20 @@ class TestDataFactory {
         }
         """
 
+    fun invalidPutRequest() =
+        """
+        {
+            "type": "${faker.random.nextEnum(StudyType::class.java)}",
+            "title": "${faker.book.title()}",
+            "year": ${faker.year()},
+            "authors": "${faker.science.scientist()}",
+            "venue": "${faker.book.publisher()}",
+            "abstract": "${faker.paragraph(30)}",
+            "keywords": ${faker.jsonWordsArray(5)},
+            "source": "${faker.lorem.words()}"
+        }
+        """
+
     fun validStatusUpdatePatchRequest(id: Long, newStatus: String) =
         """
         {
