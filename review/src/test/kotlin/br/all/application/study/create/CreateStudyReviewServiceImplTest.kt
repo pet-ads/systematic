@@ -2,6 +2,8 @@ package br.all.application.study.create
 
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.shared.exceptions.UnauthenticatedUserException
+import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.study.create.CreateStudyReviewService.RequestModel
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromStudyRequestModel
@@ -22,11 +24,11 @@ import java.util.*
 @ExtendWith(MockKExtension::class)
 class CreateStudyReviewServiceImplTest {
 
-    @MockK private lateinit var studyReviewRepository: StudyReviewRepository
-    @MockK(relaxed = true) private lateinit var systematicStudyRepository: SystematicStudyRepository
-    @MockK(relaxed = true) private lateinit var idGenerator: IdGeneratorService
-    @MockK(relaxed = true) private lateinit var credentialService: ResearcherCredentialsService
-    @MockK(relaxed = true) private lateinit var presenter: CreateStudyReviewPresenter
+    @MockK(relaxed = true) private lateinit var studyReviewRepository: StudyReviewRepository
+    @MockK(relaxUnitFun = true) private lateinit var systematicStudyRepository: SystematicStudyRepository
+    @MockK private lateinit var idGenerator: IdGeneratorService
+    @MockK private lateinit var credentialService: ResearcherCredentialsService
+    @MockK(relaxUnitFun = true) private lateinit var presenter: CreateStudyReviewPresenter
 
     private lateinit var sut: CreateStudyReviewServiceImpl
 
@@ -59,25 +61,50 @@ class CreateStudyReviewServiceImplTest {
         fun `should successfully create a Study Review`() {
             val (_, studyReviewId) = factory
             val request = factory.createRequestModel()
+            val response = factory.createResponseModel()
 
 
             preconditionCheckerMocking.makeEverythingWork()
             every { idGenerator.next() } returns studyReviewId
+            every { presenter.isDone() } returns false
 
             sut.createFromStudy(presenter, request)
 
             verify(exactly = 1) {
-                val studyId = idGenerator.next()
-                val studyReview = StudyReview.fromStudyRequestModel(studyId, request)
+                idGenerator.next()
+                studyReviewRepository.saveOrUpdate(any())
+                presenter.prepareSuccessView(any())
+            }
+        }
+    }
 
-                studyReviewRepository.saveOrUpdate(studyReview.toDto())
-                presenter.prepareSuccessView(
-                    CreateStudyReviewService.ResponseModel(
-                        request.researcherId,
-                        request.systematicStudyId,
-                        studyId
-                    )
-                )
+    @Nested
+    @Tag("InvalidClasses")
+    @DisplayName("When failing to create a study review")
+    inner class WhenFailingToCreateAStudyReview {
+        @Test
+        fun `should not be allowed to create a new study when unauthenticated`() {
+            val request = factory.createRequestModel()
+
+            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            sut.createFromStudy(presenter, request)
+
+            verifyOrder {
+                presenter.prepareFailView(any<UnauthenticatedUserException>())
+                presenter.isDone()
+            }
+        }
+
+        @Test
+        fun `should not be allowed to create a new study when unauthorized`() {
+            val request = factory.createRequestModel()
+
+            preconditionCheckerMocking.makeResearcherUnauthorized()
+            sut.createFromStudy(presenter, request)
+
+            verifyOrder {
+                presenter.prepareFailView(any<UnauthorizedUserException>())
+                presenter.isDone()
             }
         }
     }

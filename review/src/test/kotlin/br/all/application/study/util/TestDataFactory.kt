@@ -18,6 +18,7 @@ class TestDataFactory {
     val studyReviewId: Long = Random(1).nextLong()
     val systematicStudyId: UUID = UUID.randomUUID()
     private val faker = Faker()
+
     fun reviewDocument(
         systematicStudyId: UUID,
         studyReviewId: Long,
@@ -49,9 +50,9 @@ class TestDataFactory {
     }
 
     fun createRequestModel(
-        researcherId: UUID = UUID.randomUUID(),
-        systematicStudyId: UUID = UUID.randomUUID(),
-        type: String = faker.lorem.words(),
+        researcherId: UUID = this.researcherId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        type: String = faker.random.nextEnum(StudyType::class.java).toString(),
         title: String = faker.book.title(),
         year: Int = faker.year(),
         authors: String = faker.book.author(),
@@ -60,6 +61,8 @@ class TestDataFactory {
         keywords: Set<String> = setOf(faker.lorem.words(), faker.lorem.words()),
         source: String = faker.lorem.words(),
     ) = CreateStudyReviewService.RequestModel(researcherId, systematicStudyId, type, title, year, authors, venue, abstract, keywords, source)
+
+    fun createResponseModel() = CreateStudyReviewService.ResponseModel(researcherId, systematicStudyId, studyReviewId)
 
     operator fun component1() = researcherId
     operator fun component2() = studyReviewId
