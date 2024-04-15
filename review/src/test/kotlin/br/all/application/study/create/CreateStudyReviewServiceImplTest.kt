@@ -4,21 +4,15 @@ import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
-import br.all.application.study.create.CreateStudyReviewService.RequestModel
 import br.all.application.study.repository.StudyReviewRepository
-import br.all.application.study.repository.fromStudyRequestModel
-import br.all.application.study.repository.toDto
 import br.all.application.study.util.TestDataFactory
 import br.all.application.util.PreconditionCheckerMocking
-import br.all.domain.model.study.StudyReview
 import br.all.domain.services.IdGeneratorService
 import io.mockk.*
-import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.*
 @Tag("UnitTest")
 @Tag("ServiceTest")
 @ExtendWith(MockKExtension::class)
@@ -61,8 +55,6 @@ class CreateStudyReviewServiceImplTest {
         fun `should successfully create a Study Review`() {
             val (_, studyReviewId) = factory
             val request = factory.createRequestModel()
-            val response = factory.createResponseModel()
-
 
             preconditionCheckerMocking.makeEverythingWork()
             every { idGenerator.next() } returns studyReviewId

@@ -67,10 +67,5 @@ class TestDataFactory {
     operator fun component1() = researcherId
     operator fun component2() = studyReviewId
 
-    open class ResponseModel(
-        val researcherId: UUID,
-        val systematicStudyId: UUID,
-        val studyReviewId: Long
-    )
 
 }
