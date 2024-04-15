@@ -2,13 +2,8 @@ package br.all.application.study.find
 
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresenter
-import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
-import br.all.application.study.find.presenter.FindStudyReviewPresenter
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceServiceImpl
-import br.all.application.study.find.service.FindAllStudyReviewsServiceImpl
-import br.all.application.study.find.service.FindStudyReviewServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.util.TestDataFactory
 import br.all.application.util.PreconditionCheckerMocking
@@ -17,7 +12,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
-import kotlin.test.assertTrue
 
 @Tag("UnitTest")
 @Tag("ServiceTest")

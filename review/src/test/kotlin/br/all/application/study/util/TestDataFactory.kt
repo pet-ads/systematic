@@ -1,10 +1,8 @@
 package br.all.application.study.util
 
-import br.all.application.review.find.services.FindAllSystematicStudiesService
 import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService
 import br.all.application.study.find.service.FindAllStudyReviewsService
-import br.all.application.study.find.service.FindAllStudyReviewsServiceImpl
 import br.all.application.study.find.service.FindStudyReviewService
 import br.all.application.study.repository.StudyReviewDto
 import br.all.domain.model.study.StudyType
