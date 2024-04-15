@@ -8,8 +8,6 @@ import br.all.domain.shared.utils.paragraph
 import br.all.domain.shared.utils.paragraphList
 import br.all.domain.shared.utils.wordsList
 import br.all.domain.shared.utils.year
-import br.all.infrastructure.study.StudyReviewDocument
-import br.all.infrastructure.study.StudyReviewId
 import io.github.serpro69.kfaker.Faker
 import java.util.*
 import kotlin.random.Random
@@ -21,7 +19,7 @@ class TestDataFactory {
     val systematicStudyId: UUID = UUID.randomUUID()
     private val faker = Faker()
 
-    fun reviewDocument(
+    fun generateDto(
         systematicStudyId: UUID = this.systematicStudyId,
         studyReviewId: Long = this.studyReviewId,
         type: String = faker.random.nextEnum(StudyType::class.java).toString(),
@@ -66,7 +64,7 @@ class TestDataFactory {
     fun findRequestModel(
     ) = FindStudyReviewService.RequestModel(researcherId, systematicStudyId, studyReviewId)
 
-    fun findResponseModel() = FindStudyReviewService.ResponseModel(researcherId, reviewDocument())
+    fun findResponseModel() = FindStudyReviewService.ResponseModel(researcherId, generateDto())
 
     operator fun component1() = researcherId
     operator fun component2() = studyReviewId
