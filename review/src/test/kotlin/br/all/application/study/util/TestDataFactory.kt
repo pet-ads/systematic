@@ -1,6 +1,10 @@
 package br.all.application.study.util
 
+import br.all.application.review.find.services.FindAllSystematicStudiesService
 import br.all.application.study.create.CreateStudyReviewService
+import br.all.application.study.find.service.FindAllStudyReviewsBySourceService
+import br.all.application.study.find.service.FindAllStudyReviewsService
+import br.all.application.study.find.service.FindAllStudyReviewsServiceImpl
 import br.all.application.study.find.service.FindStudyReviewService
 import br.all.application.study.repository.StudyReviewDto
 import br.all.domain.model.study.StudyType
@@ -65,6 +69,31 @@ class TestDataFactory {
     ) = FindStudyReviewService.RequestModel(researcherId, systematicStudyId, studyReviewId)
 
     fun findResponseModel() = FindStudyReviewService.ResponseModel(researcherId, generateDto())
+
+    fun findAllRequestModel(
+    ) = FindAllStudyReviewsService.RequestModel(researcherId, systematicStudyId)
+
+    fun findAllResponseModel(
+        amountOfStudies: Int,
+    ) = FindAllStudyReviewsService.ResponseModel(
+        researcherId,
+        systematicStudyId,
+        List(amountOfStudies) { generateDto(studyReviewId = Random(1).nextLong()) }
+    )
+
+    fun findAllBySourceRequestModel(
+        searchSource: String
+    ) = FindAllStudyReviewsBySourceService.RequestModel(researcherId, systematicStudyId, searchSource)
+
+    fun findAllBySourceResponseModel(
+        amountOfStudies: Int,
+        searchSource: String,
+    ) = FindAllStudyReviewsBySourceService.ResponseModel(
+        researcherId,
+        systematicStudyId,
+        searchSource,
+        List(amountOfStudies) { generateDto(studyReviewId = Random(1).nextLong()) }
+    )
 
     operator fun component1() = researcherId
     operator fun component2() = studyReviewId

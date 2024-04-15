@@ -68,13 +68,12 @@ class FindStudyReviewServiceImplTest {
     @Nested
     @Tag("InvalidClasses")
     @DisplayName("When failing to find a study review")
-    inner class WhenFailingToCreateAStudyReview {
+    inner class WhenFailingToFindAStudyReview {
         @Test
         fun `should not find any study reviews`() {
             val request = factory.findRequestModel()
 
             preconditionCheckerMocking.makeEverythingWork()
-            every { presenter.isDone() } returns false
             every {studyReviewRepository.findById(any(),any())} returns null
 
             sut.findOne(presenter, request)
