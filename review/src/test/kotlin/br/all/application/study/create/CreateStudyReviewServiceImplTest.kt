@@ -22,7 +22,7 @@ class CreateStudyReviewServiceImplTest {
     @MockK(relaxUnitFun = true) private lateinit var systematicStudyRepository: SystematicStudyRepository
     @MockK private lateinit var idGenerator: IdGeneratorService
     @MockK private lateinit var credentialService: ResearcherCredentialsService
-    @MockK(relaxUnitFun = true) private lateinit var presenter: CreateStudyReviewPresenter
+    @MockK(relaxed = true) private lateinit var presenter: CreateStudyReviewPresenter
 
     private lateinit var sut: CreateStudyReviewServiceImpl
 
@@ -58,7 +58,6 @@ class CreateStudyReviewServiceImplTest {
 
             preconditionCheckerMocking.makeEverythingWork()
             every { idGenerator.next() } returns studyReviewId
-            every { presenter.isDone() } returns false
 
             sut.createFromStudy(presenter, request)
 

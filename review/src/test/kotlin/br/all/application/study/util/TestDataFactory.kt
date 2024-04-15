@@ -1,6 +1,8 @@
 package br.all.application.study.util
 
 import br.all.application.study.create.CreateStudyReviewService
+import br.all.application.study.find.service.FindStudyReviewService
+import br.all.application.study.repository.StudyReviewDto
 import br.all.domain.model.study.StudyType
 import br.all.domain.shared.utils.paragraph
 import br.all.domain.shared.utils.paragraphList
@@ -20,8 +22,8 @@ class TestDataFactory {
     private val faker = Faker()
 
     fun reviewDocument(
-        systematicStudyId: UUID,
-        studyReviewId: Long,
+        systematicStudyId: UUID = this.systematicStudyId,
+        studyReviewId: Long = this.studyReviewId,
         type: String = faker.random.nextEnum(StudyType::class.java).toString(),
         title: String = faker.book.title(),
         year: Int = faker.year(),
@@ -39,10 +41,9 @@ class TestDataFactory {
         selectionStatus: String = "UNCLASSIFIED",
         extractionStatus: String = "UNCLASSIFIED",
         readingPriority: String = "LOW"
-    ): StudyReviewDocument {
-        val studyId = StudyReviewId(systematicStudyId, studyReviewId)
-        return StudyReviewDocument(
-            studyId, type, title, year,
+    ): StudyReviewDto {
+        return StudyReviewDto(
+            studyReviewId, systematicStudyId, type, title, year,
             authors, venue, abstract, keywords, references, doi, sources,
             criteria, formAnswers, robAnswers, comments, readingPriority,
             extractionStatus, selectionStatus
@@ -62,7 +63,10 @@ class TestDataFactory {
         source: String = faker.lorem.words(),
     ) = CreateStudyReviewService.RequestModel(researcherId, systematicStudyId, type, title, year, authors, venue, abstract, keywords, source)
 
-    fun createResponseModel() = CreateStudyReviewService.ResponseModel(researcherId, systematicStudyId, studyReviewId)
+    fun findRequestModel(
+    ) = FindStudyReviewService.RequestModel(researcherId, systematicStudyId, studyReviewId)
+
+    fun findResponseModel() = FindStudyReviewService.ResponseModel(researcherId, reviewDocument())
 
     operator fun component1() = researcherId
     operator fun component2() = studyReviewId
