@@ -25,7 +25,6 @@ import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 class StudyReviewControllerTest(
     @Autowired val repository: MongoStudyReviewRepository,
     @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
-//    @Autowired val protocolRepository: ProtocolRepository,
     @Autowired val idService: StudyReviewIdGeneratorService,
     @Autowired val mockMvc: MockMvc,
 ) {

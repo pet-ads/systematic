@@ -7,6 +7,8 @@ import br.all.application.protocol.update.UpdateProtocolService
 import br.all.protocol.presenter.RestfulFindOneProtocolPresenter
 import br.all.protocol.presenter.RestfulUpdateProtocolPresenter
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.HttpStatus
@@ -25,9 +27,13 @@ class ProtocolController(
     @GetMapping
     @Operation(summary = "Get the protocol of a systematic study")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Success getting the protocol of a systematic study"),
-        ApiResponse(responseCode = "404", description = "Fail getting the protocol of a systematic study - nonexistent protocol or systematic study"),
-        ApiResponse(responseCode = "403", description = "Fail getting the protocol of a systematic study - unauthorized collaborator")
+        ApiResponse(responseCode = "200", description = "Success getting the protocol of a systematic study",
+            content = [Content(
+                mediaType = "application/json",
+                schema = Schema(implementation = FindOneProtocolService.ResponseModel::class)
+            )]),
+        ApiResponse(responseCode = "404", description = "Fail getting the protocol of a systematic study - nonexistent protocol or systematic study", content = [Content(schema = Schema(hidden = true))]),
+        ApiResponse(responseCode = "403", description = "Fail getting the protocol of a systematic study - unauthorized collaborator", content = [Content(schema = Schema(hidden = true))])
     ])
     fun findById(@PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID): ResponseEntity<*> {
         val presenter = RestfulFindOneProtocolPresenter()
@@ -59,7 +65,7 @@ class ProtocolController(
     data class ProtocolRequest(
         val goal: String? = null,
         val justification: String? = null,
-        val researchQuestions: Set<String>,
+        val researchQuestions: Set<String> = emptySet(),
         val keywords: Set<String> = emptySet(),
 
         val searchString: String? = null,
