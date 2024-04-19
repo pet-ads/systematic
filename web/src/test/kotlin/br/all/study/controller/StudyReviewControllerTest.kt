@@ -1,6 +1,5 @@
 package br.all.study.controller
 
-import br.all.application.protocol.repository.ProtocolRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
@@ -8,7 +7,7 @@ import br.all.infrastructure.study.StudyReviewId
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
 import br.all.study.utils.TestDataFactory
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -40,6 +39,9 @@ class StudyReviewControllerTest(
 
     fun findBySourceUrl(searchSource: String = "") =
         "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-source/${searchSource}"
+
+    fun updateStudyUrl(studyReviewId: Long) =
+        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyReviewId}"
 
     fun updateStatusStatus(attributeName: String, studyId: String) =
         "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyId}/${attributeName}"
@@ -88,6 +90,49 @@ class StudyReviewControllerTest(
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
             ).andExpect(status().isBadRequest)
+        }
+
+    }
+
+    @Nested
+    @DisplayName("When updating study review")
+    inner class UpdateTests {
+        @Test
+        fun `should update a study and return 200`(){
+            val studyID = 20L
+            val studyReview = factory.reviewDocument(systematicStudyId, studyID)
+            val initialTitle = studyReview.title
+
+            repository.insert(studyReview)
+
+            val json = factory.validPutRequest(researcherId, systematicStudyId, studyID)
+            mockMvc.perform(put(updateStudyUrl(studyID)).contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isOk)
+
+            val studyReviewId = StudyReviewId(systematicStudyId, studyID)
+            val updatedReview = repository.findById(studyReviewId)
+            val updatedTitle = updatedReview.get().title
+            assertTrue(initialTitle != updatedTitle)
+        }
+        @Test
+        fun `should not update upon invalid request and return 400`(){
+            val studyId = 10L
+            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
+
+            repository.insert(studyReview)
+
+            val json = factory.invalidPutRequest()
+            mockMvc.perform(put(updateStudyUrl(studyId)).contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isBadRequest)
+        }
+
+        @Test
+        fun `should not update if study review does not exist and return 404`(){
+            val studyId = 5L
+
+            val json = factory.validPutRequest(researcherId, systematicStudyId, studyId)
+            mockMvc.perform(put(updateStudyUrl(studyId)).contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isNotFound)
         }
 
     }
