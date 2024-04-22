@@ -5,6 +5,7 @@ import br.all.application.study.find.service.FindAllStudyReviewsBySourceService
 import br.all.application.study.find.service.FindAllStudyReviewsService
 import br.all.application.study.find.service.FindStudyReviewService
 import br.all.application.study.repository.StudyReviewDto
+import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.domain.model.study.StudyType
 import br.all.domain.shared.utils.paragraph
 import br.all.domain.shared.utils.paragraphList
@@ -92,6 +93,20 @@ class TestDataFactory {
         searchSource,
         List(amountOfStudies) { generateDto(studyReviewId = Random(1).nextLong()) }
     )
+
+    fun updateRequestModel(
+        researcherId: UUID = this.researcherId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        type: String = faker.random.nextEnum(StudyType::class.java).toString(),
+        title: String = faker.book.title(),
+        year: Int = faker.year(),
+        authors: String = faker.book.author(),
+        venue: String = faker.lorem.words(),
+        abstract: String = faker.lorem.words(),
+        keywords: Set<String> = setOf(faker.lorem.words(), faker.lorem.words()),
+        source: String = faker.lorem.words(),
+        studyReviewId: Long = this.studyReviewId
+    ) = UpdateStudyReviewService.RequestModel(researcherId, systematicStudyId, type, title, year, authors, venue, abstract, keywords, source, studyReviewId)
 
     operator fun component1() = researcherId
     operator fun component2() = studyReviewId
