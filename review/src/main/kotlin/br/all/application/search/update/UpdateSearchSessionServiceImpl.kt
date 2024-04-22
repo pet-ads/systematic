@@ -41,13 +41,6 @@ class UpdateSearchSessionServiceImpl (
                 source = request.source?.toSearchSource() ?: source
             }.toDto()
 
-            if (request.source?.let { searchSessionRepository.existsBySearchSource(request.systematicStudyId, it) } == true) {
-                presenter.prepareFailView(
-                    UniquenessViolationException("Search session already exists for source: ${request.source}")
-                )
-                return
-            }
-
             if (updated != dto) searchSessionRepository.saveOrUpdate(updated)
 
             presenter.prepareSuccessView(ResponseModel(researcher, systematicStudy, session))
