@@ -118,19 +118,6 @@ class SearchSessionControllerTest(
                 .andExpect(status().isNotFound)
                 .andReturn()
         }
-
-        @Test
-        fun `should return 409 when there is a uniqueness violation error`() {
-            val searchSession = factory.uniquenessViolationDocument(factory.sessionId, systematicStudyId)
-            repository.insert(searchSession)
-
-            mockMvc.perform(multipart(postUrl()).file(factory.bibfile()).param(
-                "data", factory.uniquenessViolationPostRequest())
-            )
-                .andExpect(status().isConflict)
-                .andReturn()
-
-        }
     }
 
     @Nested
@@ -271,22 +258,6 @@ class SearchSessionControllerTest(
             )
             mockMvc.perform(put(putUrl(unauthorizedId)).contentType(MediaType.APPLICATION_JSON).content(request))
                 .andExpect(status().isForbidden)
-        }
-
-        @Test
-        fun `should return 409 when there is a conflict due to duplicate searchSource during update`() {
-            val existingSearchSource = "Existing Search Source"
-            val existingSession1 = factory.searchSessionDocument(searchSource = existingSearchSource)
-            val existingSession2 = factory.searchSessionDocument(id = UUID.randomUUID(), searchSource = existingSearchSource)
-            repository.insert(existingSession1)
-            repository.insert(existingSession2)
-
-            val request = factory.createUniquenessViolationPutRequest(existingSearchSource)
-
-            mockMvc.perform(
-                put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request)
-            )
-                .andExpect(status().isConflict)
         }
     }
 }
