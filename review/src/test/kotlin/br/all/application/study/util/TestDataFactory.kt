@@ -6,6 +6,7 @@ import br.all.application.study.find.service.FindAllStudyReviewsService
 import br.all.application.study.find.service.FindStudyReviewService
 import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
+import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.domain.model.study.StudyType
 import br.all.domain.shared.utils.paragraph
 import br.all.domain.shared.utils.paragraphList
@@ -107,6 +108,10 @@ class TestDataFactory {
         source: String = faker.lorem.words(),
         studyReviewId: Long = this.studyReviewId
     ) = UpdateStudyReviewService.RequestModel(researcherId, systematicStudyId, type, title, year, authors, venue, abstract, keywords, source, studyReviewId)
+
+    fun updateStatusRequestModel(
+        status: String,
+    ) = UpdateStudyReviewStatusService.RequestModel(researcherId, systematicStudyId, studyReviewId, status)
 
     operator fun component1() = researcherId
     operator fun component2() = studyReviewId
