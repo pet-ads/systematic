@@ -55,16 +55,12 @@ class UpdateStudyReviewServiceImplTest {
             val dto = factory.generateDto()
             val request = factory.updateRequestModel()
 
-            studyReviewRepository.saveOrUpdate(dto)
-
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
 
             sut.updateFromStudy(presenter, request)
 
-            verify(exactly = 2) {
-                studyReviewRepository.saveOrUpdate(any())
-            }
             verify(exactly = 1) {
+                studyReviewRepository.saveOrUpdate(any())
                 presenter.prepareSuccessView(any())
             }
         }
