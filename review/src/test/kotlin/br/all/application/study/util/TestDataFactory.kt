@@ -5,6 +5,7 @@ import br.all.application.study.find.service.FindAllStudyReviewsBySourceService
 import br.all.application.study.find.service.FindAllStudyReviewsService
 import br.all.application.study.find.service.FindStudyReviewService
 import br.all.application.study.repository.StudyReviewDto
+import br.all.application.study.update.interfaces.MarkAsDuplicatedService
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.domain.model.study.StudyType
@@ -112,6 +113,10 @@ class TestDataFactory {
     fun updateStatusRequestModel(
         status: String,
     ) = UpdateStudyReviewStatusService.RequestModel(researcherId, systematicStudyId, studyReviewId, status)
+
+    fun markAsDuplicatedRequestModel(
+        destinationId: Long,
+    ) = MarkAsDuplicatedService.RequestModel(researcherId, systematicStudyId, destinationId, studyReviewId)
 
     operator fun component1() = researcherId
     operator fun component2() = studyReviewId
