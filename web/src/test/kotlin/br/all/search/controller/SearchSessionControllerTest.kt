@@ -1,8 +1,5 @@
 package br.all.search.controller
 
-import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.SystematicStudyId
-import br.all.domain.model.search.SearchSessionID
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.search.MongoSearchSessionRepository
 import br.all.infrastructure.shared.toNullable
@@ -44,6 +41,8 @@ class SearchSessionControllerTest(
     fun postUrl() = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-session"
     fun findUrl(sessionId: String = "") =
         "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-session${sessionId}"
+    fun invalidFindUrl(researcherId: String = "", sessionId: String = "") =
+        "/api/v1/researcher/${researcherId}/systematic-study/$systematicStudyId/search-session${sessionId}"
 
     fun putUrl(
         researcherId: UUID = factory.researcherId,
@@ -138,6 +137,21 @@ class SearchSessionControllerTest(
         }
 
         @Test
+        fun `should return 403 when researcher is not authorized`() {
+
+            val searchSession = factory.searchSessionDocument(factory.sessionId, systematicStudyId)
+            repository.insert(searchSession)
+
+            val sessionId = "/${searchSession.id}"
+            val researcherId = "/${factory.invalidResearcherId}"
+            mockMvc.perform(MockMvcRequestBuilders.get(
+                invalidFindUrl(researcherId, sessionId
+                )).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden)
+                .andReturn()
+        }
+
+        @Test
         fun `should return 404 if don't find the search session`() {
             mockMvc.perform(
                 MockMvcRequestBuilders.get(findUrl(factory.nonExistentSessionId.toString()))
@@ -207,8 +221,6 @@ class SearchSessionControllerTest(
                 .andExpect(jsonPath("$.searchSessionID").value(factory.sessionId.toString()))
                 .andExpect(jsonPath("$._links").exists())
 
-                val new = repository.findById(factory.sessionId).toNullable()
-
                 assertNotEquals(original, repository.findById(factory.sessionId).toNullable())
         }
 
@@ -235,6 +247,17 @@ class SearchSessionControllerTest(
             )
             mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
                 .andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should return 403 if the researcher is unauthorized`(){
+            val unauthorizedId = UUID.randomUUID()
+
+            val request = factory.createValidPutRequest(
+                "New Search String", "New Additional Info", "New SearchSource"
+            )
+            mockMvc.perform(put(putUrl(unauthorizedId)).contentType(MediaType.APPLICATION_JSON).content(request))
+                .andExpect(status().isForbidden)
         }
     }
 }
