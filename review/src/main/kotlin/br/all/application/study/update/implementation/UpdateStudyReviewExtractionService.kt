@@ -13,7 +13,6 @@ import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.ResponseModel
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
-import br.all.domain.model.study.ExtractionStatus
 import br.all.domain.model.study.StudyReview
 
 class UpdateStudyReviewExtractionService(
