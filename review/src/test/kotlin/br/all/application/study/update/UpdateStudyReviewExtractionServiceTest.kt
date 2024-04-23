@@ -13,6 +13,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.test.assertFailsWith
+
 @Tag("UnitTest")
 @Tag("ServiceTest")
 @ExtendWith(MockKExtension::class)
@@ -101,10 +103,9 @@ class UpdateStudyReviewExtractionServiceTest {
             val request = factory.updateStatusRequestModel("NOTREAL")
 
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
-            sut.changeStatus(presenter, request)
 
-            verify {
-                presenter.prepareFailView(any<IllegalArgumentException>())
+            assertFailsWith<IllegalArgumentException> {
+                sut.changeStatus(presenter, request)
             }
         }
     }

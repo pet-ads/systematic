@@ -47,7 +47,7 @@ class UpdateStudyReviewExtractionService(
             "UNCLASSIFIED" -> studyReview.declassifyInExtraction()
             "INCLUDED" -> studyReview.includeInExtraction()
             "EXCLUDED" -> studyReview.excludeInExtraction()
-            else -> presenter.prepareFailView(IllegalArgumentException("Unknown study review status: ${request.status}."))
+            else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
         }
         studyReviewRepository.saveOrUpdate(studyReview.toDto())
         presenter.prepareSuccessView(
