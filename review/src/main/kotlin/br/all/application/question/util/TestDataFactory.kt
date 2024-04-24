@@ -98,6 +98,7 @@ class TestDataFactory {
         researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
         questionType: QuestionType = QuestionType.PICK_LIST,
+        options: List<String>? = listOf(faker.lorem.words(), faker.lorem.words())
     ) = RequestModel(
         researcherId,
         systematicStudyId,
@@ -107,20 +108,21 @@ class TestDataFactory {
         null,
         null,
         null,
-        listOf(faker.lorem.words(), faker.lorem.words())
+        options
     )
 
     fun createLabeledScaleRequestModel(
         researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
         questionType: QuestionType = QuestionType.LABELED_SCALE,
+        scales: Map<String, Int>? = mapOf(faker.lorem.words() to 1, faker.lorem.words() to 2),
     ) = RequestModel(
         researcherId,
         systematicStudyId,
         questionType,
         code,
         description,
-        mapOf(faker.lorem.words() to 1, faker.lorem.words() to 2),
+        scales,
         null,
         null,
         null
@@ -130,6 +132,8 @@ class TestDataFactory {
         researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
         questionType: QuestionType = QuestionType.NUMBERED_SCALE,
+        higher: Int? = 10,
+        lower: Int? = 1
     ) = RequestModel(
         researcherId,
         systematicStudyId,
@@ -137,8 +141,8 @@ class TestDataFactory {
         code,
         description,
         null,
-        10,
-        1,
+        higher,
+        lower,
         null
     )
 
