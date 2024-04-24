@@ -2,6 +2,7 @@ package br.all.application.question.util
 
 import br.all.application.question.create.CreateQuestionService.*
 import br.all.application.question.repository.QuestionDto
+import br.all.application.question.update.services.UpdateQuestionService
 import io.github.serpro69.kfaker.Faker
 import java.util.*
 import br.all.application.question.find.FindQuestionService as Find
@@ -17,18 +18,20 @@ class TestDataFactory {
     fun generateTextualDto(
         questionId: UUID = question,
         systematicStudyId: UUID = systematicStudy,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
     ) =
         QuestionDto(
             questionId,
             systematicStudyId,
-            faker.lorem.words(),
-            faker.lorem.words(),
+            code,
+            description,
             "TEXTUAL",
             null,
             null,
             null,
             null
-    )
+        )
 
     fun generatePickListDto(
         questionId: UUID = question,
@@ -94,6 +97,26 @@ class TestDataFactory {
         null
     )
 
+    fun updateTextualRequestModel(
+        researcherId: UUID = researcher,
+        systematicStudyId: UUID = systematicStudy,
+        questionId: UUID = question,
+        questionType: QuestionType = QuestionType.TEXTUAL,
+        code: String,
+        description: String,
+    ) = UpdateQuestionService.RequestModel(
+        researcherId,
+        systematicStudyId,
+        questionId,
+        questionType,
+        code,
+        description,
+        null,
+        null,
+        null,
+        null
+    )
+
     fun createPickListRequestModel(
         researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
@@ -102,6 +125,25 @@ class TestDataFactory {
     ) = RequestModel(
         researcherId,
         systematicStudyId,
+        questionType,
+        code,
+        description,
+        null,
+        null,
+        null,
+        options
+    )
+
+    fun updatePickListRequestModel(
+        researcherId: UUID = researcher,
+        systematicStudyId: UUID = systematicStudy,
+        questionId: UUID = question,
+        questionType: QuestionType = QuestionType.PICK_LIST,
+        options: List<String>? = listOf(faker.lorem.words(), faker.lorem.words())
+    ) = UpdateQuestionService.RequestModel(
+        researcherId,
+        systematicStudyId,
+        questionId,
         questionType,
         code,
         description,
@@ -128,6 +170,25 @@ class TestDataFactory {
         null
     )
 
+    fun updateLabeledScaleRequestModel(
+        researcherId: UUID = researcher,
+        systematicStudyId: UUID = systematicStudy,
+        questionId: UUID = question,
+        questionType: QuestionType = QuestionType.LABELED_SCALE,
+        scales: Map<String, Int>? = mapOf(faker.lorem.words() to 1, faker.lorem.words() to 2),
+    ) = UpdateQuestionService.RequestModel(
+        researcherId,
+        systematicStudyId,
+        questionId,
+        questionType,
+        code,
+        description,
+        scales,
+        null,
+        null,
+        null
+    )
+
     fun createNumberedScaleRequestModel(
         researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
@@ -144,6 +205,34 @@ class TestDataFactory {
         higher,
         lower,
         null
+    )
+
+    fun updateNumberedScaleRequestModel(
+        researcherId: UUID = researcher,
+        systematicStudyId: UUID = systematicStudy,
+        questionId: UUID = question,
+        questionType: QuestionType = QuestionType.NUMBERED_SCALE,
+        higher: Int? = 10,
+        lower: Int? = 1
+    ) = UpdateQuestionService.RequestModel(
+        researcherId,
+        systematicStudyId,
+        questionId,
+        questionType,
+        code,
+        description,
+        null,
+        higher,
+        lower,
+        null
+    )
+
+    fun updateQuestionResponseModel(
+        researcherId: UUID = researcher,
+        systematicStudyId: UUID = systematicStudy,
+        questionId: UUID = question,
+    ) = UpdateQuestionService.ResponseModel(
+        researcherId, systematicStudyId, questionId
     )
 
     fun findOneQuestionRequestModel(
