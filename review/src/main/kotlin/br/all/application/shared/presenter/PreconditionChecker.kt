@@ -6,14 +6,14 @@ import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.domain.model.researcher.ResearcherId
-import java.util.*
+import br.all.domain.model.review.SystematicStudyId
 
 class PreconditionChecker(
     private val reviewRepository: SystematicStudyRepository,
     private val credentialsService: ResearcherCredentialsService,
 ) {
 
-    fun prepareIfViolatesPreconditions(presenter: GenericPresenter<*>, researcherId: UUID, systematicStudyId: UUID) {
+    fun prepareIfViolatesPreconditions(presenter: GenericPresenter<*>, researcherId: ResearcherId, systematicStudyId: SystematicStudyId) {
         prepareIfUnauthenticatedOrUnauthorized(presenter, researcherId)
         if (presenter.isDone())
             return
