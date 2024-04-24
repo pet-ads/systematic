@@ -10,6 +10,7 @@ interface UpdateQuestionService {
     data class RequestModel(
         val researcherId: UUID,
         val systematicStudyId: UUID,
+        val questionId: UUID,
         val questionType: QuestionType,
         val code: String,
         val description: String,
