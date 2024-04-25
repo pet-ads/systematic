@@ -38,13 +38,6 @@ class CreateSearchSessionServiceImpl(
         }
         if (presenter.isDone()) return
 
-        if (searchSessionRepository.existsBySearchSource(request.systematicStudyId, request.source)) {
-            presenter.prepareFailView(
-                UniquenessViolationException("Search session already exists for source: ${request.source}")
-            )
-            return
-        }
-
         val sessionId = SearchSessionID(uuidGeneratorService.next())
         val searchSession = SearchSession.fromRequestModel(sessionId, request)
 
