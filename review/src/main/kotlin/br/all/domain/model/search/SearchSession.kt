@@ -1,6 +1,7 @@
 package br.all.domain.model.search
 
 import br.all.domain.model.protocol.SearchSource
+import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
@@ -11,9 +12,10 @@ import java.util.*
 class SearchSession(
     searchSessionId: SearchSessionID,
     val systematicStudyId: SystematicStudyId,
+    val researcherId: ResearcherId,
     var searchString: String,
     var additionalInfo: String?,
-    val timestamp: LocalDateTime = LocalDateTime.now(),
+    var timestamp: LocalDateTime = LocalDateTime.now(),
     var source: SearchSource
 ) : Entity<UUID>(searchSessionId){
     init {
