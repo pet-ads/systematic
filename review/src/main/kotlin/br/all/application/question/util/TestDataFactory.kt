@@ -81,6 +81,23 @@ class TestDataFactory {
             null,
         )
 
+    fun updateQuestionRequestModel(
+        updatedDto: QuestionDto,
+        questionType: QuestionType,
+        researcherId: UUID = researcher,
+    ) = UpdateQuestionService.RequestModel(
+        researcherId,
+        updatedDto.systematicStudyId,
+        updatedDto.questionId,
+        questionType,
+        updatedDto.code,
+        updatedDto.description,
+        updatedDto.scales,
+        updatedDto.higher,
+        updatedDto.lower,
+        updatedDto.options
+    )
+
     fun createTextualRequestModel(
         researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
@@ -88,26 +105,6 @@ class TestDataFactory {
     ) = RequestModel(
         researcherId,
         systematicStudyId,
-        questionType,
-        code,
-        description,
-        null,
-        null,
-        null,
-        null
-    )
-
-    fun updateTextualRequestModel(
-        researcherId: UUID = researcher,
-        systematicStudyId: UUID = systematicStudy,
-        questionId: UUID = question,
-        questionType: QuestionType = QuestionType.TEXTUAL,
-        code: String,
-        description: String,
-    ) = UpdateQuestionService.RequestModel(
-        researcherId,
-        systematicStudyId,
-        questionId,
         questionType,
         code,
         description,
@@ -134,25 +131,6 @@ class TestDataFactory {
         options
     )
 
-    fun updatePickListRequestModel(
-        researcherId: UUID = researcher,
-        systematicStudyId: UUID = systematicStudy,
-        questionId: UUID = question,
-        questionType: QuestionType = QuestionType.PICK_LIST,
-        options: List<String>? = listOf(faker.lorem.words(), faker.lorem.words())
-    ) = UpdateQuestionService.RequestModel(
-        researcherId,
-        systematicStudyId,
-        questionId,
-        questionType,
-        code,
-        description,
-        null,
-        null,
-        null,
-        options
-    )
-
     fun createLabeledScaleRequestModel(
         researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
@@ -161,25 +139,6 @@ class TestDataFactory {
     ) = RequestModel(
         researcherId,
         systematicStudyId,
-        questionType,
-        code,
-        description,
-        scales,
-        null,
-        null,
-        null
-    )
-
-    fun updateLabeledScaleRequestModel(
-        researcherId: UUID = researcher,
-        systematicStudyId: UUID = systematicStudy,
-        questionId: UUID = question,
-        questionType: QuestionType = QuestionType.LABELED_SCALE,
-        scales: Map<String, Int>? = mapOf(faker.lorem.words() to 1, faker.lorem.words() to 2),
-    ) = UpdateQuestionService.RequestModel(
-        researcherId,
-        systematicStudyId,
-        questionId,
         questionType,
         code,
         description,
@@ -198,26 +157,6 @@ class TestDataFactory {
     ) = RequestModel(
         researcherId,
         systematicStudyId,
-        questionType,
-        code,
-        description,
-        null,
-        higher,
-        lower,
-        null
-    )
-
-    fun updateNumberedScaleRequestModel(
-        researcherId: UUID = researcher,
-        systematicStudyId: UUID = systematicStudy,
-        questionId: UUID = question,
-        questionType: QuestionType = QuestionType.NUMBERED_SCALE,
-        higher: Int? = 10,
-        lower: Int? = 1
-    ) = UpdateQuestionService.RequestModel(
-        researcherId,
-        systematicStudyId,
-        questionId,
         questionType,
         code,
         description,
@@ -261,6 +200,7 @@ class TestDataFactory {
         questionDto: QuestionDto = generateNumberedScaleDto()
     ) = Find.ResponseModel(researcherId, questionDto)
 
+
     fun dtoFromRequest(
         request: RequestModel,
         questionId: UUID = question,
@@ -276,7 +216,6 @@ class TestDataFactory {
         request.higher,
         request.options
     )
-
 
     operator fun component1() = researcher
     operator fun component2() = systematicStudy
