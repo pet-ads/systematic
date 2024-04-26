@@ -13,22 +13,12 @@ import java.util.*
 @SpringBootApplication
 class WebApplication{
 
-    //TODO Update RegisterUser endpoint with proper documentation
-    //TODO finish video https://www.youtube.com/watch?v=_1npBylaRVs&list=PLvN8k8yxjoeud4ESoB-wjiieqYGaDVqPR&index=13
-    //TODO write test cases
-    
-//    @Bean
-//    fun run(repository: JpaAccountCredentialsRepository, encoder: PasswordEncoder) = CommandLineRunner { args ->
-//        val user = UserAccountEntity(
-//            uuid = UUID.randomUUID(),
-//            username = "admin",
-//            password = encoder.encode("password"), // Please use a strong password hashing mechanism in production!
-//            email = "admin@example.com",
-//            country = "US",
-//            affiliation = "Example Corporation"
-//        )
-//        repository.save(user)
-//    }
+    //TODO Check the integration between account and review modules
+    //TODO See how to remove researcher info from every endpoint
+    //TODO Check how to fix API tests
+    //TODO write test cases route for PET members for account
+    //TODO write test case guide for checking for 401
+    //TODO fix the token get claims returning 500 for invalid token format
 }
 
 fun main(args: Array<String>) {
