@@ -1,13 +1,7 @@
 package br.all
 
-import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.context.annotation.Bean
-import br.all.infrastructure.user.JpaAccountCredentialsRepository
-import br.all.infrastructure.user.UserAccountEntity
-import org.springframework.security.crypto.password.PasswordEncoder
-import java.util.*
 
 
 @SpringBootApplication

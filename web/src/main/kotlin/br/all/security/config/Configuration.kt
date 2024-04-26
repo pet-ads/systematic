@@ -1,7 +1,5 @@
 package br.all.security.config
 
-import br.all.application.user.find.LoadCredentialsByTokenService
-import br.all.application.user.find.LoadCredentialsByTokenServiceImpl
 import br.all.application.user.find.LoadAccountCredentialsService
 import br.all.application.user.find.LoadAccountCredentialsServiceImpl
 import br.all.application.user.repository.UserAccountRepository
@@ -34,10 +32,6 @@ class Configuration {
     @Bean
     fun updateToken(repository: UserAccountRepository): UpdateRefreshTokenService =
         UpdateRefreshTokenServiceImpl(repository)
-
-    @Bean
-    fun loadUserDetailsByToken(repository: UserAccountRepository): LoadCredentialsByTokenService =
-        LoadCredentialsByTokenServiceImpl(repository)
 
     @Bean
     fun encoder(): PasswordEncoder = BCryptPasswordEncoder()
