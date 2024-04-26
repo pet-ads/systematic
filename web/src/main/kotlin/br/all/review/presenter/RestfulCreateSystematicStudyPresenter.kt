@@ -32,7 +32,6 @@ class RestfulCreateSystematicStudyPresenter: CreateSystematicStudyPresenter {
     private fun linkForUpdatingTheStudy(response: ResponseModel) =
         linkTo<SystematicStudyController> {
             updateSystematicStudy(
-                response.researcherId,
                 response.systematicStudyId,
                 PutRequest("title", "description"),
             )
@@ -40,17 +39,17 @@ class RestfulCreateSystematicStudyPresenter: CreateSystematicStudyPresenter {
 
     private fun linkForAllStudiesByOwner(response: ResponseModel) =
         linkTo<SystematicStudyController> {
-            findAllSystematicStudiesByOwner(response.researcherId, response.researcherId)
+            findAllSystematicStudiesByOwner(response.researcherId)
         }.withRel("allStudiesByOwner")
 
     private fun linkForAllStudies(response: ResponseModel) =
         linkTo<SystematicStudyController> {
-            findAllSystematicStudies(response.researcherId)
+            findAllSystematicStudies()
         }.withRel("allStudies")
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<SystematicStudyController> {
-            findSystematicStudy(response.researcherId, response.systematicStudyId)
+            findSystematicStudy(response.researcherId)
         }.withSelfRel()
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }

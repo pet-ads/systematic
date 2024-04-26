@@ -18,15 +18,15 @@ class RestfulUpdateSystematicStudyPresenter: UpdateSystematicStudyPresenter {
         val restfulResponse = ViewModel(response.researcherId, response.systematicStudy)
 
         val self = linkTo<SystematicStudyController> {
-            findSystematicStudy(response.researcherId, response.systematicStudy)
+            findSystematicStudy(response.systematicStudy)
         }.withSelfRel()
 
-        restfulResponse.add(self, postSystematicStudy(response.researcherId))
+        restfulResponse.add(self, postSystematicStudy())
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
-    private fun postSystematicStudy(researcherId: UUID) = linkTo<SystematicStudyController> {
-        postSystematicStudy(researcherId, PostRequest("title", "description", setOf(UUID.randomUUID())))
+    private fun postSystematicStudy() = linkTo<SystematicStudyController> {
+        postSystematicStudy(PostRequest("title", "description", setOf(UUID.randomUUID())))
     }.withSelfRel()
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }

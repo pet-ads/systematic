@@ -1,6 +1,6 @@
 package br.all.security.service
 
-import br.all.application.user.find.LoadCredentialsByTokenService
+import br.all.application.user.find.LoadAccountCredentialsService
 import br.all.application.user.update.UpdateRefreshTokenService
 import br.all.application.user.update.UpdateRefreshTokenService.RequestModel
 import br.all.security.auth.AuthenticationRequest
@@ -18,7 +18,7 @@ class AuthenticationService(
     private val userDetailService: UserDetailsService,
     private val tokenService: TokenService,
     private val jwtProperties: JwtProperties,
-    private val loadCredentialsByTokenService: LoadCredentialsByTokenService,
+    private val loadCredentialsService: LoadAccountCredentialsService,
     private val updateRefreshTokenService: UpdateRefreshTokenService
 ) {
     fun authenticate(request: AuthenticationRequest): AuthenticationResponse {
@@ -44,7 +44,7 @@ class AuthenticationService(
         val username = tokenService.extractUsername(refreshToken) ?: return null
 
         val currentUserDetails = userDetailService.loadUserByUsername(username) as ApplicationUser
-        val tokenUserCredentials = loadCredentialsByTokenService.loadByToken(refreshToken)
+        val tokenUserCredentials = loadCredentialsService.loadSimpleCredentialsByToken(refreshToken)
 
         if(canNotRefreshAccessToken(refreshToken, currentUserDetails.id, tokenUserCredentials.id)) return null
         return generateToken(currentUserDetails, jwtProperties.accessTokenExpiration)

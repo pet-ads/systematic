@@ -15,30 +15,31 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class RestfulFindOneSystematicStudyPresenter: FindOneSystematicStudyPresenter {
+class RestfulFindOneSystematicStudyPresenter : FindOneSystematicStudyPresenter {
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.content)
 
         val self = linkTo<SystematicStudyController> {
-            findSystematicStudy(response.researcherId, response.systematicStudyId)
+            findSystematicStudy(response.systematicStudyId)
         }.withSelfRel()
 
-        restfulResponse.add(self, postSystematicStudy(response.researcherId), updateSystematicStudy(response.researcherId,
-                                                                                                    response.systematicStudyId))
+        restfulResponse.add(
+            self, postSystematicStudy(response.researcherId), updateSystematicStudy(response.systematicStudyId)
+        )
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
     private fun postSystematicStudy(researcherId: UUID) = linkTo<SystematicStudyController> {
-        postSystematicStudy(researcherId, PostRequest("title", "description", setOf(UUID.randomUUID())))
+        postSystematicStudy(PostRequest("title", "description", setOf(UUID.randomUUID())))
     }.withSelfRel()
 
-    private fun updateSystematicStudy(researcherId: UUID, systematicStudyId: UUID) = linkTo<SystematicStudyController> {
-        updateSystematicStudy(researcherId, systematicStudyId, PutRequest("title", "description"))
+    private fun updateSystematicStudy(systematicStudyId: UUID) = linkTo<SystematicStudyController> {
+        updateSystematicStudy(systematicStudyId, PutRequest("title", "description"))
     }.withSelfRel()
 
-    override fun prepareFailView(throwable: Throwable)= run { responseEntity = createErrorResponseFrom(throwable) }
+    override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 
     override fun isDone() = responseEntity != null
 

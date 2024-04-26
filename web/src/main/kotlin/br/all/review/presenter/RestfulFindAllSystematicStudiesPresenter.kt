@@ -24,23 +24,23 @@ class RestfulFindAllSystematicStudiesPresenter: FindAllSystematicStudyPresenter 
         )
 
         val self = with(response) {
-            ownerId?.let { linkToFindAllByOwner(researcherId, it) } ?: linkToFindAll(researcherId)
+            ownerId?.let { linkToFindAllByOwner(it) } ?: linkToFindAll()
         }
 
-        restfulResponse.add(self, postSystematicStudy(response.researcherId))
+        restfulResponse.add(self, postSystematicStudy())
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
-    private fun linkToFindAllByOwner(researcherId: UUID, ownerId: UUID) = linkTo<SystematicStudyController> {
-        findAllSystematicStudiesByOwner(researcherId, ownerId)
+    private fun linkToFindAllByOwner(ownerId: UUID) = linkTo<SystematicStudyController> {
+        findAllSystematicStudiesByOwner(ownerId)
     }.withSelfRel()
 
-    private fun linkToFindAll(researcherId: UUID) = linkTo<SystematicStudyController> {
-        findAllSystematicStudies(researcherId)
+    private fun linkToFindAll() = linkTo<SystematicStudyController> {
+        findAllSystematicStudies()
     }.withSelfRel()
 
-    private fun postSystematicStudy(researcherId: UUID) = linkTo<SystematicStudyController> {
-        postSystematicStudy(researcherId, PostRequest("title", "description", setOf(UUID.randomUUID())))
+    private fun postSystematicStudy() = linkTo<SystematicStudyController> {
+        postSystematicStudy(PostRequest("title", "description", setOf(UUID.randomUUID())))
     }.withSelfRel()
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }

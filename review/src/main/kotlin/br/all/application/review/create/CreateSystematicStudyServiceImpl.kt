@@ -21,6 +21,7 @@ class CreateSystematicStudyServiceImpl(
     private val uuidGeneratorService: UuidGeneratorService,
     private val credentialsService: ResearcherCredentialsService,
 ) : CreateSystematicStudyService {
+
     override fun create(presenter: CreateSystematicStudyPresenter, request: RequestModel) {
         val (researcher) = request
         PreconditionChecker(systematicStudyRepository, credentialsService).also {
@@ -33,8 +34,7 @@ class CreateSystematicStudyServiceImpl(
             systematicStudyRepository.saveOrUpdate(it.toDto())
         }
 
-        val protocol = Protocol.write(id.toSystematicStudyId(), emptySet())
-            .build()
+        val protocol = Protocol.write(id.toSystematicStudyId(), emptySet()).build()
         protocolRepository.saveOrUpdate(protocol.toDto())
 
         presenter.prepareSuccessView(ResponseModel(researcher, id))
