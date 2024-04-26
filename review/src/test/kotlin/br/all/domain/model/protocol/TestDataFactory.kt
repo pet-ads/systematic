@@ -62,6 +62,7 @@ class TestDataFactory {
         text().toSearchSource()
     }.toSet()
 
+    @OptIn(ExperimentalStdlibApi::class)
     fun languages(length: Int = 5) = mutableSetOf<Language>().also {
         while (it.size < min(length, LangType.entries.size))
             it.add(Language(faker.random.nextEnum()))

@@ -1,13 +1,24 @@
 package br.all.domain.user
 
-import java.util.*
+import java.time.LocalDateTime
 
+class UserAccount(
+    val id: UserAccountId,
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    var email: Email,
+    var country: Text,
+    var affiliation: String,
+    username: Username,
+    password: String,
+){
+    private var _accountCredentials = AccountCredentials(username, password, null)
+    val accountCredentials get() =_accountCredentials
 
-class UserAccount (
-    private val uuid: UUID,
-    private val username: String,
-    private val password: String,
-    private val email: String,
-    private val country: String,
-    private val affiliation: String,
-)
+    fun changeUsername(newUsername: Username) {
+        _accountCredentials = AccountCredentials(newUsername, _accountCredentials.password, null)
+    }
+
+    fun changePassword(password: String) {
+        _accountCredentials = AccountCredentials(_accountCredentials.username, password, null)
+    }
+}

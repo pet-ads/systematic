@@ -1,4 +1,4 @@
-package br.all.application.shared.presenter
+package br.all.application.shared
 
 interface GenericPresenter <T> {
     fun prepareSuccessView(response: T)
