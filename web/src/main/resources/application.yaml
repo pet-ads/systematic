@@ -1,0 +1,29 @@
+spring:
+  data:
+    mongodb:
+      authentication-database: admin
+      username: rootuser
+      password: rootpass  # Consider using a secure method in production!
+      port: 27017
+      database: review
+      host: localhost
+      uuid-representation: standard
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/start
+    username: start-adm
+    password: start-doing-it
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # Not recommended for production!
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+jwt:
+  key: "dasdasdadadasdasdadadasdasdadadasdasdadadasdasdada"
+  access-token-expiration: 3600000
+  refresh-token-expiration: 86400000
