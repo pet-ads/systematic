@@ -23,6 +23,9 @@ class UserAccountRepositoryImpl(
     override fun loadCredentialsByToken(token: String): AccountCredentialsDto? =
         credentialsRepository.findByRefreshToken(token)?.toAccountCredentialsDto()
 
+    override fun loadCredentialsById(id: UUID): AccountCredentialsDto? =
+        credentialsRepository.findById(id).orElse(null)?.toAccountCredentialsDto()
+
     override fun updateRefreshToken(userId: UUID, token: String) {
         credentialsRepository.updateRefreshTokenById(userId, token)
     }

@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param
 import java.util.*
 
 @Transactional
-interface JpaAccountCredentialsRepository : JpaRepository<AccountCredentialsEntity, String>{
+interface JpaAccountCredentialsRepository : JpaRepository<AccountCredentialsEntity, UUID>{
      fun findByUsername(username: String): AccountCredentialsEntity?
      fun findByRefreshToken(refreshToken: String): AccountCredentialsEntity?
      fun existsByUsername(username: String): Boolean
