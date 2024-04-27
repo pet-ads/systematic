@@ -18,7 +18,7 @@ fun SystematicStudy.Companion.fromRequestModel(id: UUID, requestModel: RequestMo
     SystematicStudyId(id),
     requestModel.title,
     requestModel.description,
-    ResearcherId(requestModel.researcher),
+    ResearcherId(requestModel.userId),
 )
 
 fun SystematicStudy.Companion.fromDto(dto: SystematicStudyDto) = SystematicStudy(

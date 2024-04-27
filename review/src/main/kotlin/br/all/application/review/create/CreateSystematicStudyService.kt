@@ -6,7 +6,7 @@ interface CreateSystematicStudyService {
     fun create(presenter: CreateSystematicStudyPresenter, request: RequestModel)
 
     data class RequestModel(
-        val researcher: UUID,
+        val userId: UUID,
         val title : String,
         val description : String,
         val collaborators : Set<UUID>,
