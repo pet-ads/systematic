@@ -25,6 +25,8 @@ class PreconditionChecker(
             presenter.prepareFailView(UnauthorizedUserException("User of id $researcherId is not a reviewer."))
     }
 
+
+
     fun prepareIfUnauthenticatedOrUnauthorized(presenter: GenericPresenter<*>, researcherId: ResearcherId) {
         if (!credentialsService.isAuthenticated(researcherId)) {
             presenter.prepareFailView(UnauthenticatedUserException("User of id $researcherId is not authenticated."))
