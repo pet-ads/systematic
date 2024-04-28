@@ -7,9 +7,7 @@ import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.repository.toDto
 import br.all.domain.user.*
 
-class RegisterUserAccountServiceImpl(
-    private val repository: UserAccountRepository,
-) : RegisterUserAccountService {
+class RegisterUserAccountServiceImpl(private val repository: UserAccountRepository) : RegisterUserAccountService {
 
     override fun register(presenter: RegisterUserAccountPresenter, request: RequestModel) {
         if (repository.existsByEmail(request.email)) {
@@ -31,7 +29,8 @@ class RegisterUserAccountServiceImpl(
             password = request.password,
             email = email,
             country = country,
-            affiliation = request.affiliation
+            affiliation = request.affiliation,
+            authorities = setOf(Authority.USER)
         )
 
         repository.save(userAccount.toDto())

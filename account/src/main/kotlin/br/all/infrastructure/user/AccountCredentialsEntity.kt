@@ -12,8 +12,14 @@ class AccountCredentialsEntity(
     var username: String,
     @Column(nullable = false)
     var password: String,
+
+    @ElementCollection
+    @Column(name = "authority")
+    val authorities: Set<String>,
+
     @Column(unique = true)
     val refreshToken: String?,
+
     var isAccountNonExpired : Boolean,
     var isAccountNonLocked : Boolean,
     var isCredentialsNonExpired : Boolean,
