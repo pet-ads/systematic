@@ -2,6 +2,11 @@ Para cada pacote de aggregate no módulo Web
 - Remova a parte /researcher/{researcherId}/ do @RequestMapping
 - Remova todos os parâmetros "@PathVariable researcherId: UUID" dos métodos dos controllers usando "Refactor/Change Signature" do IntelliJ (caso contrário vai quebrar os presenters)
 - Adicione a seguinte injeção de dependência no construtor do Controller: private val credentialService: CredentialService
-- Em cada implementação de método controller obtenha o researcher id a partir do credentialService (exemplo: val researcherId = credentialService.getAuthenticatedUserId())
-- 
+- Em cada implementação de método controller obtenha o researcher id a partir do AuthenticationInfoService (exemplo: val researcherId = authenticationInfoService.getAuthenticatedUserId())
+- Nas classes service utilizada pelo controller, inclua a dependência "private val credentialsService: CredentialsService" no construtor.
+- Obtenha os dados do usuário autenticado usando o método loadCredentials do credentialService
+- Obtenha o systematicStudy usando o repositório pertinente
+- Substituia a chamada para o PreconditionChecker pela extension function "prepareIfFailsPreconditions(user, systematicStudy)" e verifique se presenter.isDone()
 - Atualize as URLs na respectiva classe de teste.
+- Atualize os testes
+- Inclua testes para verificar problemas de autenticação e autorização (user não cadastrado, user que não pode ter acesso por não ter o Role de RESEARCHER)
