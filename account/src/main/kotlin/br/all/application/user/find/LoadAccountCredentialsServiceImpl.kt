@@ -24,7 +24,7 @@ class LoadAccountCredentialsServiceImpl(private val repository: UserAccountRepos
 
     override fun loadSimpleCredentialsById(id: UUID): UserSimpleCredentials {
         val userDto = repository.loadCredentialsById(id)
-            ?: throw NoSuchElementException("Username id $id not found.")
+            ?: throw NoSuchElementException("User id $id not found.")
 
         return UserSimpleCredentials(userDto.id, userDto.username, userDto.authorities)
     }

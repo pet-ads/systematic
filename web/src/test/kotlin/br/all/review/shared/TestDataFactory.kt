@@ -1,7 +1,9 @@
 package br.all.review.shared
 
+import br.all.application.user.repository.UserAccountDto
 import br.all.infrastructure.review.SystematicStudyDocument
 import io.github.serpro69.kfaker.Faker
+import java.time.LocalDateTime
 import java.util.*
 
 class TestDataFactory {

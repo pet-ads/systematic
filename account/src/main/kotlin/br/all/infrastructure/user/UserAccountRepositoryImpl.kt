@@ -17,6 +17,11 @@ class UserAccountRepositoryImpl(
         userAccountRepository.save(entity)
     }
 
+    override fun deleteById(id: UUID) {
+        userAccountRepository.deleteById(id)
+        credentialsRepository.deleteById(id)
+    }
+
     override fun loadCredentialsByUsername(username: String) =
         credentialsRepository.findByUsername(username)?.toAccountCredentialsDto()
 
