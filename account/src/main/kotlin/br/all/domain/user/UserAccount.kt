@@ -10,15 +10,22 @@ class UserAccount(
     var affiliation: String,
     username: Username,
     password: String,
+    authorities: Set<Authority>,
 ){
-    private var _accountCredentials = AccountCredentials(username, password, null)
+    private var _accountCredentials = AccountCredentials(username, password, authorities)
     val accountCredentials get() =_accountCredentials
 
     fun changeUsername(newUsername: Username) {
-        _accountCredentials = AccountCredentials(newUsername, _accountCredentials.password, null)
+        _accountCredentials = AccountCredentials(
+            newUsername,
+            _accountCredentials.password,
+            _accountCredentials.authorities)
     }
 
     fun changePassword(password: String) {
-        _accountCredentials = AccountCredentials(_accountCredentials.username, password, null)
+        _accountCredentials = AccountCredentials(
+            _accountCredentials.username,
+            password,
+            _accountCredentials.authorities)
     }
 }

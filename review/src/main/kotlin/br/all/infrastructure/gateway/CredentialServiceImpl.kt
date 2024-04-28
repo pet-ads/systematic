@@ -13,6 +13,6 @@ class CredentialServiceImpl(private val accountCredentialsService : LoadAccountC
         return accountCredentialsService.loadSimpleCredentialsById(userId).toResponseModel()
     }
 
-    private fun UserSimpleCredentials.toResponseModel() = ResponseModel(this.id, this.username)
+    private fun UserSimpleCredentials.toResponseModel() = ResponseModel(this.id, this.username, this.authorities)
 
 }

@@ -8,6 +8,7 @@ fun UserAccountDto.toUserAccountEntity(): UserAccountEntity {
         id,
         username,
         password,
+        authorities,
         refreshToken,
         isAccountNonExpired,
         isAccountNonExpired,
@@ -17,4 +18,4 @@ fun UserAccountDto.toUserAccountEntity(): UserAccountEntity {
     return UserAccountEntity(id, credentials, email, country, affiliation, createdAt)
 }
 
-fun AccountCredentialsEntity.toAccountCredentialsDto() = AccountCredentialsDto(id, username, password, refreshToken)
+fun AccountCredentialsEntity.toAccountCredentialsDto() = AccountCredentialsDto(id, username, password, authorities, refreshToken)
