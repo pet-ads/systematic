@@ -3,6 +3,8 @@ package br.all.review.controller
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.review.shared.TestDataFactory
+import br.all.security.service.ApplicationUser
+import br.all.shared.TestHelperService
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -23,54 +26,56 @@ import java.util.*
 @Tag("IntegrationTest")
 class SystematicStudyControllerTest(
     @Autowired private val repository: MongoSystematicStudyRepository,
+    @Autowired private val testHelperService: TestHelperService,
     @Autowired private val mockMvc: MockMvc,
 ) {
     private lateinit var factory: TestDataFactory
+    private lateinit var user: ApplicationUser
 
     @BeforeEach
     fun setUp() {
         repository.deleteAll()
         factory = TestDataFactory()
+        user = testHelperService.createApplicationUser()
     }
 
     @AfterEach
-    fun tearDown() = repository.deleteAll()
+    fun tearDown() {
+        repository.deleteAll()
+        testHelperService.deleteApplicationUser(user.id)
+    }
 
-    private fun postUrl() = "/api/v1/researcher/${factory.researcherId}/systematic-study"
+    private fun postUrl() = "/api/v1/systematic-study"
 
-    private fun getOneUrl(
-        researcherId: UUID = factory.researcherId,
-        systematicStudyId: UUID = factory.systematicStudyId,
-    ) = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId"
+    private fun getOneUrl(systematicStudyId: UUID = factory.systematicStudyId) =
+        "/api/v1/systematic-study/$systematicStudyId"
 
-    private fun getAllUrl(
-        researcherId: UUID = factory.researcherId,
-    ) =  "/api/v1/researcher/$researcherId/systematic-study"
+    private fun getAllUrl() = "/api/v1/systematic-study"
 
-    private fun getAllByOwnerUrl(
-        researcherId: UUID = factory.researcherId,
-        ownerId: UUID = factory.ownerId,
-    ) = "${getAllUrl(researcherId)}/owner/$ownerId"
+    private fun getAllByOwnerUrl(ownerId: UUID = factory.ownerId) = "${getAllUrl()}/owner/$ownerId"
 
-    private fun putUrl(
-        researcherId: UUID = factory.researcherId,
-        systematicStudyId: UUID = factory.systematicStudyId
-    ) = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId"
+    private fun putUrl(systematicStudyId: UUID = factory.systematicStudyId) =
+        "/api/v1/systematic-study/$systematicStudyId"
 
     @Nested
     @DisplayName("When posting a new Systematic Study")
     inner class WhenPostingANewSystematicStudy {
+
         @Test
         @Tag("ValidClasses")
         fun `should create a valid systematic study`() {
             val json = factory.createValidPostRequest()
-            mockMvc.perform(post(postUrl()).contentType(MediaType.APPLICATION_JSON).content(json))
+            mockMvc.perform(
+                post(postUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+            )
                 .andExpect(status().isCreated)
-                .andExpect(jsonPath("$.researcherId").value(factory.researcherId.toString()))
+                .andExpect(jsonPath("$.researcherId").value(user.id.toString()))
                 .andExpect(jsonPath("$.systematicStudyId").isString)
                 .andExpect(jsonPath("$._links").exists())
         }
-        
+
         @Test
         @Tag("InvalidClasses")
         fun `should not create a invalid systematic study`() {
@@ -89,7 +94,7 @@ class SystematicStudyControllerTest(
         inner class AndSuccessfullyFindingThem {
             @Test
             fun `should get a systematic study and return 200 status code`() {
-                repository.save(factory.createSystematicStudyDocument())
+                repository.save(factory.createSystematicStudyDocument(owner = user.id))
                 mockMvc.perform(get(getOneUrl()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk)
                     .andExpect(jsonPath("$.content.id").value(factory.systematicStudyId.toString()))
@@ -98,9 +103,19 @@ class SystematicStudyControllerTest(
 
             @Test
             fun `should get the only study of the researcher when looking for all of them`() {
-                repository.save(factory.createSystematicStudyDocument())
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(owner = user.id))
+                repository.save(
+                    factory.createSystematicStudyDocument(
+                        id = UUID.randomUUID(),
+                        owner = UUID.randomUUID()
+                    )
+                )
+                repository.save(
+                    factory.createSystematicStudyDocument(
+                        id = UUID.randomUUID(),
+                        owner = UUID.randomUUID()
+                    )
+                )
 
                 mockMvc.perform(get(getAllUrl()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk)
@@ -110,9 +125,9 @@ class SystematicStudyControllerTest(
 
             @Test
             fun `should get all systematic studies and return 200`() {
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
 
                 mockMvc.perform(get(getAllUrl()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk)
@@ -122,11 +137,21 @@ class SystematicStudyControllerTest(
 
             @Test
             fun `should get only the systematic studies that belongs to the researcher`() {
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
                 repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
                 repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
+                repository.save(
+                    factory.createSystematicStudyDocument(
+                        id = UUID.randomUUID(),
+                        owner = UUID.randomUUID()
+                    )
+                )
+                repository.save(
+                    factory.createSystematicStudyDocument(
+                        id = UUID.randomUUID(),
+                        owner = UUID.randomUUID()
+                    )
+                )
 
                 mockMvc.perform(get(getAllUrl()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk)
@@ -137,8 +162,18 @@ class SystematicStudyControllerTest(
             @Test
             fun `should get the only systematic study of a owner and return 200`() {
                 saveOwnerStudy()
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = factory.researcherId))
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = factory.researcherId))
+                repository.save(
+                    factory.createSystematicStudyDocument(
+                        id = UUID.randomUUID(),
+                        owner = user.id
+                    )
+                )
+                repository.save(
+                    factory.createSystematicStudyDocument(
+                        id = UUID.randomUUID(),
+                        owner = user.id
+                    )
+                )
 
                 mockMvc.perform(get(getAllByOwnerUrl()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk)
@@ -151,7 +186,7 @@ class SystematicStudyControllerTest(
                 factory.createSystematicStudyDocument(
                     id = UUID.randomUUID(),
                     owner = factory.ownerId,
-                    collaborators = mutableSetOf(factory.researcherId),
+                    collaborators = mutableSetOf(user.id),
                 )
             )
 
@@ -159,7 +194,12 @@ class SystematicStudyControllerTest(
             fun `should get only systematic studies of the owner`() {
                 repeat(3) {
                     saveOwnerStudy()
-                    repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = factory.researcherId))
+                    repository.save(
+                        factory.createSystematicStudyDocument(
+                            id = UUID.randomUUID(),
+                            owner = user.id
+                        )
+                    )
                 }
 
                 mockMvc.perform(get(getAllByOwnerUrl()).contentType(MediaType.APPLICATION_JSON))
@@ -192,19 +232,19 @@ class SystematicStudyControllerTest(
 
             @Test
             fun `should a researcher is not a collaborator be unauthorized and return 403`() {
-                repository.save(factory.createSystematicStudyDocument())
+                repository.save(factory.createSystematicStudyDocument(owner = user.id))
                 val notAllowed = UUID.randomUUID()
-                mockMvc.perform(get(getOneUrl(researcherId = notAllowed)).contentType(MediaType.APPLICATION_JSON))
+                mockMvc.perform(get(getOneUrl()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isForbidden)
             }
 
             @Test
             fun `should not get any systematic studies and return 200`() {
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
 
-                mockMvc.perform(get(getAllUrl(UUID.randomUUID())).contentType(MediaType.APPLICATION_JSON))
+                mockMvc.perform(get(getAllUrl()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk)
                     .andExpect(jsonPath("$.size").value(0))
                     .andExpect(jsonPath("$._links").exists())
@@ -212,9 +252,9 @@ class SystematicStudyControllerTest(
 
             @Test
             fun `should not get any systematic study if the given owner does not have any study`() {
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
-                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
+                repository.save(factory.createSystematicStudyDocument(id = UUID.randomUUID(), owner = UUID.randomUUID()))
 
                 mockMvc.perform(get(getAllByOwnerUrl()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk)
@@ -235,13 +275,14 @@ class SystematicStudyControllerTest(
             @ParameterizedTest
             @CsvSource("New title,", ",New description", "New title,New description")
             fun `should update the systematic study and return 200`(title: String?, description: String?) {
-                val original = factory.createSystematicStudyDocument(title="Old title", description = "Old description")
+                val original =
+                    factory.createSystematicStudyDocument(title = "Old title", description = "Old description", owner =  user.id)
                 repository.save(original)
 
                 val request = factory.createValidPutRequest(title, description)
                 mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
                     .andExpect(status().isOk)
-                    .andExpect(jsonPath("$.researcherId").value(factory.researcherId.toString()))
+                    .andExpect(jsonPath("$.researcherId").value(user.id.toString()))
                     .andExpect(jsonPath("$.systematicStudyId").value(factory.systematicStudyId.toString()))
                     .andExpect(jsonPath("$._links").exists())
 
@@ -255,13 +296,13 @@ class SystematicStudyControllerTest(
         inner class ButFailingToUpdate {
             @Test
             fun `should nothing be updated if nothing is provided`() {
-                val document = factory.createSystematicStudyDocument()
+                val document = factory.createSystematicStudyDocument(owner = user.id)
                 repository.save(document)
 
                 val request = "{}"
                 mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
                     .andExpect(status().isOk)
-                    .andExpect(jsonPath("$.researcherId").value(factory.researcherId.toString()))
+                    .andExpect(jsonPath("$.researcherId").value(user.id.toString()))
                     .andExpect(jsonPath("$.systematicStudyId").value(factory.systematicStudyId.toString()))
                     .andExpect(jsonPath("$._links").exists())
 

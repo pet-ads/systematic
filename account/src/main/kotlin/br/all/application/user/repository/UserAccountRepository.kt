@@ -10,4 +10,5 @@ interface UserAccountRepository {
     fun updateRefreshToken(userId: UUID, token: String)
     fun existsByEmail(email: String): Boolean
     fun existsByUsername(username: String): Boolean
+    fun deleteById(id: UUID)
 }
