@@ -10,6 +10,7 @@ data class SearchSessionDocument(
     @Id
     val id: UUID,
     val systematicStudyId: UUID,
+    val researcherId: UUID,
     val searchString: String,
     val additionalInfo: String?,
     val timestamp: LocalDateTime,
