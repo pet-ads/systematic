@@ -6,6 +6,7 @@ import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.update.UpdateSearchSessionService
 import br.all.application.search.update.UpdateSearchSessionService.RequestModel
 import br.all.domain.model.protocol.SearchSource
+import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
@@ -44,6 +45,7 @@ class TestDataFactory {
     ) = SearchSession(
         SearchSessionID(sessionId),
         SystematicStudyId(request.systematicStudyId),
+        ResearcherId(request.researcherId),
         request.searchString,
         request.additionalInfo ?: "",
         timestamp,
@@ -74,6 +76,7 @@ class TestDataFactory {
     fun generateDto(
         id: UUID = searchSessionId,
         systematicStudyId: UUID = this.systematicStudyId,
+        researcherId: UUID = this.researcherId,
         searchString: String = "SearchString",
         additionalInfo: String = "",
         timeStamp: LocalDateTime = LocalDateTime.now(),
@@ -81,6 +84,7 @@ class TestDataFactory {
     ) = SearchSessionDto(
         id,
         systematicStudyId,
+        researcherId,
         searchString,
         additionalInfo,
         timeStamp,
