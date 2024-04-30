@@ -4,8 +4,8 @@ import br.all.application.search.find.presenter.FindAllSearchSessionsBySourcePre
 import br.all.application.search.repository.SearchSessionDto
 import java.util.*
 
-interface FindAllSearchSessionBySourceService {
-    fun findAllBySource(presenter: FindAllSearchSessionsBySourcePresenter, request: RequestModel)
+interface FindAllSearchSessionsBySourceService {
+    fun findAllSessionsBySource(presenter: FindAllSearchSessionsBySourcePresenter, request: RequestModel)
 
     data class RequestModel(
         val researcherId: UUID,
