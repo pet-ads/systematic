@@ -24,7 +24,7 @@ import br.all.application.search.create.CreateSearchSessionService.RequestModel 
 import br.all.application.search.find.service.FindAllSearchSessionsService.RequestModel as FindAllRequest
 
 @RestController
-@RequestMapping("api/v1/researcher/{researcherId}/systematic-study/{systematicStudyId}/search-session")
+@RequestMapping("api/v1/researcher/{researcherId}/systematic-study/{systematicStudyId}")
 class SearchSessionController(
     val createService: CreateSearchSessionService,
     val findOneService: FindSearchSessionService,
@@ -45,7 +45,7 @@ class SearchSessionController(
             )
     }
 
-    @PostMapping
+    @PostMapping("/search-session")
     @Operation(summary = "create a search session in the systematic study")
     @ApiResponses(
         value = [
@@ -79,7 +79,7 @@ class SearchSessionController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping
+    @GetMapping("/search-session")
     @Operation(summary = "Get all search sessions of a systematic review")
     @ApiResponses(
         value = [
@@ -103,7 +103,7 @@ class SearchSessionController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping("/{sessionId}")
+    @GetMapping("/search-session/{sessionId}")
     @Operation(summary = "Get an existing search session of a systematic review")
     @ApiResponses(
         value = [
@@ -137,7 +137,8 @@ class SearchSessionController(
         findOneService.findOneSession(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
-    @GetMapping
+
+    @GetMapping("/search-session-source/{source}")
     fun findSearchSessionsBySource(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
@@ -149,7 +150,7 @@ class SearchSessionController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PutMapping("/{sessionId}")
+    @PutMapping("/search-session/{sessionId}")
     fun updateSearchSession(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
