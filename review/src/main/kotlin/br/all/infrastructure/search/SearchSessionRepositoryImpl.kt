@@ -22,9 +22,9 @@ open class SearchSessionRepositoryImpl(val repository: MongoSearchSessionReposit
     override fun findAllFromSystematicStudy(systematicStudyId: UUID): List<SearchSessionDto> =
         repository.findAllBySystematicStudyId(systematicStudyId).map { it.toDto() }
 
-    override fun getSearchSessionBySource(systematicStudyId: UUID, source: String): SearchSession? {
-        TODO("Not yet implemented")
-    }
+    override fun findSearchSessionsBySource(systematicStudyId: UUID, source: String): List<SearchSessionDto> =
+        repository.findAllBySource(systematicStudyId, source).map { it.toDto() }
+
     override fun existsBySearchSource(systematicStudyId: UUID, source: String) =
         repository.existsBySystematicStudyIdAndSource(systematicStudyId, source)
     override fun saveOrUpdate(dto: SearchSessionDto) {
