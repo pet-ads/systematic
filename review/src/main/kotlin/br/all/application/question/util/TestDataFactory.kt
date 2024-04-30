@@ -2,6 +2,7 @@ package br.all.application.question.util
 
 import br.all.application.question.create.CreateQuestionService.*
 import br.all.application.question.repository.QuestionDto
+import br.all.application.question.update.services.UpdateQuestionService
 import io.github.serpro69.kfaker.Faker
 import java.util.*
 import br.all.application.question.find.FindQuestionService as Find
@@ -17,18 +18,20 @@ class TestDataFactory {
     fun generateTextualDto(
         questionId: UUID = question,
         systematicStudyId: UUID = systematicStudy,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
     ) =
         QuestionDto(
             questionId,
             systematicStudyId,
-            faker.lorem.words(),
-            faker.lorem.words(),
+            code,
+            description,
             "TEXTUAL",
             null,
             null,
             null,
             null
-    )
+        )
 
     fun generatePickListDto(
         questionId: UUID = question,
@@ -78,6 +81,23 @@ class TestDataFactory {
             null,
         )
 
+    fun updateQuestionRequestModel(
+        updatedDto: QuestionDto,
+        questionType: QuestionType,
+        researcherId: UUID = researcher,
+    ) = UpdateQuestionService.RequestModel(
+        researcherId,
+        updatedDto.systematicStudyId,
+        updatedDto.questionId,
+        questionType,
+        updatedDto.code,
+        updatedDto.description,
+        updatedDto.scales,
+        updatedDto.higher,
+        updatedDto.lower,
+        updatedDto.options
+    )
+
     fun createTextualRequestModel(
         researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
@@ -98,6 +118,7 @@ class TestDataFactory {
         researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
         questionType: QuestionType = QuestionType.PICK_LIST,
+        options: List<String>? = listOf(faker.lorem.words(), faker.lorem.words())
     ) = RequestModel(
         researcherId,
         systematicStudyId,
@@ -107,20 +128,21 @@ class TestDataFactory {
         null,
         null,
         null,
-        listOf(faker.lorem.words(), faker.lorem.words())
+        options
     )
 
     fun createLabeledScaleRequestModel(
         researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
         questionType: QuestionType = QuestionType.LABELED_SCALE,
+        scales: Map<String, Int>? = mapOf(faker.lorem.words() to 1, faker.lorem.words() to 2),
     ) = RequestModel(
         researcherId,
         systematicStudyId,
         questionType,
         code,
         description,
-        mapOf(faker.lorem.words() to 1, faker.lorem.words() to 2),
+        scales,
         null,
         null,
         null
@@ -130,6 +152,8 @@ class TestDataFactory {
         researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
         questionType: QuestionType = QuestionType.NUMBERED_SCALE,
+        higher: Int? = 10,
+        lower: Int? = 1
     ) = RequestModel(
         researcherId,
         systematicStudyId,
@@ -137,9 +161,17 @@ class TestDataFactory {
         code,
         description,
         null,
-        10,
-        1,
+        higher,
+        lower,
         null
+    )
+
+    fun updateQuestionResponseModel(
+        researcherId: UUID = researcher,
+        systematicStudyId: UUID = systematicStudy,
+        questionId: UUID = question,
+    ) = UpdateQuestionService.ResponseModel(
+        researcherId, systematicStudyId, questionId
     )
 
     fun findOneQuestionRequestModel(
@@ -168,6 +200,7 @@ class TestDataFactory {
         questionDto: QuestionDto = generateNumberedScaleDto()
     ) = Find.ResponseModel(researcherId, questionDto)
 
+
     fun dtoFromRequest(
         request: RequestModel,
         questionId: UUID = question,
@@ -183,7 +216,6 @@ class TestDataFactory {
         request.higher,
         request.options
     )
-
 
     operator fun component1() = researcher
     operator fun component2() = systematicStudy
