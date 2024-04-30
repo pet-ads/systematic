@@ -24,7 +24,9 @@ class FindAllSearchSessionsBySourceServiceImpl(
 
         if(presenter.isDone()) return
 
-        val searchSessions = searchSessionRepository.findAllFromSystematicStudy(request.systematicStudyId)
+        val searchSessions = searchSessionRepository.findSearchSessionsBySource(
+            request.systematicStudyId, request.searchSource
+        )
         presenter.prepareSuccessView(ResponseModel(
             request.researcherId, request.systematicStudyId, request.searchSource, searchSessions
         ))
