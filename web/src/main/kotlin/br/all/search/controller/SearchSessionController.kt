@@ -2,14 +2,12 @@ package br.all.search.controller
 
 import br.all.application.review.update.services.UpdateSystematicStudyService
 import br.all.application.search.create.CreateSearchSessionService
+import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindSearchSessionService
-import br.all.search.presenter.RestfulCreateSearchSessionPresenter
-import br.all.search.presenter.RestfulFindSearchSessionPresenter
 import br.all.application.search.find.service.FindAllSearchSessionsService
 import br.all.application.search.update.UpdateSearchSessionService
 import br.all.domain.model.protocol.SearchSource
-import br.all.search.presenter.RestfulFindAllSearchSessionsPresenter
-import br.all.search.presenter.RestfulUpdateSearchSessionPresenter
+import br.all.search.presenter.*
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -31,6 +29,7 @@ class SearchSessionController(
     val createService: CreateSearchSessionService,
     val findOneService: FindSearchSessionService,
     val findAllService: FindAllSearchSessionsService,
+    val findAllBySourceService: FindAllSearchSessionsBySourceService,
     val updateService: UpdateSearchSessionService,
     val mapper: ObjectMapper
 ) {
@@ -136,6 +135,17 @@ class SearchSessionController(
         val presenter = RestfulFindSearchSessionPresenter()
         val request = FindSearchSessionService.RequestModel(researcherId, systematicStudyId, sessionId)
         findOneService.findOneSession(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+    @GetMapping
+    fun findSearchSessionsBySource(
+        @PathVariable researcherId: UUID,
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable source: String
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindAllSearchSessionsBySourcePresenter()
+        val request = FindAllSearchSessionsBySourceService.RequestModel(researcherId, systematicStudyId, source)
+        findAllBySourceService.findAllSessionsBySource(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
