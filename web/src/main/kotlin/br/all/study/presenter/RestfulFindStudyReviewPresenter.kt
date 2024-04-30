@@ -1,5 +1,6 @@
 package br.all.study.presenter
 
+import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.find.presenter.FindStudyReviewPresenter
 import br.all.application.study.find.service.FindStudyReviewService.ResponseModel
 import br.all.application.study.repository.StudyReviewDto
@@ -19,13 +20,43 @@ class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.content)
 
-        val self = linkTo<StudyReviewController> {
+        val selfRef = linkSelfRef(response)
+        val allStudyReview = linkFindAllStudyReviews(response)
+        val createStudy = linkCreateStudyReview(response)
+        restfulResponse.add(selfRef, allStudyReview, createStudy)
+        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
+    }
+
+    private fun linkSelfRef(response: ResponseModel) =
+        linkTo<StudyReviewController> {
             findStudyReview(response.researcherId, response.content.systematicStudyId, response.content.studyReviewId)
         }.withSelfRel()
 
-        restfulResponse.add(self)
-        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
-    }
+    private fun linkFindAllStudyReviews(response: ResponseModel) =
+        linkTo<StudyReviewController> {
+            findAllStudyReviews(response.researcherId, systematicStudy = response.content.systematicStudyId)
+        }.withRel("allStudyReview")
+
+    private fun linkCreateStudyReview(response: ResponseModel) =
+        linkTo<StudyReviewController> {
+            createStudyReview(
+                response.researcherId,
+                response.content.systematicStudyId,
+                request = CreateStudyReviewService.RequestModel(
+                    researcherId = response.researcherId,
+                    systematicStudyId = response.content.systematicStudyId,
+                    type = "",
+                    title = "",
+                    year = 2024,
+                    authors = "",
+                    venue = "",
+                    abstract = "",
+                    keywords = emptySet(),
+                    source = ""
+                )
+            )
+        }.withRel("createStudy")
+
 
     override fun prepareFailView(throwable: Throwable)= run { responseEntity = createErrorResponseFrom(throwable) }
 

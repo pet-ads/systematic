@@ -16,6 +16,7 @@ class TestDataFactory {
     val systematicStudyId: UUID = UUID.randomUUID()
     val sessionId: UUID = UUID.randomUUID()
     val nonExistentSessionId: UUID = UUID.randomUUID()
+    val invalidResearcherId: UUID = UUID.randomUUID()
     private val faker = Faker()
 
     fun validPostRequest(researcher: UUID = this.researcherId, systematicStudyId: UUID = this.systematicStudyId) =
@@ -24,6 +25,17 @@ class TestDataFactory {
             "researcherId": "$researcher",
             "systematicStudyId": "$systematicStudyId",
             "source": "${faker.lorem.words()}",
+            "searchString": "${faker.paragraph(5)}",
+            "additionalInfo": "${faker.paragraph(30)}"
+        }
+        """.trimIndent()
+
+    fun uniquenessViolationPostRequest(researcher: UUID = this.researcherId, systematicStudyId: UUID = this.systematicStudyId) =
+        """
+        {
+            "researcherId": "$researcher",
+            "systematicStudyId": "$systematicStudyId",
+            "source": "Source",
             "searchString": "${faker.paragraph(5)}",
             "additionalInfo": "${faker.paragraph(30)}"
         }
@@ -106,6 +118,24 @@ class TestDataFactory {
         )
     }
 
+    fun uniquenessViolationDocument(
+        id: UUID = this.sessionId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        searchString: String = "SearchString",
+        additionalInfo: String = "AdditionalInfo",
+        timeStamp: LocalDateTime = LocalDateTime.of(2022, 1, 1, 0, 0),
+        searchSource: String = "Source"
+    ): SearchSessionDocument {
+        return SearchSessionDocument(
+            id,
+            systematicStudyId,
+            searchString,
+            additionalInfo,
+            timeStamp,
+            searchSource,
+        )
+    }
+
     fun createValidPutRequest(
         searchString: String?,
         additionalInfo: String?,
@@ -125,6 +155,14 @@ class TestDataFactory {
             jsonFields.add("\"source\": \"$source\"")
         }
 
+        return "{ ${jsonFields.joinToString(", ")} }"
+    }
+
+    fun createUniquenessViolationPutRequest(
+        source: String
+    ): String {
+        val jsonFields = mutableListOf<String>()
+        jsonFields.add("\"source\": \"$source\"")
         return "{ ${jsonFields.joinToString(", ")} }"
     }
 }

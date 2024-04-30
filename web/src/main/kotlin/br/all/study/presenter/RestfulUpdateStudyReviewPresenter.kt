@@ -1,14 +1,12 @@
 package br.all.study.presenter
 
-import br.all.application.study.create.CreateStudyReviewPresenter
-import br.all.application.study.create.CreateStudyReviewService.ResponseModel
+
 import br.all.application.study.update.interfaces.UpdateStudyReviewPresenter
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.shared.error.createErrorResponseFrom
 import br.all.study.controller.StudyReviewController
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
-import org.springframework.hateoas.server.mvc.withRel
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.status
@@ -23,19 +21,17 @@ class RestfulUpdateStudyReviewPresenter : UpdateStudyReviewPresenter {
     override fun prepareSuccessView(response: UpdateStudyReviewService.ResponseModel) {
         val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, response.studyReviewId)
 
-        val self = linkTo<StudyReviewController> {
+        val linkSelfRef = linkTo<StudyReviewController> {
             findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
         }.withSelfRel()
 
-        linkTo<StudyReviewController> {
+
+        val linkFindAllStudyReview = linkTo<StudyReviewController> {
             findAllStudyReviews(response.researcherId, response.systematicStudyId);
-        }.withRel("_all")
+        }.withRel("allStudyReview")
 
-        // TODO add link to update study review
-        // TODO add link to update study review
-
-        restfulResponse.add(self)
-        responseEntity = status(HttpStatus.CREATED).body(restfulResponse)
+        restfulResponse.add(linkSelfRef, linkFindAllStudyReview)
+        responseEntity = status(HttpStatus.OK).body(restfulResponse)
     }
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }

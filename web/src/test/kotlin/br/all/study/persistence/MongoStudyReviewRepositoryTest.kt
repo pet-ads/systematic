@@ -20,10 +20,12 @@ class MongoStudyReviewRepositoryTest (
 ) {
 
     private lateinit var factory: TestDataFactory
+    private lateinit var reviewId: UUID
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
+        reviewId = UUID.randomUUID()
         idService.reset()
         sut.deleteAll()
     }
@@ -40,7 +42,6 @@ class MongoStudyReviewRepositoryTest (
 
     @Test
     fun `Should update a study review`(){
-        val reviewId = UUID.randomUUID()
         val studyId = idService.next()
         val study = factory.reviewDocument(reviewId, studyId,"study")
         sut.insert(study)
@@ -52,7 +53,6 @@ class MongoStudyReviewRepositoryTest (
 
     @Test
     fun `Should find all study reviews of a review`(){
-        val reviewId = UUID.randomUUID()
         sut.insert(factory.reviewDocument(reviewId, idService.next()))
         sut.insert(factory.reviewDocument(reviewId, idService.next()))
         sut.insert(factory.reviewDocument(UUID.randomUUID(), idService.next()))
@@ -60,8 +60,18 @@ class MongoStudyReviewRepositoryTest (
         assertTrue(result.size == 2)
     }
 
+    @Test
+    fun `Should find all study reviews in a review by search sources`(){
+        val sourceToFind = "source to find"
+        val sources: Set<String> = setOf(sourceToFind)
+        sut.insert(factory.reviewDocument(reviewId, idService.next()))
+        sut.insert(factory.reviewDocument(reviewId, idService.next(), sources = sources))
+        sut.insert(factory.reviewDocument(UUID.randomUUID(), idService.next()))
+        val result = sut.findAllById_SystematicStudyIdAndSearchSourcesContaining(reviewId, sourceToFind)
+        assertTrue(result.size == 1)
+    }
+
     @Test fun `Should update study reviews selection status`(){
-        val reviewId = UUID.randomUUID()
         val studyId = idService.next()
         val studyReview = factory.reviewDocument(reviewId, studyId)
         sut.insert(studyReview)
@@ -73,7 +83,6 @@ class MongoStudyReviewRepositoryTest (
 
     @Test
     fun `Should find a study review in a review`(){
-        val reviewId = UUID.randomUUID()
         val studyReview = factory.reviewDocument(reviewId, idService.next(),"study")
         sut.insert(studyReview)
         val result = sut.findById(studyReview.id)

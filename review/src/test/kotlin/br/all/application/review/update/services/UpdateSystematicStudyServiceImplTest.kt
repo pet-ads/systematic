@@ -104,7 +104,7 @@ class UpdateSystematicStudyServiceImplTest {
 
     @Nested
     @Tag("InvalidClasses")
-    @DisplayName("When the being unable to perform updates")
+    @DisplayName("When being unable to perform updates")
     inner class WhenTheBeingUnableToPerformUpdates {
         @Test
         fun `should nothing happen when title and description are not given`() {

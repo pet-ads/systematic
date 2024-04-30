@@ -3,7 +3,9 @@ package br.all.question.presenter.riskOfBias
 import br.all.application.question.findAll.FindAllBySystematicStudyIdPresenter
 import br.all.application.question.findAll.FindAllBySystematicStudyIdService
 import br.all.application.question.repository.QuestionDto
+import br.all.question.controller.ExtractionQuestionController
 import br.all.question.controller.RiskOfBiasQuestionController
+import br.all.question.presenter.extraction.RestfulFindAllExtractionQuestionPresenter
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
@@ -16,18 +18,73 @@ class RestfulFindAllRoBQuestionPresenter : FindAllBySystematicStudyIdPresenter {
     override fun prepareSuccessView(response: FindAllBySystematicStudyIdService.ResponseModel) {
         val restfulResponse = ViewModel(response.systematicStudyId, response.questions.size, response.questions)
 
-        val self = linkTo<RiskOfBiasQuestionController> {
-            findAllBySystematicStudyId(response.researcherId, response.systematicStudyId)
-        }.withSelfRel()
+        val selfRef = linkSelfRef(response)
+        val createQuestion = linkCreateQuestion(response)
+        val createPickList = linkCreatePickList(response)
+        val createLabeledScale = linkCreateLabeledScale(response)
+        val createNumberScale = linkCreateNumberScale(response)
 
-        restfulResponse.add(self)
+        restfulResponse.add(selfRef, createQuestion ,createPickList,createLabeledScale,createNumberScale)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
+
+    private fun linkSelfRef(response: FindAllBySystematicStudyIdService.ResponseModel) =
+        linkTo<RiskOfBiasQuestionController> {
+            findAllBySystematicStudyId(response.researcherId, response.systematicStudyId)
+        }.withSelfRel()
+
+
+
+    private fun linkCreateQuestion(response: FindAllBySystematicStudyIdService.ResponseModel) =
+        linkTo<RiskOfBiasQuestionController> {
+            createTextualQuestion(
+                response.researcherId,
+                response.systematicStudyId,
+                request = RiskOfBiasQuestionController.TextualRequest(
+                    "code", "description"
+                ))
+        }.withRel("createQuestion")
+
+
+    private fun linkCreatePickList(response: FindAllBySystematicStudyIdService.ResponseModel) =
+        linkTo<RiskOfBiasQuestionController> {
+            createPickListQuestion(
+                response.researcherId,
+                response.systematicStudyId,
+                request = RiskOfBiasQuestionController.PickListRequest(
+                    "code", "description", listOf("option1")
+                )
+            )
+        }.withRel("createPickList")
+
+
+    private fun linkCreateLabeledScale(response: FindAllBySystematicStudyIdService.ResponseModel) =
+        linkTo<RiskOfBiasQuestionController> {
+            createLabeledScaleQuestion(
+                response.researcherId,
+                response.systematicStudyId,
+                request = RiskOfBiasQuestionController.LabeledScaleRequest(
+                    "code", "description", mapOf("scale1" to 1)
+                )
+            )
+        }.withRel("createLabeledScale")
+
+
+    private fun linkCreateNumberScale(response: FindAllBySystematicStudyIdService.ResponseModel) =
+        linkTo<RiskOfBiasQuestionController> {
+            createNumberScaleQuestion(
+                response.researcherId,
+                response.systematicStudyId,
+                request = RiskOfBiasQuestionController.NumberScaleRequest(
+                    "code", "description", 0, 0
+                )
+            )
+        }.withRel("createNumberScale")
+
+
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
-
     override fun isDone() = responseEntity != null
-
     private data class ViewModel(
         val systematicStudyId: UUID,
         val size: Int,
