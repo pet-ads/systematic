@@ -7,11 +7,9 @@ import br.all.application.study.find.service.FindStudyReviewService
 import br.all.application.study.update.implementation.UpdateStudyReviewExtractionService
 import br.all.application.study.update.implementation.UpdateStudyReviewPriorityService
 import br.all.application.study.update.implementation.UpdateStudyReviewSelectionService
-import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionPresenter
 import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionService
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
-import br.all.question.controller.RiskOfBiasQuestionController
 import br.all.study.presenter.*
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -221,7 +219,7 @@ class StudyReviewController(
         val presenter = RestfulAnswerRiskOfBiasQuestionPresenter()
         val requestModel = request.toRiskOfBiasRequest(researcherId, systematicStudy, studyReviewId)
 
-        answerRiskOfBiasQuestionService.answer(presenter, requestModel)
+        answerRiskOfBiasQuestionService.answerQuestion(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
     abstract class AnswerRequest(

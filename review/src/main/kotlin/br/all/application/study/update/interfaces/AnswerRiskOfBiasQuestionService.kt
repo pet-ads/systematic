@@ -3,7 +3,7 @@ package br.all.application.study.update.interfaces
 import java.util.*
 
 interface AnswerRiskOfBiasQuestionService {
-    fun answer(presenter: AnswerRiskOfBiasQuestionPresenter, request: RequestModel<*>)
+    fun answerQuestion(presenter: AnswerRiskOfBiasQuestionPresenter, request: RequestModel<*>)
 
     data class RequestModel<T>(
         val researcherId: UUID,

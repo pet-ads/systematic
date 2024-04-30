@@ -1,6 +1,4 @@
 package br.all.application.study.update.implementation
-import br.all.application.question.create.CreateQuestionService.QuestionType
-import br.all.application.question.repository.QuestionDto
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.repository.fromDto
 import br.all.application.researcher.credentials.ResearcherCredentialsService
@@ -25,7 +23,7 @@ class AnswerRiskOfBiasQuestionImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val credentialsService: ResearcherCredentialsService,
 ): AnswerRiskOfBiasQuestionService {
-    override fun answer(
+    override fun answerQuestion(
         presenter: AnswerRiskOfBiasQuestionPresenter,
         request: AnswerRiskOfBiasQuestionService.RequestModel<*>
     ) {
@@ -60,7 +58,7 @@ class AnswerRiskOfBiasQuestionImpl(
         val question = Question.fromDto(questionDto)
 
 
-        val answer = answerQuestion(questionDto.questionType, request, question)
+        val answer = answer(questionDto.questionType, request, question)
         review.answerFormQuestionOf(answer)
 
         studyReviewRepository.saveOrUpdate(review.toDto())
@@ -74,7 +72,7 @@ class AnswerRiskOfBiasQuestionImpl(
         )
     }
 
-    private fun answerQuestion(
+    private fun answer(
         type: String,
         request: AnswerRiskOfBiasQuestionService.RequestModel<*>,
         question: Question<*>
