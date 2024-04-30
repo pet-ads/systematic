@@ -1,5 +1,7 @@
-- Como fazer os endpoints? Ver o arquivo api-doc.md
-- O que preciso fazer de testes antes de pedir um PR? Ver o arquivo testing-guidelines.md
+# Guidelines para criar novas features 
+
+- Como fazer os endpoints? Ver o arquivo [api-doc](./api-doc.md)
+- O que preciso testar antes de pedir um PR? Ver o arquivo [testing-guidelines.md](./testing-guidelines.md)
 - Em qual ordem fazer o trabalho? 
   - Fazer um feature-branch
   - Escolher UM endpoint por ordem de importância (CREATE é mais importante que DELETE, certo?)

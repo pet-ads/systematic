@@ -1,7 +1,7 @@
 package br.all.review.presenter
 
-import br.all.application.review.find.presenter.FindOneSystematicStudyPresenter
-import br.all.application.review.find.services.FindOneSystematicStudyService.ResponseModel
+import br.all.application.review.find.presenter.FindSystematicStudyPresenter
+import br.all.application.review.find.services.FindSystematicStudyService.ResponseModel
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.review.controller.SystematicStudyController
 import br.all.review.controller.SystematicStudyController.PostRequest
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class RestfulFindOneSystematicStudyPresenter : FindOneSystematicStudyPresenter {
+class RestfulFindSystematicStudyPresenter : FindSystematicStudyPresenter {
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {

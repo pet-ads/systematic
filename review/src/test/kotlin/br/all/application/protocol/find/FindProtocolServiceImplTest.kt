@@ -1,9 +1,9 @@
-package br.all.application.review.find.services
+package br.all.application.protocol.find
 
+import br.all.application.protocol.repository.ProtocolRepository
+import br.all.application.protocol.util.TestDataFactory
 import br.all.application.researcher.credentials.ResearcherCredentialsService
-import br.all.application.review.find.presenter.FindOneSystematicStudyPresenter
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.review.util.TestDataFactory
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
@@ -20,15 +20,17 @@ import org.junit.jupiter.api.extension.ExtendWith
 @Tag("UnitTest")
 @Tag("ServiceTest")
 @ExtendWith(MockKExtension::class)
-class FindOneSystematicStudyServiceImplTest {
-    @MockK
-    private lateinit var repository: SystematicStudyRepository
+class FindProtocolServiceImplTest {
+    @MockK(relaxUnitFun = true)
+    private lateinit var systematicStudyRepository: SystematicStudyRepository
+    @MockK(relaxUnitFun = true)
+    private lateinit var protocolRepository: ProtocolRepository
     @MockK
     private lateinit var credentialsService: ResearcherCredentialsService
     @MockK(relaxed = true)
-    private lateinit var presenter: FindOneSystematicStudyPresenter
+    private lateinit var presenter: FindProtocolPresenter
     @InjectMockKs
-    private lateinit var sut: FindOneSystematicStudyServiceImpl
+    private lateinit var sut: FindProtocolServiceImpl
 
     private lateinit var factory: TestDataFactory
     private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
@@ -39,7 +41,7 @@ class FindOneSystematicStudyServiceImplTest {
         preconditionCheckerMocking = PreconditionCheckerMocking(
             presenter,
             credentialsService,
-            repository,
+            systematicStudyRepository,
             factory.researcher,
             factory.systematicStudy,
         )
@@ -47,33 +49,54 @@ class FindOneSystematicStudyServiceImplTest {
 
     @Nested
     @Tag("ValidClasses")
-    @DisplayName("When successfully finding one existent systematic study")
-    inner class WhenSuccessfullyFindingOneExistentSystematicStudy {
+    @DisplayName("When being able to find protocols")
+    inner class WhenBeingAbleToFindProtocols {
         @Test
-        fun `should correctly find a systematic study and prepare a success view`() {
-            val (_, systematicStudy) = factory
-            val request = factory.findOneRequestModel()
-            val response = factory.findOneResponseModel()
+        fun `should find a existent protocol`() {
+            val (_, protocolId) = factory
+            val request = factory.findRequestModel()
+            val dto = factory.protocolDto()
+            val response = factory.findResponseModel(dto = dto)
 
             preconditionCheckerMocking.makeEverythingWork()
-            every { repository.findById(systematicStudy) } returns response.content
+            every { protocolRepository.findById(protocolId) } returns dto
 
             sut.findById(presenter, request)
-            verify { presenter.prepareSuccessView(response) }
+
+            verify {
+                protocolRepository.findById(protocolId)
+                presenter.prepareSuccessView(response)
+            }
         }
     }
 
     @Nested
     @Tag("InvalidClasses")
-    @DisplayName("When being unable to find a systematic study")
-    inner class WhenBeingUnableToFindASystematicStudy {
+    @DisplayName("When being unable to find any protocol")
+    inner class WhenBeingUnableToFindAnyProtocol {
         @Test
-        fun `should prepare a fail view when trying to find a nonexistent systematic study`() {
-            val request = factory.findOneRequestModel()
+        fun `should not be possible to find nonexistent protocols`() {
+            val (_, protocolId) = factory
+            val request = factory.findRequestModel()
 
-            preconditionCheckerMocking.makeSystematicStudyNonexistent()
+            preconditionCheckerMocking.makeEverythingWork()
+            every { protocolRepository.findById(protocolId) } returns null
 
             sut.findById(presenter, request)
+
+            verify {
+                protocolRepository.findById(protocolId)
+                presenter.prepareFailView(any<EntityNotFoundException>())
+            }
+        }
+
+        @Test
+        fun `should prepare fail view when trying to find the protocol of a nonexistent study`() {
+            val request = factory.findRequestModel()
+
+            preconditionCheckerMocking.makeSystematicStudyNonexistent()
+            sut.findById(presenter, request)
+
             verifyOrder {
                 presenter.prepareFailView(any<EntityNotFoundException>())
                 presenter.isDone()
@@ -81,12 +104,12 @@ class FindOneSystematicStudyServiceImplTest {
         }
 
         @Test
-        fun `should prepare a fail view if the researcher is not a collaborator`() {
-            val request = factory.findOneRequestModel()
+        fun `should not a non collaborator find protocols of a systematic study`() {
+            val request = factory.findRequestModel()
 
             preconditionCheckerMocking.makeResearcherNotACollaborator()
-
             sut.findById(presenter, request)
+
             verifyOrder {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()
@@ -94,12 +117,12 @@ class FindOneSystematicStudyServiceImplTest {
         }
 
         @Test
-        fun `should a unauthenticated researcher be unable to find any systematic study`() {
-            val request = factory.findOneRequestModel()
+        fun `should prepare fail view for unauthenticated researchers`() {
+            val request = factory.findRequestModel()
 
             preconditionCheckerMocking.makeResearcherUnauthenticated()
-
             sut.findById(presenter, request)
+
             verifyOrder {
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
                 presenter.isDone()
@@ -107,12 +130,12 @@ class FindOneSystematicStudyServiceImplTest {
         }
 
         @Test
-        fun `should a unauthorized researcher be unable to find any systematic study`() {
-            val request = factory.findOneRequestModel()
+        fun `should not allow unauthorized users to find protocols`() {
+            val request = factory.findRequestModel()
 
             preconditionCheckerMocking.makeResearcherUnauthorized()
-
             sut.findById(presenter, request)
+
             verifyOrder {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()

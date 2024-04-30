@@ -3,11 +3,11 @@ package br.all.review.controller
 import br.all.application.review.create.CreateSystematicStudyService
 import br.all.application.review.find.services.FindAllSystematicStudiesService
 import br.all.application.review.find.services.FindAllSystematicStudiesService.FindByOwnerRequest
-import br.all.application.review.find.services.FindOneSystematicStudyService
+import br.all.application.review.find.services.FindSystematicStudyService
 import br.all.application.review.update.services.UpdateSystematicStudyService
 import br.all.review.presenter.RestfulCreateSystematicStudyPresenter
 import br.all.review.presenter.RestfulFindAllSystematicStudiesPresenter
-import br.all.review.presenter.RestfulFindOneSystematicStudyPresenter
+import br.all.review.presenter.RestfulFindSystematicStudyPresenter
 import br.all.review.presenter.RestfulUpdateSystematicStudyPresenter
 import br.all.security.service.AuthenticationInfoService
 import io.swagger.v3.oas.annotations.Operation
@@ -20,14 +20,14 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel as CreateRequestModel
-import br.all.application.review.find.services.FindOneSystematicStudyService.RequestModel as FindOneRequestModel
+import br.all.application.review.find.services.FindSystematicStudyService.RequestModel as FindOneRequestModel
 import br.all.application.review.update.services.UpdateSystematicStudyService.RequestModel as UpdateRequestModel
 
 @RestController
 @RequestMapping("/api/v1/systematic-study")
 class SystematicStudyController(
     private val createSystematicStudyService: CreateSystematicStudyService,
-    private val findOneSystematicStudyServiceImpl: FindOneSystematicStudyService,
+    private val findSystematicStudyServiceImpl: FindSystematicStudyService,
     private val findAllSystematicStudiesService: FindAllSystematicStudiesService,
     private val updateSystematicStudyService: UpdateSystematicStudyService,
     private val authenticationInfoService: AuthenticationInfoService
@@ -75,7 +75,7 @@ class SystematicStudyController(
                 responseCode = "200", description = "Success getting a systematic study by id",
                 content = [Content(
                     mediaType = "application/json",
-                    schema = Schema(implementation = FindOneSystematicStudyService.ResponseModel::class)
+                    schema = Schema(implementation = FindSystematicStudyService.ResponseModel::class)
                 )]
             ),
             ApiResponse(
@@ -91,11 +91,11 @@ class SystematicStudyController(
         ]
     )
     fun findSystematicStudy(@PathVariable systematicStudyId: UUID): ResponseEntity<*> {
-        val presenter = RestfulFindOneSystematicStudyPresenter()
+        val presenter = RestfulFindSystematicStudyPresenter()
         val researcherId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindOneRequestModel(researcherId, systematicStudyId)
 
-        findOneSystematicStudyServiceImpl.findById(presenter, request)
+        findSystematicStudyServiceImpl.findById(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 

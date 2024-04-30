@@ -3,8 +3,8 @@ package br.all.application.protocol.find
 import br.all.application.protocol.repository.ProtocolDto
 import java.util.*
 
-interface FindOneProtocolService {
-    fun findById(presenter: FindOneProtocolPresenter, request: RequestModel)
+interface FindProtocolService {
+    fun findById(presenter: FindProtocolPresenter, request: RequestModel)
 
     data class RequestModel(
         val researcherId: UUID,

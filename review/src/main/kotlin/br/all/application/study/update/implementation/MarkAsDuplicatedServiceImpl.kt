@@ -55,9 +55,6 @@ class MarkAsDuplicatedServiceImpl (
             request.studyReviewDestination,
             request.studyReviewSource
         )
-
         presenter.prepareSuccessView(response)
     }
-
-
 }

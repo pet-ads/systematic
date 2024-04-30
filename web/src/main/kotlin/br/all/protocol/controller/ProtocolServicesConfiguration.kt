@@ -1,6 +1,6 @@
 package br.all.protocol.controller
 
-import br.all.application.protocol.find.FindOneProtocolServiceImpl
+import br.all.application.protocol.find.FindProtocolServiceImpl
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.update.UpdateProtocolServiceImpl
 import br.all.application.researcher.credentials.ResearcherCredentialsService
@@ -15,7 +15,7 @@ class ProtocolServicesConfiguration {
         protocolRepository: ProtocolRepository,
         systematicStudyRepository: SystematicStudyRepository,
         credentialsService: ResearcherCredentialsService,
-    ) = FindOneProtocolServiceImpl(protocolRepository, systematicStudyRepository, credentialsService)
+    ) = FindProtocolServiceImpl(protocolRepository, systematicStudyRepository, credentialsService)
 
     @Bean
     fun updateProtocolService(

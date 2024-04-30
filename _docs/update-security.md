@@ -1,4 +1,4 @@
-Para cada pacote de aggregate no módulo Web
+Para cada pacote de aggregate no módulo Web (ver Create Systematic Study como exemplo)
 - Remova a parte /researcher/{researcherId}/ do @RequestMapping
 - Remova todos os parâmetros "@PathVariable researcherId: UUID" dos métodos dos controllers usando "Refactor/Change Signature" do IntelliJ (caso contrário vai quebrar os presenters)
 - Adicione a seguinte injeção de dependência no construtor do Controller: private val credentialService: CredentialService
