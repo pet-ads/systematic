@@ -13,6 +13,7 @@ class FindAllSystematicStudiesServiceImpl(
     private val repository: SystematicStudyRepository,
     private val credentialsService: ResearcherCredentialsService,
 ) : FindAllSystematicStudiesService {
+
     override fun findAllByCollaborator(presenter: FindAllSystematicStudyPresenter, researcher: UUID) {
         if (researcherNotAllowed(presenter, researcher)) return
 

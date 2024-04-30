@@ -1,7 +1,6 @@
 package br.all.application.study.update.implementation
 
 import br.all.application.researcher.credentials.ResearcherCredentialsService
-import br.all.application.researcher.repository.ResearcherRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.presenter.PreconditionChecker
@@ -56,9 +55,6 @@ class MarkAsDuplicatedServiceImpl (
             request.studyReviewDestination,
             request.studyReviewSource
         )
-
         presenter.prepareSuccessView(response)
     }
-
-
 }

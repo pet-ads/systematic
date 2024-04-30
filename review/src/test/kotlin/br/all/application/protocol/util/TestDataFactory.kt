@@ -6,8 +6,8 @@ import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.shared.utils.wordsList
 import io.github.serpro69.kfaker.Faker
 import java.util.*
-import br.all.application.protocol.find.FindOneProtocolService.RequestModel as FindRequestModel
-import br.all.application.protocol.find.FindOneProtocolService.ResponseModel as FindOneResponseModel
+import br.all.application.protocol.find.FindProtocolService.RequestModel as FindRequestModel
+import br.all.application.protocol.find.FindProtocolService.ResponseModel as FindOneResponseModel
 import br.all.application.protocol.update.UpdateProtocolService.RequestModel as UpdateRequestModel
 import br.all.application.protocol.update.UpdateProtocolService.ResponseModel as UpdateResponseModel
 

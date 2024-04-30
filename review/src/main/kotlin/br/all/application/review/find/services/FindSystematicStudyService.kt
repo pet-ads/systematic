@@ -1,11 +1,11 @@
 package br.all.application.review.find.services
 
-import br.all.application.review.find.presenter.FindOneSystematicStudyPresenter
+import br.all.application.review.find.presenter.FindSystematicStudyPresenter
 import br.all.application.review.repository.SystematicStudyDto
 import java.util.*
 
-interface FindOneSystematicStudyService {
-    fun findById(presenter: FindOneSystematicStudyPresenter, request: RequestModel)
+interface FindSystematicStudyService {
+    fun findById(presenter: FindSystematicStudyPresenter, request: RequestModel)
 
     data class RequestModel(
         val researcher: UUID,

@@ -1,7 +1,7 @@
 package br.all.protocol.presenter
 
-import br.all.application.protocol.find.FindOneProtocolPresenter
-import br.all.application.protocol.find.FindOneProtocolService.ResponseModel
+import br.all.application.protocol.find.FindProtocolPresenter
+import br.all.application.protocol.find.FindProtocolService.ResponseModel
 import br.all.application.protocol.repository.ProtocolDto
 import br.all.protocol.controller.ProtocolController
 import br.all.shared.error.createErrorResponseFrom
@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.util.*
 
-class RestfulFindOneProtocolPresenter: FindOneProtocolPresenter {
+class RestfulFindProtocolPresenter: FindProtocolPresenter {
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {

@@ -1,10 +1,10 @@
 package br.all.protocol.controller
 
-import br.all.application.protocol.find.FindOneProtocolService
+import br.all.application.protocol.find.FindProtocolService
 import br.all.application.protocol.repository.CriterionDto
 import br.all.application.protocol.repository.PicocDto
 import br.all.application.protocol.update.UpdateProtocolService
-import br.all.protocol.presenter.RestfulFindOneProtocolPresenter
+import br.all.protocol.presenter.RestfulFindProtocolPresenter
 import br.all.protocol.presenter.RestfulUpdateProtocolPresenter
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -15,12 +15,12 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import br.all.application.protocol.find.FindOneProtocolService.RequestModel as FindOneRequestModel
+import br.all.application.protocol.find.FindProtocolService.RequestModel as FindOneRequestModel
 
 @RestController
 @RequestMapping("/researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol")
 class ProtocolController(
-    private val findOneProtocolService: FindOneProtocolService,
+    private val findProtocolService: FindProtocolService,
     private val updateProtocolService: UpdateProtocolService,
 ) {
 
@@ -30,16 +30,16 @@ class ProtocolController(
         ApiResponse(responseCode = "200", description = "Success getting the protocol of a systematic study",
             content = [Content(
                 mediaType = "application/json",
-                schema = Schema(implementation = FindOneProtocolService.ResponseModel::class)
+                schema = Schema(implementation = FindProtocolService.ResponseModel::class)
             )]),
         ApiResponse(responseCode = "404", description = "Fail getting the protocol of a systematic study - nonexistent protocol or systematic study", content = [Content(schema = Schema(hidden = true))]),
         ApiResponse(responseCode = "403", description = "Fail getting the protocol of a systematic study - unauthorized collaborator", content = [Content(schema = Schema(hidden = true))])
     ])
     fun findById(@PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID): ResponseEntity<*> {
-        val presenter = RestfulFindOneProtocolPresenter()
+        val presenter = RestfulFindProtocolPresenter()
         val request = FindOneRequestModel(researcherId, systematicStudyId)
 
-        findOneProtocolService.findById(presenter, request)
+        findProtocolService.findById(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 

@@ -5,7 +5,7 @@ import br.all.application.researcher.CredentialsService
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.create.CreateSystematicStudyServiceImpl
 import br.all.application.review.find.services.FindAllSystematicStudiesServiceImpl
-import br.all.application.review.find.services.FindOneSystematicStudyServiceImpl
+import br.all.application.review.find.services.FindSystematicStudyServiceImpl
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.update.services.UpdateSystematicStudyServiceImpl
 import br.all.domain.services.UuidGeneratorService
@@ -31,7 +31,7 @@ class SystematicStudyServicesConfiguration {
     fun findOneSystematicStudyService(
         systematicStudyRepository: SystematicStudyRepository,
         credentialsService: ResearcherCredentialsService,
-    ) = FindOneSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
+    ) = FindSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
 
     @Bean
     fun findAllSystematicStudiesService(
