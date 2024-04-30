@@ -1,5 +1,6 @@
 package br.all.application.search.util
 
+import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindAllSearchSessionsService
 import br.all.application.search.find.service.FindSearchSessionService
 import br.all.application.search.repository.SearchSessionDto
@@ -21,6 +22,7 @@ class TestDataFactory {
     val researcherId: UUID = UUID.randomUUID()
     val systematicStudyId: UUID = UUID.randomUUID()
     val searchSessionId: UUID = UUID.randomUUID()
+    val source: String = "TestSearchSource"
 
     private val faker = Faker()
 
@@ -73,6 +75,12 @@ class TestDataFactory {
         systematicStudyId: UUID = this.systematicStudyId,
     ) = FindAllSearchSessionsService.RequestModel(researcherId, systematicStudyId)
 
+    fun findAllBySourceRequestModel(
+        researcherId: UUID = this.researcherId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        source: String = this.source
+    ) = FindAllSearchSessionsBySourceService.RequestModel(researcherId, systematicStudyId, source)
+
     fun generateDto(
         id: UUID = searchSessionId,
         systematicStudyId: UUID = this.systematicStudyId,
@@ -112,12 +120,38 @@ class TestDataFactory {
         }
     )
 
+    fun findAllBySourceResponseModel(
+        amountOfSearchSessions: Int,
+        researcherId: UUID = this.researcherId,
+        source: String = this.source
+    ) = FindAllSearchSessionsBySourceService.ResponseModel(
+        researcherId,
+        systematicStudyId,
+        source,
+        List(amountOfSearchSessions) {
+            generateDto(
+                id = UUID.randomUUID(),
+                timeStamp = LocalDateTime.now(),
+                source = this.source
+            )
+        }
+    )
+
     fun emptyFindAllResponseModel(
         researcherId: UUID = this.researcherId,
     ) = FindAllSearchSessionsService.ResponseModel(
         researcherId,
         systematicStudyId,
         searchSessions = emptyList(),
+    )
+
+    fun emptyFindBySourceResponseModel(
+        researcherId: UUID = this.researcherId,
+    ) = FindAllSearchSessionsBySourceService.ResponseModel(
+        researcherId,
+        systematicStudyId,
+        source,
+        searchSessions = emptyList()
     )
 
     fun updateRequestModel(
