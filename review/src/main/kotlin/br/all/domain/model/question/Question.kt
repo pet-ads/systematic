@@ -30,4 +30,5 @@ abstract class Question<T>(
     }
 
     abstract fun answer(value: T): Answer<T>
+    companion object
 }

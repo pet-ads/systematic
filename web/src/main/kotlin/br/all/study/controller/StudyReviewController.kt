@@ -7,6 +7,7 @@ import br.all.application.study.find.service.FindStudyReviewService
 import br.all.application.study.update.implementation.UpdateStudyReviewExtractionService
 import br.all.application.study.update.implementation.UpdateStudyReviewPriorityService
 import br.all.application.study.update.implementation.UpdateStudyReviewSelectionService
+import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionService
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.study.presenter.*
@@ -38,7 +39,8 @@ class StudyReviewController(
     val updateSelectionService: UpdateStudyReviewSelectionService,
     val updateExtractionService: UpdateStudyReviewExtractionService,
     val updateReadingPriorityService: UpdateStudyReviewPriorityService,
-    val markAsDuplicatedService: MarkAsDuplicatedService
+    val markAsDuplicatedService: MarkAsDuplicatedService,
+    val answerRiskOfBiasQuestionService: AnswerRiskOfBiasQuestionService,
 ) {
 
     @PostMapping("/study-review")
@@ -205,6 +207,29 @@ class StudyReviewController(
         updateExtractionService.changeStatus(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
+
+    @PatchMapping("/study-review/{studyReview}/riskOfBias-answer")
+    @Operation(summary = "Update the answer of a risk of bias question")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Success updating answer to risk of bias question"),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail updating answer to risk of bias question"
+            ),
+        ]
+    )
+    fun riskOfBiasAnswer(
+        @PathVariable researcher: UUID,
+        @PathVariable systematicStudy: UUID,
+        @PathVariable studyReview: Long,
+        @RequestBody request: AnswerRiskOfBiasQuestionService.RequestModel<*>,
+    ) : ResponseEntity<*> {
+        val presenter = RestfulAnswerRiskOfBiasQuestionPresenter()
+        answerRiskOfBiasQuestionService.answerQuestion(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
 
     @PatchMapping("/study-review/{studyReview}/reading-priority")
     @Operation(summary = "Update the reading priority of study review")

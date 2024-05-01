@@ -1,6 +1,5 @@
 package br.all.application.question.find
 
-import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.question.find.FindQuestionService.*
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.researcher.credentials.ResearcherCredentialsService

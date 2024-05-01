@@ -1,7 +1,9 @@
 package br.all.study.utils
 
+import br.all.application.question.repository.QuestionDto
 import br.all.domain.model.study.StudyType
 import br.all.domain.shared.utils.*
+import br.all.infrastructure.question.QuestionDocument
 import br.all.infrastructure.study.StudyReviewDocument
 import br.all.infrastructure.study.StudyReviewId
 import io.github.serpro69.kfaker.Faker
@@ -84,6 +86,19 @@ class TestDataFactory {
         """.trimIndent()
 
 
+    fun <T> validAnswerRiskOfBiasPatchRequest(studyReviewId: Long, questionId: UUID, type: String, answer: T) =
+        """
+        {
+          "researcherId": "$researcherId",
+          "systematicStudyId": "$systematicStudyId",
+          "studyReviewId": $studyReviewId,
+          "status": "$questionId",
+          "type": "$type",
+          "answer": "$answer"
+        }
+        """.trimIndent()
+
+
     fun reviewDocument(
         systematicStudyId: UUID,
         studyReviewId: Long,
@@ -113,4 +128,23 @@ class TestDataFactory {
             extractionStatus, selectionStatus
         )
     }
+
+    fun generateQuestionTextualDto(
+        questionId: UUID,
+        systematicStudyId: UUID = this.systematicStudyId,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+    ) =
+        QuestionDocument(
+            questionId,
+            systematicStudyId,
+            code,
+            description,
+            "TEXTUAL",
+            null,
+            null,
+            null,
+            null
+        )
+
 }

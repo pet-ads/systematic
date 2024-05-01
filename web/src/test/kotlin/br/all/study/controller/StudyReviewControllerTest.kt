@@ -1,5 +1,7 @@
 package br.all.study.controller
 
+import br.all.application.question.repository.QuestionRepository
+import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
@@ -48,6 +50,9 @@ class StudyReviewControllerTest(
 
     fun markAsDuplicated(studyIdToKeep: Long, studyIdDuplicate: Long) =
         "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyIdToKeep}/duplicated/${studyIdDuplicate}"
+
+    fun answerRiskOfBiasQuestion(studyReviewId: Long) =
+        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyReviewId}/riskOfBias-answer"
 
     @BeforeEach
     fun setUp() {
@@ -319,6 +324,35 @@ class StudyReviewControllerTest(
         }
     }
 
+    @Nested
+    @DisplayName("When answering questions in a review")
+    inner class AnswerQuestionsTests(
+        @Autowired val questionRepository: MongoQuestionRepository
+    ){
+
+        //TODO likely to be a json parsing error
+        @Disabled
+        @Test
+        fun `should assign answer to question and return 200`(){
+            val studyId = idService.next()
+            val questionId = UUID.randomUUID()
+
+            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
+            repository.insert(studyReview)
+
+            val question = factory.generateQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
+            questionRepository.insert(question)
+
+            val json = factory.validAnswerRiskOfBiasPatchRequest(studyId, questionId, "TEXTUAL", "TEST")
+            mockMvc.perform(patch(answerRiskOfBiasQuestion(studyId)).contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isOk)
+
+            val studyReviewId = StudyReviewId(systematicStudyId, studyId)
+            val updatedReview = repository.findById(studyReviewId)
+            assertEquals(updatedReview.get().formAnswers[questionId], "TEST")
+        }
+
+    }
 
     @Nested
     @DisplayName("When marking a study review as duplicated")

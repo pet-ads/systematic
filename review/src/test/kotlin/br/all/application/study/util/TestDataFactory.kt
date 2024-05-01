@@ -1,10 +1,12 @@
 package br.all.application.study.util
 
+import br.all.application.question.repository.QuestionDto
 import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService
 import br.all.application.study.find.service.FindAllStudyReviewsService
 import br.all.application.study.find.service.FindStudyReviewService
 import br.all.application.study.repository.StudyReviewDto
+import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionService
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
@@ -117,6 +119,55 @@ class TestDataFactory {
     fun markAsDuplicatedRequestModel(
         destinationId: Long,
     ) = MarkAsDuplicatedService.RequestModel(researcherId, systematicStudyId, destinationId, studyReviewId)
+
+    fun <T> answerRequestModel(
+        questionId: UUID,
+        type: String,
+        answer: T,
+    ) = AnswerRiskOfBiasQuestionService
+        .RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
+
+    fun labelDto(
+        name: String,
+        value: Int,
+    ) = AnswerRiskOfBiasQuestionService.LabelDto(name, value)
+
+    fun generateQuestionTextualDto(
+        questionId: UUID,
+        systematicStudyId: UUID = this.systematicStudyId,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+    ) =
+        QuestionDto(
+            questionId,
+            systematicStudyId,
+            code,
+            description,
+            "TEXTUAL",
+            null,
+            null,
+            null,
+            null
+        )
+
+    fun generateQuestionLabeledScaleDto(
+        questionId: UUID,
+        systematicStudyId: UUID = this.systematicStudyId,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+        labelDto: AnswerRiskOfBiasQuestionService.LabelDto
+    ) =
+        QuestionDto(
+            questionId,
+            systematicStudyId,
+            code,
+            description,
+            "LABELED_SCALE",
+            mapOf(labelDto.name to labelDto.value),
+            null,
+            null,
+            null
+        )
 
     operator fun component1() = researcherId
     operator fun component2() = studyReviewId
