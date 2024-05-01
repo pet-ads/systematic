@@ -1,9 +1,11 @@
 package br.all.domain.user
 
+import br.all.domain.shared.ddd.Entity
 import java.time.LocalDateTime
+import java.util.UUID
 
 class UserAccount(
-    val id: UserAccountId,
+    id: UserAccountId,
     val createdAt: LocalDateTime = LocalDateTime.now(),
     var email: Email,
     var country: Text,
@@ -11,7 +13,7 @@ class UserAccount(
     username: Username,
     password: String,
     authorities: Set<Authority>,
-){
+) : Entity<UUID>(id) {
     private var _accountCredentials = AccountCredentials(username, password, authorities)
     val accountCredentials get() =_accountCredentials
 
