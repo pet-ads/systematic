@@ -2,7 +2,7 @@ package br.all.application.review.create
 
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.repository.toDto
-import br.all.application.researcher.CredentialsService
+import br.all.application.user.CredentialsService
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel
 import br.all.application.review.create.CreateSystematicStudyService.ResponseModel
 import br.all.application.review.repository.SystematicStudyRepository

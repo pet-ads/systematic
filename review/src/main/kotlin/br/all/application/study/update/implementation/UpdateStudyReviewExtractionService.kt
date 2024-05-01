@@ -1,6 +1,6 @@
 package br.all.application.study.update.implementation
 
-import br.all.application.researcher.credentials.ResearcherCredentialsService
+import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.presenter.PreconditionChecker
@@ -13,7 +13,6 @@ import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.ResponseModel
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
-import br.all.domain.model.study.ExtractionStatus
 import br.all.domain.model.study.StudyReview
 
 class UpdateStudyReviewExtractionService(

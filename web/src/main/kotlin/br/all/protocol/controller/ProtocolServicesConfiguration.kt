@@ -3,7 +3,7 @@ package br.all.protocol.controller
 import br.all.application.protocol.find.FindProtocolServiceImpl
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.update.UpdateProtocolServiceImpl
-import br.all.application.researcher.credentials.ResearcherCredentialsService
+import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

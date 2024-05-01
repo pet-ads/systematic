@@ -1,7 +1,6 @@
 package br.all.study.controller
 
-import br.all.application.protocol.repository.ProtocolRepository
-import br.all.application.researcher.credentials.ResearcherCredentialsService
+import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.create.CreateStudyReviewServiceImpl
 import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresenter

@@ -1,7 +1,6 @@
 package br.all.application.search.update
 
-import br.all.application.researcher.credentials.ResearcherCredentialsService
-import br.all.application.review.repository.SystematicStudyDto
+import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.repository.SearchSessionRepository
@@ -10,7 +9,6 @@ import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.util.PreconditionCheckerMocking
-import io.github.serpro69.kfaker.provider.Prince
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

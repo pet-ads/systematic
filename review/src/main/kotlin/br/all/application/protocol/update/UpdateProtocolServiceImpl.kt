@@ -6,7 +6,7 @@ import br.all.application.protocol.repository.fromDto
 import br.all.application.protocol.repository.toDto
 import br.all.application.protocol.update.UpdateProtocolService.RequestModel
 import br.all.application.protocol.update.UpdateProtocolService.ResponseModel
-import br.all.application.researcher.credentials.ResearcherCredentialsService
+import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.presenter.PreconditionChecker
 import br.all.domain.model.protocol.Protocol

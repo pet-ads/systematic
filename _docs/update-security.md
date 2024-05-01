@@ -1,7 +1,8 @@
 Para cada pacote de aggregate no módulo Web (ver Create Systematic Study como exemplo)
 - Remova a parte /researcher/{researcherId}/ do @RequestMapping
 - Remova todos os parâmetros "@PathVariable researcherId: UUID" dos métodos dos controllers usando "Refactor/Change Signature" do IntelliJ (caso contrário vai quebrar os presenters)
-- Adicione a seguinte injeção de dependência no construtor do Controller: private val credentialService: CredentialService
+- Atualizar o nome das variáveis de responseModel dos endpoints e dtos associados de Researcher/Reviewer para user/userId
+- Adicione a seguinte injeção de dependência no construtor do Controller: authenticationInfoService: AuthenticationInfoService
 - Em cada implementação de método controller obtenha o researcher id a partir do AuthenticationInfoService (exemplo: val researcherId = authenticationInfoService.getAuthenticatedUserId())
 - Nas classes service utilizada pelo controller, inclua a dependência "private val credentialsService: CredentialsService" no construtor.
 - Obtenha os dados do usuário autenticado usando o método loadCredentials do credentialService
