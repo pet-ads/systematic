@@ -209,50 +209,27 @@ class StudyReviewController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PutMapping("/study-review/{studyReview}/riskOfBias-answer")
+    @PatchMapping("/study-review/{studyReview}/riskOfBias-answer")
+    @Operation(summary = "Update the answer of a risk of bias question")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Success updating answer to risk of bias question"),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail updating answer to risk of bias question"
+            ),
+        ]
+    )
     fun riskOfBiasAnswer(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudy: UUID,
         @PathVariable studyReviewId: Long,
-        @RequestBody request: AnswerRequest,
+        @RequestBody request: AnswerRiskOfBiasQuestionService.RequestModel<*>,
     ) : ResponseEntity<*> {
         val presenter = RestfulAnswerRiskOfBiasQuestionPresenter()
-        val requestModel = request.toRiskOfBiasRequest(researcherId, systematicStudy, studyReviewId)
-
-        answerRiskOfBiasQuestionService.answerQuestion(presenter, requestModel)
+        answerRiskOfBiasQuestionService.answerQuestion(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
-    abstract class AnswerRequest(
-        val questionId: UUID,
-        val type: String,
-        open val answer: Any,
-    ) {
-        fun toRiskOfBiasRequest(researcher: UUID, systematicStudy: UUID, studyReview: Long) =
-            RiskOfBiasRequest(researcher, systematicStudy, studyReview, questionId, type, answer)
-    }
-    class TextualAnswerRequest(
-        questionId: UUID,
-        type: String,
-        override val answer: String
-    ) : AnswerRequest(questionId, type, answer)
-
-    class PickListAnswerRequest(
-        questionId: UUID,
-        type: String,
-        override val answer: String
-    ) : AnswerRequest(questionId, type, answer)
-
-    class LabeledScaleRequest(
-        questionId: UUID,
-        type: String,
-        override val answer: String,
-    ) : AnswerRequest(questionId, type, answer)
-
-    class NumberScaleRequest(
-        questionId: UUID,
-        type: String,
-        override val answer: String,
-    ) : AnswerRequest(questionId, type, answer)
 
 
     @PatchMapping("/study-review/{studyReview}/reading-priority")
