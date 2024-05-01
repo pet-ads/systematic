@@ -27,7 +27,6 @@ import br.all.application.study.find.service.FindAllStudyReviewsService.RequestM
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService.RequestModel as FindAllBySourceRequest
 import br.all.application.study.find.service.FindStudyReviewService.RequestModel as FindOneRequest
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.RequestModel as UpdateStatusRequest
-import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionService.RequestModel as RiskOfBiasRequest
 
 @RestController
 @RequestMapping("/api/v1/researcher/{researcher}/systematic-study/{systematicStudy}")
@@ -221,9 +220,9 @@ class StudyReviewController(
         ]
     )
     fun riskOfBiasAnswer(
-        @PathVariable researcherId: UUID,
+        @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
-        @PathVariable studyReviewId: Long,
+        @PathVariable studyReview: Long,
         @RequestBody request: AnswerRiskOfBiasQuestionService.RequestModel<*>,
     ) : ResponseEntity<*> {
         val presenter = RestfulAnswerRiskOfBiasQuestionPresenter()
