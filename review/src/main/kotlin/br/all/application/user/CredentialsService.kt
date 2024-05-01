@@ -1,4 +1,4 @@
-package br.all.application.researcher
+package br.all.application.user
 
 import br.all.domain.model.researcher.Researcher
 import br.all.domain.model.researcher.ResearcherId
@@ -13,7 +13,7 @@ interface CredentialsService {
         fun toUser() : Researcher {
             val researcherId = ResearcherId(id)
             val userRoles = roles.toMutableSet()
-                .map { if (it == "USER") "RESEARCHER" else it }
+                .map { if (it == "USER") "COLLABORATOR" else it }
                 .map { Role.valueOf(it) }
                 .toSet()
 

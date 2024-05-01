@@ -5,7 +5,7 @@ import br.all.application.question.create.CreateQuestionService.RequestModel
 import br.all.application.question.create.CreateQuestionService.ResponseModel
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.repository.toDto
-import br.all.application.researcher.credentials.ResearcherCredentialsService
+import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.presenter.PreconditionChecker
 import br.all.domain.model.question.QuestionBuilder

@@ -1,8 +1,8 @@
 package br.all.review.controller
 
 import br.all.application.protocol.repository.ProtocolRepository
-import br.all.application.researcher.CredentialsService
-import br.all.application.researcher.credentials.ResearcherCredentialsService
+import br.all.application.user.CredentialsService
+import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.create.CreateSystematicStudyServiceImpl
 import br.all.application.review.find.services.FindAllSystematicStudiesServiceImpl
 import br.all.application.review.find.services.FindSystematicStudyServiceImpl

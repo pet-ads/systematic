@@ -2,7 +2,7 @@ package br.all.application.question.find
 
 import br.all.application.question.find.FindQuestionService.*
 import br.all.application.question.repository.QuestionRepository
-import br.all.application.researcher.credentials.ResearcherCredentialsService
+import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.presenter.PreconditionChecker

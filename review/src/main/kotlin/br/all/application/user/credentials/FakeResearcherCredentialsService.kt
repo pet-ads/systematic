@@ -1,4 +1,4 @@
-package br.all.application.researcher.credentials
+package br.all.application.user.credentials
 
 import br.all.domain.model.researcher.ResearcherId
 import org.springframework.stereotype.Service

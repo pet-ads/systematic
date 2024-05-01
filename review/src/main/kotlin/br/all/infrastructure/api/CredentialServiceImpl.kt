@@ -1,7 +1,7 @@
-package br.all.infrastructure.gateway
+package br.all.infrastructure.api
 
-import br.all.application.researcher.CredentialsService
-import br.all.application.researcher.CredentialsService.ResponseModel
+import br.all.application.user.CredentialsService
+import br.all.application.user.CredentialsService.ResponseModel
 import br.all.application.user.find.LoadAccountCredentialsService
 import br.all.application.user.find.LoadAccountCredentialsService.UserSimpleCredentials
 import org.springframework.stereotype.Service
@@ -14,5 +14,4 @@ class CredentialServiceImpl(private val accountCredentialsService : LoadAccountC
     }
 
     private fun UserSimpleCredentials.toResponseModel() = ResponseModel(this.id, this.username, this.authorities)
-
 }

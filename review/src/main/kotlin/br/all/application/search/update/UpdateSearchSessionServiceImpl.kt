@@ -1,6 +1,6 @@
 package br.all.application.search.update
 
-import br.all.application.researcher.credentials.ResearcherCredentialsService
+import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.search.repository.fromDto
