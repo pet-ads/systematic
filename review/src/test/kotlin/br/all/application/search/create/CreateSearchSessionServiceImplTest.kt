@@ -155,26 +155,5 @@ class CreateSearchSessionServiceImplTest {
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
             verify {presenter.prepareFailView(match { it is EntityNotFoundException }) }
         }
-
-        @Test
-        fun `createSession should fail due to existing search session for the same study and source`() {
-            val (_, systematicStudyUuid, searchSessionId) = testDataFactory
-            val systematicStudyId = SystematicStudyId(systematicStudyUuid)
-            val request = testDataFactory.createRequestModel()
-            val response = testDataFactory.createResponseModel()
-
-            preconditionCheckerMocking.makeEverythingWork()
-            every {
-                searchSessionRepository.existsBySearchSource(systematicStudyUuid, request.source)
-            } returns true
-            every { uuidGeneratorService.next() } returns searchSessionId
-            every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
-
-            sut.createSession(presenter, request, testDataFactory.bibFileContent())
-
-            verify {
-                presenter.prepareFailView(match { it is UniquenessViolationException })
-            }
-        }
     }
 }

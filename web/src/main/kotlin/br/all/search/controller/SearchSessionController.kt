@@ -2,14 +2,12 @@ package br.all.search.controller
 
 import br.all.application.review.update.services.UpdateSystematicStudyService
 import br.all.application.search.create.CreateSearchSessionService
+import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindSearchSessionService
-import br.all.search.presenter.RestfulCreateSearchSessionPresenter
-import br.all.search.presenter.RestfulFindSearchSessionPresenter
 import br.all.application.search.find.service.FindAllSearchSessionsService
 import br.all.application.search.update.UpdateSearchSessionService
 import br.all.domain.model.protocol.SearchSource
-import br.all.search.presenter.RestfulFindAllSearchSessionsPresenter
-import br.all.search.presenter.RestfulUpdateSearchSessionPresenter
+import br.all.search.presenter.*
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -26,11 +24,12 @@ import br.all.application.search.create.CreateSearchSessionService.RequestModel 
 import br.all.application.search.find.service.FindAllSearchSessionsService.RequestModel as FindAllRequest
 
 @RestController
-@RequestMapping("api/v1/researcher/{researcherId}/systematic-study/{systematicStudyId}/search-session")
+@RequestMapping("api/v1/researcher/{researcherId}/systematic-study/{systematicStudyId}")
 class SearchSessionController(
     val createService: CreateSearchSessionService,
     val findOneService: FindSearchSessionService,
     val findAllService: FindAllSearchSessionsService,
+    val findAllBySourceService: FindAllSearchSessionsBySourceService,
     val updateService: UpdateSearchSessionService,
     val mapper: ObjectMapper
 ) {
@@ -46,7 +45,7 @@ class SearchSessionController(
             )
     }
 
-    @PostMapping
+    @PostMapping("/search-session")
     @Operation(summary = "create a search session in the systematic study")
     @ApiResponses(
         value = [
@@ -80,7 +79,7 @@ class SearchSessionController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping
+    @GetMapping("/search-session")
     @Operation(summary = "Get all search sessions of a systematic review")
     @ApiResponses(
         value = [
@@ -104,7 +103,7 @@ class SearchSessionController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping("/{sessionId}")
+    @GetMapping("/search-session/{sessionId}")
     @Operation(summary = "Get an existing search session of a systematic review")
     @ApiResponses(
         value = [
@@ -139,7 +138,19 @@ class SearchSessionController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PutMapping("/{sessionId}")
+    @GetMapping("/search-session-source/{source}")
+    fun findSearchSessionsBySource(
+        @PathVariable researcherId: UUID,
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable source: String
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindAllSearchSessionsBySourcePresenter()
+        val request = FindAllSearchSessionsBySourceService.RequestModel(researcherId, systematicStudyId, source)
+        findAllBySourceService.findAllSessionsBySource(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @PutMapping("/search-session/{sessionId}")
     fun updateSearchSession(
         @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,

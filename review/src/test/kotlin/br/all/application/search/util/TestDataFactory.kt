@@ -1,11 +1,13 @@
 package br.all.application.search.util
 
+import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindAllSearchSessionsService
 import br.all.application.search.find.service.FindSearchSessionService
 import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.update.UpdateSearchSessionService
 import br.all.application.search.update.UpdateSearchSessionService.RequestModel
 import br.all.domain.model.protocol.SearchSource
+import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
@@ -20,6 +22,7 @@ class TestDataFactory {
     val researcherId: UUID = UUID.randomUUID()
     val systematicStudyId: UUID = UUID.randomUUID()
     val searchSessionId: UUID = UUID.randomUUID()
+    val source: String = "TestSearchSource"
 
     private val faker = Faker()
 
@@ -44,6 +47,7 @@ class TestDataFactory {
     ) = SearchSession(
         SearchSessionID(sessionId),
         SystematicStudyId(request.systematicStudyId),
+        ResearcherId(request.researcherId),
         request.searchString,
         request.additionalInfo ?: "",
         timestamp,
@@ -71,9 +75,16 @@ class TestDataFactory {
         systematicStudyId: UUID = this.systematicStudyId,
     ) = FindAllSearchSessionsService.RequestModel(researcherId, systematicStudyId)
 
+    fun findAllBySourceRequestModel(
+        researcherId: UUID = this.researcherId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        source: String = this.source
+    ) = FindAllSearchSessionsBySourceService.RequestModel(researcherId, systematicStudyId, source)
+
     fun generateDto(
         id: UUID = searchSessionId,
         systematicStudyId: UUID = this.systematicStudyId,
+        researcherId: UUID = this.researcherId,
         searchString: String = "SearchString",
         additionalInfo: String = "",
         timeStamp: LocalDateTime = LocalDateTime.now(),
@@ -81,6 +92,7 @@ class TestDataFactory {
     ) = SearchSessionDto(
         id,
         systematicStudyId,
+        researcherId,
         searchString,
         additionalInfo,
         timeStamp,
@@ -108,12 +120,38 @@ class TestDataFactory {
         }
     )
 
+    fun findAllBySourceResponseModel(
+        amountOfSearchSessions: Int,
+        researcherId: UUID = this.researcherId,
+        source: String = this.source
+    ) = FindAllSearchSessionsBySourceService.ResponseModel(
+        researcherId,
+        systematicStudyId,
+        source,
+        List(amountOfSearchSessions) {
+            generateDto(
+                id = UUID.randomUUID(),
+                timeStamp = LocalDateTime.now(),
+                source = this.source
+            )
+        }
+    )
+
     fun emptyFindAllResponseModel(
         researcherId: UUID = this.researcherId,
     ) = FindAllSearchSessionsService.ResponseModel(
         researcherId,
         systematicStudyId,
         searchSessions = emptyList(),
+    )
+
+    fun emptyFindBySourceResponseModel(
+        researcherId: UUID = this.researcherId,
+    ) = FindAllSearchSessionsBySourceService.ResponseModel(
+        researcherId,
+        systematicStudyId,
+        source,
+        searchSessions = emptyList()
     )
 
     fun updateRequestModel(
