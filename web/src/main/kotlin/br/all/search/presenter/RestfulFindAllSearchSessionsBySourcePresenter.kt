@@ -21,13 +21,13 @@ class RestfulFindAllSearchSessionsBySourcePresenter: FindAllSearchSessionsBySour
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(
             response.systematicStudyId,
-            response.searchSource,
+            response.source,
             response.searchSessions.size,
             response.searchSessions
         )
 
         val self = linkTo<SearchSessionController> {
-            findSearchSessionsBySource(response.researcherId, response.systematicStudyId, response.searchSource)
+            findSearchSessionsBySource(response.researcherId, response.systematicStudyId, response.source)
         }.withSelfRel()
 
         restfulResponse.add(self)
@@ -40,7 +40,7 @@ class RestfulFindAllSearchSessionsBySourcePresenter: FindAllSearchSessionsBySour
     override fun isDone() = responseEntity != null
     private data class ViewModel (
         val systematicStudyId: UUID,
-        val searchSource: String,
+        val source: String,
         val size: Int,
         val searchSessions: List<SearchSessionDto>
     ) : RepresentationModel<ViewModel>()
