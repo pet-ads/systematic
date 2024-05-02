@@ -3,6 +3,7 @@ package br.all.application.search.find
 import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.find.presenter.FindAllSearchSessionsBySourcePresenter
+import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceServiceImpl
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.search.util.TestDataFactory
@@ -77,7 +78,11 @@ class FindAllSearchSessionsBySourceServiceImplTest {
             every { searchSessionRepository.findSearchSessionsBySource(
                 factory.systematicStudyId, factory.source)} returns response.searchSessions
             sut.findAllSessionsBySource(presenter, factory.findAllBySourceRequestModel())
-            verify{ presenter.prepareSuccessView(response) }
+            verify{ presenter.prepareSuccessView(response)
+                presenter.prepareSuccessView(match<FindAllSearchSessionsBySourceService.ResponseModel> {
+                    it.searchSessions.size == 5
+                })
+            }
         }
     }
 
