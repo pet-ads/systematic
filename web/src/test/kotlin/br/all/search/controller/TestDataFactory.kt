@@ -107,7 +107,7 @@ class TestDataFactory {
         searchString: String = "SearchString",
         additionalInfo: String = "AdditionalInfo",
         timeStamp: LocalDateTime = LocalDateTime.of(2022, 1, 1, 0, 0),
-        searchSource: String = "SearchSource"
+        source: String = "Source"
     ): SearchSessionDocument {
         return SearchSessionDocument(
             id,
@@ -116,7 +116,7 @@ class TestDataFactory {
             searchString,
             additionalInfo,
             timeStamp,
-            searchSource,
+            source,
         )
     }
 
