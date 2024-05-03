@@ -1,17 +1,18 @@
 package br.all.study.controller
 
-import br.all.application.user.credentials.ResearcherCredentialsService
+import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.create.CreateStudyReviewServiceImpl
 import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresenter
 import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
-import br.all.application.study.find.service.FindAllStudyReviewsServiceImpl
 import br.all.application.study.find.presenter.FindStudyReviewPresenter
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceServiceImpl
+import br.all.application.study.find.service.FindAllStudyReviewsServiceImpl
 import br.all.application.study.find.service.FindStudyReviewServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.update.implementation.*
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresenter
+import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.domain.services.IdGeneratorService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -107,5 +108,18 @@ class StudyReviewServicesConfiguration {
         credentialsService: ResearcherCredentialsService
     ) = MarkAsDuplicatedServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService
+    )
+
+    @Bean
+    fun riskOfBiasService(
+        studyReviewRepository: StudyReviewRepository,
+        questionRepository: QuestionRepository,
+        systematicStudyRepository: SystematicStudyRepository,
+        credentialsService: ResearcherCredentialsService,
+    ) = AnswerRiskOfBiasQuestionImpl(
+        studyReviewRepository,
+        questionRepository,
+        systematicStudyRepository,
+        credentialsService
     )
 }
