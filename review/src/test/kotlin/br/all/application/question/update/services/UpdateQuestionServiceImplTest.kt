@@ -5,7 +5,7 @@ import br.all.application.question.create.CreateQuestionService.QuestionType.*
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.update.presenter.UpdateQuestionPresenter
 import br.all.application.question.util.TestDataFactory
-import br.all.application.researcher.credentials.ResearcherCredentialsService
+import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.util.PreconditionCheckerMocking
 import br.all.domain.services.UuidGeneratorService
