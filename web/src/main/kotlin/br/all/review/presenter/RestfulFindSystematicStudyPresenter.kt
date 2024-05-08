@@ -4,7 +4,7 @@ import br.all.application.review.find.presenter.FindSystematicStudyPresenter
 import br.all.application.review.find.services.FindSystematicStudyService.ResponseModel
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.review.controller.SystematicStudyController
-import br.all.review.controller.SystematicStudyController.PostRequest
+import br.all.review.requests.PostRequest
 import br.all.review.controller.SystematicStudyController.PutRequest
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel

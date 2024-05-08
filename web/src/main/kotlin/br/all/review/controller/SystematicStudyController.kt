@@ -9,6 +9,7 @@ import br.all.review.presenter.RestfulCreateSystematicStudyPresenter
 import br.all.review.presenter.RestfulFindAllSystematicStudiesPresenter
 import br.all.review.presenter.RestfulFindSystematicStudyPresenter
 import br.all.review.presenter.RestfulUpdateSystematicStudyPresenter
+import br.all.review.requests.PostRequest
 import br.all.security.service.AuthenticationInfoService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -32,15 +33,6 @@ class SystematicStudyController(
     private val updateSystematicStudyService: UpdateSystematicStudyService,
     private val authenticationInfoService: AuthenticationInfoService
 ) {
-
-    data class PostRequest(
-        val title: String,
-        val description: String,
-        val collaborators: Set<UUID>,
-    ) {
-        fun toCreateRequestModel(researcherId: UUID) =
-            CreateRequestModel(researcherId, title, description, collaborators)
-    }
 
     data class PutRequest(val title: String?, val description: String?) {
         fun toUpdateRequestModel(researcherId: UUID, systematicStudyId: UUID) =

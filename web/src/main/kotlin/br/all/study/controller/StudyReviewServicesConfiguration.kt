@@ -12,6 +12,7 @@ import br.all.application.study.find.service.FindStudyReviewServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.update.implementation.*
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresenter
+import br.all.application.user.CredentialsService
 import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.domain.services.IdGeneratorService
 import org.springframework.context.annotation.Bean
@@ -24,7 +25,7 @@ class StudyReviewServicesConfiguration {
     fun createStudyReviewService(
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
-        credentialsService: ResearcherCredentialsService,
+        credentialsService: CredentialsService,
         idGenerator: IdGeneratorService
     ) = CreateStudyReviewServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService, idGenerator
@@ -115,7 +116,7 @@ class StudyReviewServicesConfiguration {
         studyReviewRepository: StudyReviewRepository,
         questionRepository: QuestionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService,
+        credentialsService: CredentialsService,
     ) = AnswerRiskOfBiasQuestionImpl(
         studyReviewRepository,
         questionRepository,

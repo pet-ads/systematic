@@ -5,11 +5,13 @@ import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.presenter.PreconditionChecker
+import br.all.application.shared.presenter.prepareIfUnauthorized
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromDto
 import br.all.application.study.repository.toDto
 import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionPresenter
 import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionService
+import br.all.application.user.CredentialsService
 import br.all.domain.model.question.*
 import br.all.domain.model.researcher.toResearcherId
 import br.all.domain.model.review.toSystematicStudyId
@@ -21,7 +23,7 @@ class AnswerRiskOfBiasQuestionImpl(
     private val studyReviewRepository: StudyReviewRepository,
     private val questionRepository: QuestionRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
-    private val credentialsService: ResearcherCredentialsService,
+    private val credentialsService: CredentialsService,
 ): AnswerRiskOfBiasQuestionService {
     override fun answerQuestion(
         presenter: AnswerRiskOfBiasQuestionPresenter,
@@ -29,13 +31,17 @@ class AnswerRiskOfBiasQuestionImpl(
     ) {
         val (researcherId, systematicStudyId, studyReviewId, questionId) = request
 
-        PreconditionChecker(systematicStudyRepository, credentialsService).also {
-            it.prepareIfViolatesPreconditions(
-                presenter,
-                researcherId.toResearcherId(),
-                systematicStudyId.toSystematicStudyId(),
-            )
-        }
+        val user = credentialsService.loadCredentials(request.researcherId)?.toUser()
+        presenter.prepareIfUnauthorized(user)
+
+
+//        PreconditionChecker(systematicStudyRepository, credentialsService).also {
+//            it.prepareIfViolatesPreconditions(
+//                presenter,
+//                researcherId.toResearcherId(),
+//                systematicStudyId.toSystematicStudyId(),
+//            )
+//        }
 
         if (presenter.isDone()) return
 

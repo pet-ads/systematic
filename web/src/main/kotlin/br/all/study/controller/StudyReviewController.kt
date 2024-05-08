@@ -10,7 +10,9 @@ import br.all.application.study.update.implementation.UpdateStudyReviewSelection
 import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionService
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
+import br.all.security.service.AuthenticationInfoService
 import br.all.study.presenter.*
+import br.all.study.requests.PostStudyReviewRequest
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -29,18 +31,20 @@ import br.all.application.study.find.service.FindStudyReviewService.RequestModel
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.RequestModel as UpdateStatusRequest
 
 @RestController
-@RequestMapping("/api/v1/researcher/{researcher}/systematic-study/{systematicStudy}")
+@RequestMapping("/api/v1/systematic-study/{systematicStudy}")
 class StudyReviewController(
-    val createService: CreateStudyReviewService,
-    val updateService: UpdateStudyReviewService,
-    val findAllService: FindAllStudyReviewsService,
-    val findAllBySourceService: FindAllStudyReviewsBySourceService,
-    val findOneService: FindStudyReviewService,
-    val updateSelectionService: UpdateStudyReviewSelectionService,
-    val updateExtractionService: UpdateStudyReviewExtractionService,
-    val updateReadingPriorityService: UpdateStudyReviewPriorityService,
-    val markAsDuplicatedService: MarkAsDuplicatedService,
-    val answerRiskOfBiasQuestionService: AnswerRiskOfBiasQuestionService,
+    private val createService: CreateStudyReviewService,
+    private val updateService: UpdateStudyReviewService,
+    private val findAllService: FindAllStudyReviewsService,
+    private val findAllBySourceService: FindAllStudyReviewsBySourceService,
+    private val findOneService: FindStudyReviewService,
+    private val updateSelectionService: UpdateStudyReviewSelectionService,
+    private val updateExtractionService: UpdateStudyReviewExtractionService,
+    private val updateReadingPriorityService: UpdateStudyReviewPriorityService,
+    private val markAsDuplicatedService: MarkAsDuplicatedService,
+    private val answerRiskOfBiasQuestionService: AnswerRiskOfBiasQuestionService,
+    private val authenticationInfoService: AuthenticationInfoService
+
 ) {
 
     @PostMapping("/study-review")
@@ -52,11 +56,12 @@ class StudyReviewController(
         ]
     )
     fun createStudyReview(
-        @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
-        @RequestBody request: CreateRequest
+        @RequestBody postRequest: PostStudyReviewRequest
     ): ResponseEntity<*> {
         val presenter = RestfulCreateStudyReviewPresenter()
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = postRequest.toRequestModel(userId)
         createService.createFromStudy(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }

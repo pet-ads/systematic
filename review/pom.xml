@@ -49,5 +49,11 @@
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk-jvm</artifactId>
+            <version>1.13.3</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

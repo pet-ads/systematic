@@ -1,11 +1,11 @@
 package br.all.study.presenter
 
-import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.find.presenter.FindStudyReviewPresenter
 import br.all.application.study.find.service.FindStudyReviewService.ResponseModel
 import br.all.application.study.repository.StudyReviewDto
 import br.all.shared.error.createErrorResponseFrom
 import br.all.study.controller.StudyReviewController
+import br.all.study.requests.PostStudyReviewRequest
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
@@ -40,10 +40,8 @@ class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
     private fun linkCreateStudyReview(response: ResponseModel) =
         linkTo<StudyReviewController> {
             createStudyReview(
-                response.researcherId,
                 response.content.systematicStudyId,
-                request = CreateStudyReviewService.RequestModel(
-                    researcherId = response.researcherId,
+                PostStudyReviewRequest(
                     systematicStudyId = response.content.systematicStudyId,
                     type = "",
                     title = "",

@@ -3,7 +3,7 @@ package br.all.review.presenter
 import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter
 import br.all.application.review.update.services.UpdateSystematicStudyService.ResponseModel
 import br.all.review.controller.SystematicStudyController
-import br.all.review.controller.SystematicStudyController.PostRequest
+import br.all.review.requests.PostRequest
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo

@@ -1,6 +1,7 @@
 package br.all.application.study.util
 
 import br.all.application.question.repository.QuestionDto
+import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService
 import br.all.application.study.find.service.FindAllStudyReviewsService
@@ -10,6 +11,8 @@ import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionServic
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
+import br.all.application.user.CredentialsService
+import br.all.domain.model.researcher.Role
 import br.all.domain.model.study.StudyType
 import br.all.domain.shared.utils.paragraph
 import br.all.domain.shared.utils.paragraphList
@@ -25,6 +28,26 @@ class TestDataFactory {
     val studyReviewId: Long = Random(1).nextLong()
     val systematicStudyId: UUID = UUID.randomUUID()
     private val faker = Faker()
+
+    fun generateUserDto(
+        userId: UUID = this.researcherId,
+        userName: String = faker.name.firstName(),
+        userRoles: Set<String> = setOf("COLLABORATOR")
+    ) = CredentialsService.ResponseModel(userId, userName, userRoles)
+
+    fun generateSystematicStudy(
+        id: UUID = this.systematicStudyId,
+        title: String = faker.book.title(),
+        description: String = faker.lorem.words(),
+        ownerId: UUID = this.researcherId,
+        collaborators: Set<UUID> = emptySet(),
+    ) = SystematicStudyDto(
+        id,
+        title,
+        description,
+        ownerId,
+        mutableSetOf(ownerId).also { it.addAll(collaborators) },
+    )
 
     fun generateDto(
         systematicStudyId: UUID = this.systematicStudyId,
@@ -124,8 +147,7 @@ class TestDataFactory {
         questionId: UUID,
         type: String,
         answer: T,
-    ) = AnswerRiskOfBiasQuestionService
-        .RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
+    ) = AnswerRiskOfBiasQuestionService.RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
 
     fun labelDto(
         name: String,

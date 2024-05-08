@@ -12,8 +12,8 @@ import br.all.domain.model.review.SystematicStudy
 
 fun GenericPresenter<*>.prepareIfFailsPreconditions(
     user: Researcher?,
-    allowedRoles: Set<Role> = setOf(COLLABORATOR),
-    systematicStudy: SystematicStudy?
+    systematicStudy: SystematicStudy?,
+    allowedRoles: Set<Role> = setOf(COLLABORATOR)
 ) {
     this.prepareIfUnauthorized(user, allowedRoles)
     if (this.isDone()) return
@@ -24,8 +24,10 @@ fun GenericPresenter<*>.prepareIfFailsPreconditions(
         this.prepareFailView(EntityNotFoundException("Review does not exists."))
         return
     }
-    val isAdminAction = existingUser.roles.contains(ADMIN) && allowedRoles.contains(ADMIN)
-    if (!isAdminAction || !systematicStudy.collaborators.contains(existingUser.id))
+
+    if (allowedRoles.contains(ADMIN) && existingUser.roles.contains(ADMIN)) return
+
+    if (!systematicStudy.collaborators.contains(existingUser.id))
         this.prepareFailView(UnauthorizedUserException("User of id $existingUser can not perform this action."))
 }
 
