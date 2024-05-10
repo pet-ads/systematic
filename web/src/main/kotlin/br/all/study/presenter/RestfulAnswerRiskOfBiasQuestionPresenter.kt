@@ -18,7 +18,7 @@ class RestfulAnswerRiskOfBiasQuestionPresenter : AnswerRiskOfBiasQuestionPresent
         val viewModel = ViewModel(response.researcherId, response.systematicStudyId, response.studyReviewId)
 
         val link = linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
+            findStudyReview(response.systematicStudyId, response.studyReviewId)
         }.withSelfRel()
         viewModel.add(link)
 

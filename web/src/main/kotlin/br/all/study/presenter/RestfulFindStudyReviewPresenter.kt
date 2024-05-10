@@ -29,12 +29,12 @@ class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<StudyReviewController> {
-            findStudyReview(response.userId, response.content.systematicStudyId, response.content.studyReviewId)
+            findStudyReview(response.content.systematicStudyId, response.content.studyReviewId)
         }.withSelfRel()
 
     private fun linkFindAllStudyReviews(response: ResponseModel) =
         linkTo<StudyReviewController> {
-            findAllStudyReviews(response.userId, systematicStudy = response.content.systematicStudyId)
+            findAllStudyReviews(response.content.systematicStudyId)
         }.withRel("allStudyReview")
 
     private fun linkCreateStudyReview(response: ResponseModel) =
@@ -42,7 +42,6 @@ class RestfulFindStudyReviewPresenter : FindStudyReviewPresenter {
             createStudyReview(
                 response.content.systematicStudyId,
                 PostStudyReviewRequest(
-                    systematicStudyId = response.content.systematicStudyId,
                     type = "",
                     title = "",
                     year = 2024,

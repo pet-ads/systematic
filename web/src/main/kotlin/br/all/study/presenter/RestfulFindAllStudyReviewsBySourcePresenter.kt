@@ -19,7 +19,7 @@ class RestfulFindAllStudyReviewsBySourcePresenter : FindAllStudyReviewsBySourceP
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
-        val (researcherId, systematicStudyId, searchSource, studyReviews) = response
+        val (_, systematicStudyId, searchSource, studyReviews) = response
         val restfulResponse = ViewModel(systematicStudyId, searchSource, studyReviews.size, studyReviews)
 
         val selfRef = linkSelfRef(response)
@@ -32,12 +32,12 @@ class RestfulFindAllStudyReviewsBySourcePresenter : FindAllStudyReviewsBySourceP
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<StudyReviewController> {
-            findAllStudyReviewsBySource(response.userId, response.systematicStudyId, response.searchSource)
+            findAllStudyReviewsBySource(response.systematicStudyId, response.searchSource)
         }.withSelfRel()
 
     private fun linkFindAllStudiesReviews(response: ResponseModel) =
         linkTo<StudyReviewController> {
-            findAllStudyReviews(response.userId, response.systematicStudyId)
+            findAllStudyReviews(response.systematicStudyId)
         }.withRel("allStudyReview")
 
     private fun linkCreateStudyReview(response: ResponseModel) =
@@ -45,7 +45,6 @@ class RestfulFindAllStudyReviewsBySourcePresenter : FindAllStudyReviewsBySourceP
             createStudyReview(
                 response.systematicStudyId,
                 PostStudyReviewRequest(
-                    systematicStudyId = response.systematicStudyId,
                     type = "",
                     title = "",
                     year = 2024,

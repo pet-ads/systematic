@@ -22,12 +22,12 @@ class RestfulUpdateStudyReviewPresenter : UpdateStudyReviewPresenter {
         val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, response.studyReviewId)
 
         val linkSelfRef = linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
+            findStudyReview(response.systematicStudyId, response.studyReviewId)
         }.withSelfRel()
 
 
         val linkFindAllStudyReview = linkTo<StudyReviewController> {
-            findAllStudyReviews(response.researcherId, response.systematicStudyId);
+            findAllStudyReviews(response.systematicStudyId)
         }.withRel("allStudyReview")
 
         restfulResponse.add(linkSelfRef, linkFindAllStudyReview)

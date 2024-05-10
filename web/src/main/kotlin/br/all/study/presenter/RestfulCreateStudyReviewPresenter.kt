@@ -4,6 +4,7 @@ import br.all.application.study.create.CreateStudyReviewPresenter
 import br.all.application.study.create.CreateStudyReviewService.ResponseModel
 import br.all.shared.error.createErrorResponseFrom
 import br.all.study.controller.StudyReviewController
+import br.all.study.requests.PatchStatusStudyReviewRequest
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
@@ -11,7 +12,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.status
 import org.springframework.stereotype.Component
 import java.util.*
-import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.RequestModel as UpdateStatusRequest
 
 @Component
 class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
@@ -36,22 +36,21 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<StudyReviewController> {
-            findStudyReview(response.userId, response.systematicStudyId, response.studyReviewId)
+            findStudyReview(response.systematicStudyId, response.studyReviewId)
         }.withSelfRel()
 
     private fun linkFindAllStudyReview(response: ResponseModel) =
         linkTo<StudyReviewController> {
-            findAllStudyReviews(response.userId, response.systematicStudyId)
+            findAllStudyReviews(response.systematicStudyId)
         }.withRel("allStudyReview")
 
     private fun linkUpdateSelectionStatus(response: ResponseModel) =
         linkTo<StudyReviewController> {
             updateStudyReviewSelectionStatus(
-                response.userId,
                 response.systematicStudyId,
                 response.studyReviewId,
-                request = UpdateStatusRequest(
-                    response.userId, response.systematicStudyId, response.studyReviewId, status = "status"
+                patchRequest = PatchStatusStudyReviewRequest(
+                    "status"
                 )
             )
         }.withRel("updateSelectionStatus")
@@ -59,11 +58,10 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
     private fun linkUpdateExtractionStatus(response: ResponseModel) =
         linkTo<StudyReviewController> {
             updateStudyReviewExtractionStatus(
-                response.userId,
                 response.systematicStudyId,
                 response.studyReviewId,
-                request = UpdateStatusRequest(
-                    response.userId, response.systematicStudyId, response.studyReviewId, status = "status"
+                patchRequest = PatchStatusStudyReviewRequest(
+                   "status"
                 )
             )
         }.withRel("updateExtractionStatus")
@@ -71,11 +69,10 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
     private fun linkUpdateReadingPriority(response: ResponseModel) =
         linkTo<StudyReviewController> {
             updateStudyReviewReadingPriority(
-                response.userId,
                 response.systematicStudyId,
                 response.studyReviewId,
-                request = UpdateStatusRequest(
-                    response.userId, response.systematicStudyId, response.studyReviewId, status = "status"
+                patchRequest = PatchStatusStudyReviewRequest(
+                    "status"
                 )
             )
         }.withRel("updateReadingPriority")
@@ -83,7 +80,6 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
     private fun linkMarkAsDuplicated(response: ResponseModel) =
         linkTo<StudyReviewController> {
             markAsDuplicated(
-                response.userId,
                 response.systematicStudyId,
                 response.studyReviewId,
                 response.studyReviewId
