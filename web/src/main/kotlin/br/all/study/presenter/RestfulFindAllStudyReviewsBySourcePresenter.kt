@@ -1,6 +1,5 @@
 package br.all.study.presenter
 
-import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresenter
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService.ResponseModel
 import br.all.application.study.repository.StudyReviewDto
@@ -33,12 +32,12 @@ class RestfulFindAllStudyReviewsBySourcePresenter : FindAllStudyReviewsBySourceP
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<StudyReviewController> {
-            findAllStudyReviewsBySource(response.researcherId, response.systematicStudyId, response.searchSource)
+            findAllStudyReviewsBySource(response.userId, response.systematicStudyId, response.searchSource)
         }.withSelfRel()
 
     private fun linkFindAllStudiesReviews(response: ResponseModel) =
         linkTo<StudyReviewController> {
-            findAllStudyReviews(response.researcherId, response.systematicStudyId)
+            findAllStudyReviews(response.userId, response.systematicStudyId)
         }.withRel("allStudyReview")
 
     private fun linkCreateStudyReview(response: ResponseModel) =
