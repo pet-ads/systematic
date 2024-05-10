@@ -43,22 +43,22 @@ class StudyReviewControllerTest(
 
     fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/study-review"
     fun findUrl(studyId: String = "") =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review${studyId}"
+        "/api/v1/systematic-study/$systematicStudyId/study-review${studyId}"
 
     fun findBySourceUrl(searchSource: String = "") =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-source/${searchSource}"
+        "/api/v1/systematic-study/$systematicStudyId/search-source/${searchSource}"
 
     fun updateStudyUrl(studyReviewId: Long) =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyReviewId}"
+        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}"
 
     fun updateStatusStatus(attributeName: String, studyId: String) =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyId}/${attributeName}"
+        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyId}/${attributeName}"
 
     fun markAsDuplicated(studyIdToKeep: Long, studyIdDuplicate: Long) =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyIdToKeep}/duplicated/${studyIdDuplicate}"
+        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyIdToKeep}/duplicated/${studyIdDuplicate}"
 
     fun answerRiskOfBiasQuestion(studyReviewId: Long) =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyReviewId}/riskOfBias-answer"
+        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}/riskOfBias-answer"
 
     @BeforeEach
     fun setUp() {
