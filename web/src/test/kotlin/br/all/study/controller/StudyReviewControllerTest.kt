@@ -108,6 +108,7 @@ class StudyReviewControllerTest(
             val json = factory.invalidPostRequest()
             mockMvc.perform(
                 post(postUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
             ).andExpect(status().isBadRequest)
@@ -168,7 +169,10 @@ class StudyReviewControllerTest(
             repository.insert(studyReview)
 
             val studyId = "/${studyReview.id.studyReviewId}"
-            mockMvc.perform(get(findUrl(studyId)).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(findUrl(studyId))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(studyReview.id.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -176,7 +180,10 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should return 404 if don't find the study review`() {
-            mockMvc.perform(get(findUrl("/-1")).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(findUrl("/-1"))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
                 .andExpect(status().isNotFound)
         }
 
@@ -186,7 +193,10 @@ class StudyReviewControllerTest(
             repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), "study"))
             repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), "study"))
 
-            mockMvc.perform(get(findUrl()).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(findUrl())
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$.size").value(2))
@@ -194,7 +204,10 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should return empty list and return 200 if no study is found`() {
-            mockMvc.perform(get(findUrl()).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(findUrl())
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
                 .andDo(print())
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
@@ -218,7 +231,10 @@ class StudyReviewControllerTest(
                 )
             )
 
-            mockMvc.perform(get(findBySourceUrl("ACM")).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(findBySourceUrl("ACM"))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$.size").value(1))

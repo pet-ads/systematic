@@ -45,7 +45,7 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         findAllStudyReviewsPresenter: FindAllStudyReviewsPresenter,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindAllStudyReviewsServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
@@ -56,7 +56,7 @@ class StudyReviewServicesConfiguration {
         studyReviewRepository: StudyReviewRepository,
         //protocolRepository: ProtocolRepository,
         findAllStudyReviewsBySourcePresenter: FindAllStudyReviewsBySourcePresenter,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindAllStudyReviewsBySourceServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
@@ -66,7 +66,7 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         findStudyReviewPresenter: FindStudyReviewPresenter,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindStudyReviewServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
