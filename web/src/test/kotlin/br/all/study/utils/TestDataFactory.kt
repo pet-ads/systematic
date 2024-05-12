@@ -86,14 +86,21 @@ class TestDataFactory {
     fun <T> validAnswerRiskOfBiasPatchRequest(studyReviewId: Long, questionId: UUID, type: String, answer: T) =
         """
         {
-          "researcherId": "$researcherId",
-          "systematicStudyId": "$systematicStudyId",
           "studyReviewId": $studyReviewId,
-          "status": "$questionId",
+          "questionId": "$questionId",
           "type": "$type",
           "answer": "$answer"
         }
-        """.trimIndent()
+        """
+
+    fun invalidAnswerRiskOfBiasPatchRequest(studyReviewId: Long, questionId: UUID, type: String) =
+        """
+        {
+          "studyReviewId": $studyReviewId,
+          "questionId": "$questionId",
+          "type": "$type",
+        }
+        """
 
 
     fun reviewDocument(

@@ -389,8 +389,6 @@ class StudyReviewControllerTest(
         @Autowired val questionRepository: MongoQuestionRepository
     ) {
 
-        //TODO likely to be a json parsing error
-        @Disabled
         @Test
         fun `should assign answer to question and return 200`() {
             val studyId = idService.next()
@@ -413,6 +411,26 @@ class StudyReviewControllerTest(
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
             val updatedReview = repository.findById(studyReviewId)
             assertEquals(updatedReview.get().formAnswers[questionId], "TEST")
+        }
+
+        @Test
+        fun `should not assign answer with invalid request`() {
+            val studyId = idService.next()
+            val questionId = UUID.randomUUID()
+
+            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
+            repository.insert(studyReview)
+
+            val question = factory.generateQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
+            questionRepository.insert(question)
+
+            val json = factory.invalidAnswerRiskOfBiasPatchRequest(studyId, questionId, "TEXTUAL")
+            mockMvc.perform(
+                patch(answerRiskOfBiasQuestion(studyId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+            )
+                .andExpect(status().isBadRequest)
         }
 
     }
