@@ -1,20 +1,17 @@
 package br.all.application.study.find
 
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
 import br.all.application.study.find.service.FindAllStudyReviewsServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.util.TestDataFactory
 import br.all.application.user.CredentialsService
-import br.all.application.util.PreconditionCheckerMocking
 import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapProperties.Credential
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -42,6 +39,7 @@ class FindAllStudyReviewsServiceImplTest {
             presenter,
             credentialService,
             factory.researcherId,
+            systematicStudyRepository,
             factory.systematicStudyId
         )
         sut = FindAllStudyReviewsServiceImpl(
@@ -62,6 +60,8 @@ class FindAllStudyReviewsServiceImplTest {
             val request = factory.findAllRequestModel()
             val response = factory.findAllResponseModel(1)
 
+            preconditionCheckerMocking.makeEverythingWork()
+
             every { studyReviewRepository.findAllFromReview(request.systematicStudyId) } returns response.studyReviews
 
             sut.findAllFromReview(presenter, request)
@@ -75,6 +75,8 @@ class FindAllStudyReviewsServiceImplTest {
         fun `should successfully find all reviews`(){
             val request = factory.findAllRequestModel()
             val response = factory.findAllResponseModel(3)
+
+            preconditionCheckerMocking.makeEverythingWork()
 
             every { studyReviewRepository.findAllFromReview(request.systematicStudyId) } returns response.studyReviews
 

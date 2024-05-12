@@ -1,6 +1,5 @@
 package br.all.application.study.find
 
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.study.find.presenter.FindStudyReviewPresenter
@@ -8,7 +7,6 @@ import br.all.application.study.find.service.FindStudyReviewServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.util.TestDataFactory
 import br.all.application.user.CredentialsService
-import br.all.application.util.PreconditionCheckerMocking
 import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
@@ -37,6 +35,7 @@ class FindStudyReviewServiceImplTest {
             presenter,
             credentialService,
             factory.researcherId,
+            systematicStudyRepository,
             factory.systematicStudyId
         )
         sut = FindStudyReviewServiceImpl(
@@ -85,10 +84,10 @@ class FindStudyReviewServiceImplTest {
         }
 
         @Test
-        fun `should not allow noncollaborator to find a study review`(){
+        fun `should not allow unauthorized user to find a study review`(){
             val request = factory.findRequestModel()
 
-            preconditionCheckerMocking.makeResearcherNotACollaborator()
+            preconditionCheckerMocking.makeResearcherUnauthorized()
             sut.findOne(presenter, request)
 
             verifyOrder {

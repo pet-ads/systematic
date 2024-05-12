@@ -1,7 +1,6 @@
 package br.all.application.study.update
 
 import br.all.application.question.repository.QuestionRepository
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.study.repository.StudyReviewRepository
@@ -9,7 +8,6 @@ import br.all.application.study.update.implementation.AnswerRiskOfBiasQuestionIm
 import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionPresenter
 import br.all.application.study.util.TestDataFactory
 import br.all.application.user.CredentialsService
-import br.all.application.util.PreconditionCheckerMocking
 import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
@@ -44,6 +42,7 @@ class AnswerRiskOfBiasQuestionImplTest {
             presenter,
             credentialService,
             factory.researcherId,
+            systematicStudyRepository,
             factory.systematicStudyId
         )
         preconditionCheckerMocking.makeEverythingWork()
