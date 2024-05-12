@@ -68,7 +68,6 @@ class CreateStudyReviewServiceImplTest {
 
             preconditionCheckerMocking.makeEverythingWork()
             every { idGenerator.next() } returns studyReviewId
-            every { systematicStudyRepository.findById(factory.systematicStudyId) } returns factory.generateSystematicStudy()
 
             sut.createFromStudy(presenter, request)
 
@@ -91,7 +90,8 @@ class CreateStudyReviewServiceImplTest {
             every { credentialService.loadCredentials(factory.researcherId) } returns null
             every { systematicStudyRepository.findById(factory.systematicStudyId) } returns factory.generateSystematicStudy()
 
-            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            preconditionCheckerMocking.mockPresenterIsDone()
+
             sut.createFromStudy(presenter, request)
 
             verifyOrder {
@@ -104,7 +104,10 @@ class CreateStudyReviewServiceImplTest {
         fun `should not be allowed to create a new study when unauthorized`() {
             val request = factory.createRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthorized()
+            every { credentialService.loadCredentials(factory.researcherId) } returns factory.generateUnauthorizedUserDto()
+            every { systematicStudyRepository.findById(factory.systematicStudyId) } returns factory.generateSystematicStudy()
+
+            preconditionCheckerMocking.mockPresenterIsDone()
             sut.createFromStudy(presenter, request)
 
             verifyOrder {

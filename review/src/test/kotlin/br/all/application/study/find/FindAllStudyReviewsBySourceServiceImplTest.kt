@@ -6,7 +6,9 @@ import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresen
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.util.TestDataFactory
+import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -25,7 +27,7 @@ class FindAllStudyReviewsBySourceServiceImplTest {
     private lateinit var systematicStudyRepository: SystematicStudyRepository
 
     @MockK
-    private lateinit var credentialService: ResearcherCredentialsService
+    private lateinit var credentialService: CredentialsService
 
     @MockK(relaxed = true)
     private lateinit var presenter: FindAllStudyReviewsBySourcePresenter
@@ -33,15 +35,14 @@ class FindAllStudyReviewsBySourceServiceImplTest {
     private lateinit var sut: FindAllStudyReviewsBySourceServiceImpl
 
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialService,
-            systematicStudyRepository,
             factory.researcherId,
             factory.systematicStudyId
         )

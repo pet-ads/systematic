@@ -38,6 +38,10 @@ class PreconditionCheckerMockingNew(
         every { presenter.isDone() } returns true
     }
 
+    fun mockPresenterIsDone(){
+        every { presenter.isDone() } returns true
+    }
+
     fun makeSystematicStudyNonexistent() {
         every { presenter.isDone() } returns false andThen true
     }

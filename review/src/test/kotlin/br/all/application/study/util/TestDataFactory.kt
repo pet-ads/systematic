@@ -35,6 +35,12 @@ class TestDataFactory {
         userRoles: Set<String> = setOf("COLLABORATOR")
     ) = CredentialsService.ResponseModel(userId, userName, userRoles)
 
+    fun generateUnauthorizedUserDto(
+        userId: UUID = this.researcherId,
+        userName: String = faker.name.firstName(),
+        userRoles: Set<String> = emptySet()
+    ) = CredentialsService.ResponseModel(userId, userName, userRoles)
+
     fun generateSystematicStudy(
         id: UUID = this.systematicStudyId,
         title: String = faker.book.title(),
