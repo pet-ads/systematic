@@ -38,8 +38,8 @@ class FindAllStudyReviewsServiceImplTest {
         preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialService,
-            factory.researcherId,
             systematicStudyRepository,
+            factory.researcherId,
             factory.systematicStudyId
         )
         sut = FindAllStudyReviewsServiceImpl(

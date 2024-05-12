@@ -14,8 +14,8 @@ import java.util.*
 class PreconditionCheckerMockingNew(
     private val presenter: GenericPresenter<*>,
     private val credentialsService: CredentialsService,
-    private val userId: UUID,
     private val systematicStudyRepository: SystematicStudyRepository,
+    private val userId: UUID,
     private val systematicStudyId: UUID,
 ) {
     private val faker = Faker()

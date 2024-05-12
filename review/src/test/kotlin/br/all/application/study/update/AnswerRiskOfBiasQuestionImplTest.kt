@@ -41,8 +41,8 @@ class AnswerRiskOfBiasQuestionImplTest {
         preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialService,
-            factory.researcherId,
             systematicStudyRepository,
+            factory.researcherId,
             factory.systematicStudyId
         )
         preconditionCheckerMocking.makeEverythingWork()
@@ -65,6 +65,7 @@ class AnswerRiskOfBiasQuestionImplTest {
             val questionDto = factory.generateQuestionTextualDto(questionId, factory.systematicStudyId)
             val request = factory.answerRequestModel(questionId, "TEXTUAL", "Answer Test")
 
+            preconditionCheckerMocking.makeEverythingWork()
 
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
             every { questionRepository.findById(request.systematicStudyId, questionId) } returns questionDto
@@ -83,6 +84,8 @@ class AnswerRiskOfBiasQuestionImplTest {
             val answer = factory.labelDto("Test Name", 1)
             val questionDto = factory.generateQuestionLabeledScaleDto(questionId, labelDto = answer)
             val request = factory.answerRequestModel(questionId, "LABELED_SCALE", answer)
+
+            preconditionCheckerMocking.makeEverythingWork()
 
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
             every { questionRepository.findById(request.systematicStudyId, questionId) } returns questionDto
@@ -107,6 +110,8 @@ class AnswerRiskOfBiasQuestionImplTest {
             val questionDto = factory.generateQuestionTextualDto(questionId, factory.systematicStudyId)
             val request = factory.answerRequestModel(questionId, "LABELED_SCALE", "Test")
 
+            preconditionCheckerMocking.makeEverythingWork()
+
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
             every { questionRepository.findById(request.systematicStudyId, questionId) } returns questionDto
 
@@ -118,6 +123,8 @@ class AnswerRiskOfBiasQuestionImplTest {
         @Test
         fun `should not work if study doesn't exist`() {
             val request = factory.answerRequestModel(questionId, "TEXTUAL", "Answer")
+
+            preconditionCheckerMocking.makeEverythingWork()
 
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns null
             sut.answerQuestion(presenter, request)
@@ -131,6 +138,8 @@ class AnswerRiskOfBiasQuestionImplTest {
         fun `should not work if question doesn't exist`() {
             val dto = factory.generateDto()
             val request = factory.answerRequestModel(questionId, "TEXTUAL", "Testing")
+
+            preconditionCheckerMocking.makeEverythingWork()
 
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
             every { questionRepository.findById(request.systematicStudyId, questionId) } returns null

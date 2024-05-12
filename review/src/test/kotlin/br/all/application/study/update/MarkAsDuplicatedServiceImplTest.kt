@@ -1,13 +1,13 @@
 package br.all.application.study.update
 
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.update.implementation.MarkAsDuplicatedServiceImpl
 import br.all.application.study.update.interfaces.MarkAsDuplicatedPresenter
 import br.all.application.study.util.TestDataFactory
-import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.user.CredentialsService
+import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -20,18 +20,18 @@ class MarkAsDuplicatedServiceImplTest {
 
     @MockK(relaxed = true) private lateinit var studyReviewRepository: StudyReviewRepository
     @MockK(relaxUnitFun = true) private lateinit var systematicStudyRepository: SystematicStudyRepository
-    @MockK private lateinit var credentialService: ResearcherCredentialsService
+    @MockK private lateinit var credentialService: CredentialsService
     @MockK(relaxed = true) private lateinit var presenter: MarkAsDuplicatedPresenter
 
     private lateinit var sut: MarkAsDuplicatedServiceImpl
 
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialService,
             systematicStudyRepository,
@@ -55,6 +55,8 @@ class MarkAsDuplicatedServiceImplTest {
             val sourceDto = factory.generateDto()
             val destinationDto = factory.generateDto(studyReviewId = 10L)
             val request = factory.markAsDuplicatedRequestModel(destinationDto.studyReviewId)
+
+            preconditionCheckerMocking.makeEverythingWork()
 
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewSource)
             } returns sourceDto
@@ -81,6 +83,8 @@ class MarkAsDuplicatedServiceImplTest {
             val destinationDto = factory.generateDto(studyReviewId = 10L)
             val request = factory.markAsDuplicatedRequestModel(destinationDto.studyReviewId)
 
+            preconditionCheckerMocking.makeEverythingWork()
+
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewSource)
             } returns null
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewDestination)
@@ -97,6 +101,8 @@ class MarkAsDuplicatedServiceImplTest {
         fun `should not be able to update with non-existent destination`() {
             val sourceDto = factory.generateDto()
             val request = factory.markAsDuplicatedRequestModel(10L)
+
+            preconditionCheckerMocking.makeEverythingWork()
 
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewSource)
             } returns sourceDto
