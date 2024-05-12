@@ -39,7 +39,7 @@ class StudyReviewControllerTest(
     private lateinit var user: ApplicationUser
 
     private lateinit var systematicStudyId: UUID
-    private lateinit var researcherId: UUID
+//    private lateinit var researcherId: UUID
 
     fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/study-review"
     fun findUrl(studyId: String = "") =
@@ -127,8 +127,11 @@ class StudyReviewControllerTest(
 
             repository.insert(studyReview)
 
-            val json = factory.validPutRequest(researcherId, systematicStudyId, studyID)
-            mockMvc.perform(put(updateStudyUrl(studyID)).contentType(MediaType.APPLICATION_JSON).content(json))
+            val json = factory.validPutRequest(systematicStudyId, studyID)
+            mockMvc.perform(put(updateStudyUrl(studyID))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON).content(json)
+            )
                 .andExpect(status().isOk)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyID)
@@ -145,7 +148,10 @@ class StudyReviewControllerTest(
             repository.insert(studyReview)
 
             val json = factory.invalidPutRequest()
-            mockMvc.perform(put(updateStudyUrl(studyId)).contentType(MediaType.APPLICATION_JSON).content(json))
+            mockMvc.perform(put(updateStudyUrl(studyId))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON).content(json)
+            )
                 .andExpect(status().isBadRequest)
         }
 
@@ -153,8 +159,11 @@ class StudyReviewControllerTest(
         fun `should not update if study review does not exist and return 404`() {
             val studyId = 5L
 
-            val json = factory.validPutRequest(researcherId, systematicStudyId, studyId)
-            mockMvc.perform(put(updateStudyUrl(studyId)).contentType(MediaType.APPLICATION_JSON).content(json))
+            val json = factory.validPutRequest(systematicStudyId, studyId)
+            mockMvc.perform(put(updateStudyUrl(studyId))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON).content(json)
+            )
                 .andExpect(status().isNotFound)
         }
 
@@ -256,6 +265,7 @@ class StudyReviewControllerTest(
 
             mockMvc.perform(
                 patch(updateStatusStatus("selection-status", studyId.toString()))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(json)
             ).andExpect(status().isOk)
 
@@ -277,6 +287,7 @@ class StudyReviewControllerTest(
 
             mockMvc.perform(
                 patch(updateStatusStatus("selection-status", studyId.toString()))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(json)
             ).andExpect(status().isBadRequest)
 
@@ -296,7 +307,9 @@ class StudyReviewControllerTest(
             repository.insert(studyReview)
 
             val patchStatusStatus = updateStatusStatus("extraction-status", studyId.toString())
-            mockMvc.perform(patch(patchStatusStatus).contentType(MediaType.APPLICATION_JSON).content(json))
+            mockMvc.perform(patch(patchStatusStatus)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isOk)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
@@ -316,7 +329,9 @@ class StudyReviewControllerTest(
             repository.insert(studyReview)
 
             val patchStatusStatus = updateStatusStatus("extraction-status", studyId.toString())
-            mockMvc.perform(patch(patchStatusStatus).contentType(MediaType.APPLICATION_JSON).content(json))
+            mockMvc.perform(patch(patchStatusStatus)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isBadRequest)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
@@ -336,6 +351,7 @@ class StudyReviewControllerTest(
 
             mockMvc.perform(
                 patch(updateStatusStatus("reading-priority", studyId.toString()))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(json)
             ).andExpect(status().isOk)
 
@@ -356,7 +372,9 @@ class StudyReviewControllerTest(
             repository.insert(studyReview)
 
             val patchStatusStatus = updateStatusStatus("reading-priority", studyId.toString())
-            mockMvc.perform(patch(patchStatusStatus).contentType(MediaType.APPLICATION_JSON).content(json))
+            mockMvc.perform(patch(patchStatusStatus)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isBadRequest)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
@@ -386,7 +404,9 @@ class StudyReviewControllerTest(
 
             val json = factory.validAnswerRiskOfBiasPatchRequest(studyId, questionId, "TEXTUAL", "TEST")
             mockMvc.perform(
-                patch(answerRiskOfBiasQuestion(studyId)).contentType(MediaType.APPLICATION_JSON).content(json)
+                patch(answerRiskOfBiasQuestion(studyId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
             )
                 .andExpect(status().isOk)
 
@@ -410,7 +430,9 @@ class StudyReviewControllerTest(
             val studyReviewToDuplicate = factory.reviewDocument(systematicStudyId, studyToDuplicateId)
             repository.insert(studyReviewToDuplicate)
 
-            mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId)))
+            mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
                 .andExpect(status().isOk)
 
             val updatedStudyId = StudyReviewId(systematicStudyId, studyToUpdateId)
@@ -436,7 +458,9 @@ class StudyReviewControllerTest(
             val studyReviewToDuplicate = factory.reviewDocument(systematicStudyId, studyToDuplicateId)
             repository.insert(studyReviewToDuplicate)
 
-            mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))).andExpect(status().isNotFound)
+            mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            ).andExpect(status().isNotFound)
         }
 
         @Test
@@ -447,7 +471,9 @@ class StudyReviewControllerTest(
             val studyReviewToUpdate = factory.reviewDocument(systematicStudyId, studyToUpdateId)
             repository.insert(studyReviewToUpdate)
 
-            mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))).andExpect(status().isNotFound)
+            mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            ).andExpect(status().isNotFound)
         }
     }
 }

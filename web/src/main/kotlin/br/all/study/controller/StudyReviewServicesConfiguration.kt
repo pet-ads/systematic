@@ -13,7 +13,6 @@ import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.update.implementation.*
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresenter
 import br.all.application.user.CredentialsService
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.domain.services.IdGeneratorService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -35,7 +34,7 @@ class StudyReviewServicesConfiguration {
     fun updateStudyReviewService(
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
-        credentialsService: ResearcherCredentialsService,
+        credentialsService: CredentialsService,
     ) = UpdateStudyReviewServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService,
     )
@@ -76,7 +75,7 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = UpdateStudyReviewSelectionService(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
@@ -86,7 +85,7 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = UpdateStudyReviewExtractionService(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
@@ -96,7 +95,7 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = UpdateStudyReviewPriorityService(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
@@ -106,7 +105,7 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = MarkAsDuplicatedServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
