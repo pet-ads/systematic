@@ -20,7 +20,7 @@ class RestfulMarkAsDuplicatedPresenter : MarkAsDuplicatedPresenter {
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(
-            response.researcherId,
+            response.userId,
             response.systematicStudyId,
             response.updatedStudyReview,
             response.duplicatedStudyReview,

@@ -6,7 +6,7 @@ interface AnswerRiskOfBiasQuestionService {
     fun answerQuestion(presenter: AnswerRiskOfBiasQuestionPresenter, request: RequestModel<*>)
 
     data class RequestModel<T>(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val studyReviewId: Long,
         val questionId: UUID,
@@ -20,7 +20,7 @@ interface AnswerRiskOfBiasQuestionService {
     )
 
     data class ResponseModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val studyReviewId: Long,
     )

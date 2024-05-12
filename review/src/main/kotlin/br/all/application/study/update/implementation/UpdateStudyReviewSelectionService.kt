@@ -1,9 +1,9 @@
 package br.all.application.study.update.implementation
 
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.review.repository.fromDto
 import br.all.application.shared.exceptions.EntityNotFoundException
-import br.all.application.shared.presenter.PreconditionChecker
+import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromDto
 import br.all.application.study.repository.toDto
@@ -11,21 +11,23 @@ import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresenter
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.ResponseModel
-import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.SystematicStudyId
+import br.all.application.user.CredentialsService
+import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.study.StudyReview
 
 class UpdateStudyReviewSelectionService(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,
-    private val credentialsService: ResearcherCredentialsService,
+    private val credentialsService: CredentialsService,
 ) : UpdateStudyReviewStatusService {
 
     override fun changeStatus(presenter: UpdateStudyReviewStatusPresenter, request: RequestModel){
-        val researcherId = ResearcherId(request.researcherId)
-        val systematicStudyId = SystematicStudyId(request.systematicStudyId)
-        val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
+        val user = credentialsService.loadCredentials(request.userId)?.toUser()
+
+        val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
+        val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
         if(presenter.isDone()) return
 
@@ -50,6 +52,6 @@ class UpdateStudyReviewSelectionService(
             else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
         }
         studyReviewRepository.saveOrUpdate(studyReview.toDto())
-        presenter.prepareSuccessView(ResponseModel(request.researcherId, request.systematicStudyId, request.studyReviewId))
+        presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, request.studyReviewId))
     }
 }

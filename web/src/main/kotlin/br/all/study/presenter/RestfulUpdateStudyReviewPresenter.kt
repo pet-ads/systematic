@@ -19,7 +19,7 @@ class RestfulUpdateStudyReviewPresenter : UpdateStudyReviewPresenter {
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: UpdateStudyReviewService.ResponseModel) {
-        val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, response.studyReviewId)
+        val restfulResponse = ViewModel(response.userId, response.systematicStudyId, response.studyReviewId)
 
         val linkSelfRef = linkTo<StudyReviewController> {
             findStudyReview(response.systematicStudyId, response.studyReviewId)

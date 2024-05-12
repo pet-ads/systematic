@@ -1,11 +1,10 @@
 package br.all.application.study.update.implementation
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.repository.fromDto
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.review.repository.fromDto
 import br.all.application.shared.exceptions.EntityNotFoundException
-import br.all.application.shared.presenter.PreconditionChecker
-import br.all.application.shared.presenter.prepareIfUnauthorized
+import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromDto
 import br.all.application.study.repository.toDto
@@ -13,11 +12,10 @@ import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionPresen
 import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionService
 import br.all.application.user.CredentialsService
 import br.all.domain.model.question.*
-import br.all.domain.model.researcher.toResearcherId
-import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.model.study.Answer
 import br.all.domain.model.study.StudyReview
 import br.all.domain.model.question.Question
+import br.all.domain.model.review.SystematicStudy
 
 class AnswerRiskOfBiasQuestionImpl(
     private val studyReviewRepository: StudyReviewRepository,
@@ -31,17 +29,12 @@ class AnswerRiskOfBiasQuestionImpl(
     ) {
         val (researcherId, systematicStudyId, studyReviewId, questionId) = request
 
-        val user = credentialsService.loadCredentials(request.researcherId)?.toUser()
-        presenter.prepareIfUnauthorized(user)
+        val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
+        val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
+        val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
 
-//        PreconditionChecker(systematicStudyRepository, credentialsService).also {
-//            it.prepareIfViolatesPreconditions(
-//                presenter,
-//                researcherId.toResearcherId(),
-//                systematicStudyId.toSystematicStudyId(),
-//            )
-//        }
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
         if (presenter.isDone()) return
 

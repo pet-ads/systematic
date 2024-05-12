@@ -7,7 +7,7 @@ interface UpdateStudyReviewService {
     fun updateFromStudy(presenter: UpdateStudyReviewPresenter, request: RequestModel)
 
     data class RequestModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val type: String,
         val title: String,
@@ -21,7 +21,7 @@ interface UpdateStudyReviewService {
     )
 
     open class ResponseModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val studyReviewId: Long
     )
