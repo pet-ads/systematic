@@ -1,44 +1,52 @@
 package br.all.application.util
 
 import br.all.application.question.repository.QuestionRepository
-import br.all.application.user.credentials.ResearcherCredentialsService
+import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.presenter.GenericPresenter
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
-import br.all.application.shared.presenter.prepareIfUnauthorized
 import br.all.application.user.CredentialsService
-import br.all.domain.model.researcher.toResearcherId
-import br.all.domain.model.review.toSystematicStudyId
+import io.github.serpro69.kfaker.Faker
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockkStatic
-import io.mockk.runs
 import java.util.*
 
 class PreconditionCheckerMockingNew(
     private val presenter: GenericPresenter<*>,
     private val credentialsService: CredentialsService,
-    researcher: UUID,
-    systematicStudy: UUID,
+    private val systematicStudyRepository: SystematicStudyRepository,
+    private val userId: UUID,
+    private val systematicStudyId: UUID,
 ) {
-    private val researcher = researcher.toResearcherId()
-    private val systematicStudy = systematicStudy.toSystematicStudyId()
+    private val faker = Faker()
+    private val systematicStudy = generateSystematicStudy()
 
     fun makeEverythingWork() {
+        val user = generateUserDto()
         mockkStatic(GenericPresenter<*>::prepareIfFailsPreconditions)
+        every { credentialsService.loadCredentials(userId) } returns user
+        every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
         every { presenter.prepareIfFailsPreconditions(any(), any()) } returns Unit
         every { presenter.isDone() } returns false
     }
 
     fun makeResearcherUnauthenticated() {
+        every { credentialsService.loadCredentials(userId) } returns null
+        every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
         every { presenter.isDone() } returns true
     }
 
     fun makeResearcherUnauthorized() {
+        val user = generateUnauthorizedUserDto()
+        every { credentialsService.loadCredentials(userId) } returns user
+        every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
         every { presenter.isDone() } returns true
     }
 
     fun makeSystematicStudyNonexistent() {
+        val user = generateUserDto()
+        every { credentialsService.loadCredentials(userId) } returns user
+        every { systematicStudyRepository.findById(systematicStudyId) } returns null
         every { presenter.isDone() } returns false andThen true
     }
 
@@ -49,4 +57,31 @@ class PreconditionCheckerMockingNew(
     fun makeResearcherNotACollaborator() {
         every { presenter.isDone() } returns false andThen true
     }
+
+    private fun generateSystematicStudy(
+        id: UUID = systematicStudyId,
+        title: String = faker.book.title(),
+        description: String = faker.lorem.words(),
+        ownerId: UUID = userId,
+        collaborators: Set<UUID> = emptySet(),
+    ) = SystematicStudyDto(
+        id,
+        title,
+        description,
+        ownerId,
+        mutableSetOf(ownerId).also { it.addAll(collaborators) },
+    )
+
+    private fun generateUserDto(
+        userId: UUID = this.userId,
+        userName: String = faker.name.firstName(),
+        userRoles: Set<String> = setOf("COLLABORATOR")
+    ) = CredentialsService.ResponseModel(userId, userName, userRoles)
+
+    private fun generateUnauthorizedUserDto(
+        userId: UUID = this.userId,
+        userName: String = faker.name.firstName(),
+        userRoles: Set<String> = emptySet()
+    ) = CredentialsService.ResponseModel(userId, userName, userRoles)
+
 }

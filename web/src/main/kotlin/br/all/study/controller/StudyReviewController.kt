@@ -12,7 +12,10 @@ import br.all.application.study.update.interfaces.MarkAsDuplicatedService
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.security.service.AuthenticationInfoService
 import br.all.study.presenter.*
+import br.all.study.requests.PatchRiskOfBiasAnswerStudyReviewRequest
+import br.all.study.requests.PatchStatusStudyReviewRequest
 import br.all.study.requests.PostStudyReviewRequest
+import br.all.study.requests.PutStudyReviewRequest
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -23,12 +26,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService.RequestModel as DuplicatedRequest
-import br.all.application.study.create.CreateStudyReviewService.RequestModel as CreateRequest
-import br.all.application.study.update.interfaces.UpdateStudyReviewService.RequestModel as UpdateRequest
-import br.all.application.study.find.service.FindAllStudyReviewsService.RequestModel as FindAllRequest
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService.RequestModel as FindAllBySourceRequest
 import br.all.application.study.find.service.FindStudyReviewService.RequestModel as FindOneRequest
-import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.RequestModel as UpdateStatusRequest
 
 @RestController
 @RequestMapping("/api/v1/systematic-study/{systematicStudy}")
@@ -61,33 +60,8 @@ class StudyReviewController(
     ): ResponseEntity<*> {
         val presenter = RestfulCreateStudyReviewPresenter()
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = postRequest.toRequestModel(userId)
+        val request = postRequest.toRequestModel(userId, systematicStudy)
         createService.createFromStudy(presenter, request)
-        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
-    }
-
-    @PutMapping("/study-review/{studyReview}")
-    @Operation(summary = "Update an existing study review of a systematic study")
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "200",
-                description = "Success updating an existing study review of a systematic study"
-            ),
-            ApiResponse(responseCode = "400", description = "Fail to update an existing study review - invalid status"),
-            ApiResponse(
-                responseCode = "404",
-                description = "Fail to update an existing study review - study not found"
-            ),
-        ]
-    )
-    fun updateStudyReview(
-        @PathVariable researcher: UUID,
-        @PathVariable systematicStudy: UUID,
-        @RequestBody request: UpdateRequest
-    ): ResponseEntity<*> {
-        val presenter = RestfulUpdateStudyReviewPresenter()
-        updateService.updateFromStudy(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -106,11 +80,11 @@ class StudyReviewController(
         ]
     )
     fun findAllStudyReviews(
-        @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
     ): ResponseEntity<*> {
         val presenter = RestfulFindAllStudyReviewsPresenter()
-        val request = FindAllRequest(researcher, systematicStudy)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindAllStudyReviewsService.RequestModel(userId, systematicStudy)
         findAllService.findAllFromReview(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -130,12 +104,12 @@ class StudyReviewController(
         ]
     )
     fun findAllStudyReviewsBySource(
-        @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
         @PathVariable searchSource: String,
     ): ResponseEntity<*> {
         val presenter = RestfulFindAllStudyReviewsBySourcePresenter()
-        val request = FindAllBySourceRequest(researcher, systematicStudy, searchSource)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindAllBySourceRequest(userId, systematicStudy, searchSource)
         findAllBySourceService.findAllFromSearchSession(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -159,13 +133,40 @@ class StudyReviewController(
         ]
     )
     fun findStudyReview(
-        @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
         @PathVariable studyReview: Long,
     ): ResponseEntity<*> {
         val presenter = RestfulFindStudyReviewPresenter()
-        val request = FindOneRequest(researcher, systematicStudy, studyReview)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindOneRequest(userId, systematicStudy, studyReview)
         findOneService.findOne(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @PutMapping("/study-review/{studyReview}")
+    @Operation(summary = "Update an existing study review of a systematic study")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success updating an existing study review of a systematic study"
+            ),
+            ApiResponse(responseCode = "400", description = "Fail to update an existing study review - invalid status"),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail to update an existing study review - study not found"
+            ),
+        ]
+    )
+    fun updateStudyReview(
+        @PathVariable systematicStudy: UUID,
+        @PathVariable studyReview: Long,
+        @RequestBody putRequest: PutStudyReviewRequest
+    ): ResponseEntity<*> {
+        val presenter = RestfulUpdateStudyReviewPresenter()
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = putRequest.toRequestModel(userId, systematicStudy, studyReview)
+        updateService.updateFromStudy(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -181,12 +182,13 @@ class StudyReviewController(
         ]
     )
     fun updateStudyReviewSelectionStatus(
-        @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
         @PathVariable studyReview: Long,
-        @RequestBody request: UpdateStatusRequest
+        @RequestBody patchRequest: PatchStatusStudyReviewRequest
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter()
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
         updateSelectionService.changeStatus(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -203,38 +205,16 @@ class StudyReviewController(
         ]
     )
     fun updateStudyReviewExtractionStatus(
-        @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
         @PathVariable studyReview: Long,
-        @RequestBody request: UpdateStatusRequest
+        @RequestBody patchRequest: PatchStatusStudyReviewRequest
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter()
+        val userID = authenticationInfoService.getAuthenticatedUserId()
+        val request = patchRequest.toRequestModel(userID, systematicStudy, studyReview)
         updateExtractionService.changeStatus(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
-
-    @PatchMapping("/study-review/{studyReview}/riskOfBias-answer")
-    @Operation(summary = "Update the answer of a risk of bias question")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "200", description = "Success updating answer to risk of bias question"),
-            ApiResponse(
-                responseCode = "400",
-                description = "Fail updating answer to risk of bias question"
-            ),
-        ]
-    )
-    fun riskOfBiasAnswer(
-        @PathVariable researcher: UUID,
-        @PathVariable systematicStudy: UUID,
-        @PathVariable studyReview: Long,
-        @RequestBody request: AnswerRiskOfBiasQuestionService.RequestModel<*>,
-    ) : ResponseEntity<*> {
-        val presenter = RestfulAnswerRiskOfBiasQuestionPresenter()
-        answerRiskOfBiasQuestionService.answerQuestion(presenter, request)
-        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
-    }
-
 
     @PatchMapping("/study-review/{studyReview}/reading-priority")
     @Operation(summary = "Update the reading priority of study review")
@@ -248,13 +228,38 @@ class StudyReviewController(
         ]
     )
     fun updateStudyReviewReadingPriority(
-        @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
         @PathVariable studyReview: Long,
-        @RequestBody request: UpdateStatusRequest
+        @RequestBody patchRequest: PatchStatusStudyReviewRequest
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter()
+        val userID = authenticationInfoService.getAuthenticatedUserId()
+        val request = patchRequest.toRequestModel(userID, systematicStudy, studyReview)
         updateReadingPriorityService.changeStatus(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+
+    @PatchMapping("/study-review/{studyReview}/riskOfBias-answer")
+    @Operation(summary = "Update the answer of a risk of bias question")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Success updating answer to risk of bias question"),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail updating answer to risk of bias question"
+            ),
+        ]
+    )
+    fun riskOfBiasAnswer(
+        @PathVariable systematicStudy: UUID,
+        @PathVariable studyReview: Long,
+        @RequestBody patchRequest: PatchRiskOfBiasAnswerStudyReviewRequest<*>,
+    ) : ResponseEntity<*> {
+        val presenter = RestfulAnswerRiskOfBiasQuestionPresenter()
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
+        answerRiskOfBiasQuestionService.answerQuestion(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -273,13 +278,13 @@ class StudyReviewController(
         ]
     )
     fun markAsDuplicated(
-        @PathVariable researcher: UUID,
         @PathVariable systematicStudy: UUID,
         @PathVariable studyReviewIdToKeep: Long,
         @PathVariable studyReviewToMarkAsDuplicated: Long,
     ): ResponseEntity<*> {
         val presenter = RestfulMarkAsDuplicatedPresenter()
-        val request = DuplicatedRequest(researcher, systematicStudy, studyReviewIdToKeep, studyReviewToMarkAsDuplicated)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = DuplicatedRequest(userId, systematicStudy, studyReviewIdToKeep, studyReviewToMarkAsDuplicated)
         markAsDuplicatedService.markAsDuplicated(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }

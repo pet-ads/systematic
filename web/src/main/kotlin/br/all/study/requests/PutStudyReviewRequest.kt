@@ -1,9 +1,9 @@
 package br.all.study.requests
 
-import br.all.application.study.create.CreateStudyReviewService
+import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import java.util.*
 
-data class PostStudyReviewRequest(
+data class PutStudyReviewRequest(
     val type: String,
     val title: String,
     val year: Int,
@@ -13,7 +13,7 @@ data class PostStudyReviewRequest(
     val keywords: Set<String>,
     val source: String,
 ) {
-    fun toRequestModel(userId: UUID, systematicStudyId: UUID) = CreateStudyReviewService.RequestModel(
+    fun toRequestModel(userId: UUID, systematicStudyId: UUID, studyReviewId: Long) = UpdateStudyReviewService.RequestModel(
         userId,
         systematicStudyId,
         type,
@@ -23,6 +23,7 @@ data class PostStudyReviewRequest(
         venue,
         abstract,
         keywords,
-        source
+        source,
+        studyReviewId
     )
 }

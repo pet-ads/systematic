@@ -1,12 +1,12 @@
 package br.all.application.study.find
 
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresenter
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.util.TestDataFactory
-import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.user.CredentialsService
+import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -25,7 +25,7 @@ class FindAllStudyReviewsBySourceServiceImplTest {
     private lateinit var systematicStudyRepository: SystematicStudyRepository
 
     @MockK
-    private lateinit var credentialService: ResearcherCredentialsService
+    private lateinit var credentialService: CredentialsService
 
     @MockK(relaxed = true)
     private lateinit var presenter: FindAllStudyReviewsBySourcePresenter
@@ -33,12 +33,12 @@ class FindAllStudyReviewsBySourceServiceImplTest {
     private lateinit var sut: FindAllStudyReviewsBySourceServiceImpl
 
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialService,
             systematicStudyRepository,
@@ -65,6 +65,8 @@ class FindAllStudyReviewsBySourceServiceImplTest {
             val request = factory.findAllBySourceRequestModel(searchSource)
             val response = factory.findAllBySourceResponseModel(1, searchSource)
 
+            preconditionCheckerMocking.makeEverythingWork()
+
             every {
                 studyReviewRepository.findAllBySource(any(), any())
             } returns response.studyReviews
@@ -81,6 +83,8 @@ class FindAllStudyReviewsBySourceServiceImplTest {
             val searchSource = "testsource"
             val request = factory.findAllBySourceRequestModel(searchSource)
             val response = factory.findAllBySourceResponseModel(3, searchSource)
+
+            preconditionCheckerMocking.makeEverythingWork()
 
             every {
                 studyReviewRepository.findAllBySource(any(), any())

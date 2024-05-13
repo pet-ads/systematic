@@ -8,12 +8,12 @@ interface FindAllStudyReviewsBySourceService {
     fun findAllFromSearchSession(presenter: FindAllStudyReviewsBySourcePresenter, request: RequestModel)
 
     data class RequestModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val searchSource: String,
     )
     data class ResponseModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val searchSource: String,
         val studyReviews: List<StudyReviewDto>

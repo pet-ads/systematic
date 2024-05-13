@@ -8,11 +8,11 @@ interface FindAllStudyReviewsService {
     fun findAllFromReview(presenter: FindAllStudyReviewsPresenter, request: RequestModel)
 
     data class RequestModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID
     )
     data class ResponseModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val studyReviews: List<StudyReviewDto>
     )

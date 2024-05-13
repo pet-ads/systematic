@@ -1,13 +1,12 @@
 package br.all.application.study.create
 
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.util.TestDataFactory
 import br.all.application.user.CredentialsService
-import br.all.application.util.PreconditionCheckerMocking
 import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.services.IdGeneratorService
 import io.mockk.*
@@ -42,6 +41,7 @@ class CreateStudyReviewServiceImplTest {
         preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialService,
+            systematicStudyRepository,
             factory.researcherId,
             factory.systematicStudyId
         )
@@ -61,14 +61,10 @@ class CreateStudyReviewServiceImplTest {
         fun `should successfully create a Study Review`() {
             val (_, studyReviewId) = factory
 
-            every { credentialService.loadCredentials(factory.researcherId) } returns factory.generateUserDto()
-            every { systematicStudyRepository.findById(factory.systematicStudyId) } returns factory.generateSystematicStudy()
-
             val request = factory.createRequestModel()
 
             preconditionCheckerMocking.makeEverythingWork()
             every { idGenerator.next() } returns studyReviewId
-            every { systematicStudyRepository.findById(factory.systematicStudyId) } returns factory.generateSystematicStudy()
 
             sut.createFromStudy(presenter, request)
 
@@ -88,10 +84,8 @@ class CreateStudyReviewServiceImplTest {
         fun `should not be allowed to create a new study when unauthenticated`() {
             val request = factory.createRequestModel()
 
-            every { credentialService.loadCredentials(factory.researcherId) } returns null
-            every { systematicStudyRepository.findById(factory.systematicStudyId) } returns factory.generateSystematicStudy()
-
             preconditionCheckerMocking.makeResearcherUnauthenticated()
+
             sut.createFromStudy(presenter, request)
 
             verifyOrder {
@@ -109,6 +103,19 @@ class CreateStudyReviewServiceImplTest {
 
             verifyOrder {
                 presenter.prepareFailView(any<UnauthorizedUserException>())
+                presenter.isDone()
+            }
+        }
+
+        @Test
+        fun `should not be allowed to create a new study if systematic study does not exist`() {
+            val request = factory.createRequestModel()
+
+            preconditionCheckerMocking.makeSystematicStudyNonexistent()
+            sut.createFromStudy(presenter, request)
+
+            verifyOrder {
+                presenter.prepareFailView(any<EntityNotFoundException>())
                 presenter.isDone()
             }
         }

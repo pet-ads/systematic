@@ -1,6 +1,5 @@
 package br.all.study.utils
 
-import br.all.application.question.repository.QuestionDto
 import br.all.domain.model.study.StudyType
 import br.all.domain.shared.utils.*
 import br.all.infrastructure.question.QuestionDocument
@@ -44,11 +43,10 @@ class TestDataFactory {
         }
         """
 
-    fun validPutRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId, studyReviewId: Long) =
+    fun validPutRequest(systematicStudyId: UUID = this.systematicStudyId, studyReviewId: Long) =
         """
         {
             "studyReviewId": "$studyReviewId",
-            "researcherId": "$researcher",
             "systematicStudyId": "$systematicStudyId",
             "type": "${faker.random.nextEnum(StudyType::class.java)}",
             "title": "${faker.book.title()}",
@@ -64,8 +62,7 @@ class TestDataFactory {
     fun invalidPutRequest() =
         """
         {
-            "type": "${faker.random.nextEnum(StudyType::class.java)}",
-            "title": "${faker.book.title()}",
+            
             "year": ${faker.year()},
             "authors": "${faker.science.scientist()}",
             "venue": "${faker.book.publisher()}",
@@ -89,14 +86,21 @@ class TestDataFactory {
     fun <T> validAnswerRiskOfBiasPatchRequest(studyReviewId: Long, questionId: UUID, type: String, answer: T) =
         """
         {
-          "researcherId": "$researcherId",
-          "systematicStudyId": "$systematicStudyId",
           "studyReviewId": $studyReviewId,
-          "status": "$questionId",
+          "questionId": "$questionId",
           "type": "$type",
           "answer": "$answer"
         }
-        """.trimIndent()
+        """
+
+    fun invalidAnswerRiskOfBiasPatchRequest(studyReviewId: Long, questionId: UUID, type: String) =
+        """
+        {
+          "studyReviewId": $studyReviewId,
+          "questionId": "$questionId",
+          "type": "$type",
+        }
+        """
 
 
     fun reviewDocument(
