@@ -40,7 +40,6 @@ class UpdateStudyReviewExtractionServiceTest {
             factory.researcherId,
             factory.systematicStudyId
         )
-        preconditionCheckerMocking.makeEverythingWork()
         sut = UpdateStudyReviewExtractionService(
             systematicStudyRepository,
             studyReviewRepository,
@@ -116,6 +115,37 @@ class UpdateStudyReviewExtractionServiceTest {
                 sut.changeStatus(presenter, request)
             }
         }
+
+        @Test
+        fun `should not update when unauthenticated`() {
+            val request = factory.updateStatusRequestModel("INCLUDED")
+
+            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
+                sut.changeStatus(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not update when unauthorized`() {
+            val request = factory.updateStatusRequestModel("INCLUDED")
+
+            preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
+                sut.changeStatus(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not update when systematic study does not exist`() {
+            val request = factory.updateStatusRequestModel("INCLUDED")
+
+            preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
+                sut.changeStatus(presenter, request)
+            }
+
+        }
+
     }
 
 }

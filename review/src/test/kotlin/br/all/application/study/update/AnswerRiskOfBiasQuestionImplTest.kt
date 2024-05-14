@@ -23,10 +23,10 @@ import kotlin.test.assertFailsWith
 class AnswerRiskOfBiasQuestionImplTest {
 
     @MockK(relaxed = true) private lateinit var studyReviewRepository: StudyReviewRepository
-    @MockK(relaxUnitFun = true) private lateinit var systematicStudyRepository: SystematicStudyRepository
-    @MockK(relaxUnitFun = true) private lateinit var questionRepository: QuestionRepository
+    @MockK private lateinit var systematicStudyRepository: SystematicStudyRepository
+    @MockK private lateinit var questionRepository: QuestionRepository
     @MockK private lateinit var credentialService: CredentialsService
-    @MockK(relaxUnitFun = true) private lateinit var presenter: AnswerRiskOfBiasQuestionPresenter
+    @MockK(relaxed = true) private lateinit var presenter: AnswerRiskOfBiasQuestionPresenter
 
     private lateinit var sut: AnswerRiskOfBiasQuestionImpl
 
@@ -45,7 +45,6 @@ class AnswerRiskOfBiasQuestionImplTest {
             factory.researcherId,
             factory.systematicStudyId
         )
-        preconditionCheckerMocking.makeEverythingWork()
         sut = AnswerRiskOfBiasQuestionImpl(
             studyReviewRepository,
             questionRepository,
@@ -149,6 +148,35 @@ class AnswerRiskOfBiasQuestionImplTest {
             verify {
                 presenter.prepareFailView(any<EntityNotFoundException>())
             }
+        }
+
+        @Test
+        fun `should not answer when unauthorized`() {
+            val request = factory.answerRequestModel(questionId, "TEXTUAL", "failure test")
+
+            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
+                sut.answerQuestion(presenter, request)
+            }
+        }
+
+        @Test
+        fun `should not answer when unauthenticated`() {
+            val request = factory.answerRequestModel(questionId, "TEXTUAL", "nono")
+
+            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
+                sut.answerQuestion(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not answer when systematic study does not exist`() {
+            val request = factory.answerRequestModel(questionId, "TEXTUAL", "not real")
+
+            preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
+                sut.answerQuestion(presenter, request)
+            }
+
         }
     }
 

@@ -43,7 +43,6 @@ class MarkAsDuplicatedServiceImplTest {
             studyReviewRepository,
             credentialService,
         )
-        preconditionCheckerMocking.makeEverythingWork()
     }
 
     @Nested
@@ -114,6 +113,36 @@ class MarkAsDuplicatedServiceImplTest {
             verify {
                 presenter.prepareFailView(any<EntityNotFoundException>())
             }
+        }
+
+        @Test
+        fun `should not mark as duplicated when unauthenticated`() {
+            val request = factory.markAsDuplicatedRequestModel(11L)
+
+            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
+                sut.markAsDuplicated(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not mark as duplicated when unauthorized`() {
+            val request = factory.markAsDuplicatedRequestModel(12L)
+
+            preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
+                sut.markAsDuplicated(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not mark as duplicated when systematic study does not exist`() {
+            val request = factory.markAsDuplicatedRequestModel(13L)
+
+            preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
+                sut.markAsDuplicated(presenter, request)
+            }
+
         }
     }
 

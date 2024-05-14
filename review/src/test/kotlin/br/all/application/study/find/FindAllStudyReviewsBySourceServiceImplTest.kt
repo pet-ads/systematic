@@ -20,13 +20,10 @@ class FindAllStudyReviewsBySourceServiceImplTest {
 
     @MockK
     private lateinit var studyReviewRepository: StudyReviewRepository
-
     @MockK
     private lateinit var systematicStudyRepository: SystematicStudyRepository
-
     @MockK
     private lateinit var credentialService: CredentialsService
-
     @MockK(relaxed = true)
     private lateinit var presenter: FindAllStudyReviewsBySourcePresenter
 
@@ -115,6 +112,36 @@ class FindAllStudyReviewsBySourceServiceImplTest {
             verify {
                 presenter.prepareSuccessView(any())
             }
+        }
+
+        @Test
+        fun `should not be allowed to find a study when unauthenticated`() {
+            val request = factory.findAllBySourceRequestModel("false")
+
+            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
+                sut.findAllFromSearchSession(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not be allowed to find a study when unauthorized`() {
+            val request = factory.findAllBySourceRequestModel("no")
+
+            preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
+                sut.findAllFromSearchSession(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not be allowed to find a study when systematic study does not exist`() {
+            val request = factory.findAllBySourceRequestModel("nope")
+
+            preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
+                sut.findAllFromSearchSession(presenter, request)
+            }
+
         }
     }
 

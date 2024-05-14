@@ -40,7 +40,6 @@ class UpdateStudyReviewSelectionStatusServiceTest {
             factory.researcherId,
             factory.systematicStudyId
         )
-        preconditionCheckerMocking.makeEverythingWork()
         sut = UpdateStudyReviewSelectionService(
             systematicStudyRepository,
             studyReviewRepository,
@@ -108,11 +107,43 @@ class UpdateStudyReviewSelectionStatusServiceTest {
             val dto = factory.generateDto()
             val request = factory.updateStatusRequestModel("NOTREAL")
 
+            preconditionCheckerMocking.makeEverythingWork()
+
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
 
             assertFailsWith<IllegalArgumentException> {
                 sut.changeStatus(presenter, request)
             }
+        }
+
+        @Test
+        fun `should not update when unauthenticated`() {
+            val request = factory.updateStatusRequestModel("status!")
+
+            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
+                sut.changeStatus(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not update when unauthorized`() {
+            val request = factory.updateStatusRequestModel("status!")
+
+            preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
+                sut.changeStatus(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not update when systematic study doesnt exist`() {
+            val request = factory.updateStatusRequestModel("status!")
+
+            preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
+                sut.changeStatus(presenter, request)
+            }
+
         }
     }
 

@@ -43,7 +43,6 @@ class UpdateStudyReviewServiceImplTest {
             studyReviewRepository,
             credentialService,
         )
-        preconditionCheckerMocking.makeEverythingWork()
     }
 
     @Nested
@@ -84,6 +83,36 @@ class UpdateStudyReviewServiceImplTest {
             verify {
                 presenter.prepareFailView(any<EntityNotFoundException>())
             }
+        }
+
+        @Test
+        fun `should not update when unauthenticated`() {
+            val request = factory.updateRequestModel()
+
+            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
+                sut.updateFromStudy(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not update when unauthorized`() {
+            val request = factory.updateRequestModel()
+
+            preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
+                sut.updateFromStudy(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not update when systematic study`() {
+            val request = factory.updateRequestModel()
+
+            preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
+                sut.updateFromStudy(presenter, request)
+            }
+
         }
     }
 

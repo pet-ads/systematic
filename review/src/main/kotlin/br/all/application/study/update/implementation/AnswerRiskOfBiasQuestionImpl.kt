@@ -27,7 +27,6 @@ class AnswerRiskOfBiasQuestionImpl(
         presenter: AnswerRiskOfBiasQuestionPresenter,
         request: AnswerRiskOfBiasQuestionService.RequestModel<*>
     ) {
-        val (researcherId, systematicStudyId, studyReviewId, questionId) = request
 
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
@@ -37,6 +36,8 @@ class AnswerRiskOfBiasQuestionImpl(
         presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
         if (presenter.isDone()) return
+
+        val (userId, systematicStudyId, studyReviewId, questionId) = request
 
         val reviewDto = studyReviewRepository.findById(systematicStudyId, studyReviewId)
         if (reviewDto == null) {
@@ -64,7 +65,7 @@ class AnswerRiskOfBiasQuestionImpl(
 
         presenter.prepareSuccessView(
             AnswerRiskOfBiasQuestionService.ResponseModel(
-                researcherId,
+                userId,
                 systematicStudyId,
                 studyReviewId
             )
