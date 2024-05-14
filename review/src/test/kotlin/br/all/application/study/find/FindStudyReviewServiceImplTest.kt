@@ -1,7 +1,6 @@
 package br.all.application.study.find
 
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.study.find.presenter.FindStudyReviewPresenter
 import br.all.application.study.find.service.FindStudyReviewServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
@@ -84,16 +83,33 @@ class FindStudyReviewServiceImplTest {
         }
 
         @Test
-        fun `should not allow unauthorized user to find a study review`(){
+        fun `should not be allowed to find a study when unauthenticated`() {
             val request = factory.findRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthorized()
-            sut.findOne(presenter, request)
-
-            verifyOrder {
-                presenter.prepareFailView(any<UnauthorizedUserException>())
-                presenter.isDone()
+            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
+                sut.findOne(presenter, request)
             }
+
+        }
+
+        @Test
+        fun `should not be allowed to find a study when unauthorized`() {
+            val request = factory.findRequestModel()
+
+            preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
+                sut.findOne(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not be allowed to find a study when systematic study doesn't exist`() {
+            val request = factory.findRequestModel()
+
+            preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
+                sut.findOne(presenter, request)
+            }
+
         }
     }
 

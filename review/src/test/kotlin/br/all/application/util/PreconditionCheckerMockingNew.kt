@@ -1,14 +1,17 @@
 package br.all.application.util
 
-import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.application.shared.exceptions.UnauthenticatedUserException
+import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.shared.presenter.GenericPresenter
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.user.CredentialsService
 import io.github.serpro69.kfaker.Faker
 import io.mockk.every
 import io.mockk.mockkStatic
+import io.mockk.verifyOrder
 import java.util.*
 
 class PreconditionCheckerMockingNew(
@@ -30,13 +33,13 @@ class PreconditionCheckerMockingNew(
         every { presenter.isDone() } returns false
     }
 
-    fun makeResearcherUnauthenticated() {
+    fun makeUserUnauthenticated() {
         every { credentialsService.loadCredentials(userId) } returns null
         every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
         every { presenter.isDone() } returns true
     }
 
-    fun makeResearcherUnauthorized() {
+    fun makeUserUnauthorized() {
         val user = generateUnauthorizedUserDto()
         every { credentialsService.loadCredentials(userId) } returns user
         every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
@@ -50,12 +53,43 @@ class PreconditionCheckerMockingNew(
         every { presenter.isDone() } returns false andThen true
     }
 
-    fun makeQuestionNonexistent(questionRepository: QuestionRepository, questionId: UUID) {
-        every { presenter.isDone() } returns false
+    fun <T>testForUnauthorizedUser(
+        presenter: GenericPresenter<*>,
+        request: T,
+        service: (presenter: GenericPresenter<*>, requestModel: T) -> Unit
+    ){
+        this.makeUserUnauthorized()
+        service(presenter, request)
+        verifyOrder {
+            presenter.prepareFailView(ofType(UnauthorizedUserException::class))
+            presenter.isDone()
+        }
     }
 
-    fun makeResearcherNotACollaborator() {
-        every { presenter.isDone() } returns false andThen true
+    fun <T>testForUnauthenticatedUser(
+        presenter: GenericPresenter<*>,
+        request: T,
+        service: (presenter: GenericPresenter<*>, requestModel: T) -> Unit
+    ){
+        this.makeUserUnauthenticated()
+        service(presenter, request)
+        verifyOrder {
+            presenter.prepareFailView(ofType(UnauthenticatedUserException::class))
+            presenter.isDone()
+        }
+    }
+
+    fun <T>testForNonexistentSystematicStudy(
+        presenter: GenericPresenter<*>,
+        request: T,
+        service: (presenter: GenericPresenter<*>, requestModel: T) -> Unit
+    ){
+        this.makeSystematicStudyNonexistent()
+        service(presenter, request)
+        verifyOrder {
+            presenter.isDone()
+            presenter.prepareFailView(ofType(EntityNotFoundException::class))
+        }
     }
 
     private fun generateSystematicStudy(

@@ -103,6 +103,36 @@ class FindAllStudyReviewsServiceImplTest {
                 presenter.prepareSuccessView(any())
             }
         }
+
+        @Test
+        fun `should not be allowed to find a study when unauthenticated`() {
+            val request = factory.findAllRequestModel()
+
+            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
+                sut.findAllFromReview(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not be allowed to find a study when unauthorized`() {
+            val request = factory.findAllRequestModel()
+
+            preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
+                sut.findAllFromReview(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not be allowed to find a study when systematic study doesn't exist`() {
+            val request = factory.findAllRequestModel()
+
+            preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
+                sut.findAllFromReview(presenter, request)
+            }
+
+        }
     }
 
 }

@@ -38,7 +38,6 @@ class UpdateStudyReviewPriorityServiceTest {
             factory.researcherId,
             factory.systematicStudyId
         )
-        preconditionCheckerMocking.makeEverythingWork()
         sut = UpdateStudyReviewPriorityService(
             systematicStudyRepository,
             studyReviewRepository,
@@ -84,6 +83,36 @@ class UpdateStudyReviewPriorityServiceTest {
             verify {
                 presenter.prepareFailView(any<EntityNotFoundException>())
             }
+        }
+
+        @Test
+        fun `should not update when unauthenticated`() {
+            val request = factory.updateStatusRequestModel("status!")
+
+            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
+                sut.changeStatus(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not update when unauthorized`() {
+            val request = factory.updateStatusRequestModel("status!")
+
+            preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
+                sut.changeStatus(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not update when systematic study doesnt exist`() {
+            val request = factory.updateStatusRequestModel("status!")
+
+            preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
+                sut.changeStatus(presenter, request)
+            }
+
         }
     }
 
