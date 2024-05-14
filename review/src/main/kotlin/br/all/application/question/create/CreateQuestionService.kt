@@ -8,7 +8,7 @@ interface CreateQuestionService {
     enum class QuestionType{TEXTUAL, PICK_LIST, NUMBERED_SCALE, LABELED_SCALE}
 
     data class RequestModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val questionType: QuestionType,
         val code: String,
@@ -20,7 +20,7 @@ interface CreateQuestionService {
     )
 
     data class ResponseModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val questionId: UUID,
     )
