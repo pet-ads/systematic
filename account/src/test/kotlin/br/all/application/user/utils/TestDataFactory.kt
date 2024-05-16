@@ -1,7 +1,9 @@
 package br.all.application.user.utils
 
 import br.all.application.user.create.RegisterUserAccountService
+import br.all.application.user.repository.AccountCredentialsDto
 import io.github.serpro69.kfaker.Faker
+import java.util.*
 
 class TestDataFactory {
     val faker = Faker()
@@ -13,4 +15,14 @@ class TestDataFactory {
         country = faker.address.country(),
         affiliation = faker.lorem.words()
     )
+
+    fun accountCredentials()
+    = AccountCredentialsDto(
+        id = UUID.randomUUID(),
+        username = faker.name.firstName(),
+        password = faker.pearlJam.songs(),
+        authorities = setOf("USER"),
+        refreshToken = faker.lorem.words()
+    )
+
 }
