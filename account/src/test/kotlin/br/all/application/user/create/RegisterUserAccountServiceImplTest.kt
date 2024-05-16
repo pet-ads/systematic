@@ -8,7 +8,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verifyOrder
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtendWith
 
 @Tag("UnitTest")
