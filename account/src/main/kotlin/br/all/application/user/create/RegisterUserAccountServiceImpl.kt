@@ -13,7 +13,7 @@ class RegisterUserAccountServiceImpl(private val repository: UserAccountReposito
         if (repository.existsByEmail(request.email)) {
             presenter.prepareFailView(UniquenessViolationException("The email ${request.email} is already registered."))
         }
-        if (repository.existsByUsername(request.email)) {
+        if (repository.existsByUsername(request.username)) {
             presenter.prepareFailView(UniquenessViolationException("The username ${request.username} is already registered."))
         }
         if (presenter.isDone()) return
