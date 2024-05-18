@@ -7,7 +7,7 @@ interface UpdateSearchSessionService {
     fun updateSession(presenter: UpdateSearchSessionPresenter, request: RequestModel)
 
     data class RequestModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val sessionId: UUID,
         val searchString: String?,
@@ -16,7 +16,7 @@ interface UpdateSearchSessionService {
     )
 
     data class ResponseModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val sessionId: UUID
     )
