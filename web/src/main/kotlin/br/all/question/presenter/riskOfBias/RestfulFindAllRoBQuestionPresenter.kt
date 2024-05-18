@@ -29,7 +29,7 @@ class RestfulFindAllRoBQuestionPresenter : FindAllBySystematicStudyIdPresenter {
 
     private fun linkSelfRef(response: FindAllBySystematicStudyIdService.ResponseModel) =
         linkTo<RiskOfBiasQuestionController> {
-            findAllBySystematicStudyId(response.researcherId, response.systematicStudyId)
+            findAllBySystematicStudyId(response.systematicStudyId)
         }.withSelfRel()
 
 
