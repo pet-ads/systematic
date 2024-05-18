@@ -1,5 +1,6 @@
 package br.all.application.util
 
+import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
@@ -53,6 +54,14 @@ class PreconditionCheckerMockingNew(
         every { presenter.isDone() } returns false andThen true
     }
 
+    fun makeQuestionNonexistent(questionId: UUID, repository: QuestionRepository) {
+        val user = generateUserDto()
+        every { credentialsService.loadCredentials(userId) } returns user
+        every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
+        every { repository.findById(systematicStudyId, questionId) } returns null
+        every { presenter.isDone() } returns false andThen false andThen true
+    }
+
     fun <T>testForUnauthorizedUser(
         presenter: GenericPresenter<*>,
         request: T,
@@ -85,6 +94,21 @@ class PreconditionCheckerMockingNew(
         service: (presenter: GenericPresenter<*>, requestModel: T) -> Unit
     ){
         this.makeSystematicStudyNonexistent()
+        service(presenter, request)
+        verifyOrder {
+            presenter.isDone()
+            presenter.prepareFailView(ofType(EntityNotFoundException::class))
+        }
+    }
+
+    fun <T>testForNonexistentQuestion(
+        presenter: GenericPresenter<*>,
+        request: T,
+        questionId: UUID,
+        questionRepository: QuestionRepository,
+        service: (presenter: GenericPresenter<*>, requestModel: T) -> Unit
+    ){
+        this.makeQuestionNonexistent(questionId, questionRepository)
         service(presenter, request)
         verifyOrder {
             presenter.isDone()
