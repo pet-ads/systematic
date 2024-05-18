@@ -1,14 +1,14 @@
 package br.all.search.controller
 
-import br.all.application.review.update.services.UpdateSystematicStudyService
 import br.all.application.search.create.CreateSearchSessionService
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindSearchSessionService
 import br.all.application.search.find.service.FindAllSearchSessionsService
 import br.all.application.search.update.UpdateSearchSessionService
-import br.all.domain.model.protocol.SearchSource
 import br.all.search.presenter.*
+import br.all.security.service.AuthenticationInfoService
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -18,20 +18,20 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import java.time.LocalDateTime
 import java.util.*
 import br.all.application.search.create.CreateSearchSessionService.RequestModel as CreateRequest
 import br.all.application.search.find.service.FindAllSearchSessionsService.RequestModel as FindAllRequest
 
 @RestController
-@RequestMapping("api/v1/researcher/{researcherId}/systematic-study/{systematicStudyId}")
+@RequestMapping("api/v1/systematic-study/{systematicStudyId}")
 class SearchSessionController(
     val createService: CreateSearchSessionService,
     val findOneService: FindSearchSessionService,
     val findAllService: FindAllSearchSessionsService,
     val findAllBySourceService: FindAllSearchSessionsBySourceService,
     val updateService: UpdateSearchSessionService,
-    val mapper: ObjectMapper
+    val mapper: ObjectMapper,
+    val authenticationInfoService: AuthenticationInfoService
 ) {
 
     data class PutRequest(
@@ -39,9 +39,9 @@ class SearchSessionController(
         val additionalInfo: String?,
         val source: String?
     ) {
-        fun toUpdateRequestModel(researcherId: UUID, systematicStudyId: UUID, sessionId: UUID) =
+        fun toUpdateRequestModel(userId: UUID, systematicStudyId: UUID, sessionId: UUID) =
             UpdateSearchSessionService.RequestModel(
-                researcherId, systematicStudyId, sessionId, searchString, additionalInfo, source
+                userId, systematicStudyId, sessionId, searchString, additionalInfo, source
             )
     }
 
@@ -63,18 +63,25 @@ class SearchSessionController(
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail creating a search session in the systematic study - unauthorized researcher"
+                description = "Fail creating a search session in the systematic study - unauthorized user"
             )
         ]
     )
     fun createSearchSession(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @RequestParam file: MultipartFile,
         @RequestParam data: String,
     ): ResponseEntity<*> {
         val presenter = RestfulCreateSearchSessionPresenter()
-        val request = mapper.readValue(data, CreateRequest::class.java)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val jsonData: Map<String, Any> = mapper.readValue(data)
+        val request = CreateRequest(
+            userId = userId,
+            systematicStudyId = systematicStudyId,
+            source = jsonData["source"] as String,
+            searchString = jsonData["searchString"] as String,
+            additionalInfo = jsonData["additionalInfo"] as? String
+        )
         createService.createSession(presenter, request, String(file.bytes))
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -94,11 +101,11 @@ class SearchSessionController(
         ]
     )
     fun findAllSearchSessions(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
     ): ResponseEntity<*> {
         val presenter = RestfulFindAllSearchSessionsPresenter()
-        val request = FindAllRequest(researcherId, systematicStudyId)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindAllRequest(userId, systematicStudyId)
         findAllService.findAllSearchSessions(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -128,37 +135,37 @@ class SearchSessionController(
         ]
     )
     fun findSearchSession(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @PathVariable sessionId: UUID,
     ): ResponseEntity<*> {
         val presenter = RestfulFindSearchSessionPresenter()
-        val request = FindSearchSessionService.RequestModel(researcherId, systematicStudyId, sessionId)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindSearchSessionService.RequestModel(userId, systematicStudyId, sessionId)
         findOneService.findOneSession(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @GetMapping("/search-session-source/{source}")
     fun findSearchSessionsBySource(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @PathVariable source: String
     ): ResponseEntity<*> {
         val presenter = RestfulFindAllSearchSessionsBySourcePresenter()
-        val request = FindAllSearchSessionsBySourceService.RequestModel(researcherId, systematicStudyId, source)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindAllSearchSessionsBySourceService.RequestModel(userId, systematicStudyId, source)
         findAllBySourceService.findAllSessionsBySource(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @PutMapping("/search-session/{sessionId}")
     fun updateSearchSession(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @PathVariable sessionId: UUID,
         @RequestBody request: PutRequest
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateSearchSessionPresenter()
-        val requestModel = request.toUpdateRequestModel(researcherId, systematicStudyId, sessionId)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val requestModel = request.toUpdateRequestModel(userId, systematicStudyId, sessionId)
 
         updateService.updateSession(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
