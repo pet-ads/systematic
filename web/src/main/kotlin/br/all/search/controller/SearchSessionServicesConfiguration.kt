@@ -10,6 +10,7 @@ import br.all.application.search.find.service.FindAllSearchSessionsServiceImpl
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.search.update.UpdateSearchSessionServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
+import br.all.application.user.CredentialsService
 import br.all.domain.services.BibtexConverterService
 import br.all.domain.services.IdGeneratorService
 import br.all.domain.services.UuidGeneratorService
@@ -29,7 +30,7 @@ class SearchSessionServicesConfiguration {
         uuidGeneratorService: UuidGeneratorService,
         bibtexConverterService: BibtexConverterService,
         studyReviewRepository: StudyReviewRepository,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = CreateSearchSessionServiceImpl(
         searchSessionRepository,
         systematicStudyRepository,
@@ -43,7 +44,7 @@ class SearchSessionServicesConfiguration {
     fun findSearchSession(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindSearchSessionServiceImpl (
         systematicStudyRepository,
         searchSessionRepository,
@@ -54,7 +55,7 @@ class SearchSessionServicesConfiguration {
     fun findAllSessionService(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindAllSearchSessionsServiceImpl (
         systematicStudyRepository, searchSessionRepository, credentialsService
     )
@@ -63,7 +64,7 @@ class SearchSessionServicesConfiguration {
     fun findAllSearchSessionsBySourceService(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindAllSearchSessionsBySourceServiceImpl (
         systematicStudyRepository, searchSessionRepository, credentialsService
     )
@@ -72,7 +73,7 @@ class SearchSessionServicesConfiguration {
     fun updateSessionService(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = UpdateSearchSessionServiceImpl (
         systematicStudyRepository, searchSessionRepository, credentialsService
     )
