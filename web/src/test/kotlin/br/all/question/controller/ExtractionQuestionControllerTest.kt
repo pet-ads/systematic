@@ -47,6 +47,14 @@ class ExtractionQuestionControllerTest(
             id = systematicStudyId,
             owner = user.id,
         ))
+        user = testHelperService.createApplicationUser()
+        systematicStudyRepository.deleteAll()
+        systematicStudyRepository.save(
+            br.all.review.shared.TestDataFactory().createSystematicStudyDocument(
+                id = systematicStudyId,
+                owner = user.id,
+            )
+        )
     }
 
     @AfterEach
