@@ -27,7 +27,7 @@ class RestfulFindAllSearchSessionsBySourcePresenter: FindAllSearchSessionsBySour
         )
 
         val self = linkTo<SearchSessionController> {
-            findSearchSessionsBySource(response.researcherId, response.systematicStudyId, response.source)
+            findSearchSessionsBySource(response.systematicStudyId, response.source)
         }.withSelfRel()
 
         restfulResponse.add(self)
