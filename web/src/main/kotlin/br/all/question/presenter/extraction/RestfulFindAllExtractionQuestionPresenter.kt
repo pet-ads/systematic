@@ -1,6 +1,5 @@
 package br.all.question.presenter.extraction
 
-import br.all.application.question.create.CreateQuestionService
 import br.all.application.question.findAll.FindAllBySystematicStudyIdPresenter
 import br.all.application.question.findAll.FindAllBySystematicStudyIdService.ResponseModel
 import br.all.application.question.repository.QuestionDto
@@ -35,7 +34,6 @@ class RestfulFindAllExtractionQuestionPresenter : FindAllBySystematicStudyIdPres
     private fun linkCreateQuestion(response: ResponseModel) =
         linkTo<ExtractionQuestionController> {
             createTextualQuestion(
-                response.researcherId,
                 response.systematicStudyId,
                 request = ExtractionQuestionController.TextualRequest(
                     "code", "description"
@@ -46,7 +44,6 @@ class RestfulFindAllExtractionQuestionPresenter : FindAllBySystematicStudyIdPres
     private fun linkCreatePickList(response: ResponseModel) =
         linkTo<ExtractionQuestionController> {
             createPickListQuestion(
-                response.researcherId,
                 response.systematicStudyId,
                 request = ExtractionQuestionController.PickListRequest(
                     "code", "description", listOf("option1")
@@ -57,7 +54,6 @@ class RestfulFindAllExtractionQuestionPresenter : FindAllBySystematicStudyIdPres
     private fun linkCreateLabeledScale(response: ResponseModel) =
         linkTo<ExtractionQuestionController> {
             createLabeledScaleQuestion(
-                response.researcherId,
                 response.systematicStudyId,
                 request = ExtractionQuestionController.LabeledScaleRequest(
                     "code", "description", mapOf("scale1" to 1)
@@ -68,7 +64,6 @@ class RestfulFindAllExtractionQuestionPresenter : FindAllBySystematicStudyIdPres
     private fun linkCreateNumberScale(response: ResponseModel) =
         linkTo<ExtractionQuestionController> {
             createNumberScaleQuestion(
-                response.researcherId,
                 response.systematicStudyId,
                 request = ExtractionQuestionController.NumberScaleRequest(
                     "code", "description", 0, 0

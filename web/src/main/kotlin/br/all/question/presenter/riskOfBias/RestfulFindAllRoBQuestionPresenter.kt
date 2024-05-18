@@ -3,9 +3,7 @@ package br.all.question.presenter.riskOfBias
 import br.all.application.question.findAll.FindAllBySystematicStudyIdPresenter
 import br.all.application.question.findAll.FindAllBySystematicStudyIdService
 import br.all.application.question.repository.QuestionDto
-import br.all.question.controller.ExtractionQuestionController
 import br.all.question.controller.RiskOfBiasQuestionController
-import br.all.question.presenter.extraction.RestfulFindAllExtractionQuestionPresenter
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
@@ -39,18 +37,17 @@ class RestfulFindAllRoBQuestionPresenter : FindAllBySystematicStudyIdPresenter {
     private fun linkCreateQuestion(response: FindAllBySystematicStudyIdService.ResponseModel) =
         linkTo<RiskOfBiasQuestionController> {
             createTextualQuestion(
-                response.researcherId,
                 response.systematicStudyId,
                 request = RiskOfBiasQuestionController.TextualRequest(
                     "code", "description"
-                ))
+                )
+            )
         }.withRel("createQuestion")
 
 
     private fun linkCreatePickList(response: FindAllBySystematicStudyIdService.ResponseModel) =
         linkTo<RiskOfBiasQuestionController> {
             createPickListQuestion(
-                response.researcherId,
                 response.systematicStudyId,
                 request = RiskOfBiasQuestionController.PickListRequest(
                     "code", "description", listOf("option1")
@@ -62,7 +59,6 @@ class RestfulFindAllRoBQuestionPresenter : FindAllBySystematicStudyIdPresenter {
     private fun linkCreateLabeledScale(response: FindAllBySystematicStudyIdService.ResponseModel) =
         linkTo<RiskOfBiasQuestionController> {
             createLabeledScaleQuestion(
-                response.researcherId,
                 response.systematicStudyId,
                 request = RiskOfBiasQuestionController.LabeledScaleRequest(
                     "code", "description", mapOf("scale1" to 1)
@@ -74,7 +70,6 @@ class RestfulFindAllRoBQuestionPresenter : FindAllBySystematicStudyIdPresenter {
     private fun linkCreateNumberScale(response: FindAllBySystematicStudyIdService.ResponseModel) =
         linkTo<RiskOfBiasQuestionController> {
             createNumberScaleQuestion(
-                response.researcherId,
                 response.systematicStudyId,
                 request = RiskOfBiasQuestionController.NumberScaleRequest(
                     "code", "description", 0, 0

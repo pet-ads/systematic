@@ -38,7 +38,6 @@ class RestfulCreateRoBQuestionPresenter : CreateQuestionPresenter {
     private fun linkCreatePickList(response: ResponseModel) =
         linkTo<RiskOfBiasQuestionController> {
         createPickListQuestion(
-            response.userId,
             response.systematicStudyId,
             request = RiskOfBiasQuestionController.PickListRequest(
                 "code", "description", listOf("option1")
@@ -49,7 +48,6 @@ class RestfulCreateRoBQuestionPresenter : CreateQuestionPresenter {
     private fun linkCreateLabeledScale(response: ResponseModel) =
         linkTo<RiskOfBiasQuestionController> {
         createLabeledScaleQuestion(
-            response.userId,
             response.systematicStudyId,
             request = RiskOfBiasQuestionController.LabeledScaleRequest(
                 "code", "description", mapOf("scale1" to 1)
@@ -61,7 +59,6 @@ class RestfulCreateRoBQuestionPresenter : CreateQuestionPresenter {
     private fun linkCreateNumberScale(response: ResponseModel) =
         linkTo<RiskOfBiasQuestionController> {
         createNumberScaleQuestion(
-            response.userId,
             response.systematicStudyId,
             request = RiskOfBiasQuestionController.NumberScaleRequest(
                 "code", "description", 0, 0
