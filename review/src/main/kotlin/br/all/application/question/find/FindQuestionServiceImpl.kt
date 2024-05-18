@@ -2,17 +2,13 @@ package br.all.application.question.find
 
 import br.all.application.question.find.FindQuestionService.*
 import br.all.application.question.repository.QuestionRepository
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.shared.exceptions.EntityNotFoundException
-import br.all.application.shared.presenter.PreconditionChecker
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.user.CredentialsService
 import br.all.domain.model.question.QuestionId
-import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudy
-import br.all.domain.model.review.SystematicStudyId
 
 class FindQuestionServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
