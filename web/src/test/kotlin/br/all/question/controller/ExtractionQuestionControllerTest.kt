@@ -3,11 +3,14 @@ package br.all.question.controller
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.question.utils.TestDataFactory
+import br.all.security.service.ApplicationUser
+import br.all.shared.TestHelperService
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.*
@@ -22,11 +25,13 @@ class ExtractionQuestionControllerTest(
     @Autowired val repository: MongoQuestionRepository,
     @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
     @Autowired val mockMvc: MockMvc,
-) {
+    @Autowired private val testHelperService: TestHelperService,
+    ) {
     private lateinit var factory: TestDataFactory
     private lateinit var systematicStudyId: UUID
     private lateinit var researcherId: UUID
     private lateinit var questionId: UUID
+    private lateinit var user: ApplicationUser
 
     @BeforeEach
     fun setUp() {
@@ -41,16 +46,26 @@ class ExtractionQuestionControllerTest(
             id = systematicStudyId,
             owner = researcherId,
         ))
+        user = testHelperService.createApplicationUser()
+        systematicStudyRepository.deleteAll()
+        systematicStudyRepository.save(
+            br.all.review.shared.TestDataFactory().createSystematicStudyDocument(
+                id = systematicStudyId,
+                owner = user.id,
+            )
+        )
     }
 
     @AfterEach
-    fun teardown() = repository.deleteAll()
+    fun teardown() {
+        repository.deleteAll()
+        testHelperService.deleteApplicationUser(user.id)
+    }
 
-
-    fun postUrl() = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/extraction-question"
+    fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/protocol/extraction-question"
 
     fun getUrl(questionId: String = "") =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/extraction-question${questionId}"
+        "/api/v1/systematic-study/$systematicStudyId/protocol/extraction-question${questionId}"
 
 
     @Nested
@@ -60,7 +75,9 @@ class ExtractionQuestionControllerTest(
         fun `should create textual question and return 201`() {
             val json = factory.validCreateTextualRequest()
             mockMvc.perform(
-                post(postUrl() + "/textual").contentType(MediaType.APPLICATION_JSON).content(json)
+                post(postUrl() + "/textual")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
             )
                 .andDo(print())
                 .andExpect(status().isCreated)

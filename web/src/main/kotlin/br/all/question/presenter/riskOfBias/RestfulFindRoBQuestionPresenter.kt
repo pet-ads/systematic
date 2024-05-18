@@ -19,7 +19,7 @@ class RestfulFindRoBQuestionPresenter : FindQuestionPresenter {
         val restfulResponse = ViewModel(content)
 
         val self = linkTo<RiskOfBiasQuestionController> {
-            findQuestion(response.researcherId, content.systematicStudyId, content.questionId)
+            findQuestion(content.systematicStudyId, content.questionId)
         }.withSelfRel()
 
         restfulResponse.add(self)

@@ -160,12 +160,11 @@ class RiskOfBiasQuestionController(
         ]
     )
     fun findQuestion(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @PathVariable questionId: UUID,
     ): ResponseEntity<*> {
         val presenter = RestfulFindRoBQuestionPresenter()
-        val request = FindQuestionService.RequestModel(researcherId, systematicStudyId, questionId)
+        val request = FindQuestionService.RequestModel(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId, questionId)
         findOneService.findOne(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -185,11 +184,10 @@ class RiskOfBiasQuestionController(
         ]
     )
     fun findAllBySystematicStudyId(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID
     ): ResponseEntity<*> {
         val presenter = RestfulFindAllExtractionQuestionPresenter()
-        val request = FindAllBySystematicStudyIdService.RequestModel(researcherId, systematicStudyId)
+        val request = FindAllBySystematicStudyIdService.RequestModel(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId)
         findAllService.findAllBySystematicStudyId(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }

@@ -161,12 +161,11 @@ class ExtractionQuestionController(
         ]
     )
     fun findQuestion(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @PathVariable questionId: UUID,
     ): ResponseEntity<*> {
         val presenter = RestfulFindExtractionQuestionPresenter()
-        val request = FindQuestionService.RequestModel(researcherId, systematicStudyId, questionId)
+        val request = FindQuestionService.RequestModel(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId, questionId)
         findOneService.findOne(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -186,11 +185,10 @@ class ExtractionQuestionController(
         ]
     )
     fun findAllBySystematicStudyId(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID
     ): ResponseEntity<*> {
         val presenter = RestfulFindAllExtractionQuestionPresenter()
-        val request = FindAllRequest(researcherId, systematicStudyId)
+        val request = FindAllRequest(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId)
         findAllService.findAllBySystematicStudyId(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }

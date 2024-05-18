@@ -31,7 +31,7 @@ class RestfulCreateRoBQuestionPresenter : CreateQuestionPresenter {
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<RiskOfBiasQuestionController> {
-        findQuestion(response.userId, response.systematicStudyId, response.questionId)
+        findQuestion(response.systematicStudyId, response.questionId)
     }.withSelfRel()
 
 
@@ -68,7 +68,7 @@ class RestfulCreateRoBQuestionPresenter : CreateQuestionPresenter {
 
     private fun linkFindAll(response: ResponseModel) =
         linkTo<RiskOfBiasQuestionController> {
-        findAllBySystematicStudyId(response.userId, response.systematicStudyId)
+        findAllBySystematicStudyId(response.systematicStudyId)
     }.withRel("findAll")
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }

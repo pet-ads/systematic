@@ -28,7 +28,7 @@ class RestfulFindAllExtractionQuestionPresenter : FindAllBySystematicStudyIdPres
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<ExtractionQuestionController> {
-            findAllBySystematicStudyId(response.researcherId, response.systematicStudyId)
+            findAllBySystematicStudyId(response.systematicStudyId)
         }.withSelfRel()
 
     private fun linkCreateQuestion(response: ResponseModel) =
