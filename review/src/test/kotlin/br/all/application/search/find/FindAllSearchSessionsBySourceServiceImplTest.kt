@@ -9,7 +9,9 @@ import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.search.util.TestDataFactory
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
+import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -30,23 +32,23 @@ class FindAllSearchSessionsBySourceServiceImplTest {
     private lateinit var searchSessionRepository: SearchSessionRepository
 
     @MockK
-    private lateinit var credentialsService: ResearcherCredentialsService
+    private lateinit var credentialsService: CredentialsService
 
     @MockK(relaxed = true)
     private lateinit var presenter: FindAllSearchSessionsBySourcePresenter
 
     private lateinit var sut: FindAllSearchSessionsBySourceServiceImpl
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     @BeforeEach
     fun setUp() = run {
         factory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             systematicStudyRepository,
-            factory.researcherId,
+            factory.userId,
             factory.systematicStudyId,
         )
     }
