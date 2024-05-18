@@ -7,7 +7,7 @@ import java.util.*
 data class SearchSessionDto(
     val id: UUID,
     val systematicStudyId: UUID,
-    val researcherId: UUID,
+    val userId: UUID,
     val searchString: String,
     val additionalInfo: String?,
     val timestamp: LocalDateTime,
