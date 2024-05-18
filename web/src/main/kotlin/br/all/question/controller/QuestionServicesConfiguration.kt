@@ -30,7 +30,7 @@ class QuestionServicesConfiguration {
     fun findQuestionService(
         systematicStudyRepository: SystematicStudyRepository,
         questionRepository: QuestionRepository,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindQuestionServiceImpl(
         systematicStudyRepository, questionRepository, credentialsService
     )
@@ -39,7 +39,7 @@ class QuestionServicesConfiguration {
     fun findAllBySystematicStudyIdService(
         systematicStudyRepository: SystematicStudyRepository,
         questionRepository: QuestionRepository,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindAllBySystematicStudyIdServiceImpl(
         systematicStudyRepository, questionRepository, credentialsService
     )
