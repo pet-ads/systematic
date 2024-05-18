@@ -8,13 +8,13 @@ interface FindQuestionService {
     fun findOne(presenter: FindQuestionPresenter, request: RequestModel)
 
     data class RequestModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val questionId: UUID
     )
 
     data class ResponseModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val content: QuestionDto
     )
 }

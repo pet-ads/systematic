@@ -31,7 +31,7 @@ class RestfulCreateExtractionQuestionPresenter : CreateQuestionPresenter {
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<ExtractionQuestionController> {
-            findQuestion(response.userId, response.systematicStudyId, response.questionId)
+            findQuestion(response.systematicStudyId, response.questionId)
         }.withSelfRel()
 
     private fun linkCreatePickList(response: ResponseModel) =
@@ -65,7 +65,7 @@ class RestfulCreateExtractionQuestionPresenter : CreateQuestionPresenter {
         }.withRel("numberScale")
     private fun linkFindAll(response: ResponseModel) =
         linkTo<ExtractionQuestionController> {
-            findAllBySystematicStudyId(response.userId, response.systematicStudyId)
+            findAllBySystematicStudyId(response.systematicStudyId)
         }.withRel("findAll")
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
