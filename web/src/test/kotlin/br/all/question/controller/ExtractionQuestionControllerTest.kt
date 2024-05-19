@@ -40,20 +40,13 @@ class ExtractionQuestionControllerTest(
         systematicStudyId = factory.systematicStudyId
         researcherId = factory.researcherId
         questionId = factory.questionId
-        systematicStudyRepository.deleteAll()
-        systematicStudyRepository.save(
-            br.all.review.shared.TestDataFactory().createSystematicStudyDocument(
-            id = systematicStudyId,
-            owner = researcherId,
-        ))
         user = testHelperService.createApplicationUser()
         systematicStudyRepository.deleteAll()
         systematicStudyRepository.save(
             br.all.review.shared.TestDataFactory().createSystematicStudyDocument(
-                id = systematicStudyId,
-                owner = user.id,
-            )
-        )
+            id = systematicStudyId,
+            owner = user.id,
+        ))
     }
 
     @AfterEach
