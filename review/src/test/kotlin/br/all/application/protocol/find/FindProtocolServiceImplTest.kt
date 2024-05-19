@@ -2,12 +2,12 @@ package br.all.application.protocol.find
 
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.util.TestDataFactory
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
-import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.user.CredentialsService
+import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -26,19 +26,19 @@ class FindProtocolServiceImplTest {
     @MockK(relaxUnitFun = true)
     private lateinit var protocolRepository: ProtocolRepository
     @MockK
-    private lateinit var credentialsService: ResearcherCredentialsService
+    private lateinit var credentialsService: CredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: FindProtocolPresenter
     @InjectMockKs
     private lateinit var sut: FindProtocolServiceImpl
 
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             systematicStudyRepository,
@@ -104,23 +104,10 @@ class FindProtocolServiceImplTest {
         }
 
         @Test
-        fun `should not a non collaborator find protocols of a systematic study`() {
+        fun `should prepare fail view for unauthenticated users`() {
             val request = factory.findRequestModel()
 
-            preconditionCheckerMocking.makeResearcherNotACollaborator()
-            sut.findById(presenter, request)
-
-            verifyOrder {
-                presenter.prepareFailView(any<UnauthorizedUserException>())
-                presenter.isDone()
-            }
-        }
-
-        @Test
-        fun `should prepare fail view for unauthenticated researchers`() {
-            val request = factory.findRequestModel()
-
-            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            preconditionCheckerMocking.makeUserUnauthenticated()
             sut.findById(presenter, request)
 
             verifyOrder {
@@ -133,7 +120,7 @@ class FindProtocolServiceImplTest {
         fun `should not allow unauthorized users to find protocols`() {
             val request = factory.findRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthorized()
+            preconditionCheckerMocking.makeUserUnauthorized()
             sut.findById(presenter, request)
 
             verifyOrder {
