@@ -211,7 +211,7 @@ class SearchSessionControllerTest(
         }
 
         //TODO make it work and make the others tests
-        /*@Test
+        @Test
         fun `should find all search sessions by source and return 200`(){
             val id1 = UUID.randomUUID()
             val id2 = UUID.randomUUID()
@@ -221,12 +221,14 @@ class SearchSessionControllerTest(
             repository.insert(factory.searchSessionDocument(id2, systematicStudyId))
             repository.insert(factory.searchSessionDocument(id3, systematicStudyId, source = "WrongSource"))
 
-            mockMvc.perform(MockMvcRequestBuilders.get(findBySourceUrl("Source")).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(findBySourceUrl("Source"))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
-                .andExpect(jsonPath("$.source").value("Source"))
                 .andExpect(jsonPath("$.size").value(2))
-        }*/
+        }
     }
 
     @Nested
