@@ -18,12 +18,12 @@ class RestfulFindProtocolPresenter: FindProtocolPresenter {
         val (researcher, systematicStudy, content) = response
         val viewModel = ViewModel(researcher, systematicStudy, content)
 
-        val link = linkTo<ProtocolController> { findById(researcher, systematicStudy) }.withSelfRel()
+        val link = linkTo<ProtocolController> { findById(systematicStudy) }.withSelfRel()
 
         val putProtocol = linkTo<ProtocolController> {
-            putProtocol(response.researcherId,
-                        response.systematicStudyId,
-                        request = ProtocolController.ProtocolRequest()
+            putProtocol(
+                response.systematicStudyId,
+                request = ProtocolController.ProtocolRequest()
             )
         }.withRel("putProtocol")
 
