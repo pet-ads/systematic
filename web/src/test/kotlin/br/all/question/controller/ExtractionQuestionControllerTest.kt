@@ -90,6 +90,7 @@ class ExtractionQuestionControllerTest(
             val json = factory.validCreatePickListRequest()
             mockMvc.perform(
                 post(postUrl() + "/pick-list").contentType(MediaType.APPLICATION_JSON).content(json)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
                 .andDo(print())
                 .andExpect(status().isCreated)
@@ -102,6 +103,7 @@ class ExtractionQuestionControllerTest(
             val json = factory.validCreateLabeledScaleRequest()
             mockMvc.perform(
                 post(postUrl() + "/labeled-scale").contentType(MediaType.APPLICATION_JSON).content(json)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
                 .andDo(print())
                 .andExpect(status().isCreated)
@@ -114,6 +116,7 @@ class ExtractionQuestionControllerTest(
             val json = factory.validCreateNumberScaleRequest()
             mockMvc.perform(
                 post(postUrl() + "/number-scale").contentType(MediaType.APPLICATION_JSON).content(json)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
                 .andDo(print())
                 .andExpect(status().isCreated)
