@@ -135,7 +135,9 @@ class ExtractionQuestionControllerTest(
             repository.insert(question)
 
             val questionIdUrl = "/${questionId}"
-            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -148,7 +150,10 @@ class ExtractionQuestionControllerTest(
             repository.insert(question)
 
             val questionIdUrl = "/${questionId}"
-            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
+
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -162,7 +167,9 @@ class ExtractionQuestionControllerTest(
             repository.insert(question)
 
             val questionIdUrl = "/${questionId}"
-            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -175,7 +182,9 @@ class ExtractionQuestionControllerTest(
             repository.insert(question)
 
             val questionIdUrl = "/${questionId}"
-            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -189,7 +198,9 @@ class ExtractionQuestionControllerTest(
             repository.insert(textualQuestion)
             repository.insert(pickListQuestion)
 
-            mockMvc.perform(get(getUrl()).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(getUrl()).contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$.size").value(2))
@@ -197,7 +208,9 @@ class ExtractionQuestionControllerTest(
 
         @Test
         fun `should return an empty list and return 200 if no study is found`() {
-            mockMvc.perform(get(getUrl()).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(getUrl()).contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$.size").value(0))
