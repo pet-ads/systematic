@@ -4,6 +4,7 @@ import br.all.application.protocol.find.FindProtocolPresenter
 import br.all.application.protocol.find.FindProtocolService.ResponseModel
 import br.all.application.protocol.repository.ProtocolDto
 import br.all.protocol.controller.ProtocolController
+import br.all.protocol.requests.PutRequest
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
@@ -23,7 +24,7 @@ class RestfulFindProtocolPresenter: FindProtocolPresenter {
         val putProtocol = linkTo<ProtocolController> {
             putProtocol(
                 response.systematicStudyId,
-                request = ProtocolController.ProtocolRequest()
+                request = PutRequest()
             )
         }.withRel("putProtocol")
 
