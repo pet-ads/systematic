@@ -10,6 +10,7 @@ import br.all.review.presenter.RestfulFindAllSystematicStudiesPresenter
 import br.all.review.presenter.RestfulFindSystematicStudyPresenter
 import br.all.review.presenter.RestfulUpdateSystematicStudyPresenter
 import br.all.review.requests.PostRequest
+import br.all.review.requests.PutRequest
 import br.all.security.service.AuthenticationInfoService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -20,9 +21,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import br.all.application.review.create.CreateSystematicStudyService.RequestModel as CreateRequestModel
 import br.all.application.review.find.services.FindSystematicStudyService.RequestModel as FindOneRequestModel
-import br.all.application.review.update.services.UpdateSystematicStudyService.RequestModel as UpdateRequestModel
 
 @RestController
 @RequestMapping("/api/v1/systematic-study")
@@ -33,11 +32,6 @@ class SystematicStudyController(
     private val updateSystematicStudyService: UpdateSystematicStudyService,
     private val authenticationInfoService: AuthenticationInfoService
 ) {
-
-    data class PutRequest(val title: String?, val description: String?) {
-        fun toUpdateRequestModel(researcherId: UUID, systematicStudyId: UUID) =
-            UpdateRequestModel(researcherId, systematicStudyId, title, description)
-    }
 
     @PostMapping
     @Operation(summary = "Create a systematic study")
@@ -52,8 +46,8 @@ class SystematicStudyController(
     )
     fun postSystematicStudy(@RequestBody request: PostRequest): ResponseEntity<*> {
         val presenter = RestfulCreateSystematicStudyPresenter()
-        val researcherId = authenticationInfoService.getAuthenticatedUserId()
-        val requestModel = request.toCreateRequestModel(researcherId)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val requestModel = request.toCreateRequestModel(userId)
 
         createSystematicStudyService.create(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -84,8 +78,8 @@ class SystematicStudyController(
     )
     fun findSystematicStudy(@PathVariable systematicStudyId: UUID): ResponseEntity<*> {
         val presenter = RestfulFindSystematicStudyPresenter()
-        val researcherId = authenticationInfoService.getAuthenticatedUserId()
-        val request = FindOneRequestModel(researcherId, systematicStudyId)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindOneRequestModel(userId, systematicStudyId)
 
         findSystematicStudyServiceImpl.findById(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -112,9 +106,9 @@ class SystematicStudyController(
     )
     fun findAllSystematicStudies(): ResponseEntity<*> {
         val presenter = RestfulFindAllSystematicStudiesPresenter()
-        val researcherId = authenticationInfoService.getAuthenticatedUserId()
+        val userId = authenticationInfoService.getAuthenticatedUserId()
 
-        findAllSystematicStudiesService.findAllByCollaborator(presenter, researcherId)
+        findAllSystematicStudiesService.findAllByCollaborator(presenter, userId)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -139,8 +133,8 @@ class SystematicStudyController(
     )
     fun findAllSystematicStudiesByOwner(@PathVariable ownerId: UUID): ResponseEntity<*> {
         val presenter = RestfulFindAllSystematicStudiesPresenter()
-        val researcherId = authenticationInfoService.getAuthenticatedUserId()
-        val request = FindByOwnerRequest(researcherId, ownerId)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindByOwnerRequest(userId, ownerId)
 
         findAllSystematicStudiesService.findAllByOwner(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -161,8 +155,8 @@ class SystematicStudyController(
     fun updateSystematicStudy(@PathVariable systematicStudyId: UUID,
         @RequestBody request: PutRequest): ResponseEntity<*> {
         val presenter = RestfulUpdateSystematicStudyPresenter()
-        val researcherId = authenticationInfoService.getAuthenticatedUserId()
-        val requestModel = request.toUpdateRequestModel(researcherId, systematicStudyId)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val requestModel = request.toUpdateRequestModel(userId, systematicStudyId)
 
         updateSystematicStudyService.update(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
