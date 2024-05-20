@@ -21,7 +21,7 @@ fun SearchSession.toDto() = SearchSessionDto(
 fun SearchSession.Companion.fromRequestModel(id: SearchSessionID, request: RequestModel) = SearchSession(
     id,
     SystematicStudyId(request.systematicStudyId),
-    ResearcherId(request.researcherId),
+    ResearcherId(request.userId),
     request.searchString,
     request.additionalInfo ?: "",
     source = SearchSource(request.source),
@@ -30,7 +30,7 @@ fun SearchSession.Companion.fromRequestModel(id: SearchSessionID, request: Reque
 fun SearchSession.Companion.fromDto(dto: SearchSessionDto) = SearchSession(
     SearchSessionID(dto.id),
     SystematicStudyId(dto.systematicStudyId),
-    ResearcherId(dto.researcherId),
+    ResearcherId(dto.userId),
     dto.searchString,
     dto.additionalInfo,
     dto.timestamp,

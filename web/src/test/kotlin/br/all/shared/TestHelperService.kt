@@ -34,6 +34,27 @@ class TestHelperService(private val repository: UserAccountRepository) {
         return applicationUser
     }
 
+    fun createUnauthorizedApplicationUser(): ApplicationUser {
+        val userDto = UserAccountDto(
+            id = UUID.randomUUID(),
+            username = faker.name.firstName(),
+            password = faker.fallout.locations(),
+            email = faker.internet.email(),
+            country = faker.address.country(),
+            affiliation = faker.university.name(),
+            createdAt = LocalDateTime.now(),
+            authorities = setOf(),
+            refreshToken = null,
+            isAccountNonExpired = true,
+            isAccountNonLocked = true,
+            isCredentialsNonExpired = true,
+            isEnabled = true
+        )
+        val applicationUser = ApplicationUser(userDto.id, userDto.username, userDto.password)
+        repository.save(userDto)
+        return applicationUser
+    }
+
     fun deleteApplicationUser(id: UUID) {
         repository.deleteById(id)
     }

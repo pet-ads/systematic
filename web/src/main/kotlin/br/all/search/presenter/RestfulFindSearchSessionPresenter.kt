@@ -1,7 +1,6 @@
 package br.all.search.presenter
 
 import br.all.application.search.find.presenter.FindSearchSessionPresenter
-import br.all.application.search.find.service.FindAllSearchSessionsService
 import br.all.application.search.find.service.FindSearchSessionService.ResponseModel
 import br.all.application.search.repository.SearchSessionDto
 import br.all.search.controller.SearchSessionController
@@ -11,8 +10,6 @@ import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
-import org.springframework.web.multipart.MultipartFile
-import java.io.File
 
 @Component
 class RestfulFindSearchSessionPresenter : FindSearchSessionPresenter {
@@ -30,12 +27,12 @@ class RestfulFindSearchSessionPresenter : FindSearchSessionPresenter {
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<SearchSessionController> {
-            findSearchSession(response.researcherId, response.content.systematicStudyId, response.content.id)
+            findSearchSession(response.content.systematicStudyId, response.content.id)
         }.withSelfRel()
 
     private fun linkFindAllSession(response: ResponseModel) =
         linkTo<SearchSessionController> {
-            findAllSearchSessions(response.researcherId, response.content.systematicStudyId)
+            findAllSearchSessions(response.content.systematicStudyId)
         }.withRel("allSessions")
 
     /*

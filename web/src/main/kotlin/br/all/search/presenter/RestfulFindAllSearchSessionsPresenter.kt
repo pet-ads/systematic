@@ -10,8 +10,6 @@ import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
-import org.springframework.web.multipart.MultipartFile
-import java.io.File
 import java.util.UUID
 
 @Component
@@ -31,7 +29,7 @@ class RestfulFindAllSearchSessionsPresenter : FindAllSearchSessionsPresenter {
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<SearchSessionController> {
-            findAllSearchSessions(response.researcherId, response.systematicStudyId)
+            findAllSearchSessions(response.systematicStudyId)
         }.withSelfRel()
 
     /*

@@ -10,7 +10,9 @@ import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.shared.exceptions.UniquenessViolationException
 import br.all.application.study.repository.StudyReviewRepository
+import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.services.BibtexConverterService
 import br.all.domain.services.UuidGeneratorService
@@ -42,14 +44,14 @@ class CreateSearchSessionServiceImplTest {
     private lateinit var studyReviewRepository: StudyReviewRepository
 
     @MockK
-    private lateinit var credentialsService: ResearcherCredentialsService
+    private lateinit var credentialsService: CredentialsService
 
     @MockK(relaxed = true)
     private lateinit var presenter: CreateSearchSessionPresenter
 
     private lateinit var sut: CreateSearchSessionServiceImpl
     private lateinit var testDataFactory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
 
     @BeforeEach
@@ -63,11 +65,11 @@ class CreateSearchSessionServiceImplTest {
             credentialsService
         )
         testDataFactory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             systematicStudyRepository,
-            testDataFactory.researcherId,
+            testDataFactory.userId,
             testDataFactory.systematicStudyId,
         )
     }
@@ -126,7 +128,7 @@ class CreateSearchSessionServiceImplTest {
             val request = testDataFactory.createRequestModel()
             val response = testDataFactory.createResponseModel()
 
-            preconditionCheckerMocking.makeResearcherNotACollaborator()
+            preconditionCheckerMocking.makeResearcherUnauthorized()
             every {
                 searchSessionRepository.existsBySearchSource(systematicStudyUuid, request.source)
             } returns false

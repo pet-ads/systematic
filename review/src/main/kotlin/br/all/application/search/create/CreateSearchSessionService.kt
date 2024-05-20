@@ -6,7 +6,7 @@ interface CreateSearchSessionService {
     fun createSession(presenter: CreateSearchSessionPresenter, request: RequestModel, file: String)
 
     data class RequestModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val source: String,
         val searchString: String,
@@ -14,7 +14,7 @@ interface CreateSearchSessionService {
     )
 
     data class ResponseModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val sessionId: UUID,
     )
