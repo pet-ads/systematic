@@ -17,7 +17,7 @@ class RestfulFindAllSystematicStudiesPresenter: FindAllSystematicStudyPresenter 
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(
-            response.researcherId,
+            response.userId,
             response.systematicStudies.size,
             response.systematicStudies,
             response.ownerId,
