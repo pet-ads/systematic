@@ -8,7 +8,7 @@ interface UpdateProtocolService {
     fun update(presenter: UpdateProtocolPresenter, request: RequestModel)
 
     data class RequestModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
 
         val goal: String? = null,
@@ -34,7 +34,7 @@ interface UpdateProtocolService {
     )
 
     data class ResponseModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
     )
 }
