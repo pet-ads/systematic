@@ -12,7 +12,7 @@ class TestDataFactory {
         username = faker.name.firstName(),
         password = faker.pearlJam.songs(),
         email = faker.internet.email(),
-        country = faker.address.country(),
+        country = faker.address.countryCode(),
         affiliation = faker.lorem.words()
     )
 
