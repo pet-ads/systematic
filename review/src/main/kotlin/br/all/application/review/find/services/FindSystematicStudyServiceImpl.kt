@@ -4,6 +4,7 @@ import br.all.application.review.find.presenter.FindSystematicStudyPresenter
 import br.all.application.review.find.services.FindSystematicStudyService.RequestModel
 import br.all.application.review.find.services.FindSystematicStudyService.ResponseModel
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfUnauthorized
 import br.all.application.user.CredentialsService
 
@@ -18,8 +19,14 @@ class FindSystematicStudyServiceImpl(
         presenter.prepareIfUnauthorized(user)
         if (presenter.isDone()) return
 
-        repository.findById(request.systematicStudy)?.let {
-            presenter.prepareSuccessView(ResponseModel(userId, request.systematicStudy, it))
+        val systematicStudy = repository.findById(request.systematicStudy)
+
+        if (systematicStudy === null) {
+            val message = "There is no systematic study of id ${request.systematicStudy}."
+            presenter.prepareFailView(EntityNotFoundException(message))
+            return
         }
+
+        presenter.prepareSuccessView(ResponseModel(userId, request.systematicStudy, systematicStudy))
     }
 }
