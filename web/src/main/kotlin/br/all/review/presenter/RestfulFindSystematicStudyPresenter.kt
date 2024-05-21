@@ -5,7 +5,7 @@ import br.all.application.review.find.services.FindSystematicStudyService.Respon
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.review.controller.SystematicStudyController
 import br.all.review.requests.PostRequest
-import br.all.review.controller.SystematicStudyController.PutRequest
+import br.all.review.requests.PutRequest
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
@@ -26,12 +26,12 @@ class RestfulFindSystematicStudyPresenter : FindSystematicStudyPresenter {
         }.withSelfRel()
 
         restfulResponse.add(
-            self, postSystematicStudy(response.researcherId), updateSystematicStudy(response.systematicStudyId)
+            self, postSystematicStudy(), updateSystematicStudy(response.systematicStudyId)
         )
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
-    private fun postSystematicStudy(researcherId: UUID) = linkTo<SystematicStudyController> {
+    private fun postSystematicStudy() = linkTo<SystematicStudyController> {
         postSystematicStudy(PostRequest("title", "description", setOf(UUID.randomUUID())))
     }.withSelfRel()
 

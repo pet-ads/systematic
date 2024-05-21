@@ -3,7 +3,7 @@ package br.all.review.presenter
 import br.all.application.review.create.CreateSystematicStudyPresenter
 import br.all.application.review.create.CreateSystematicStudyService.ResponseModel
 import br.all.review.controller.SystematicStudyController
-import br.all.review.controller.SystematicStudyController.PutRequest
+import br.all.review.requests.PutRequest
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
@@ -18,7 +18,7 @@ class RestfulCreateSystematicStudyPresenter: CreateSystematicStudyPresenter {
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
-        val viewModel = ViewModel(response.researcherId, response.systematicStudyId)
+        val viewModel = ViewModel(response.userId, response.systematicStudyId)
 
         val selfRef = linkSelfRef(response)
         val allStudies = linkForAllStudies(response)
@@ -39,7 +39,7 @@ class RestfulCreateSystematicStudyPresenter: CreateSystematicStudyPresenter {
 
     private fun linkForAllStudiesByOwner(response: ResponseModel) =
         linkTo<SystematicStudyController> {
-            findAllSystematicStudiesByOwner(response.researcherId)
+            findAllSystematicStudiesByOwner(response.userId)
         }.withRel("allStudiesByOwner")
 
     private fun linkForAllStudies(response: ResponseModel) =
@@ -49,7 +49,7 @@ class RestfulCreateSystematicStudyPresenter: CreateSystematicStudyPresenter {
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<SystematicStudyController> {
-            findSystematicStudy(response.researcherId)
+            findSystematicStudy(response.userId)
         }.withSelfRel()
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }

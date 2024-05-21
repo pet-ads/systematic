@@ -7,14 +7,14 @@ interface UpdateSystematicStudyService {
     fun update(presenter: UpdateSystematicStudyPresenter, request: RequestModel)
 
     data class RequestModel(
-        val researcher: UUID,
+        val userId: UUID,
         val systematicStudy: UUID,
         val title: String?,
         val description: String?,
     )
 
     data class ResponseModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudy: UUID,
     )
 }

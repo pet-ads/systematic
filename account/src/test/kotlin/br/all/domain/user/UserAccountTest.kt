@@ -70,7 +70,7 @@ class UserAccountTest{
         id: UUID = UUID.randomUUID(),
         createdAt: LocalDateTime = LocalDateTime.now(),
         email: Email = Email(faker.internet.email()),
-        country: Text = Text(faker.address.country()),
+        country: Text = Text(faker.address.countryCode()),
         affiliation: String = faker.lorem.words(),
         username: Username = Username(faker.name.firstName()),
         password: String = faker.pearlJam.songs(),

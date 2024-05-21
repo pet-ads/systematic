@@ -15,7 +15,7 @@ class RestfulUpdateSystematicStudyPresenter: UpdateSystematicStudyPresenter {
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
-        val restfulResponse = ViewModel(response.researcherId, response.systematicStudy)
+        val restfulResponse = ViewModel(response.userId, response.systematicStudy)
 
         val self = linkTo<SystematicStudyController> {
             findSystematicStudy(response.systematicStudy)

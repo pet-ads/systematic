@@ -13,7 +13,7 @@ interface CreateSystematicStudyService {
     )
 
     data class ResponseModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
     )
 }

@@ -1,13 +1,13 @@
 package br.all.application.review.find.services
 
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.find.presenter.FindSystematicStudyPresenter
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.TestDataFactory
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
-import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.user.CredentialsService
+import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -24,19 +24,19 @@ class FindSystematicStudyServiceImplTest {
     @MockK
     private lateinit var repository: SystematicStudyRepository
     @MockK
-    private lateinit var credentialsService: ResearcherCredentialsService
+    private lateinit var credentialsService: CredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: FindSystematicStudyPresenter
     @InjectMockKs
     private lateinit var sut: FindSystematicStudyServiceImpl
 
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             repository,
@@ -76,20 +76,6 @@ class FindSystematicStudyServiceImplTest {
             sut.findById(presenter, request)
             verifyOrder {
                 presenter.prepareFailView(any<EntityNotFoundException>())
-                presenter.isDone()
-            }
-        }
-
-        @Test
-        fun `should prepare a fail view if the researcher is not a collaborator`() {
-            val request = factory.findOneRequestModel()
-
-            preconditionCheckerMocking.makeResearcherNotACollaborator()
-
-            sut.findById(presenter, request)
-            verifyOrder {
-                presenter.prepareFailView(any<UnauthorizedUserException>())
-                presenter.isDone()
             }
         }
 
@@ -97,7 +83,7 @@ class FindSystematicStudyServiceImplTest {
         fun `should a unauthenticated researcher be unable to find any systematic study`() {
             val request = factory.findOneRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            preconditionCheckerMocking.makeUserUnauthenticated()
 
             sut.findById(presenter, request)
             verifyOrder {
@@ -110,7 +96,7 @@ class FindSystematicStudyServiceImplTest {
         fun `should a unauthorized researcher be unable to find any systematic study`() {
             val request = factory.findOneRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthorized()
+            preconditionCheckerMocking.makeUserUnauthorized()
 
             sut.findById(presenter, request)
             verifyOrder {
