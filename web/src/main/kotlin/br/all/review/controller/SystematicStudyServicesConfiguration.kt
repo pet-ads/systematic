@@ -2,7 +2,6 @@ package br.all.review.controller
 
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.user.CredentialsService
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.create.CreateSystematicStudyServiceImpl
 import br.all.application.review.find.services.FindAllSystematicStudiesServiceImpl
 import br.all.application.review.find.services.FindSystematicStudyServiceImpl
@@ -30,18 +29,18 @@ class SystematicStudyServicesConfiguration {
     @Bean
     fun findOneSystematicStudyService(
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService,
+        credentialsService: CredentialsService,
     ) = FindSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
 
     @Bean
     fun findAllSystematicStudiesService(
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService,
+        credentialsService: CredentialsService,
     ) = FindAllSystematicStudiesServiceImpl(systematicStudyRepository, credentialsService)
 
     @Bean
     fun updateSystematicStudyService(
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService,
+        credentialsService: CredentialsService,
     ) = UpdateSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
 }
