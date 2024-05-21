@@ -1,6 +1,5 @@
 package br.all.application.search.find
 
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.find.presenter.FindAllSearchSessionsBySourcePresenter
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
@@ -10,7 +9,6 @@ import br.all.application.search.util.TestDataFactory
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.user.CredentialsService
-import br.all.application.util.PreconditionCheckerMocking
 import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -114,7 +112,7 @@ class FindAllSearchSessionsBySourceServiceImplTest {
         }
         @Test
         fun `should prepare fail view when the researcher is unauthenticated`() {
-            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            preconditionCheckerMocking.makeUserUnauthenticated()
 
             sut.findAllSessionsBySource(presenter, factory.findAllBySourceRequestModel())
             verify {
@@ -125,7 +123,7 @@ class FindAllSearchSessionsBySourceServiceImplTest {
         @Test
         fun `should prepare fail view when the researcher is unauthorized`() {
 
-            preconditionCheckerMocking.makeResearcherUnauthorized()
+            preconditionCheckerMocking.makeUserUnauthorized()
 
             sut.findAllSessionsBySource(presenter, factory.findAllBySourceRequestModel())
             verify {

@@ -1,6 +1,5 @@
 package br.all.application.search.update
 
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.repository.SearchSessionRepository
@@ -9,7 +8,6 @@ import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.user.CredentialsService
-import br.all.application.util.PreconditionCheckerMocking
 import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
@@ -177,7 +175,7 @@ class UpdateSearchSessionServiceImplTest {
         fun `should the researcher be unauthorized if they are not a collaborator`() {
             val request = factory.updateRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthorized()
+            preconditionCheckerMocking.makeUserUnauthorized()
             sut.updateSession(presenter, request)
 
             verifyOrder {
@@ -190,7 +188,7 @@ class UpdateSearchSessionServiceImplTest {
         fun `should prepare fail view if the researcher is unauthenticated`() {
             val request = factory.updateRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            preconditionCheckerMocking.makeUserUnauthenticated()
             sut.updateSession(presenter, request)
 
             verifyOrder {
@@ -203,7 +201,7 @@ class UpdateSearchSessionServiceImplTest {
         fun `should prepare fail view if the researcher is unauthorized`() {
             val request = factory.updateRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthorized()
+            preconditionCheckerMocking.makeUserUnauthorized()
             sut.updateSession(presenter, request)
 
             verifyOrder {
