@@ -224,6 +224,7 @@ class ExtractionQuestionControllerTest(
                 post(postUrl() + "/textual")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
             ).andExpect(status().isBadRequest)
         }
 
@@ -234,6 +235,7 @@ class ExtractionQuestionControllerTest(
                 post(postUrl() + "/pick-list")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
             ).andExpect(status().isBadRequest)
         }
 
@@ -244,6 +246,7 @@ class ExtractionQuestionControllerTest(
                 post(postUrl() + "/labeled-scale")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
             ).andExpect(status().isBadRequest)
         }
 
@@ -254,6 +257,7 @@ class ExtractionQuestionControllerTest(
                 post(postUrl() + "/number-scale")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
             ).andExpect(status().isBadRequest)
         }
     }
@@ -264,7 +268,10 @@ class ExtractionQuestionControllerTest(
     inner class WhenNotAbleToFindQuestionSuccessfully {
         @Test
         fun `should return 404 if don't find the question`() {
-            mockMvc.perform(get(getUrl(UUID.randomUUID().toString())).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(getUrl(UUID.randomUUID().toString()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
                 .andExpect(status().isNotFound)
         }
 
