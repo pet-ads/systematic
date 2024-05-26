@@ -32,6 +32,7 @@ class RiskOfBiasQuestionControllerTest(
     private lateinit var researcherId: UUID
     private lateinit var questionId: UUID
     private lateinit var user: ApplicationUser
+    private lateinit var unauthorizedUser: ApplicationUser
 
     @BeforeEach
     fun setUp() {
@@ -41,6 +42,7 @@ class RiskOfBiasQuestionControllerTest(
         questionId = factory.questionId
         researcherId = factory.researcherId
         user = testHelperService.createApplicationUser()
+        unauthorizedUser = testHelperService.createUnauthorizedApplicationUser()
         systematicStudyRepository.deleteAll()
         systematicStudyRepository.save(
             br.all.review.shared.TestDataFactory().createSystematicStudyDocument(
@@ -54,13 +56,19 @@ class RiskOfBiasQuestionControllerTest(
     fun teardown() {
         repository.deleteAll()
         testHelperService.deleteApplicationUser(user.id)
+        testHelperService.deleteApplicationUser(unauthorizedUser.id)
     }
 
 
     fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/protocol/rob-question"
 
+    fun postNonExistentSystematicStudyUrl() = "/api/v1/systematic-study/${UUID.randomUUID()}/protocol/rob-question"
+
     fun getUrl(questionId: String = "") =
         "/api/v1/systematic-study/$systematicStudyId/protocol/rob-question${questionId}"
+
+    fun getNonExistentSystematicStudyUrl(questionId: String = "") =
+        "/api/v1/systematic-study/${UUID.randomUUID()}/protocol/rob-question${questionId}"
 
     @Nested
     @Tag("ValidClasses")
@@ -222,6 +230,7 @@ class RiskOfBiasQuestionControllerTest(
                 post(postUrl() + "/textual")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
             ).andExpect(status().isBadRequest)
         }
 
@@ -232,6 +241,7 @@ class RiskOfBiasQuestionControllerTest(
                 post(postUrl() + "/pick-list")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
             ).andExpect(status().isBadRequest)
         }
 
@@ -242,6 +252,7 @@ class RiskOfBiasQuestionControllerTest(
                 post(postUrl() + "/labeled-scale")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
             ).andExpect(status().isBadRequest)
         }
 
@@ -252,6 +263,7 @@ class RiskOfBiasQuestionControllerTest(
                 post(postUrl() + "/number-scale")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
             ).andExpect(status().isBadRequest)
         }
 
@@ -263,6 +275,7 @@ class RiskOfBiasQuestionControllerTest(
                 post(postUrl() + "/textual")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
             ).andExpect(status().isForbidden)
         }
 
@@ -271,9 +284,10 @@ class RiskOfBiasQuestionControllerTest(
             val json = factory.validCreateTextualRequest()
             val nonexistentId = UUID.randomUUID()
             mockMvc.perform(
-                post(postUrl() + "/textual")
+                post(postNonExistentSystematicStudyUrl() + "/textual")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
             ).andExpect(status().isNotFound)
         }
     }
@@ -285,7 +299,9 @@ class RiskOfBiasQuestionControllerTest(
         @Test
         fun `should return 404 if don't find the question`() {
             mockMvc.perform(
-                get(getUrl(UUID.randomUUID().toString())).contentType(MediaType.APPLICATION_JSON)
+                get(getUrl(UUID.randomUUID().toString()))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
                 .andExpect(status().isNotFound)
         }
@@ -298,10 +314,10 @@ class RiskOfBiasQuestionControllerTest(
             val questionIdUrl = "/${questionId}"
             mockMvc.perform(
                 get(
-                    getUrl(
+                    getNonExistentSystematicStudyUrl(
                         questionIdUrl,
                     )
-                ).contentType(MediaType.APPLICATION_JSON)
+                ).contentType(MediaType.APPLICATION_JSON).with(SecurityMockMvcRequestPostProcessors.user(user))
             )
                 .andExpect(status().isNotFound)
         }
@@ -319,6 +335,7 @@ class RiskOfBiasQuestionControllerTest(
                         questionIdUrl,
                     )
                 ).contentType(MediaType.APPLICATION_JSON)
+                    .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
             )
                 .andExpect(status().isForbidden)
         }
