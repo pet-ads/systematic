@@ -39,7 +39,6 @@ class StudyReviewControllerTest(
     private lateinit var user: ApplicationUser
 
     private lateinit var systematicStudyId: UUID
-//    private lateinit var researcherId: UUID
 
     fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/study-review"
     fun findUrl(studyId: String = "") =
@@ -114,6 +113,24 @@ class StudyReviewControllerTest(
             ).andExpect(status().isBadRequest)
         }
 
+        @Test
+        fun `should not create if user is unauthorized`(){
+            testHelperService.testForUnauthorizedUser(
+                post(postUrl()).content(factory.validPostRequest())
+            ) {
+                mockMvc.perform(it)
+            }
+        }
+
+        @Test
+        fun `should not create if user is unauthenticated`() {
+            testHelperService.testForUnauthenticatedUser(
+                post(postUrl())
+            ) {
+                mockMvc.perform(it)
+            }
+        }
+
     }
 
     @Nested
@@ -167,6 +184,28 @@ class StudyReviewControllerTest(
                 .andExpect(status().isNotFound)
         }
 
+        @Test
+        fun `should not update if user is unauthorized`(){
+            val studyId = 5L
+
+            testHelperService.testForUnauthorizedUser(
+                put(updateStudyUrl(studyId)).content(factory.validPutRequest(systematicStudyId, studyId))
+            ) {
+                mockMvc.perform(it)
+            }
+        }
+
+        @Test
+        fun `should not update if user is unauthenticated`(){
+            val studyId = 5L
+
+            testHelperService.testForUnauthenticatedUser(
+                put(updateStudyUrl(studyId))
+            ) {
+                mockMvc.perform(it)
+            }
+        }
+
     }
 
     @Nested
@@ -194,6 +233,30 @@ class StudyReviewControllerTest(
                 .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should not find if user is unauthorized`(){
+            val studyReview = factory.reviewDocument(systematicStudyId, idService.next())
+            repository.insert(studyReview)
+
+            testHelperService.testForUnauthorizedUser(
+                get(findUrl("/${studyReview.id.studyReviewId}"))
+            ) {
+                mockMvc.perform(it)
+            }
+        }
+
+        @Test
+        fun `should not find if user is unauthenticated`(){
+            val studyReview = factory.reviewDocument(systematicStudyId, idService.next())
+            repository.insert(studyReview)
+
+            testHelperService.testForUnauthenticatedUser(
+                get(findUrl("/${studyReview.id.studyReviewId}"))
+            ) {
+                mockMvc.perform(it)
+            }
         }
 
         @Test
@@ -381,6 +444,29 @@ class StudyReviewControllerTest(
             val updatedReview = repository.findById(studyReviewId).toNullable()
             assertEquals(studyReview, updatedReview)
         }
+
+        @Test
+        fun `should not update if user is unauthorized`() {
+            val studyId = idService.next()
+
+            testHelperService.testForUnauthorizedUser(
+                patch(updateStatusStatus("reading-priority", studyId.toString()))
+                    .content(factory.validStatusUpdatePatchRequest(studyId, "HIGH"))
+            ) {
+                mockMvc.perform(it)
+            }
+        }
+
+        @Test
+        fun `should not update if user is unauthenticated`() {
+            val studyId = idService.next()
+
+            testHelperService.testForUnauthenticatedUser(
+                patch(updateStatusStatus("reading-priority", studyId.toString()))
+            ) {
+                mockMvc.perform(it)
+            }
+        }
     }
 
     @Nested
@@ -433,6 +519,32 @@ class StudyReviewControllerTest(
                 .andExpect(status().isBadRequest)
         }
 
+        @Test
+        fun `should not update if user is unauthorized`(){
+            val studyId = idService.next()
+            val questionId = UUID.randomUUID()
+
+
+            testHelperService.testForUnauthorizedUser(
+                patch(answerRiskOfBiasQuestion(studyId))
+                    .content(factory.validAnswerRiskOfBiasPatchRequest(
+                        studyId, questionId, "TEXTUAL", "TEST"
+                    ))
+            ) {
+                mockMvc.perform(it)
+            }
+        }
+
+        @Test
+        fun `should not update if user is unauthenticated`(){
+            val studyId = idService.next()
+
+            testHelperService.testForUnauthenticatedUser(
+                patch(answerRiskOfBiasQuestion(studyId))
+            ) {
+                mockMvc.perform(it)
+            }
+        }
     }
 
     @Nested
@@ -492,6 +604,30 @@ class StudyReviewControllerTest(
             mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
             ).andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should not update if user is unauthorized`(){
+            val studyToUpdateId = idService.next()
+            val studyToDuplicateId = idService.next()
+
+            testHelperService.testForUnauthorizedUser(
+                patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
+            ) {
+                mockMvc.perform(it)
+            }
+        }
+
+        @Test
+        fun `should not update if user is unauthenticated`(){
+            val studyToUpdateId = idService.next()
+            val studyToDuplicateId = idService.next()
+
+            testHelperService.testForUnauthenticatedUser(
+                patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
+            ) {
+                mockMvc.perform(it)
+            }
         }
     }
 }
