@@ -1,4 +1,5 @@
 
+import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.CreateSearchSessionServiceImpl
 import br.all.application.search.create.CreateSearchSessionPresenter
@@ -31,6 +32,9 @@ class CreateSearchSessionServiceImplTest {
     @MockK(relaxUnitFun = true)
     private lateinit var systematicStudyRepository: SystematicStudyRepository
 
+    @MockK(relaxUnitFun = true)
+    private lateinit var protocolRepository: ProtocolRepository
+
     @MockK
     private lateinit var uuidGeneratorService: UuidGeneratorService
 
@@ -56,6 +60,7 @@ class CreateSearchSessionServiceImplTest {
         sut = CreateSearchSessionServiceImpl(
             searchSessionRepository,
             systematicStudyRepository,
+            protocolRepository,
             uuidGeneratorService,
             bibtexConverterService,
             studyReviewRepository,
