@@ -269,13 +269,21 @@ class RiskOfBiasQuestionControllerTest(
 
         @Test
         fun `should a researcher who is not a collaborator be unauthorized and return 403`() {
-            val json = factory.validCreateTextualRequest()
-            mockMvc.perform(
+            testHelperService.testForUnauthorizedUser(
                 post(postUrl() + "/textual")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(json)
-                    .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
-            ).andExpect(status().isForbidden)
+                    .content(factory.validCreateTextualRequest())
+            ) {
+                mockMvc.perform(it)
+            }
+        }
+
+        @Test
+        fun `should not allow unauthenticated user to create a question`(){
+            testHelperService.testForUnauthenticatedUser(
+                post(postUrl() + "/textual")
+            ) {
+                mockMvc.perform(it)
+            }
         }
 
         @Test
@@ -321,19 +329,18 @@ class RiskOfBiasQuestionControllerTest(
 
         @Test
         fun `should a researcher who is not a collaborator be unauthorized and return 403`() {
-            val question = factory.validCreateTextualQuestionDocument(questionId, systematicStudyId)
-            repository.insert(question)
-            val questionIdUrl = "/${questionId}"
+            testHelperService.testForUnauthorizedUser(get(getUrl())) {
+                mockMvc.perform(it)
+            }
+        }
 
-            mockMvc.perform(
-                get(
-                    getUrl(
-                        questionIdUrl,
-                    )
-                ).contentType(MediaType.APPLICATION_JSON)
-                    .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
-            )
-                .andExpect(status().isForbidden)
+        @Test
+        fun `should not find question when user is unauthenticated`(){
+            testHelperService.testForUnauthenticatedUser(
+                get(getUrl())
+            ) {
+                mockMvc.perform(it)
+            }
         }
     }
 }

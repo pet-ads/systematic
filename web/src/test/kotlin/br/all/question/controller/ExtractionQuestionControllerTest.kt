@@ -260,6 +260,26 @@ class ExtractionQuestionControllerTest(
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
             ).andExpect(status().isBadRequest)
         }
+
+        @Test
+        fun `should not create question when user is not authenticated`() {
+            testHelperService.testForUnauthenticatedUser(
+                post(postUrl() + "/textual")
+                    .content(factory.validCreateTextualRequest())
+            ) {
+                mockMvc.perform(it)
+            }
+        }
+
+        @Test
+        fun `should not create question when user is unauthorized`() {
+            testHelperService.testForUnauthorizedUser(
+                post(postUrl() + "/textual")
+                    .content(factory.validCreateTextualRequest())
+            ) {
+                mockMvc.perform(it)
+            }
+        }
     }
 
     @Nested
@@ -273,6 +293,24 @@ class ExtractionQuestionControllerTest(
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
                 .andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should not find question when user is unauthenticated`(){
+            testHelperService.testForUnauthenticatedUser(
+                get(getUrl())
+            ) {
+                mockMvc.perform(it)
+            }
+        }
+
+        @Test
+        fun `should not find question when user is unauthorized`(){
+            testHelperService.testForUnauthorizedUser(
+                get(getUrl())
+            ) {
+                mockMvc.perform(it)
+            }
         }
 
     }
