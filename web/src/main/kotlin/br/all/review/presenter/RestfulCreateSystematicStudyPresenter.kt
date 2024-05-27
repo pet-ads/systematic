@@ -21,7 +21,7 @@ class RestfulCreateSystematicStudyPresenter: CreateSystematicStudyPresenter {
         val viewModel = ViewModel(response.userId, response.systematicStudyId)
 
         val selfRef = linkSelfRef(response)
-        val allStudies = linkForAllStudies(response)
+        val allStudies = linkForAllStudies()
         val allStudiesByOwner = linkForAllStudiesByOwner(response)
         val updateStudy = linkForUpdatingTheStudy(response)
 
@@ -42,7 +42,7 @@ class RestfulCreateSystematicStudyPresenter: CreateSystematicStudyPresenter {
             findAllSystematicStudiesByOwner(response.userId)
         }.withRel("allStudiesByOwner")
 
-    private fun linkForAllStudies(response: ResponseModel) =
+    private fun linkForAllStudies() =
         linkTo<SystematicStudyController> {
             findAllSystematicStudies()
         }.withRel("allStudies")
