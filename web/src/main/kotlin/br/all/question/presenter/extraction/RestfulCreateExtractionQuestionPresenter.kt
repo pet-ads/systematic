@@ -17,7 +17,7 @@ class RestfulCreateExtractionQuestionPresenter : CreateQuestionPresenter {
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
-        val viewModel = ViewModel(response.researcherId, response.systematicStudyId, response.questionId)
+        val viewModel = ViewModel(response.userId, response.systematicStudyId, response.questionId)
 
         val selfRef = linkSelfRef(response)
         val pickList = linkCreatePickList(response)
@@ -31,13 +31,12 @@ class RestfulCreateExtractionQuestionPresenter : CreateQuestionPresenter {
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<ExtractionQuestionController> {
-            findQuestion(response.researcherId, response.systematicStudyId, response.questionId)
+            findQuestion(response.systematicStudyId, response.questionId)
         }.withSelfRel()
 
     private fun linkCreatePickList(response: ResponseModel) =
         linkTo<ExtractionQuestionController> {
             createPickListQuestion(
-                response.researcherId,
                 response.systematicStudyId,
                 request = ExtractionQuestionController.PickListRequest(
                     "code", "description", listOf("option1")
@@ -48,7 +47,6 @@ class RestfulCreateExtractionQuestionPresenter : CreateQuestionPresenter {
     private fun linkCreateLabeledScale(response: ResponseModel) =
         linkTo<ExtractionQuestionController> {
             createLabeledScaleQuestion(
-                response.researcherId,
                 response.systematicStudyId,
                 request = ExtractionQuestionController.LabeledScaleRequest(
                     "code", "description", mapOf("scale1" to 1)
@@ -59,7 +57,6 @@ class RestfulCreateExtractionQuestionPresenter : CreateQuestionPresenter {
     private fun linkCreateNumberScale(response: ResponseModel) =
         linkTo<ExtractionQuestionController> {
             createNumberScaleQuestion(
-                response.researcherId,
                 response.systematicStudyId,
                 request = ExtractionQuestionController.NumberScaleRequest(
                     "code", "description", 0, 0
@@ -68,7 +65,7 @@ class RestfulCreateExtractionQuestionPresenter : CreateQuestionPresenter {
         }.withRel("numberScale")
     private fun linkFindAll(response: ResponseModel) =
         linkTo<ExtractionQuestionController> {
-            findAllBySystematicStudyId(response.researcherId, response.systematicStudyId)
+            findAllBySystematicStudyId(response.systematicStudyId)
         }.withRel("findAll")
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
@@ -76,7 +73,7 @@ class RestfulCreateExtractionQuestionPresenter : CreateQuestionPresenter {
     override fun isDone() = responseEntity != null
 
     private data class ViewModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val questionId: UUID
     ) : RepresentationModel<ViewModel>()

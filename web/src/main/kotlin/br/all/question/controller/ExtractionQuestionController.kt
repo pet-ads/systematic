@@ -9,6 +9,7 @@ import br.all.application.question.findAll.FindAllBySystematicStudyIdService.Req
 import br.all.question.presenter.extraction.RestfulFindExtractionQuestionPresenter
 import br.all.question.presenter.extraction.RestfulCreateExtractionQuestionPresenter
 import br.all.question.presenter.extraction.RestfulFindAllExtractionQuestionPresenter
+import br.all.security.service.AuthenticationInfoService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -21,8 +22,9 @@ import java.util.*
 import br.all.application.question.create.CreateQuestionService.RequestModel as CreateRequest
 
 @RestController
-@RequestMapping("/api/v1/researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question")
+@RequestMapping("/api/v1/systematic-study/{systematicStudyId}/protocol/extraction-question")
 class ExtractionQuestionController(
+    val authenticationInfoService: AuthenticationInfoService,
     val createQuestionService: CreateQuestionService,
     val findOneService: FindQuestionService,
     val findAllService: FindAllBySystematicStudyIdService,
@@ -50,10 +52,10 @@ class ExtractionQuestionController(
         ]
     )
     fun createTextualQuestion(
-        @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: TextualRequest,
+        @PathVariable systematicStudyId: UUID, @RequestBody request: TextualRequest,
     ): ResponseEntity<*> = createQuestion(
         RequestModel(
-            researcherId,
+            authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
             TEXTUAL,
             request.code,
@@ -73,10 +75,10 @@ class ExtractionQuestionController(
         ]
     )
     fun createPickListQuestion(
-        @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: PickListRequest,
+        @PathVariable systematicStudyId: UUID, @RequestBody request: PickListRequest,
     ): ResponseEntity<*> = createQuestion(
         RequestModel(
-            researcherId,
+            authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
             PICK_LIST,
             request.code,
@@ -100,12 +102,11 @@ class ExtractionQuestionController(
         ]
     )
     fun createLabeledScaleQuestion(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @RequestBody request: LabeledScaleRequest,
     ): ResponseEntity<*> = createQuestion(
         RequestModel(
-            researcherId,
+            authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
             LABELED_SCALE,
             request.code,
@@ -126,12 +127,11 @@ class ExtractionQuestionController(
         ]
     )
     fun createNumberScaleQuestion(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @RequestBody request: NumberScaleRequest,
     ): ResponseEntity<*> = createQuestion(
         RequestModel(
-            researcherId,
+            authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
             NUMBERED_SCALE,
             request.code,
@@ -161,12 +161,11 @@ class ExtractionQuestionController(
         ]
     )
     fun findQuestion(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @PathVariable questionId: UUID,
     ): ResponseEntity<*> {
         val presenter = RestfulFindExtractionQuestionPresenter()
-        val request = FindQuestionService.RequestModel(researcherId, systematicStudyId, questionId)
+        val request = FindQuestionService.RequestModel(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId, questionId)
         findOneService.findOne(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -186,11 +185,10 @@ class ExtractionQuestionController(
         ]
     )
     fun findAllBySystematicStudyId(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID
     ): ResponseEntity<*> {
         val presenter = RestfulFindAllExtractionQuestionPresenter()
-        val request = FindAllRequest(researcherId, systematicStudyId)
+        val request = FindAllRequest(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId)
         findAllService.findAllBySystematicStudyId(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
