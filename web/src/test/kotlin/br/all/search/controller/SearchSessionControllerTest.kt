@@ -45,8 +45,7 @@ class SearchSessionControllerTest(
     fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/search-session"
     fun findUrl(sessionId: String = "") =
         "/api/v1/systematic-study/$systematicStudyId/search-session${sessionId}"
-    fun invalidFindUrl(sessionId: String = "") =
-        "/api/v1/systematic-study/$systematicStudyId/search-session${sessionId}"
+
     fun findBySourceUrl(source: String = "") =
         "/api/v1/systematic-study/$systematicStudyId/search-session-source/${source}"
 
@@ -115,13 +114,25 @@ class SearchSessionControllerTest(
         @Test
         fun `should return 403 when user is not authorized`() {
 
-            mockMvc.perform(
-                multipart(postUrl()).file(factory.bibfile())
+            testHelperService.testForUnauthorizedUser(
+                multipart(postUrl())
+                    .file(factory.bibfile())
                     .param("data", factory.validPostRequest())
-                    .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
-            )
-                .andExpect(status().isForbidden)
-                .andReturn()
+            ) {
+                mockMvc.perform(it)
+            }
+        }
+
+        @Test
+        fun `should return 403 when user is not authenticated`() {
+
+            testHelperService.testForUnauthenticatedUser(
+                multipart(postUrl())
+                    .file(factory.bibfile())
+                    .param("data", factory.validPostRequest())
+            ) {
+                mockMvc.perform(it)
+            }
         }
     }
 
@@ -150,10 +161,26 @@ class SearchSessionControllerTest(
             repository.insert(searchSession)
 
             val sessionId = "/${searchSession.id}"
-            mockMvc.perform(get(invalidFindUrl(sessionId)).contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser)))
-                .andExpect(status().isForbidden)
-                .andReturn()
+            testHelperService.testForUnauthorizedUser(
+                get(findUrl(sessionId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
+            ) {
+                mockMvc.perform(it)
+            }
+        }
+
+        @Test
+        fun `should return 403 when user is not authenticated`() {
+
+            val searchSession = factory.searchSessionDocument(factory.sessionId, systematicStudyId)
+            repository.insert(searchSession)
+
+            val sessionId = "/${searchSession.id}"
+            testHelperService.testForUnauthenticatedUser(
+                get(findUrl(sessionId))
+            ) {
+                mockMvc.perform(it)
+            }
         }
 
         @Test
@@ -293,14 +320,16 @@ class SearchSessionControllerTest(
 
         @Test
         fun `should return 403 if the user is unauthorized`(){
-            val unauthorizedId = UUID.randomUUID()
-
             val request = factory.createValidPutRequest(
                 "New Search String", "New Additional Info", "New SearchSource"
             )
-            mockMvc.perform(put(putUrl(unauthorizedId)).contentType(MediaType.APPLICATION_JSON).content(request)
-                .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser)))
-                .andExpect(status().isForbidden)
+            testHelperService.testForUnauthorizedUser(
+                put(putUrl())
+                    .content(request)
+                    .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
+            ) {
+                mockMvc.perform(it)
+            }
         }
     }
 }
