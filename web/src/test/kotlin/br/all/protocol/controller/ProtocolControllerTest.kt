@@ -114,17 +114,16 @@ class ProtocolControllerTest(
 
             @Test
             fun `should not authorize researchers that are not a collaborator to find protocols`() {
-                val unauthorizedUser = testHelperService.createUnauthorizedApplicationUser()
+                testHelperService.testForUnauthorizedUser(get(getUrl())) {
+                    perform(it)
+                }
+            }
 
-                mockMvc.perform(
-                    get(getUrl())
-                        .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
-                        .contentType(MediaType.APPLICATION_JSON)
-                ).andExpect(status().isForbidden)
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.detail").exists())
-
-                testHelperService.deleteApplicationUser(unauthorizedUser.id)
+            @Test
+            fun `should not allow researchers that are not unauthenticated to find protocols`() {
+                testHelperService.testForUnauthenticatedUser(get(getUrl())) {
+                    perform(it)
+                }
             }
         }
     }
@@ -175,17 +174,16 @@ class ProtocolControllerTest(
             }
             @Test
             fun `should not allow researchers that are not collaborators to update the protocol`() {
-                val unauthorizedUser = testHelperService.createUnauthorizedApplicationUser()
-                val json = factory.validPutRequest()
+                testHelperService.testForUnauthorizedUser(put(putUrl()).content(factory.validPutRequest())) {
+                    perform(it)
+                }
+            }
 
-                mockMvc.perform(
-                    put(putUrl())
-                        .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                ).andExpect(status().isForbidden)
-
-                testHelperService.deleteApplicationUser(unauthorizedUser.id)
+            @Test
+            fun `should not allow researchers that are not unauthenticated to update`() {
+                testHelperService.testForUnauthenticatedUser(put(putUrl()).content(factory.validPutRequest())) {
+                    perform(it)
+                }
             }
         }
     }
