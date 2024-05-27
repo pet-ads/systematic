@@ -84,6 +84,20 @@ class SystematicStudyControllerTest(
                 .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isBadRequest)
         }
+
+        @Test
+        fun `should not create study when user is unauthorized`(){
+            testHelperService.testForUnauthorizedUser(post(postUrl()).content(factory.createValidPostRequest())){
+                mockMvc.perform(it)
+            }
+        }
+
+        @Test
+        fun `should not create study when user is unauthenticated`(){
+            testHelperService.testForUnauthenticatedUser(post(postUrl()).content(factory.createValidPostRequest())){
+                mockMvc.perform(it)
+            }
+        }
     }
 
     @Nested
@@ -289,16 +303,16 @@ class SystematicStudyControllerTest(
 
             @Test
             fun `should a researcher is not a collaborator be unauthorized and return 403`() {
-                val unauthorizedUser = testHelperService.createUnauthorizedApplicationUser()
+                testHelperService.testForUnauthenticatedUser(get(getOneUrl())){
+                    mockMvc.perform(it)
+                }
+            }
 
-                repository.save(factory.createSystematicStudyDocument(owner = unauthorizedUser.id))
-                mockMvc.perform(get(getOneUrl())
-                    .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
-                    .contentType(MediaType.APPLICATION_JSON)
-                )
-                    .andExpect(status().isForbidden)
-
-                testHelperService.deleteApplicationUser(unauthorizedUser.id)
+            @Test
+            fun `should a researcher is not a collaborator be unauthenticated and return 403`() {
+                testHelperService.testForUnauthorizedUser(get(getOneUrl())){
+                    mockMvc.perform(it)
+                }
             }
 
             @Test
@@ -426,6 +440,24 @@ class SystematicStudyControllerTest(
                     .contentType(MediaType.APPLICATION_JSON).content(request)
                 )
                     .andExpect(status().isNotFound)
+            }
+
+            @Test
+            fun `should not update if user is unauthorized`(){
+                testHelperService.testForUnauthorizedUser(put(
+                    putUrl()).content(factory.createValidPutRequest("New title", "New description"))
+                ){
+                    mockMvc.perform(it)
+                }
+            }
+
+            @Test
+            fun `should not update if user is unauthenticated`(){
+                testHelperService.testForUnauthenticatedUser(put(
+                    putUrl()).content(factory.createValidPutRequest("New title", "New description"))
+                ){
+                    mockMvc.perform(it)
+                }
             }
         }
     }
