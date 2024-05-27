@@ -1,5 +1,6 @@
 package br.all.application.search
 
+import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
@@ -28,6 +29,7 @@ import br.all.domain.services.UuidGeneratorService
 class CreateSearchSessionServiceImpl(
     private val searchSessionRepository: SearchSessionRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
+    private val protocolRepository: ProtocolRepository,
     private val uuidGeneratorService: UuidGeneratorService,
     private val bibtexConverterService: BibtexConverterService,
     private val studyReviewRepository: StudyReviewRepository,
@@ -44,6 +46,16 @@ class CreateSearchSessionServiceImpl(
         presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
         if (presenter.isDone()) return
+
+        val source = request.source
+
+        val protocolDto = protocolRepository.findBySystematicStudyId(request.systematicStudyId)
+        val hasSource = protocolDto?.informationSources?.contains(source) ?: false
+
+        if (!hasSource) {
+            val message = "Protocol ID ${protocolDto?.id} does not contain $source as a search source"
+            presenter.prepareFailView(NoSuchElementException(message))
+        }
 
         val sessionId = SearchSessionID(uuidGeneratorService.next())
         val searchSession = SearchSession.fromRequestModel(sessionId, request)
