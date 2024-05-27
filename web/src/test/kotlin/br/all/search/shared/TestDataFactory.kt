@@ -1,10 +1,7 @@
-package br.all.search.controller
+package br.all.search.shared
 
-import br.all.application.search.create.CreateSearchSessionService
-import br.all.domain.model.protocol.SearchSource
 import br.all.domain.shared.utils.paragraph
 import br.all.infrastructure.search.SearchSessionDocument
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.serpro69.kfaker.Faker
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile

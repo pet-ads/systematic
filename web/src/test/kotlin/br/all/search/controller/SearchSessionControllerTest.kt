@@ -5,6 +5,7 @@ import br.all.infrastructure.search.MongoSearchSessionRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
+import br.all.search.shared.TestDataFactory
 import br.all.security.service.ApplicationUser
 import br.all.shared.TestHelperService
 import org.junit.jupiter.api.*
