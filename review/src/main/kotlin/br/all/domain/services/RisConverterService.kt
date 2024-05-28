@@ -78,5 +78,12 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         val studyTypeName = matchResult?.groupValues?.get(1)?.uppercase(Locale.getDefault()) ?: "UNKNOWN"
         return StudyType.valueOf(studyTypeName)
     }
-}
+
+    private fun parseKeywords(keywords: String?): String {
+        return keywords?.split(",")?.map { it.trim() }?.filter { it.isNotBlank() }?.joinToString(", ") ?: ""
+    }
+
+    private fun parseReferences(references: String?): Set<String> {
+        return references?.split(";")?.map { it.trim() }?.filter { it.isNotBlank() }?.toSet() ?: emptySet()
+    }
 }
