@@ -50,4 +50,25 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
 
         return Study(type, ("$primaryTitle $secondaryTitle").trim(), year, authors, abs, keywords, references, doi)
     }
+
+    private fun parseRisFields(ris: String): Map<String, String> {
+        val fieldMap = mutableMapOf<String, String>()
+        val lines = ris.trim().lines()
+        var currentKey: String? = null
+
+        for (line in lines) {
+            val trimmedLine = line.trim()
+            if (trimmedLine.contains(" - ")) {
+                val keyValuePair = trimmedLine.split(" - ", limit = 2)
+                if (keyValuePair.size == 2) {
+                    currentKey = keyValuePair[0].trim()
+                    val value = keyValuePair[1].trim()
+                    fieldMap[currentKey] = value
+                }
+            } else if (currentKey != null) {
+                fieldMap[currentKey] = "${fieldMap[currentKey]} $trimmedLine".trim()
+            }
+        }
+        return fieldMap
+    }
 }
