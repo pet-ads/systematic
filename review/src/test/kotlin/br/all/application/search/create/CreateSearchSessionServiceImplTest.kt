@@ -85,11 +85,10 @@ class CreateSearchSessionServiceImplTest {
             val systematicStudyId = SystematicStudyId(systematicStudyUuid)
             val request = testDataFactory.createRequestModel()
             val response = testDataFactory.createResponseModel()
+            val protocol = testDataFactory.generateProtocol()
 
             preconditionCheckerMocking.makeEverythingWork()
-            every {
-                searchSessionRepository.existsBySearchSource(systematicStudyUuid, request.source)
-            } returns false
+            every { protocolRepository.findBySystematicStudyId(systematicStudyUuid) } returns protocol
             every { uuidGeneratorService.next() } returns searchSessionId
             every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
 
