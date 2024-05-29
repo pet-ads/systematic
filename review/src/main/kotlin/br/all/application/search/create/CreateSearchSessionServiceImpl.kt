@@ -49,7 +49,7 @@ class CreateSearchSessionServiceImpl(
 
         val source = request.source
 
-        val protocolDto = protocolRepository.findBySystematicStudyId(request.systematicStudyId)
+        val protocolDto = protocolRepository.findById(request.systematicStudyId)
         val hasSource = protocolDto?.informationSources?.contains(source) ?: false
 
         if (!hasSource) {
