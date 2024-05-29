@@ -18,8 +18,4 @@ open class ProtocolRepositoryImpl(private val innerRepository: MongoProtocolRepo
         ?.toDto()
 
     override fun existsById(id: UUID) = innerRepository.existsById(id)
-
-    override fun findBySystematicStudyId(systematicStudy: UUID): ProtocolDto? {
-        return innerRepository.findBySystematicStudyId(systematicStudy).toDto()
-    }
 }
