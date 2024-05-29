@@ -100,7 +100,7 @@ class MongoSearchSessionRepositoryTest(
             sut.save(testDataFactory.searchSessionDocument(
                 id = UUID.randomUUID(), systematicStudyId = systematicStudyId, source = "WrongSource"))
 
-            Assertions.assertEquals(3, sut.findAllBySource(systematicStudyId, source).size)
+            Assertions.assertEquals(3, sut.findAllBySystematicStudyIdAndSource(systematicStudyId, source).size)
         }
     }
 
