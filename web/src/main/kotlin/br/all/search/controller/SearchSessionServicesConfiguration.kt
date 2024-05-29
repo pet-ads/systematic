@@ -1,5 +1,6 @@
 package br.all.search.controller
 
+import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.CreateSearchSessionServiceImpl
@@ -14,6 +15,7 @@ import br.all.application.user.CredentialsService
 import br.all.domain.services.BibtexConverterService
 import br.all.domain.services.IdGeneratorService
 import br.all.domain.services.UuidGeneratorService
+import br.all.infrastructure.protocol.MongoProtocolRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -27,6 +29,7 @@ class SearchSessionServicesConfiguration {
     fun createSearchSession(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
+        protocolRepository: ProtocolRepository,
         uuidGeneratorService: UuidGeneratorService,
         bibtexConverterService: BibtexConverterService,
         studyReviewRepository: StudyReviewRepository,
@@ -34,6 +37,7 @@ class SearchSessionServicesConfiguration {
     ) = CreateSearchSessionServiceImpl(
         searchSessionRepository,
         systematicStudyRepository,
+        protocolRepository,
         uuidGeneratorService,
         bibtexConverterService,
         studyReviewRepository,
