@@ -7,6 +7,4 @@ interface ProtocolRepository {
     fun findById(id: UUID): ProtocolDto?
 
     fun existsById(id: UUID): Boolean
-
-    fun findBySystematicStudyId(systematicStudy: UUID): ProtocolDto?
 }
