@@ -269,21 +269,16 @@ class RiskOfBiasQuestionControllerTest(
 
         @Test
         fun `should a researcher who is not a collaborator be unauthorized and return 403`() {
-            testHelperService.testForUnauthorizedUser(
+            testHelperService.testForUnauthorizedUser(mockMvc,
                 post(postUrl() + "/textual")
                     .content(factory.validCreateTextualRequest())
-            ) {
-                mockMvc.perform(it)
-            }
+            )
         }
 
         @Test
         fun `should not allow unauthenticated user to create a question`(){
-            testHelperService.testForUnauthenticatedUser(
-                post(postUrl() + "/textual")
-            ) {
-                mockMvc.perform(it)
-            }
+            testHelperService.testForUnauthenticatedUser(mockMvc, post(postUrl() + "/textual"),
+            )
         }
 
         @Test
@@ -329,18 +324,13 @@ class RiskOfBiasQuestionControllerTest(
 
         @Test
         fun `should a researcher who is not a collaborator be unauthorized and return 403`() {
-            testHelperService.testForUnauthorizedUser(get(getUrl())) {
-                mockMvc.perform(it)
-            }
+            testHelperService.testForUnauthorizedUser(mockMvc, get(getUrl()))
         }
 
         @Test
         fun `should not find question when user is unauthenticated`(){
-            testHelperService.testForUnauthenticatedUser(
-                get(getUrl())
-            ) {
-                mockMvc.perform(it)
-            }
+            testHelperService.testForUnauthenticatedUser(mockMvc, get(getUrl()),
+            )
         }
     }
 }

@@ -8,7 +8,6 @@ import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.stereotype.Service
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDateTime
@@ -17,7 +16,6 @@ import java.util.*
 @Service
 class TestHelperService(
     private val repository: UserAccountRepository,
-    private val mockMvc: MockMvc
 ) {
 
     private val faker = Faker()
@@ -64,24 +62,27 @@ class TestHelperService(
         return applicationUser
     }
 
-    fun testForUnauthorizedUser(requestBuilder: MockHttpServletRequestBuilder, action: MockMvcAction) {
+    fun testForUnauthorizedUser(mockMvc: MockMvc, requestBuilder: MockHttpServletRequestBuilder) {
         val unauthorizedUser = createUnauthorizedApplicationUser()
 
         val request = requestBuilder
             .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
             .contentType(MediaType.APPLICATION_JSON)
 
-        mockMvc.action(request)
+        mockMvc.perform(request)
             .andExpect(status().isForbidden)
 
         deleteApplicationUser(unauthorizedUser.id)
     }
 
-    fun testForUnauthenticatedUser(requestBuilder: MockHttpServletRequestBuilder, action: MockMvcAction) {
+    fun testForUnauthenticatedUser(
+        mockMvc: MockMvc,
+        requestBuilder: MockHttpServletRequestBuilder
+    ) {
         val request = requestBuilder
             .contentType(MediaType.APPLICATION_JSON)
 
-        mockMvc.action(request)
+        mockMvc.perform(request)
             .andExpect(status().isUnauthorized)
     }
 
@@ -89,5 +90,3 @@ class TestHelperService(
         repository.deleteById(id)
     }
 }
-
-typealias MockMvcAction = MockMvc.(MockHttpServletRequestBuilder) -> ResultActions

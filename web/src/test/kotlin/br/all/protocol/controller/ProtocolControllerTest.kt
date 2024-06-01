@@ -114,16 +114,13 @@ class ProtocolControllerTest(
 
             @Test
             fun `should not authorize researchers that are not a collaborator to find protocols`() {
-                testHelperService.testForUnauthorizedUser(get(getUrl())) {
-                    perform(it)
-                }
+                testHelperService.testForUnauthorizedUser(mockMvc, get(getUrl()))
             }
 
             @Test
             fun `should not allow researchers that are not unauthenticated to find protocols`() {
-                testHelperService.testForUnauthenticatedUser(get(getUrl())) {
-                    perform(it)
-                }
+                testHelperService.testForUnauthenticatedUser(mockMvc, get(getUrl()),
+                )
             }
         }
     }
@@ -174,16 +171,13 @@ class ProtocolControllerTest(
             }
             @Test
             fun `should not allow researchers that are not collaborators to update the protocol`() {
-                testHelperService.testForUnauthorizedUser(put(putUrl()).content(factory.validPutRequest())) {
-                    perform(it)
-                }
+                testHelperService.testForUnauthorizedUser(mockMvc, put(putUrl()).content(factory.validPutRequest()))
             }
 
             @Test
             fun `should not allow researchers that are not unauthenticated to update`() {
-                testHelperService.testForUnauthenticatedUser(put(putUrl()).content(factory.validPutRequest())) {
-                    perform(it)
-                }
+                testHelperService.testForUnauthenticatedUser(mockMvc, put(putUrl()).content(factory.validPutRequest()),
+                )
             }
         }
     }
