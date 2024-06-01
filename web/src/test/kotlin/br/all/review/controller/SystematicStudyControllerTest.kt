@@ -87,16 +87,16 @@ class SystematicStudyControllerTest(
 
         @Test
         fun `should not create study when user is unauthorized`(){
-            testHelperService.testForUnauthorizedUser(post(postUrl()).content(factory.createValidPostRequest())){
-                mockMvc.perform(it)
-            }
+            testHelperService.testForUnauthorizedUser(mockMvc,
+                post(postUrl()).content(factory.createValidPostRequest())
+            )
         }
 
         @Test
         fun `should not create study when user is unauthenticated`(){
-            testHelperService.testForUnauthenticatedUser(post(postUrl()).content(factory.createValidPostRequest())){
-                mockMvc.perform(it)
-            }
+            testHelperService.testForUnauthenticatedUser(mockMvc,
+                post(postUrl()).content(factory.createValidPostRequest()),
+            )
         }
     }
 
@@ -303,16 +303,13 @@ class SystematicStudyControllerTest(
 
             @Test
             fun `should a researcher is not a collaborator be unauthorized and return 403`() {
-                testHelperService.testForUnauthenticatedUser(get(getOneUrl())){
-                    mockMvc.perform(it)
-                }
+                testHelperService.testForUnauthenticatedUser(mockMvc, get(getOneUrl()),
+                )
             }
 
             @Test
             fun `should a researcher is not a collaborator be unauthenticated and return 403`() {
-                testHelperService.testForUnauthorizedUser(get(getOneUrl())){
-                    mockMvc.perform(it)
-                }
+                testHelperService.testForUnauthorizedUser(mockMvc, get(getOneUrl()))
             }
 
             @Test
@@ -444,20 +441,18 @@ class SystematicStudyControllerTest(
 
             @Test
             fun `should not update if user is unauthorized`(){
-                testHelperService.testForUnauthorizedUser(put(
-                    putUrl()).content(factory.createValidPutRequest("New title", "New description"))
-                ){
-                    mockMvc.perform(it)
-                }
+                testHelperService.testForUnauthorizedUser(mockMvc,
+                    put(
+                       putUrl()).content(factory.createValidPutRequest("New title", "New description"))
+                )
             }
 
             @Test
             fun `should not update if user is unauthenticated`(){
-                testHelperService.testForUnauthenticatedUser(put(
-                    putUrl()).content(factory.createValidPutRequest("New title", "New description"))
-                ){
-                    mockMvc.perform(it)
-                }
+                testHelperService.testForUnauthenticatedUser(mockMvc,
+                    put(
+                        putUrl()).content(factory.createValidPutRequest("New title", "New description")),
+                )
             }
         }
     }

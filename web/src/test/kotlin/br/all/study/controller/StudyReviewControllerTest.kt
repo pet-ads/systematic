@@ -116,19 +116,15 @@ class StudyReviewControllerTest(
         @Test
         fun `should not create if user is unauthorized`(){
             testHelperService.testForUnauthorizedUser(
+                mockMvc,
                 post(postUrl()).content(factory.validPostRequest())
-            ) {
-                mockMvc.perform(it)
-            }
+            )
         }
 
         @Test
         fun `should not create if user is unauthenticated`() {
-            testHelperService.testForUnauthenticatedUser(
-                post(postUrl())
-            ) {
-                mockMvc.perform(it)
-            }
+            testHelperService.testForUnauthenticatedUser(mockMvc, post(postUrl()),
+            )
         }
 
     }
@@ -188,22 +184,17 @@ class StudyReviewControllerTest(
         fun `should not update if user is unauthorized`(){
             val studyId = 5L
 
-            testHelperService.testForUnauthorizedUser(
+            testHelperService.testForUnauthorizedUser(mockMvc,
                 put(updateStudyUrl(studyId)).content(factory.validPutRequest(systematicStudyId, studyId))
-            ) {
-                mockMvc.perform(it)
-            }
+            )
         }
 
         @Test
         fun `should not update if user is unauthenticated`(){
             val studyId = 5L
 
-            testHelperService.testForUnauthenticatedUser(
-                put(updateStudyUrl(studyId))
-            ) {
-                mockMvc.perform(it)
-            }
+            testHelperService.testForUnauthenticatedUser(mockMvc, put(updateStudyUrl(studyId)),
+            )
         }
 
     }
@@ -240,11 +231,9 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, idService.next())
             repository.insert(studyReview)
 
-            testHelperService.testForUnauthorizedUser(
+            testHelperService.testForUnauthorizedUser(mockMvc,
                 get(findUrl("/${studyReview.id.studyReviewId}"))
-            ) {
-                mockMvc.perform(it)
-            }
+            )
         }
 
         @Test
@@ -252,11 +241,9 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, idService.next())
             repository.insert(studyReview)
 
-            testHelperService.testForUnauthenticatedUser(
-                get(findUrl("/${studyReview.id.studyReviewId}"))
-            ) {
-                mockMvc.perform(it)
-            }
+            testHelperService.testForUnauthenticatedUser(mockMvc,
+                get(findUrl("/${studyReview.id.studyReviewId}")),
+            )
         }
 
         @Test
@@ -449,23 +436,19 @@ class StudyReviewControllerTest(
         fun `should not update if user is unauthorized`() {
             val studyId = idService.next()
 
-            testHelperService.testForUnauthorizedUser(
+            testHelperService.testForUnauthorizedUser(mockMvc,
                 patch(updateStatusStatus("reading-priority", studyId.toString()))
                     .content(factory.validStatusUpdatePatchRequest(studyId, "HIGH"))
-            ) {
-                mockMvc.perform(it)
-            }
+            )
         }
 
         @Test
         fun `should not update if user is unauthenticated`() {
             val studyId = idService.next()
 
-            testHelperService.testForUnauthenticatedUser(
-                patch(updateStatusStatus("reading-priority", studyId.toString()))
-            ) {
-                mockMvc.perform(it)
-            }
+            testHelperService.testForUnauthenticatedUser(mockMvc,
+                patch(updateStatusStatus("reading-priority", studyId.toString())),
+            )
         }
     }
 
@@ -526,24 +509,20 @@ class StudyReviewControllerTest(
 
 
             testHelperService.testForUnauthorizedUser(
+                mockMvc,
                 patch(answerRiskOfBiasQuestion(studyId))
                     .content(factory.validAnswerRiskOfBiasPatchRequest(
                         studyId, questionId, "TEXTUAL", "TEST"
                     ))
-            ) {
-                mockMvc.perform(it)
-            }
+            )
         }
 
         @Test
         fun `should not update if user is unauthenticated`(){
             val studyId = idService.next()
 
-            testHelperService.testForUnauthenticatedUser(
-                patch(answerRiskOfBiasQuestion(studyId))
-            ) {
-                mockMvc.perform(it)
-            }
+            testHelperService.testForUnauthenticatedUser(mockMvc, patch(answerRiskOfBiasQuestion(studyId)),
+            )
         }
     }
 
@@ -611,11 +590,9 @@ class StudyReviewControllerTest(
             val studyToUpdateId = idService.next()
             val studyToDuplicateId = idService.next()
 
-            testHelperService.testForUnauthorizedUser(
+            testHelperService.testForUnauthorizedUser(mockMvc,
                 patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
-            ) {
-                mockMvc.perform(it)
-            }
+            )
         }
 
         @Test
@@ -623,11 +600,9 @@ class StudyReviewControllerTest(
             val studyToUpdateId = idService.next()
             val studyToDuplicateId = idService.next()
 
-            testHelperService.testForUnauthenticatedUser(
-                patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
-            ) {
-                mockMvc.perform(it)
-            }
+            testHelperService.testForUnauthenticatedUser(mockMvc,
+                patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId)),
+            )
         }
     }
 }

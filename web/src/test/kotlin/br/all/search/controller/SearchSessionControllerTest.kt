@@ -114,25 +114,21 @@ class SearchSessionControllerTest(
         @Test
         fun `should return 403 when user is not authorized`() {
 
-            testHelperService.testForUnauthorizedUser(
+            testHelperService.testForUnauthorizedUser(mockMvc,
                 multipart(postUrl())
                     .file(factory.bibfile())
                     .param("data", factory.validPostRequest())
-            ) {
-                mockMvc.perform(it)
-            }
+            )
         }
 
         @Test
         fun `should return 403 when user is not authenticated`() {
 
-            testHelperService.testForUnauthenticatedUser(
+            testHelperService.testForUnauthenticatedUser(mockMvc,
                 multipart(postUrl())
                     .file(factory.bibfile())
-                    .param("data", factory.validPostRequest())
-            ) {
-                mockMvc.perform(it)
-            }
+                    .param("data", factory.validPostRequest()),
+            )
         }
     }
 
@@ -162,11 +158,10 @@ class SearchSessionControllerTest(
 
             val sessionId = "/${searchSession.id}"
             testHelperService.testForUnauthorizedUser(
+                mockMvc,
                 get(findUrl(sessionId))
                     .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
-            ) {
-                mockMvc.perform(it)
-            }
+            )
         }
 
         @Test
@@ -176,11 +171,8 @@ class SearchSessionControllerTest(
             repository.insert(searchSession)
 
             val sessionId = "/${searchSession.id}"
-            testHelperService.testForUnauthenticatedUser(
-                get(findUrl(sessionId))
-            ) {
-                mockMvc.perform(it)
-            }
+            testHelperService.testForUnauthenticatedUser(mockMvc, get(findUrl(sessionId)),
+            )
         }
 
         @Test
@@ -324,12 +316,23 @@ class SearchSessionControllerTest(
                 "New Search String", "New Additional Info", "New SearchSource"
             )
             testHelperService.testForUnauthorizedUser(
+                mockMvc,
                 put(putUrl())
                     .content(request)
                     .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
-            ) {
-                mockMvc.perform(it)
-            }
+            )
+        }
+
+        @Test
+        fun `should not allow unauthenticated users to update a search session`(){
+            val request = factory.createValidPutRequest(
+                "New Search String", "New Additional Info", "New SearchSource"
+            )
+            testHelperService.testForUnauthenticatedUser(
+                mockMvc,
+                put(putUrl())
+                    .content(request)
+            )
         }
     }
 }
