@@ -85,7 +85,6 @@ class MongoSearchSessionRepositoryTest(
             Assertions.assertEquals(3, sut.findAllBySystematicStudyId(systematicStudyId).size)
         }
 
-        @Disabled
         @Test
         fun `should find all search sessions of given systematic study and source`(){
             val systematicStudyId = UUID.randomUUID()

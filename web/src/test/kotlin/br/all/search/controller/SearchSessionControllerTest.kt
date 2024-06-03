@@ -230,8 +230,6 @@ class SearchSessionControllerTest(
                 .andExpect(jsonPath("$.searchSessions").isEmpty())
         }
 
-        //TODO make it work and make the others tests
-        @Disabled
         @Test
         fun `should find all search sessions by source and return 200`(){
             val id1 = UUID.randomUUID()
