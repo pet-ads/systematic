@@ -2,6 +2,7 @@ package br.all.infrastructure.protocol
 
 import br.all.application.protocol.repository.ProtocolDto
 import br.all.application.protocol.repository.ProtocolRepository
+import br.all.infrastructure.search.toDto
 import br.all.infrastructure.shared.toNullable
 import org.springframework.stereotype.Repository
 import java.util.*

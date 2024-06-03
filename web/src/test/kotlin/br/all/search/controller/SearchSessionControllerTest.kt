@@ -5,6 +5,7 @@ import br.all.infrastructure.search.MongoSearchSessionRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
+import br.all.search.shared.TestDataFactory
 import br.all.security.service.ApplicationUser
 import br.all.shared.TestHelperService
 import org.junit.jupiter.api.*
@@ -229,8 +230,6 @@ class SearchSessionControllerTest(
                 .andExpect(jsonPath("$.searchSessions").isEmpty())
         }
 
-        //TODO make it work and make the others tests
-        @Disabled
         @Test
         fun `should find all search sessions by source and return 200`(){
             val id1 = UUID.randomUUID()

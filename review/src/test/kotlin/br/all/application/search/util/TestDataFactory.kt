@@ -1,11 +1,15 @@
 package br.all.application.search.util
 
+import br.all.application.protocol.repository.CriterionDto
+import br.all.application.protocol.repository.PicocDto
+import br.all.application.protocol.repository.ProtocolDto
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindAllSearchSessionsService
 import br.all.application.search.find.service.FindSearchSessionService
 import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.update.UpdateSearchSessionService
 import br.all.application.search.update.UpdateSearchSessionService.RequestModel
+import br.all.domain.model.protocol.ResearchQuestion
 import br.all.domain.model.protocol.SearchSource
 import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
@@ -97,6 +101,48 @@ class TestDataFactory {
         additionalInfo,
         timeStamp,
         source
+    )
+
+    fun generateProtocol(
+        id: UUID = UUID.randomUUID(),
+        systematicStudy: UUID = this.systematicStudyId,
+        goal: String = "Goal",
+        justification: String = "Justification",
+        researchQuestion: Set<String> = setOf("question"),
+        keyWords: Set<String> = setOf("keyWords"),
+        searchString: String = "searchString",
+        informationSources: Set<String> = setOf(this.source),
+        sourcesSelectionCriteria: String = "criteria",
+        searchMethod: String = "method",
+        studiesLanguage: Set<String> = setOf("English"),
+        studyTypeDefinition: String = "Definition",
+        selectionProcess: String = "Process",
+        eligibilityCriteria: Set<CriterionDto> = setOf(CriterionDto("Description", "Type")),
+        dataCollectionProcess: String = "Collection",
+        analysisAndSynthesisProcess: String = "SynthesisProcess",
+        extractionQuestions: Set<UUID> = setOf(UUID.randomUUID()),
+        robQuestions: Set<UUID> = setOf(UUID.randomUUID()),
+        picoc: PicocDto = PicocDto("10000","Intevention", "Control", "Outcome", "")
+    ) = ProtocolDto(
+        id,
+        systematicStudy,
+        goal,
+        justification,
+        researchQuestion,
+        keyWords,
+        searchString,
+        informationSources,
+        sourcesSelectionCriteria,
+        searchMethod,
+        studiesLanguage,
+        studyTypeDefinition,
+        selectionProcess,
+        eligibilityCriteria,
+        dataCollectionProcess,
+        analysisAndSynthesisProcess,
+        extractionQuestions,
+        robQuestions,
+        picoc
     )
 
     fun findOneResponseModel(
