@@ -269,20 +269,21 @@ class RiskOfBiasQuestionControllerTest(
 
         @Test
         fun `should a researcher who is not a collaborator be unauthorized and return 403`() {
-            val json = factory.validCreateTextualRequest()
-            val notAllowed = UUID.randomUUID()
-            mockMvc.perform(
+            testHelperService.testForUnauthorizedUser(mockMvc,
                 post(postUrl() + "/textual")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(json)
-                    .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
-            ).andExpect(status().isForbidden)
+                    .content(factory.validCreateTextualRequest())
+            )
+        }
+
+        @Test
+        fun `should not allow unauthenticated user to create a question`(){
+            testHelperService.testForUnauthenticatedUser(mockMvc, post(postUrl() + "/textual"),
+            )
         }
 
         @Test
         fun `should return 404 when trying to create a question with a nonexistent systematicStudy`() {
             val json = factory.validCreateTextualRequest()
-            val nonexistentId = UUID.randomUUID()
             mockMvc.perform(
                 post(postNonExistentSystematicStudyUrl() + "/textual")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -310,7 +311,6 @@ class RiskOfBiasQuestionControllerTest(
         fun `should return 404 when trying to find question with a nonexistent systematicStudy`() {
             val question = factory.validCreateTextualQuestionDocument(questionId, systematicStudyId)
             repository.insert(question)
-            val nonexistentId = UUID.randomUUID()
             val questionIdUrl = "/${questionId}"
             mockMvc.perform(
                 get(
@@ -324,20 +324,13 @@ class RiskOfBiasQuestionControllerTest(
 
         @Test
         fun `should a researcher who is not a collaborator be unauthorized and return 403`() {
-            val question = factory.validCreateTextualQuestionDocument(questionId, systematicStudyId)
-            repository.insert(question)
-            val notAllowed = UUID.randomUUID()
-            val questionIdUrl = "/${questionId}"
+            testHelperService.testForUnauthorizedUser(mockMvc, get(getUrl()))
+        }
 
-            mockMvc.perform(
-                get(
-                    getUrl(
-                        questionIdUrl,
-                    )
-                ).contentType(MediaType.APPLICATION_JSON)
-                    .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
+        @Test
+        fun `should not find question when user is unauthenticated`(){
+            testHelperService.testForUnauthenticatedUser(mockMvc, get(getUrl()),
             )
-                .andExpect(status().isForbidden)
         }
     }
 }

@@ -114,17 +114,13 @@ class ProtocolControllerTest(
 
             @Test
             fun `should not authorize researchers that are not a collaborator to find protocols`() {
-                val unauthorizedUser = testHelperService.createUnauthorizedApplicationUser()
+                testHelperService.testForUnauthorizedUser(mockMvc, get(getUrl()))
+            }
 
-                mockMvc.perform(
-                    get(getUrl())
-                        .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
-                        .contentType(MediaType.APPLICATION_JSON)
-                ).andExpect(status().isForbidden)
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.detail").exists())
-
-                testHelperService.deleteApplicationUser(unauthorizedUser.id)
+            @Test
+            fun `should not allow researchers that are not unauthenticated to find protocols`() {
+                testHelperService.testForUnauthenticatedUser(mockMvc, get(getUrl()),
+                )
             }
         }
     }
@@ -175,17 +171,13 @@ class ProtocolControllerTest(
             }
             @Test
             fun `should not allow researchers that are not collaborators to update the protocol`() {
-                val unauthorizedUser = testHelperService.createUnauthorizedApplicationUser()
-                val json = factory.validPutRequest()
+                testHelperService.testForUnauthorizedUser(mockMvc, put(putUrl()).content(factory.validPutRequest()))
+            }
 
-                mockMvc.perform(
-                    put(putUrl())
-                        .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                ).andExpect(status().isForbidden)
-
-                testHelperService.deleteApplicationUser(unauthorizedUser.id)
+            @Test
+            fun `should not allow researchers that are not unauthenticated to update`() {
+                testHelperService.testForUnauthenticatedUser(mockMvc, put(putUrl()).content(factory.validPutRequest()),
+                )
             }
         }
     }
