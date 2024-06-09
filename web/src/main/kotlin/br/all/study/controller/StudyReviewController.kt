@@ -52,6 +52,8 @@ class StudyReviewController(
         value = [
             ApiResponse(responseCode = "201", description = "Success creating study review"),
             ApiResponse(responseCode = "400", description = "Fail creating study review - invalid input"),
+            ApiResponse(responseCode = "401", description = "Fail creating study review - unauthenticated user"),
+            ApiResponse(responseCode = "403", description = "Fail creating study review - unauthorized user"),
         ]
     )
     fun createStudyReview(
@@ -77,6 +79,8 @@ class StudyReviewController(
                     schema = Schema(implementation = FindAllStudyReviewsService.ResponseModel::class)
                 )]
             ),
+            ApiResponse(responseCode = "401", description = "Fail getting all study reviews - unauthenticated user"),
+            ApiResponse(responseCode = "403", description = "Fail getting all study reviews - unauthorized user"),
         ]
     )
     fun findAllStudyReviews(
@@ -100,7 +104,9 @@ class StudyReviewController(
                     mediaType = "application/json",
                     schema = Schema(implementation = FindAllStudyReviewsBySourceService.ResponseModel::class)
                 )]
-            )
+            ),
+            ApiResponse(responseCode = "401", description = "Fail getting all study reviews by source - unauthenticated user"),
+            ApiResponse(responseCode = "403", description = "Fail getting all study reviews by source - unauthorized user"),
         ]
     )
     fun findAllStudyReviewsBySource(
@@ -125,6 +131,8 @@ class StudyReviewController(
                     schema = Schema(implementation = FindStudyReviewService.ResponseModel::class)
                 )]
             ),
+            ApiResponse(responseCode = "401", description = "Fail getting study review - unauthenticated user"),
+            ApiResponse(responseCode = "403", description = "Fail getting study review - unauthorized user"),
             ApiResponse(
                 responseCode = "404",
                 description = "Fail getting study review - not found",
@@ -153,6 +161,13 @@ class StudyReviewController(
             ),
             ApiResponse(responseCode = "400", description = "Fail to update an existing study review - invalid status"),
             ApiResponse(
+                responseCode = "401",
+                description = "Fail to update an existing study review - unauthenticated user"
+            ),ApiResponse(
+                responseCode = "403",
+                description = "Fail to update an existing study review - unauthorized user"
+            ),
+            ApiResponse(
                 responseCode = "404",
                 description = "Fail to update an existing study review - study not found"
             ),
@@ -179,6 +194,14 @@ class StudyReviewController(
                 responseCode = "400",
                 description = "Fail updating selection status of study review - invalid status"
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail updating selection status of study review - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail updating selection status of study review - unauthorized user"
+            ),
         ]
     )
     fun updateStudyReviewSelectionStatus(
@@ -202,6 +225,14 @@ class StudyReviewController(
                 responseCode = "400",
                 description = "Fail updating extraction status of study review - invalid status"
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail updating extraction status of study review - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail updating extraction status of study review - unauthorized user"
+            ),
         ]
     )
     fun updateStudyReviewExtractionStatus(
@@ -224,6 +255,14 @@ class StudyReviewController(
             ApiResponse(
                 responseCode = "400",
                 description = "Fail updating reading priority of study review - invalid status"
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail updating reading priority of study review - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail updating reading priority of study review - unauthorized user"
             ),
         ]
     )
@@ -249,6 +288,14 @@ class StudyReviewController(
                 responseCode = "400",
                 description = "Fail updating answer to risk of bias question"
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail updating answer to risk of bias question - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail updating answer to risk of bias question - unauthorized user"
+            ),
         ]
     )
     fun riskOfBiasAnswer(
@@ -270,6 +317,13 @@ class StudyReviewController(
             ApiResponse(
                 responseCode = "200",
                 description = "Success marking an existing study as duplicated in the systematic study"
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail marking an existing study as duplicated in the systematic study - unauthenticated user"
+            ),ApiResponse(
+                responseCode = "403",
+                description = "Fail marking an existing study as duplicated in the systematic study - unauthorized user"
             ),
             ApiResponse(
                 responseCode = "404",
