@@ -42,6 +42,14 @@ class SystematicStudyController(
                 responseCode = "400",
                 description = "Fail creating a systematic study - invalid systematic study"
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a systematic study - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a systematic study - unauthorized user"
+            ),
         ]
     )
     fun postSystematicStudy(@RequestBody request: PostRequest): ResponseEntity<*> {
@@ -65,15 +73,19 @@ class SystematicStudyController(
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a systematic study - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail getting systematic study - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
                 responseCode = "404",
                 description = "Fail getting systematic study - not found",
                 content = [Content(schema = Schema(hidden = true))]
             ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Fail getting systematic study - unauthorized researcher",
-                content = [Content(schema = Schema(hidden = true))]
-            )
         ]
     )
     fun findSystematicStudy(@PathVariable systematicStudyId: UUID): ResponseEntity<*> {
@@ -98,8 +110,13 @@ class SystematicStudyController(
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Fail getting all systematic studies of a given reviewer - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
                 responseCode = "403",
-                description = "Fail getting all systematic studies of a given reviewer - unauthorized researcher",
+                description = "Fail getting all systematic studies of a given reviewer - unauthorized user",
                 content = [Content(schema = Schema(hidden = true))]
             )
         ]
@@ -125,8 +142,13 @@ class SystematicStudyController(
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Fail getting all systematic studies of a given owner - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
                 responseCode = "403",
-                description = "Fail getting all systematic studies of a given owner - unauthorized researcher",
+                description = "Fail getting all systematic studies of a given owner - unauthorized user",
                 content = [Content(schema = Schema(hidden = true))]
             )
         ]
@@ -145,15 +167,23 @@ class SystematicStudyController(
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Success updating an existing systematic study"),
-            ApiResponse(responseCode = "404", description = "Fail updating an existing systematic study - not found"),
             ApiResponse(
                 responseCode = "400",
                 description = "Fail updating an existing systematic study - invalid systematic study"
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail updating an existing systematic study - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail updating an existing systematic study - unauthorized user"
+            ),
+            ApiResponse(responseCode = "404", description = "Fail updating an existing systematic study - not found"),
         ]
     )
     fun updateSystematicStudy(@PathVariable systematicStudyId: UUID,
-        @RequestBody request: PutRequest): ResponseEntity<*> {
+                              @RequestBody request: PutRequest): ResponseEntity<*> {
         val presenter = RestfulUpdateSystematicStudyPresenter()
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val requestModel = request.toUpdateRequestModel(userId, systematicStudyId)
