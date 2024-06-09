@@ -1,7 +1,6 @@
 package br.all.application.search
 
 import br.all.application.protocol.repository.ProtocolRepository
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.search.create.CreateSearchSessionPresenter
@@ -11,15 +10,11 @@ import br.all.application.search.create.CreateSearchSessionService.ResponseModel
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.search.repository.fromRequestModel
 import br.all.application.search.repository.toDto
-import br.all.application.shared.exceptions.UniquenessViolationException
-import br.all.application.shared.presenter.PreconditionChecker
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.toDto
 import br.all.application.user.CredentialsService
-import br.all.domain.model.researcher.toResearcherId
 import br.all.domain.model.review.SystematicStudy
-import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID

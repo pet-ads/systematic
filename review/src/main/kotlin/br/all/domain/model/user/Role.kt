@@ -1,4 +1,4 @@
-package br.all.domain.model.researcher
+package br.all.domain.model.user
 
 enum class Role {
     COLLABORATOR,
