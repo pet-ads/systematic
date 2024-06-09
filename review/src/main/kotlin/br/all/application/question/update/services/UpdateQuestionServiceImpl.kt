@@ -10,7 +10,7 @@ import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.presenter.PreconditionChecker
 import br.all.domain.model.question.QuestionBuilder
 import br.all.domain.model.question.QuestionId
-import br.all.domain.model.researcher.ResearcherId
+import br.all.domain.model.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 
 class UpdateQuestionServiceImpl(

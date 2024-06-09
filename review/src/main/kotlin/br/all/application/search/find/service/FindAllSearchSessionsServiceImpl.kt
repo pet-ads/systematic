@@ -1,17 +1,13 @@
 package br.all.application.search.find.service
 
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.search.find.presenter.FindAllSearchSessionsPresenter
 import br.all.application.search.find.service.FindAllSearchSessionsService.RequestModel
 import br.all.application.search.repository.SearchSessionRepository
-import br.all.application.shared.presenter.PreconditionChecker
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.user.CredentialsService
-import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudy
-import br.all.domain.model.review.SystematicStudyId
 
 class FindAllSearchSessionsServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
