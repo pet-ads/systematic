@@ -1,12 +1,10 @@
 package br.all.application.search.repository
 import br.all.application.search.create.CreateSearchSessionService.RequestModel
-import br.all.application.search.update.UpdateSearchSessionService
 import br.all.domain.model.protocol.SearchSource
-import br.all.domain.model.researcher.ResearcherId
+import br.all.domain.model.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
-import java.time.LocalDateTime
 
 fun SearchSession.toDto() = SearchSessionDto(
     id.value(),

@@ -1,6 +1,5 @@
 package br.all.application.search.repository
 
-import br.all.domain.model.researcher.ResearcherId
 import java.time.LocalDateTime
 import java.util.*
 

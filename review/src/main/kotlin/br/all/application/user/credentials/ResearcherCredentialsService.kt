@@ -1,6 +1,6 @@
 package br.all.application.user.credentials
 
-import br.all.domain.model.researcher.ResearcherId
+import br.all.domain.model.user.ResearcherId
 
 interface ResearcherCredentialsService {
     fun isAuthenticated(researcherId: ResearcherId): Boolean

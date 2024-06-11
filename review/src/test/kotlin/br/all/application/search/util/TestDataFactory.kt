@@ -9,9 +9,8 @@ import br.all.application.search.find.service.FindSearchSessionService
 import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.update.UpdateSearchSessionService
 import br.all.application.search.update.UpdateSearchSessionService.RequestModel
-import br.all.domain.model.protocol.ResearchQuestion
 import br.all.domain.model.protocol.SearchSource
-import br.all.domain.model.researcher.ResearcherId
+import br.all.domain.model.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID

@@ -1,6 +1,5 @@
 package br.all.application.search.update
 
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.search.repository.SearchSessionRepository
@@ -9,14 +8,10 @@ import br.all.application.search.repository.toDto
 import br.all.application.search.update.UpdateSearchSessionService.RequestModel
 import br.all.application.search.update.UpdateSearchSessionService.ResponseModel
 import br.all.application.shared.exceptions.EntityNotFoundException
-import br.all.application.shared.exceptions.UniquenessViolationException
-import br.all.application.shared.presenter.PreconditionChecker
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.user.CredentialsService
 import br.all.domain.model.protocol.toSearchSource
-import br.all.domain.model.researcher.ResearcherId
 import br.all.domain.model.review.SystematicStudy
-import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSession
 
 class UpdateSearchSessionServiceImpl (

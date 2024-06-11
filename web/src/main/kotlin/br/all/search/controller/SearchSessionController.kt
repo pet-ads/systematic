@@ -58,13 +58,17 @@ class SearchSessionController(
                 description = "Fail creating a search session in the systematic study - invalid BibTeX format"
             ),
             ApiResponse(
-                responseCode = "404",
-                description = "Fail creating a search session in the systematic study - invalid request body"
+                responseCode = "401",
+                description = "Fail creating a search session in the systematic study - unauthenticated user"
             ),
             ApiResponse(
                 responseCode = "403",
                 description = "Fail creating a search session in the systematic study - unauthorized user"
-            )
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail creating a search session in the systematic study - invalid request body"
+            ),
         ]
     )
     fun createSearchSession(
@@ -98,6 +102,14 @@ class SearchSessionController(
                     schema = Schema(implementation = FindAllSearchSessionsService.ResponseModel::class)
                 )]
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail finding search sessions in the systematic study - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail finding search sessions in the systematic study - unauthorized user"
+            )
         ]
     )
     fun findAllSearchSessions(
@@ -123,13 +135,23 @@ class SearchSessionController(
                 )]
             ),
             ApiResponse(
-                responseCode = "404",
-                description = "Fail getting an existing search session in the systematic study - not found",
+                responseCode = "400",
+                description = "Fail getting an existing search session in the systematic study - invalid id format",
                 content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
-                responseCode = "400",
-                description = "Fail getting an existing search session in the systematic study - invalid id format",
+                responseCode = "401",
+                description = "Fail finding search sessions in the systematic study - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail finding search sessions in the systematic study - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail getting an existing search session in the systematic study - not found",
                 content = [Content(schema = Schema(hidden = true))]
             ),
         ]
@@ -146,6 +168,27 @@ class SearchSessionController(
     }
 
     @GetMapping("/search-session-source/{source}")
+    @Operation(summary = "Get all search sessions which have a given source of a systematic review")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success getting all search sessions in the systematic study. Either found all search sessions or none",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = FindAllSearchSessionsBySourceService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail finding search sessions in the systematic study - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail finding search sessions in the systematic study - unauthorized user"
+            )
+        ]
+    )
     fun findSearchSessionsBySource(
         @PathVariable systematicStudyId: UUID,
         @PathVariable source: String
@@ -157,6 +200,27 @@ class SearchSessionController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
+    @Operation(summary = "Update an existing search session of a systematic study")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success updating an existing search session of a systematic study"
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail to update an existing search session - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail to update an existing search session - unauthorized user"
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail to update an existing search session - study not found"
+            ),
+        ]
+    )
     @PutMapping("/search-session/{sessionId}")
     fun updateSearchSession(
         @PathVariable systematicStudyId: UUID,

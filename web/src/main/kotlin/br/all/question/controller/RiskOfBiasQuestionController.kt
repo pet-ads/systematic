@@ -48,6 +48,14 @@ class RiskOfBiasQuestionController(
                 responseCode = "400",
                 description = "Fail creating a textual question in the protocol - invalid input"
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a textual question in the protocol - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a textual question in the protocol - unauthorized user"
+            ),
         ]
     )
     fun createTextualQuestion(
@@ -71,6 +79,14 @@ class RiskOfBiasQuestionController(
                 responseCode = "400",
                 description = "Fail creating a pick-list question in the protocol - invalid input"
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a pick-list question in the protocol - unauthenticated user"
+            ),ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a pick-list question in the protocol - unauthorized user"
+            ),
+
         ]
     )
     fun createPickListQuestion(
@@ -98,6 +114,14 @@ class RiskOfBiasQuestionController(
                 responseCode = "400",
                 description = "Fail creating a labeled-scale question in the protocol - invalid input"
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a labeled-scale question in the protocol - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a labeled-scale question in the protocol - unauthorized user"
+            ),
         ]
     )
     fun createLabeledScaleQuestion(
@@ -122,6 +146,14 @@ class RiskOfBiasQuestionController(
             ApiResponse(
                 responseCode = "400",
                 description = "Fail creating a number-scale question in the protocol - invalid input"
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a number-scale question in the protocol - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a number-scale question in the protocol - unauthorized user"
             ),
         ]
     )
@@ -153,6 +185,14 @@ class RiskOfBiasQuestionController(
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Fail getting an risk of bias question of a given protocol by code - unauthenticated user",
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail getting an risk of bias question of a given protocol by code - unauthorized user",
+            ),
+            ApiResponse(
                 responseCode = "404",
                 description = "Fail getting an risk of bias question of a given protocol by code - not found",
                 content = [Content(schema = Schema(hidden = true))]
@@ -180,6 +220,14 @@ class RiskOfBiasQuestionController(
                     mediaType = "application/json",
                     schema = Schema(implementation = FindAllBySystematicStudyIdService.ResponseModel::class)
                 )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail getting all risk of bias questions in the protocol - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail getting all risk of bias questions in the protocol - unauthorized user"
             ),
         ]
     )
