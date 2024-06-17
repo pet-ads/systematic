@@ -30,7 +30,13 @@ class SecurityConfiguration(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/api/v1/auth", "/api/v1/auth/refresh", "/error").permitAll()
+                    .requestMatchers("/api/v1/auth", "/api/v1/auth/refresh", "/error", "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/configuration/ui",
+                        "/swagger-resources/**",
+                        "/configuration/security",
+                        "/swagger-ui.html",
+                        "/webjars/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/user").permitAll()
                     .anyRequest().fullyAuthenticated()
 
