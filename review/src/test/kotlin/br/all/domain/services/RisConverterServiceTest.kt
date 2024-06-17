@@ -59,6 +59,11 @@ class RisConverterServiceTest {
             assertEquals(studyReview.year, 2017)
         }
 
-
+    @Test
+    fun `should return correct list of authors`() {
+        val ris = testInput["valid RIS entrie"]!!
+        val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
+        assertEquals("B. C. Kwon, P. J. Haas", studyReview.authors)
+    }
 
 }
