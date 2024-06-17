@@ -73,4 +73,10 @@ class RisConverterServiceTest {
         assertEquals("IEEE Computer Graphics and Applications", studyReview.venue)
     }
 
+    @Test
+    fun `should return the correct abstract`() {
+        val ris = testInput["valid RIS entrie"]!!
+        val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
+        assertEquals("Lorem Ipsum", studyReview.abstract)
+    }
 }
