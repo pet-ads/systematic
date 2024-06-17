@@ -405,6 +405,14 @@ class RisConverterServiceTest {
             }
         }
 
+        @Test
+        fun `should throw IllegalArgumentException for invalid doi`() {
+            val bibtex = testInput["invalid doi"]!!
+            assertThrows<IllegalArgumentException> {
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            }
+        }
+
     }
 
 }
