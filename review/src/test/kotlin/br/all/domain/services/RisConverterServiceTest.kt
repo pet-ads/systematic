@@ -350,6 +350,14 @@ class RisConverterServiceTest {
                 sut.convertManyToStudyReview(SystematicStudyId(UUID.randomUUID()), "")
             }
         }
+
+        @Test
+        fun `convertToStudyReview should not accept a blank ris entry as input`() {
+            assertThrows<IllegalArgumentException> {
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), "")
+            }
+        }
+        
     }
 
 }
