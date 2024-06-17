@@ -218,6 +218,33 @@ class RisConverterServiceTest {
             )
         }
 
+        @Test
+        fun `should create proceedings from valid input`() {
+            val bibtex = testInput["valid proceedings"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+
+            val expected = "Proceedings of the 17th International Conference on Computation " +
+                    "and Natural Computation, Fontainebleau, France"
+
+            assertAll(
+                { assertEquals("1", studyReview.id.toString()) },
+                { assertEquals(StudyType.PROCEEDINGS, studyReview.studyType) },
+                { assertEquals("Susan Stepney", studyReview.authors) },
+                { assertEquals(expected, studyReview.title) },
+                { assertEquals("Springer", studyReview.venue) },
+                { assertEquals(2018, studyReview.year) },
+                { assertEquals("Lorem Ipsum", studyReview.abstract) },
+                { assertEquals(1, studyReview.searchSources.size) },
+                { assertTrue(studyReview.criteria.isEmpty()) },
+                { assertTrue(studyReview.formAnswers.isEmpty()) },
+                { assertTrue(studyReview.robAnswers.isEmpty()) },
+                { assertEquals("", studyReview.comments) },
+                { assertEquals(ReadingPriority.LOW, studyReview.readingPriority) },
+                { assertEquals(SelectionStatus.UNCLASSIFIED, studyReview.selectionStatus) },
+                { assertEquals(ExtractionStatus.UNCLASSIFIED, studyReview.extractionStatus) }
+            )
+        }
+
     }
 
 }
