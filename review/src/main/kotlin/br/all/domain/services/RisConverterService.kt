@@ -165,7 +165,15 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
             "UNPD" to StudyType.UNPUBLISHED,
             "VIDEO" to StudyType.MISC
         )
-        val studyType = risMap.getOrDefault(studyType, StudyType.MISC)
-        return studyType;
+        val st = risMap.getOrDefault(studyType, StudyType.MISC)
+        return st;
+    }
+
+    private fun parseKeywords(keywords: String?): Set<String> {
+        return keywords?.split(";")?.map { it.trim() }?.filter { it.isNotBlank() }?.toSet()?: emptySet()
+    }
+
+    private fun parseReferences(references: String?): List<String> {
+        return references?.split(";")?.map { it.trim() }?.filter { it.isNotBlank() }?.toList()?: emptyList()
     }
 }
