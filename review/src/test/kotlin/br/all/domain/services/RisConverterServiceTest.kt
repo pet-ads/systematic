@@ -397,6 +397,13 @@ class RisConverterServiceTest {
             }
         }
 
+        @Test
+        fun `should throw IllegalArgumentException for invalid abstract entry`() {
+            val bibtex = testInput["invalid abstract"]!!
+            assertThrows<IllegalArgumentException> {
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            }
+        }
 
     }
 
