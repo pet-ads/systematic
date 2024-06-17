@@ -412,7 +412,6 @@ class RisConverterServiceTest {
                 sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
             }
         }
-
     }
 
 }
