@@ -365,6 +365,13 @@ class RisConverterServiceTest {
                 sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
             }
         }
+        @Test
+        fun `should throw IllegalArgumentException for invalid title entry`() {
+            val bibtex = testInput["invalid title"].toString()
+            assertThrows<IllegalArgumentException> {
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            }
+        }
 
 
     }
