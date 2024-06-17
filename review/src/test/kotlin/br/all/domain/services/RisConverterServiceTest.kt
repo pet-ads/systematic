@@ -342,4 +342,9 @@ class RisConverterServiceTest {
         }
     }
 
+    @Nested
+    inner class InvalidClasses() {
+
+    }
+
 }
