@@ -168,6 +168,32 @@ class RisConverterServiceTest {
             )
         }
 
+        @Test
+        fun `should create techreport from valid input`() {
+            val bibtex = testInput["valid techreport"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            val expected = "Uma abordagem apoiada por linguagens específicas de domínio " +
+                    "para a criação de linhas de produto de software embarcado"
+
+            assertAll(
+                { assertEquals("1", studyReview.id.toString()) },
+                { assertEquals(StudyType.TECHREPORT, studyReview.studyType) },
+                { assertEquals("Rafael Serapilha Durelli", studyReview.authors) },
+                { assertEquals(expected, studyReview.title) },
+                { assertEquals("Universidade Federal de São Carlos (UFSCar)", studyReview.venue) },
+                { assertEquals(2011, studyReview.year) },
+                { assertEquals("Lorem Ipsum", studyReview.abstract) },
+                { assertEquals(1, studyReview.searchSources.size) },
+                { assertTrue(studyReview.criteria.isEmpty()) },
+                { assertTrue(studyReview.formAnswers.isEmpty()) },
+                { assertTrue(studyReview.robAnswers.isEmpty()) },
+                { assertEquals("", studyReview.comments) },
+                { assertEquals(ReadingPriority.LOW, studyReview.readingPriority) },
+                { assertEquals(SelectionStatus.UNCLASSIFIED, studyReview.selectionStatus) },
+                { assertEquals(ExtractionStatus.UNCLASSIFIED, studyReview.extractionStatus) }
+            )
+        }
+
     }
 
 }
