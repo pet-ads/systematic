@@ -27,4 +27,11 @@ class RisConverterServiceTest {
         fake.reset()
     }
 
+        @Test
+        fun `Should create a StudyReview list from multiple bibtex entries as input`() {
+            val ris = testInput["multiple RIS entries"]!!
+            val studyReviewList = sut.convertManyToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
+            assertEquals(3, studyReviewList.size)
+        }
+
 }
