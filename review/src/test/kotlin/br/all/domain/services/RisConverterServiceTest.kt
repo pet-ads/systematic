@@ -26,7 +26,8 @@ class RisConverterServiceTest {
         val fake = idGeneratorService as FakeIdGeneratorService
         fake.reset()
     }
-
+    @Nested
+    inner class individualTests {
         @Test
         fun `Should create a StudyReview list from multiple bibtex entries as input`() {
             val ris = testInput["multiple RIS entries"]!!
@@ -59,50 +60,50 @@ class RisConverterServiceTest {
             assertEquals(studyReview.year, 2017)
         }
 
-    @Test
-    fun `should return correct list of authors`() {
-        val ris = testInput["valid RIS entrie"]!!
-        val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
-        assertEquals("B. C. Kwon, P. J. Haas", studyReview.authors)
-    }
+        @Test
+        fun `should return correct list of authors`() {
+            val ris = testInput["valid RIS entrie"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
+            assertEquals("B. C. Kwon, P. J. Haas", studyReview.authors)
+        }
 
-    @Test
-    fun `should return the correct venue`() {
-        val ris = testInput["valid RIS entrie"]!!
-        val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
-        assertEquals("IEEE Computer Graphics and Applications", studyReview.venue)
-    }
+        @Test
+        fun `should return the correct venue`() {
+            val ris = testInput["valid RIS entrie"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
+            assertEquals("IEEE Computer Graphics and Applications", studyReview.venue)
+        }
 
-    @Test
-    fun `should return the correct abstract`() {
-        val ris = testInput["valid RIS entrie"]!!
-        val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
-        assertEquals("Lorem Ipsum", studyReview.abstract)
-    }
+        @Test
+        fun `should return the correct abstract`() {
+            val ris = testInput["valid RIS entrie"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
+            assertEquals("Lorem Ipsum", studyReview.abstract)
+        }
 
-    @Test
-    fun `should return the correct keywords`() {
-        val ris = testInput["valid RIS entrie"]!!
-        val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
-        assertAll(
-            { assertTrue("Temperature sensors" in studyReview.keywords) },
-            { assertTrue("Data visualization" in studyReview.keywords) }
-        )
-    }
+        @Test
+        fun `should return the correct keywords`() {
+            val ris = testInput["valid RIS entrie"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
+            assertAll(
+                { assertTrue("Temperature sensors" in studyReview.keywords) },
+                { assertTrue("Data visualization" in studyReview.keywords) }
+            )
+        }
 
-    @Test
-    fun `should return correct doi`() {
-        val ris = testInput["valid RIS entrie"]!!
-        val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
-        val expectedDoi = "https://doi.org/10.1109/MCG.2017.6"
-        assertEquals(expectedDoi, studyReview.doi?.value)
-    }
+        @Test
+        fun `should return correct doi`() {
+            val ris = testInput["valid RIS entrie"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
+            val expectedDoi = "https://doi.org/10.1109/MCG.2017.6"
+            assertEquals(expectedDoi, studyReview.doi?.value)
+        }
 
-    @Test
-    fun `should return list of ris entries`() {
-        val ris = testInput["multiple RIS entries"]!!
-        val study: List<Study> = sut.convertMany(ris)
-        assertEquals(3, study.size)
-    }
-
+        @Test
+        fun `should return list of ris entries`() {
+            val ris = testInput["multiple RIS entries"]!!
+            val study: List<Study> = sut.convertMany(ris)
+            assertEquals(3, study.size)
+        }
+}
 }
