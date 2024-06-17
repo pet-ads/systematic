@@ -357,7 +357,15 @@ class RisConverterServiceTest {
                 sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), "")
             }
         }
-        
+
+        @Test
+        fun `should throw IllegalArgumentException for unknown type entry`() {
+            val bibtex = testInput["unknown ris"]!!
+            assertThrows<IllegalArgumentException> {
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            }
+        }
+
     }
 
 }
