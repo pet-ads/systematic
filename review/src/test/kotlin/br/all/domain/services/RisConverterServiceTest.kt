@@ -140,6 +140,34 @@ class RisConverterServiceTest {
                 { assertEquals(ExtractionStatus.UNCLASSIFIED, studyReview.extractionStatus) }
             )
         }
+
+        @Test
+        fun `should create inproceedings from valid input`() {
+            val ris = testInput["valid inproceedings"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
+            assertAll(
+                { assertEquals("1", studyReview.id.toString()) },
+                { assertEquals(StudyType.INPROCEEDINGS, studyReview.studyType) },
+                { assertEquals("Muitos testes", studyReview.title) },
+                { assertEquals(2017, studyReview.year) },
+                { assertEquals("Gabriel, Erick", studyReview.authors) },
+                { assertEquals("Meu Computador", studyReview.venue) },
+                { assertEquals("Lorem Ipsum", studyReview.abstract) },
+                { assertTrue("Tes" in studyReview.keywords) },
+                { assertTrue("Tes" in studyReview.keywords) },
+                { assertEquals(0, studyReview.references.size) },
+                { assertEquals("https://doi.org/10.1109/MCG.2017.6", studyReview.doi?.value) },
+                { assertEquals(1, studyReview.searchSources.size) },
+                { assertTrue(studyReview.criteria.isEmpty()) },
+                { assertTrue(studyReview.formAnswers.isEmpty()) },
+                { assertTrue(studyReview.robAnswers.isEmpty()) },
+                { assertEquals("", studyReview.comments) },
+                { assertEquals(ReadingPriority.LOW, studyReview.readingPriority) },
+                { assertEquals(SelectionStatus.UNCLASSIFIED, studyReview.selectionStatus) },
+                { assertEquals(ExtractionStatus.UNCLASSIFIED, studyReview.extractionStatus) }
+            )
+        }
+
     }
 
 }
