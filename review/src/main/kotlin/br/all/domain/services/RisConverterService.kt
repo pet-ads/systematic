@@ -94,4 +94,12 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         return fieldMap
     }
 
+    fun extractStudyType(risEntry: String): StudyType {
+        val entryTypeRegex = Regex("""(?m)^TY\s*-\s*(.+)$""")
+        val matchResult = entryTypeRegex.find(risEntry)
+        val studyTypeName = translateToStudyType(matchResult?.groupValues?.get(1) ?: "")
+        return studyTypeName
+    }
+
+
 }
