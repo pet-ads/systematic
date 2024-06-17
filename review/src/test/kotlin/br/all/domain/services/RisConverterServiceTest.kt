@@ -42,4 +42,23 @@ class RisConverterServiceTest {
             assertEquals(art, study)
         }
 
+        @Test
+        fun `should return correct title`() {
+            val ris = testInput["valid RIS entrie"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
+            assertEquals(
+                studyReview.title,
+                "Sampling for Scalable Visual Analytics IEEE Computer Graphics and Applications"
+            )
+        }
+
+        @Test
+        fun `should return correct publication year`() {
+            val ris = testInput["valid RIS entrie"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
+            assertEquals(studyReview.year, 2017)
+        }
+
+
+
 }
