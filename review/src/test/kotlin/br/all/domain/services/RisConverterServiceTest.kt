@@ -79,4 +79,14 @@ class RisConverterServiceTest {
         val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
         assertEquals("Lorem Ipsum", studyReview.abstract)
     }
+
+    @Test
+    fun `should return the correct keywords`() {
+        val ris = testInput["valid RIS entrie"]!!
+        val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
+        assertAll(
+            { assertTrue("Temperature sensors" in studyReview.keywords) },
+            { assertTrue("Data visualization" in studyReview.keywords) }
+        )
+    }
 }
