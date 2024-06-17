@@ -34,56 +34,19 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         )
     }
 
-    private fun convert(ris: String): Study {
+    fun convertManyToStudyReview(systematicStudyId: SystematicStudyId, ris: String): List<StudyReview> {
         require(ris.isNotBlank()) { "RIS must not be blank." }
-
-        val fieldMap = parseRisFields(ris)
-        val primaryTitle = fieldMap["TI"] ?: ""
-        val secondaryTitle = fieldMap["T1"] ?: ""
-        val year = fieldMap["PY"]?.toIntOrNull() ?: 0
-        val authors = fieldMap["AU"] ?: ""
-        val type = extractStudyType(ris)
-        val abs = fieldMap["AB"] ?: ""
-        val keywords = parseKeywords(fieldMap["KW"])
-        val references = parseReferences(fieldMap["CR"])
-        val doi = fieldMap["doi"]?.let { Doi("https://doi.org/$it") }
-
-        return Study(type, ("$primaryTitle $secondaryTitle").trim(), year, authors, abs, keywords, references, doi)
+        val studies = convertMany(ris)
+        return studies.map { convertToStudyReview(systematicStudyId, ris) }
     }
 
-    private fun parseRisFields(ris: String): Map<String, String> {
-        val fieldMap = mutableMapOf<String, String>()
-        val lines = ris.trim().lines()
-        var currentKey: String? = null
-
-        for (line in lines) {
-            val trimmedLine = line.trim()
-            if (trimmedLine.contains(" - ")) {
-                val keyValuePair = trimmedLine.split(" - ", limit = 2)
-                if (keyValuePair.size == 2) {
-                    currentKey = keyValuePair[0].trim()
-                    val value = keyValuePair[1].trim()
-                    fieldMap[currentKey] = value
-                }
-            } else if (currentKey != null) {
-                fieldMap[currentKey] = "${fieldMap[currentKey]} $trimmedLine".trim()
-            }
-        }
-        return fieldMap
+    fun convertMany(ris: String): List<Study> {
+        require(ris.isNotBlank()) { "RIS must not be blank." }
+        return ris.splitToSequence("TY")
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .map { convert(it) }
+            .toList()
     }
 
-    private fun extractStudyType(risEntry: String): StudyType {
-        val entryTypeRegex = Regex("""(?m)^TY\s*-\s*(.+)$""")
-        val matchResult = entryTypeRegex.find(risEntry)
-        val studyTypeName = matchResult?.groupValues?.get(1)?.uppercase(Locale.getDefault()) ?: "UNKNOWN"
-        return StudyType.valueOf(studyTypeName)
-    }
-
-    private fun parseKeywords(keywords: String?): String {
-        return keywords?.split(",")?.map { it.trim() }?.filter { it.isNotBlank() }?.joinToString(", ") ?: ""
-    }
-
-    private fun parseReferences(references: String?): Set<String> {
-        return references?.split(";")?.map { it.trim() }?.filter { it.isNotBlank() }?.toSet() ?: emptySet()
-    }
 }
