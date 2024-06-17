@@ -27,7 +27,7 @@ class RisConverterServiceTest {
         fake.reset()
     }
     @Nested
-    inner class individualTests {
+    inner class IndividualTests {
         @Test
         fun `Should create a StudyReview list from multiple bibtex entries as input`() {
             val ris = testInput["multiple RIS entries"]!!
@@ -106,4 +106,5 @@ class RisConverterServiceTest {
             assertEquals(3, study.size)
         }
 }
+
 }
