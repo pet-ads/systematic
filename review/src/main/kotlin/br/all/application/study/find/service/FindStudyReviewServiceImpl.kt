@@ -1,27 +1,29 @@
 package br.all.application.study.find.service
 
-import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.review.repository.fromDto
 import br.all.application.shared.exceptions.EntityNotFoundException
-import br.all.application.shared.presenter.PreconditionChecker
+import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.find.presenter.FindStudyReviewPresenter
 import br.all.application.study.find.service.FindStudyReviewService.RequestModel
 import br.all.application.study.find.service.FindStudyReviewService.ResponseModel
 import br.all.application.study.repository.StudyReviewRepository
-import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.SystematicStudyId
+import br.all.application.user.CredentialsService
+import br.all.domain.model.review.SystematicStudy
 
 class FindStudyReviewServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,
-    private val credentialsService: ResearcherCredentialsService,
+    private val credentialsService: CredentialsService,
 ) : FindStudyReviewService {
 
     override fun findOne(presenter: FindStudyReviewPresenter, request: RequestModel) {
-        val researcherId = ResearcherId(request.researcherId)
-        val systematicStudyId = SystematicStudyId(request.systematicStudyId)
-        val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
+        val user = credentialsService.loadCredentials(request.userId)?.toUser()
+
+        val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
+        val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
         if(presenter.isDone()) return
 
@@ -31,6 +33,6 @@ class FindStudyReviewServiceImpl(
             presenter.prepareFailView(EntityNotFoundException(message))
             return
         }
-        presenter.prepareSuccessView(ResponseModel(request.researcherId, studyReview))
+        presenter.prepareSuccessView(ResponseModel(request.userId, studyReview))
     }
 }

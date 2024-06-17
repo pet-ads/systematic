@@ -1,16 +1,14 @@
 package br.all.application.search.find
 
-import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.search.CreateSearchSessionServiceImpl
-import br.all.application.search.create.CreateSearchSessionPresenter
 import br.all.application.search.find.presenter.FindAllSearchSessionsPresenter
 import br.all.application.search.find.service.FindAllSearchSessionsServiceImpl
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.search.util.TestDataFactory
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
-import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.user.CredentialsService
+import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -31,24 +29,24 @@ class FindAllSearchSessionsServiceImplTest {
     private lateinit var searchSessionRepository: SearchSessionRepository
 
     @MockK
-    private lateinit var credentialsService: ResearcherCredentialsService
+    private lateinit var credentialService: CredentialsService
 
     @MockK(relaxed = true)
     private lateinit var presenter: FindAllSearchSessionsPresenter
 
     private lateinit var sut: FindAllSearchSessionsServiceImpl
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     @BeforeEach
     fun setUp() = run {
         factory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
-            credentialsService,
+            credentialService,
             systematicStudyRepository,
-            factory.researcherId,
-            factory.systematicStudyId,
+            factory.userId,
+            factory.systematicStudyId
         )
     }
 
@@ -60,7 +58,7 @@ class FindAllSearchSessionsServiceImplTest {
             sut = FindAllSearchSessionsServiceImpl(
                 systematicStudyRepository,
                 searchSessionRepository,
-                credentialsService
+                credentialService
             )
             run { preconditionCheckerMocking.makeEverythingWork() }
         }
@@ -91,7 +89,7 @@ class FindAllSearchSessionsServiceImplTest {
             sut = FindAllSearchSessionsServiceImpl(
                 systematicStudyRepository,
                 searchSessionRepository,
-                credentialsService
+                credentialService
             )
         }
         @Test
@@ -108,7 +106,7 @@ class FindAllSearchSessionsServiceImplTest {
 
         @Test
         fun `should prepare fail view when the researcher is unauthenticated`() {
-            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            preconditionCheckerMocking.makeUserUnauthenticated()
 
             sut.findAllSearchSessions(presenter, factory.findAllRequestModel())
             verify {
@@ -119,7 +117,7 @@ class FindAllSearchSessionsServiceImplTest {
         @Test
         fun `should prepare fail view when the researcher is unauthorized`() {
 
-            preconditionCheckerMocking.makeResearcherUnauthorized()
+            preconditionCheckerMocking.makeUserUnauthorized()
 
             sut.findAllSearchSessions(presenter, factory.findAllRequestModel())
             verify {

@@ -1,12 +1,12 @@
 package br.all.application.review.find.services
 
-import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.find.presenter.FindAllSystematicStudyPresenter
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.TestDataFactory
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
-import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.user.CredentialsService
+import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -23,19 +23,19 @@ class FindAllSystematicStudiesServiceImplTest {
     @MockK
     private lateinit var repository: SystematicStudyRepository
     @MockK
-    private lateinit var credentialsService: ResearcherCredentialsService
+    private lateinit var credentialsService: CredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: FindAllSystematicStudyPresenter
     @InjectMockKs
     private lateinit var sut: FindAllSystematicStudiesServiceImpl
 
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     @BeforeEach
     fun setUp() = run {
         factory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             repository,
@@ -119,7 +119,7 @@ class FindAllSystematicStudiesServiceImplTest {
         fun `should prepare fail view when the researcher is unauthenticated`() {
             val (researcher) = factory
 
-            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            preconditionCheckerMocking.makeUserUnauthenticated()
 
             sut.findAllByCollaborator(presenter, researcher)
             verifyOrder {
@@ -132,7 +132,7 @@ class FindAllSystematicStudiesServiceImplTest {
         fun `should prepare fail view when the researcher is unauthorized`() {
             val (researcher) = factory
 
-            preconditionCheckerMocking.makeResearcherUnauthorized()
+            preconditionCheckerMocking.makeUserUnauthorized()
 
             sut.findAllByCollaborator(presenter, researcher)
             verifyOrder {

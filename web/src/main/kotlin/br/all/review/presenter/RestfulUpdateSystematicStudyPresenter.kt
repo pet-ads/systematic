@@ -3,7 +3,7 @@ package br.all.review.presenter
 import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter
 import br.all.application.review.update.services.UpdateSystematicStudyService.ResponseModel
 import br.all.review.controller.SystematicStudyController
-import br.all.review.controller.SystematicStudyController.PostRequest
+import br.all.review.requests.PostRequest
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
@@ -15,18 +15,18 @@ class RestfulUpdateSystematicStudyPresenter: UpdateSystematicStudyPresenter {
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
-        val restfulResponse = ViewModel(response.researcherId, response.systematicStudy)
+        val restfulResponse = ViewModel(response.userId, response.systematicStudy)
 
         val self = linkTo<SystematicStudyController> {
-            findSystematicStudy(response.researcherId, response.systematicStudy)
+            findSystematicStudy(response.systematicStudy)
         }.withSelfRel()
 
-        restfulResponse.add(self, postSystematicStudy(response.researcherId))
+        restfulResponse.add(self, postSystematicStudy())
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
-    private fun postSystematicStudy(researcherId: UUID) = linkTo<SystematicStudyController> {
-        postSystematicStudy(researcherId, PostRequest("title", "description", setOf(UUID.randomUUID())))
+    private fun postSystematicStudy() = linkTo<SystematicStudyController> {
+        postSystematicStudy(PostRequest("title", "description", setOf(UUID.randomUUID())))
     }.withSelfRel()
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }

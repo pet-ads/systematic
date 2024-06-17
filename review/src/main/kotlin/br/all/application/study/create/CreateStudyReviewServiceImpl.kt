@@ -1,30 +1,32 @@
 package br.all.application.study.create
 
-import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.presenter.PreconditionChecker
+import br.all.application.review.repository.fromDto
+import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.create.CreateStudyReviewService.RequestModel
 import br.all.application.study.create.CreateStudyReviewService.ResponseModel
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromStudyRequestModel
 import br.all.application.study.repository.toDto
-import br.all.domain.model.researcher.ResearcherId
-import br.all.domain.model.review.SystematicStudyId
+import br.all.application.user.CredentialsService
+import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.study.StudyReview
 import br.all.domain.services.IdGeneratorService
 
 class CreateStudyReviewServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,
-    private val credentialsService: ResearcherCredentialsService,
+    private val credentialsService: CredentialsService,
     private val idGenerator: IdGeneratorService
 ) : CreateStudyReviewService {
 
     override fun createFromStudy(presenter: CreateStudyReviewPresenter, request: RequestModel) {
-        val researcherId = ResearcherId(request.researcherId)
-        val systematicStudyId = SystematicStudyId(request.systematicStudyId)
-        val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
+        val user = credentialsService.loadCredentials(request.userId)?.toUser()
+
+        val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
+        val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
         if(presenter.isDone()) return
 
@@ -32,7 +34,7 @@ class CreateStudyReviewServiceImpl(
         val studyReview = StudyReview.fromStudyRequestModel(studyId, request)
 
         studyReviewRepository.saveOrUpdate(studyReview.toDto())
-        presenter.prepareSuccessView(ResponseModel(request.researcherId, request.systematicStudyId, studyId))
+        presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, studyId))
     }
 }
 

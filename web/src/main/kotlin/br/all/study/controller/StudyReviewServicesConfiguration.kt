@@ -1,24 +1,21 @@
 package br.all.study.controller
 
-import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.question.repository.QuestionRepository
-import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.create.CreateStudyReviewServiceImpl
 import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresenter
 import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
-import br.all.application.study.find.service.FindAllStudyReviewsServiceImpl
 import br.all.application.study.find.presenter.FindStudyReviewPresenter
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceServiceImpl
+import br.all.application.study.find.service.FindAllStudyReviewsServiceImpl
 import br.all.application.study.find.service.FindStudyReviewServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.update.implementation.*
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresenter
+import br.all.application.user.CredentialsService
 import br.all.domain.services.IdGeneratorService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import br.all.application.study.update.implementation.AnswerRiskOfBiasQuestionImpl
-
 
 @Configuration
 class StudyReviewServicesConfiguration {
@@ -27,7 +24,7 @@ class StudyReviewServicesConfiguration {
     fun createStudyReviewService(
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
-        credentialsService: ResearcherCredentialsService,
+        credentialsService: CredentialsService,
         idGenerator: IdGeneratorService
     ) = CreateStudyReviewServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService, idGenerator
@@ -37,7 +34,7 @@ class StudyReviewServicesConfiguration {
     fun updateStudyReviewService(
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
-        credentialsService: ResearcherCredentialsService,
+        credentialsService: CredentialsService,
     ) = UpdateStudyReviewServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService,
     )
@@ -47,7 +44,7 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         findAllStudyReviewsPresenter: FindAllStudyReviewsPresenter,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindAllStudyReviewsServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
@@ -58,7 +55,7 @@ class StudyReviewServicesConfiguration {
         studyReviewRepository: StudyReviewRepository,
         //protocolRepository: ProtocolRepository,
         findAllStudyReviewsBySourcePresenter: FindAllStudyReviewsBySourcePresenter,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindAllStudyReviewsBySourceServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
@@ -68,7 +65,7 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         findStudyReviewPresenter: FindStudyReviewPresenter,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindStudyReviewServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
@@ -78,7 +75,7 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = UpdateStudyReviewSelectionService(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
@@ -88,7 +85,7 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = UpdateStudyReviewExtractionService(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
@@ -98,7 +95,7 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = UpdateStudyReviewPriorityService(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
@@ -108,17 +105,21 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = MarkAsDuplicatedServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
     @Bean
-    fun answerRiskOfBiasQuestionService(
+    fun riskOfBiasService(
         studyReviewRepository: StudyReviewRepository,
         questionRepository: QuestionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService
-    ) = AnswerRiskOfBiasQuestionImpl(studyReviewRepository, questionRepository,
-        systematicStudyRepository, credentialsService)
+        credentialsService: CredentialsService,
+    ) = AnswerRiskOfBiasQuestionImpl(
+        studyReviewRepository,
+        questionRepository,
+        systematicStudyRepository,
+        credentialsService
+    )
 }

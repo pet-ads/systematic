@@ -3,12 +3,15 @@ package br.all.review.controller
 import br.all.application.review.create.CreateSystematicStudyService
 import br.all.application.review.find.services.FindAllSystematicStudiesService
 import br.all.application.review.find.services.FindAllSystematicStudiesService.FindByOwnerRequest
-import br.all.application.review.find.services.FindOneSystematicStudyService
+import br.all.application.review.find.services.FindSystematicStudyService
 import br.all.application.review.update.services.UpdateSystematicStudyService
 import br.all.review.presenter.RestfulCreateSystematicStudyPresenter
 import br.all.review.presenter.RestfulFindAllSystematicStudiesPresenter
-import br.all.review.presenter.RestfulFindOneSystematicStudyPresenter
+import br.all.review.presenter.RestfulFindSystematicStudyPresenter
 import br.all.review.presenter.RestfulUpdateSystematicStudyPresenter
+import br.all.review.requests.PostRequest
+import br.all.review.requests.PutRequest
+import br.all.security.service.AuthenticationInfoService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -18,32 +21,17 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import br.all.application.review.create.CreateSystematicStudyService.RequestModel as CreateRequestModel
-import br.all.application.review.find.services.FindOneSystematicStudyService.RequestModel as FindOneRequestModel
-import br.all.application.review.update.services.UpdateSystematicStudyService.RequestModel as UpdateRequestModel
+import br.all.application.review.find.services.FindSystematicStudyService.RequestModel as FindOneRequestModel
 
 @RestController
-@RequestMapping("/api/v1/researcher/{researcherId}/systematic-study")
+@RequestMapping("/api/v1/systematic-study")
 class SystematicStudyController(
     private val createSystematicStudyService: CreateSystematicStudyService,
-    private val findOneSystematicStudyServiceImpl: FindOneSystematicStudyService,
+    private val findSystematicStudyServiceImpl: FindSystematicStudyService,
     private val findAllSystematicStudiesService: FindAllSystematicStudiesService,
     private val updateSystematicStudyService: UpdateSystematicStudyService,
+    private val authenticationInfoService: AuthenticationInfoService
 ) {
-
-    data class PostRequest(
-        val title: String,
-        val description: String,
-        val collaborators: Set<UUID>,
-    ) {
-        fun toCreateRequestModel(researcherId: UUID) =
-            CreateRequestModel(researcherId, title, description, collaborators)
-    }
-
-    data class PutRequest(val title: String?, val description: String?) {
-        fun toUpdateRequestModel(researcherId: UUID, systematicStudyId: UUID) =
-            UpdateRequestModel(researcherId, systematicStudyId, title, description)
-    }
 
     @PostMapping
     @Operation(summary = "Create a systematic study")
@@ -54,14 +42,20 @@ class SystematicStudyController(
                 responseCode = "400",
                 description = "Fail creating a systematic study - invalid systematic study"
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a systematic study - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a systematic study - unauthorized user"
+            ),
         ]
     )
-    fun postSystematicStudy(
-        @PathVariable researcherId: UUID,
-        @RequestBody request: PostRequest,
-    ): ResponseEntity<*> {
+    fun postSystematicStudy(@RequestBody request: PostRequest): ResponseEntity<*> {
         val presenter = RestfulCreateSystematicStudyPresenter()
-        val requestModel = request.toCreateRequestModel(researcherId)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val requestModel = request.toCreateRequestModel(userId)
 
         createSystematicStudyService.create(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -75,28 +69,31 @@ class SystematicStudyController(
                 responseCode = "200", description = "Success getting a systematic study by id",
                 content = [Content(
                     mediaType = "application/json",
-                    schema = Schema(implementation = FindOneSystematicStudyService.ResponseModel::class)
+                    schema = Schema(implementation = FindSystematicStudyService.ResponseModel::class)
                 )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a systematic study - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail getting systematic study - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "404",
                 description = "Fail getting systematic study - not found",
                 content = [Content(schema = Schema(hidden = true))]
             ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Fail getting systematic study - unauthorized researcher",
-                content = [Content(schema = Schema(hidden = true))]
-            )
         ]
     )
-    fun findSystematicStudy(
-        @PathVariable researcherId: UUID,
-        @PathVariable systematicStudyId: UUID,
-    ): ResponseEntity<*> {
-        val presenter = RestfulFindOneSystematicStudyPresenter()
-        val request = FindOneRequestModel(researcherId, systematicStudyId)
-        findOneSystematicStudyServiceImpl.findById(presenter, request)
+    fun findSystematicStudy(@PathVariable systematicStudyId: UUID): ResponseEntity<*> {
+        val presenter = RestfulFindSystematicStudyPresenter()
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindOneRequestModel(userId, systematicStudyId)
+
+        findSystematicStudyServiceImpl.findById(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -113,15 +110,22 @@ class SystematicStudyController(
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Fail getting all systematic studies of a given reviewer - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
                 responseCode = "403",
-                description = "Fail getting all systematic studies of a given reviewer - unauthorized researcher",
+                description = "Fail getting all systematic studies of a given reviewer - unauthorized user",
                 content = [Content(schema = Schema(hidden = true))]
             )
         ]
     )
-    fun findAllSystematicStudies(@PathVariable researcherId: UUID): ResponseEntity<*> {
+    fun findAllSystematicStudies(): ResponseEntity<*> {
         val presenter = RestfulFindAllSystematicStudiesPresenter()
-        findAllSystematicStudiesService.findAllByCollaborator(presenter, researcherId)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+
+        findAllSystematicStudiesService.findAllByCollaborator(presenter, userId)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -138,18 +142,21 @@ class SystematicStudyController(
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Fail getting all systematic studies of a given owner - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
                 responseCode = "403",
-                description = "Fail getting all systematic studies of a given owner - unauthorized researcher",
+                description = "Fail getting all systematic studies of a given owner - unauthorized user",
                 content = [Content(schema = Schema(hidden = true))]
             )
         ]
     )
-    fun findAllSystematicStudiesByOwner(
-        @PathVariable researcherId: UUID,
-        @PathVariable ownerId: UUID,
-    ): ResponseEntity<*> {
+    fun findAllSystematicStudiesByOwner(@PathVariable ownerId: UUID): ResponseEntity<*> {
         val presenter = RestfulFindAllSystematicStudiesPresenter()
-        val request = FindByOwnerRequest(researcherId, ownerId)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindByOwnerRequest(userId, ownerId)
 
         findAllSystematicStudiesService.findAllByOwner(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -160,20 +167,26 @@ class SystematicStudyController(
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Success updating an existing systematic study"),
-            ApiResponse(responseCode = "404", description = "Fail updating an existing systematic study - not found"),
             ApiResponse(
                 responseCode = "400",
                 description = "Fail updating an existing systematic study - invalid systematic study"
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail updating an existing systematic study - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail updating an existing systematic study - unauthorized user"
+            ),
+            ApiResponse(responseCode = "404", description = "Fail updating an existing systematic study - not found"),
         ]
     )
-    fun updateSystematicStudy(
-        @PathVariable researcherId: UUID,
-        @PathVariable systematicStudyId: UUID,
-        @RequestBody request: PutRequest,
-    ): ResponseEntity<*> {
+    fun updateSystematicStudy(@PathVariable systematicStudyId: UUID,
+                              @RequestBody request: PutRequest): ResponseEntity<*> {
         val presenter = RestfulUpdateSystematicStudyPresenter()
-        val requestModel = request.toUpdateRequestModel(researcherId, systematicStudyId)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val requestModel = request.toUpdateRequestModel(userId, systematicStudyId)
 
         updateSystematicStudyService.update(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)

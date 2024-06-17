@@ -1,14 +1,14 @@
 package br.all.search.controller
 
-import br.all.application.review.update.services.UpdateSystematicStudyService
 import br.all.application.search.create.CreateSearchSessionService
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindSearchSessionService
 import br.all.application.search.find.service.FindAllSearchSessionsService
 import br.all.application.search.update.UpdateSearchSessionService
-import br.all.domain.model.protocol.SearchSource
 import br.all.search.presenter.*
+import br.all.security.service.AuthenticationInfoService
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -18,20 +18,20 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import java.time.LocalDateTime
 import java.util.*
 import br.all.application.search.create.CreateSearchSessionService.RequestModel as CreateRequest
 import br.all.application.search.find.service.FindAllSearchSessionsService.RequestModel as FindAllRequest
 
 @RestController
-@RequestMapping("api/v1/researcher/{researcherId}/systematic-study/{systematicStudyId}")
+@RequestMapping("api/v1/systematic-study/{systematicStudyId}")
 class SearchSessionController(
     val createService: CreateSearchSessionService,
     val findOneService: FindSearchSessionService,
     val findAllService: FindAllSearchSessionsService,
     val findAllBySourceService: FindAllSearchSessionsBySourceService,
     val updateService: UpdateSearchSessionService,
-    val mapper: ObjectMapper
+    val mapper: ObjectMapper,
+    val authenticationInfoService: AuthenticationInfoService
 ) {
 
     data class PutRequest(
@@ -39,9 +39,9 @@ class SearchSessionController(
         val additionalInfo: String?,
         val source: String?
     ) {
-        fun toUpdateRequestModel(researcherId: UUID, systematicStudyId: UUID, sessionId: UUID) =
+        fun toUpdateRequestModel(userId: UUID, systematicStudyId: UUID, sessionId: UUID) =
             UpdateSearchSessionService.RequestModel(
-                researcherId, systematicStudyId, sessionId, searchString, additionalInfo, source
+                userId, systematicStudyId, sessionId, searchString, additionalInfo, source
             )
     }
 
@@ -58,23 +58,34 @@ class SearchSessionController(
                 description = "Fail creating a search session in the systematic study - invalid BibTeX format"
             ),
             ApiResponse(
-                responseCode = "404",
-                description = "Fail creating a search session in the systematic study - invalid request body"
+                responseCode = "401",
+                description = "Fail creating a search session in the systematic study - unauthenticated user"
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail creating a search session in the systematic study - unauthorized researcher"
-            )
+                description = "Fail creating a search session in the systematic study - unauthorized user"
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail creating a search session in the systematic study - invalid request body"
+            ),
         ]
     )
     fun createSearchSession(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @RequestParam file: MultipartFile,
         @RequestParam data: String,
     ): ResponseEntity<*> {
         val presenter = RestfulCreateSearchSessionPresenter()
-        val request = mapper.readValue(data, CreateRequest::class.java)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val jsonData: Map<String, Any> = mapper.readValue(data)
+        val request = CreateRequest(
+            userId = userId,
+            systematicStudyId = systematicStudyId,
+            source = jsonData["source"] as String,
+            searchString = jsonData["searchString"] as String,
+            additionalInfo = jsonData["additionalInfo"] as? String
+        )
         createService.createSession(presenter, request, String(file.bytes))
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -91,14 +102,22 @@ class SearchSessionController(
                     schema = Schema(implementation = FindAllSearchSessionsService.ResponseModel::class)
                 )]
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail finding search sessions in the systematic study - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail finding search sessions in the systematic study - unauthorized user"
+            )
         ]
     )
     fun findAllSearchSessions(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
     ): ResponseEntity<*> {
         val presenter = RestfulFindAllSearchSessionsPresenter()
-        val request = FindAllRequest(researcherId, systematicStudyId)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindAllRequest(userId, systematicStudyId)
         findAllService.findAllSearchSessions(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -116,49 +135,101 @@ class SearchSessionController(
                 )]
             ),
             ApiResponse(
-                responseCode = "404",
-                description = "Fail getting an existing search session in the systematic study - not found",
+                responseCode = "400",
+                description = "Fail getting an existing search session in the systematic study - invalid id format",
                 content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
-                responseCode = "400",
-                description = "Fail getting an existing search session in the systematic study - invalid id format",
+                responseCode = "401",
+                description = "Fail finding search sessions in the systematic study - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail finding search sessions in the systematic study - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail getting an existing search session in the systematic study - not found",
                 content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
     fun findSearchSession(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @PathVariable sessionId: UUID,
     ): ResponseEntity<*> {
         val presenter = RestfulFindSearchSessionPresenter()
-        val request = FindSearchSessionService.RequestModel(researcherId, systematicStudyId, sessionId)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindSearchSessionService.RequestModel(userId, systematicStudyId, sessionId)
         findOneService.findOneSession(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @GetMapping("/search-session-source/{source}")
+    @Operation(summary = "Get all search sessions which have a given source of a systematic review")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success getting all search sessions in the systematic study. Either found all search sessions or none",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = FindAllSearchSessionsBySourceService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail finding search sessions in the systematic study - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail finding search sessions in the systematic study - unauthorized user"
+            )
+        ]
+    )
     fun findSearchSessionsBySource(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @PathVariable source: String
     ): ResponseEntity<*> {
         val presenter = RestfulFindAllSearchSessionsBySourcePresenter()
-        val request = FindAllSearchSessionsBySourceService.RequestModel(researcherId, systematicStudyId, source)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindAllSearchSessionsBySourceService.RequestModel(userId, systematicStudyId, source)
         findAllBySourceService.findAllSessionsBySource(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
+    @Operation(summary = "Update an existing search session of a systematic study")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success updating an existing search session of a systematic study"
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail to update an existing search session - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail to update an existing search session - unauthorized user"
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail to update an existing search session - study not found"
+            ),
+        ]
+    )
     @PutMapping("/search-session/{sessionId}")
     fun updateSearchSession(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @PathVariable sessionId: UUID,
         @RequestBody request: PutRequest
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateSearchSessionPresenter()
-        val requestModel = request.toUpdateRequestModel(researcherId, systematicStudyId, sessionId)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val requestModel = request.toUpdateRequestModel(userId, systematicStudyId, sessionId)
 
         updateService.updateSession(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)

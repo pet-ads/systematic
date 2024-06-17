@@ -1,5 +1,8 @@
 package br.all.application.search.util
 
+import br.all.application.protocol.repository.CriterionDto
+import br.all.application.protocol.repository.PicocDto
+import br.all.application.protocol.repository.ProtocolDto
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindAllSearchSessionsService
 import br.all.application.search.find.service.FindSearchSessionService
@@ -7,7 +10,7 @@ import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.update.UpdateSearchSessionService
 import br.all.application.search.update.UpdateSearchSessionService.RequestModel
 import br.all.domain.model.protocol.SearchSource
-import br.all.domain.model.researcher.ResearcherId
+import br.all.domain.model.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
@@ -19,7 +22,7 @@ import br.all.application.search.create.CreateSearchSessionService.RequestModel 
 import br.all.application.search.create.CreateSearchSessionService.ResponseModel as CreateResponseModel
 
 class TestDataFactory {
-    val researcherId: UUID = UUID.randomUUID()
+    val userId: UUID = UUID.randomUUID()
     val systematicStudyId: UUID = UUID.randomUUID()
     val searchSessionId: UUID = UUID.randomUUID()
     val source: String = "TestSearchSource"
@@ -27,13 +30,13 @@ class TestDataFactory {
     private val faker = Faker()
 
     fun createRequestModel(
-        researcherId: UUID = this.researcherId,
+        userId: UUID = this.userId,
         systematicStudyId: UUID = this.systematicStudyId,
         source: String = faker.paragraph(5),
         searchString: String = faker.paragraph(5),
         additionalInfo: String? = faker.paragraph(5),
     ) = CreateRequestModel(
-        researcherId,
+        userId,
         systematicStudyId,
         source,
         searchString,
@@ -47,7 +50,7 @@ class TestDataFactory {
     ) = SearchSession(
         SearchSessionID(sessionId),
         SystematicStudyId(request.systematicStudyId),
-        ResearcherId(request.researcherId),
+        ResearcherId(request.userId),
         request.searchString,
         request.additionalInfo ?: "",
         timestamp,
@@ -55,36 +58,36 @@ class TestDataFactory {
     )
 
     fun createResponseModel(
-        researcherId: UUID = this.researcherId,
+        userId: UUID = this.userId,
         systematicStudyId: UUID = this.systematicStudyId,
         sessionId: UUID = this.searchSessionId,
-    ) = CreateResponseModel(researcherId, systematicStudyId, sessionId)
+    ) = CreateResponseModel(userId, systematicStudyId, sessionId)
 
     fun findOneRequestModel(
-        researcherId: UUID = this.researcherId,
+        userId: UUID = this.userId,
         systematicStudyId: UUID = this.systematicStudyId,
         sessionId: UUID = this.searchSessionId
     ) = FindSearchSessionService.RequestModel(
-        researcherId,
+        userId,
         systematicStudyId,
         sessionId
     )
 
     fun findAllRequestModel(
-        researcherId: UUID = this.researcherId,
+        userId: UUID = this.userId,
         systematicStudyId: UUID = this.systematicStudyId,
-    ) = FindAllSearchSessionsService.RequestModel(researcherId, systematicStudyId)
+    ) = FindAllSearchSessionsService.RequestModel(userId, systematicStudyId)
 
     fun findAllBySourceRequestModel(
-        researcherId: UUID = this.researcherId,
+        userId: UUID = this.userId,
         systematicStudyId: UUID = this.systematicStudyId,
         source: String = this.source
-    ) = FindAllSearchSessionsBySourceService.RequestModel(researcherId, systematicStudyId, source)
+    ) = FindAllSearchSessionsBySourceService.RequestModel(userId, systematicStudyId, source)
 
     fun generateDto(
         id: UUID = searchSessionId,
         systematicStudyId: UUID = this.systematicStudyId,
-        researcherId: UUID = this.researcherId,
+        userId: UUID = this.userId,
         searchString: String = "SearchString",
         additionalInfo: String = "",
         timeStamp: LocalDateTime = LocalDateTime.now(),
@@ -92,25 +95,67 @@ class TestDataFactory {
     ) = SearchSessionDto(
         id,
         systematicStudyId,
-        researcherId,
+        userId,
         searchString,
         additionalInfo,
         timeStamp,
         source
     )
 
+    fun generateProtocol(
+        id: UUID = UUID.randomUUID(),
+        systematicStudy: UUID = this.systematicStudyId,
+        goal: String = "Goal",
+        justification: String = "Justification",
+        researchQuestion: Set<String> = setOf("question"),
+        keyWords: Set<String> = setOf("keyWords"),
+        searchString: String = "searchString",
+        informationSources: Set<String> = setOf(this.source),
+        sourcesSelectionCriteria: String = "criteria",
+        searchMethod: String = "method",
+        studiesLanguage: Set<String> = setOf("English"),
+        studyTypeDefinition: String = "Definition",
+        selectionProcess: String = "Process",
+        eligibilityCriteria: Set<CriterionDto> = setOf(CriterionDto("Description", "Type")),
+        dataCollectionProcess: String = "Collection",
+        analysisAndSynthesisProcess: String = "SynthesisProcess",
+        extractionQuestions: Set<UUID> = setOf(UUID.randomUUID()),
+        robQuestions: Set<UUID> = setOf(UUID.randomUUID()),
+        picoc: PicocDto = PicocDto("10000","Intevention", "Control", "Outcome", "")
+    ) = ProtocolDto(
+        id,
+        systematicStudy,
+        goal,
+        justification,
+        researchQuestion,
+        keyWords,
+        searchString,
+        informationSources,
+        sourcesSelectionCriteria,
+        searchMethod,
+        studiesLanguage,
+        studyTypeDefinition,
+        selectionProcess,
+        eligibilityCriteria,
+        dataCollectionProcess,
+        analysisAndSynthesisProcess,
+        extractionQuestions,
+        robQuestions,
+        picoc
+    )
+
     fun findOneResponseModel(
-        researcherId: UUID = this.researcherId,
+        userId: UUID = this.userId,
     ) = FindSearchSessionService.ResponseModel(
-        researcherId,
+        userId,
         (generateDto(id = this.searchSessionId, timeStamp = LocalDateTime.now()))
     )
 
     fun findAllResponseModel(
         amountOfSearchSessions: Int,
-        researcherId: UUID = this.researcherId,
+        userId: UUID = this.userId,
     ) = FindAllSearchSessionsService.ResponseModel(
-        researcherId,
+        userId,
         systematicStudyId,
         List(amountOfSearchSessions) {
             generateDto(
@@ -122,10 +167,10 @@ class TestDataFactory {
 
     fun findAllBySourceResponseModel(
         amountOfSearchSessions: Int,
-        researcherId: UUID = this.researcherId,
+        userId: UUID = this.userId,
         source: String = this.source
     ) = FindAllSearchSessionsBySourceService.ResponseModel(
-        researcherId,
+        userId,
         systematicStudyId,
         source,
         List(amountOfSearchSessions) {
@@ -138,36 +183,36 @@ class TestDataFactory {
     )
 
     fun emptyFindAllResponseModel(
-        researcherId: UUID = this.researcherId,
+        userId: UUID = this.userId,
     ) = FindAllSearchSessionsService.ResponseModel(
-        researcherId,
+        userId,
         systematicStudyId,
         searchSessions = emptyList(),
     )
 
     fun emptyFindBySourceResponseModel(
-        researcherId: UUID = this.researcherId,
+        userId: UUID = this.userId,
     ) = FindAllSearchSessionsBySourceService.ResponseModel(
-        researcherId,
+        userId,
         systematicStudyId,
         source,
         searchSessions = emptyList()
     )
 
     fun updateRequestModel(
-        researcher: UUID = researcherId,
+        userId: UUID = this.userId,
         systematicStudy: UUID = systematicStudyId,
         session: UUID = searchSessionId,
         searchString: String = "SearchString",
         additionalInfo: String = "",
         source: String = "SearchSource"
-    ) = RequestModel(researcher, systematicStudy, session, searchString, additionalInfo, source)
+    ) = RequestModel(userId, systematicStudy, session, searchString, additionalInfo, source)
 
     fun updateResponseModel(
-        researcherId: UUID = this.researcherId,
+        userId: UUID = this.userId,
         systematicStudyId: UUID = this.systematicStudyId,
         sessionId: UUID = this.searchSessionId,
-    ) = UpdateSearchSessionService.ResponseModel(researcherId, systematicStudyId, sessionId)
+    ) = UpdateSearchSessionService.ResponseModel(userId, systematicStudyId, sessionId)
 
     fun bibFileContent() =
         """
@@ -209,7 +254,7 @@ class TestDataFactory {
             }
         """
 
-    operator fun component1() = researcherId
+    operator fun component1() = userId
 
     operator fun component2() = systematicStudyId
 

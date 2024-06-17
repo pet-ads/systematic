@@ -15,10 +15,10 @@ class RestfulAnswerRiskOfBiasQuestionPresenter : AnswerRiskOfBiasQuestionPresent
     var responseEntity: ResponseEntity<*>?= null
 
     override fun prepareSuccessView(response: ResponseModel) {
-        val viewModel = ViewModel(response.researcherId, response.systematicStudyId, response.studyReviewId)
+        val viewModel = ViewModel(response.userId, response.systematicStudyId, response.studyReviewId)
 
         val link = linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId, response.systematicStudyId, response.studyReviewId)
+            findStudyReview(response.systematicStudyId, response.studyReviewId)
         }.withSelfRel()
         viewModel.add(link)
 

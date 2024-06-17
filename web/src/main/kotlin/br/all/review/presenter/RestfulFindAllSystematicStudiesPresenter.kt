@@ -4,7 +4,7 @@ import br.all.application.review.find.presenter.FindAllSystematicStudyPresenter
 import br.all.application.review.find.services.FindAllSystematicStudiesService.ResponseModel
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.review.controller.SystematicStudyController
-import br.all.review.controller.SystematicStudyController.PostRequest
+import br.all.review.requests.PostRequest
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
@@ -17,30 +17,30 @@ class RestfulFindAllSystematicStudiesPresenter: FindAllSystematicStudyPresenter 
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(
-            response.researcherId,
+            response.userId,
             response.systematicStudies.size,
             response.systematicStudies,
             response.ownerId,
         )
 
         val self = with(response) {
-            ownerId?.let { linkToFindAllByOwner(researcherId, it) } ?: linkToFindAll(researcherId)
+            ownerId?.let { linkToFindAllByOwner(it) } ?: linkToFindAll()
         }
 
-        restfulResponse.add(self, postSystematicStudy(response.researcherId))
+        restfulResponse.add(self, postSystematicStudy())
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
-    private fun linkToFindAllByOwner(researcherId: UUID, ownerId: UUID) = linkTo<SystematicStudyController> {
-        findAllSystematicStudiesByOwner(researcherId, ownerId)
+    private fun linkToFindAllByOwner(ownerId: UUID) = linkTo<SystematicStudyController> {
+        findAllSystematicStudiesByOwner(ownerId)
     }.withSelfRel()
 
-    private fun linkToFindAll(researcherId: UUID) = linkTo<SystematicStudyController> {
-        findAllSystematicStudies(researcherId)
+    private fun linkToFindAll() = linkTo<SystematicStudyController> {
+        findAllSystematicStudies()
     }.withSelfRel()
 
-    private fun postSystematicStudy(researcherId: UUID) = linkTo<SystematicStudyController> {
-        postSystematicStudy(researcherId, PostRequest("title", "description", setOf(UUID.randomUUID())))
+    private fun postSystematicStudy() = linkTo<SystematicStudyController> {
+        postSystematicStudy(PostRequest("title", "description", setOf(UUID.randomUUID())))
     }.withSelfRel()
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }

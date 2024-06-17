@@ -1,11 +1,11 @@
 package br.all.application.shared.presenter
 
-import br.all.application.researcher.credentials.ResearcherCredentialsService
+import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
-import br.all.domain.model.researcher.ResearcherId
+import br.all.domain.model.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 
 class PreconditionChecker(
@@ -24,6 +24,8 @@ class PreconditionChecker(
         if (!reviewRepository.hasReviewer(systematicStudyId.value(), researcherId.value))
             presenter.prepareFailView(UnauthorizedUserException("User of id $researcherId is not a reviewer."))
     }
+
+
 
     fun prepareIfUnauthenticatedOrUnauthorized(presenter: GenericPresenter<*>, researcherId: ResearcherId) {
         if (!credentialsService.isAuthenticated(researcherId)) {

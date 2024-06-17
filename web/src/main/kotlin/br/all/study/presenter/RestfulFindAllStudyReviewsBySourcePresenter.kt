@@ -1,19 +1,16 @@
 package br.all.study.presenter
 
-import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresenter
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService.ResponseModel
 import br.all.application.study.repository.StudyReviewDto
 import br.all.shared.error.createErrorResponseFrom
 import br.all.study.controller.StudyReviewController
+import br.all.study.requests.PostStudyReviewRequest
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
 import java.util.*
 
 @Component
@@ -22,7 +19,7 @@ class RestfulFindAllStudyReviewsBySourcePresenter : FindAllStudyReviewsBySourceP
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
-        val (researcherId, systematicStudyId, searchSource, studyReviews) = response
+        val (_, systematicStudyId, searchSource, studyReviews) = response
         val restfulResponse = ViewModel(systematicStudyId, searchSource, studyReviews.size, studyReviews)
 
         val selfRef = linkSelfRef(response)
@@ -35,22 +32,19 @@ class RestfulFindAllStudyReviewsBySourcePresenter : FindAllStudyReviewsBySourceP
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<StudyReviewController> {
-            findAllStudyReviewsBySource(response.researcherId, response.systematicStudyId, response.searchSource)
+            findAllStudyReviewsBySource(response.systematicStudyId, response.searchSource)
         }.withSelfRel()
 
     private fun linkFindAllStudiesReviews(response: ResponseModel) =
         linkTo<StudyReviewController> {
-            findAllStudyReviews(response.researcherId, response.systematicStudyId)
+            findAllStudyReviews(response.systematicStudyId)
         }.withRel("allStudyReview")
 
     private fun linkCreateStudyReview(response: ResponseModel) =
         linkTo<StudyReviewController> {
             createStudyReview(
-                response.researcherId,
                 response.systematicStudyId,
-                request = CreateStudyReviewService.RequestModel(
-                    researcherId = response.researcherId,
-                    systematicStudyId = response.systematicStudyId,
+                PostStudyReviewRequest(
                     type = "",
                     title = "",
                     year = 2024,

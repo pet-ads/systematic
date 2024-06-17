@@ -1,14 +1,14 @@
 package br.all.application.study.update
 
 import br.all.application.question.repository.QuestionRepository
-import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.update.implementation.AnswerRiskOfBiasQuestionImpl
 import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionPresenter
 import br.all.application.study.util.TestDataFactory
-import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.user.CredentialsService
+import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -23,29 +23,28 @@ import kotlin.test.assertFailsWith
 class AnswerRiskOfBiasQuestionImplTest {
 
     @MockK(relaxed = true) private lateinit var studyReviewRepository: StudyReviewRepository
-    @MockK(relaxUnitFun = true) private lateinit var systematicStudyRepository: SystematicStudyRepository
-    @MockK(relaxUnitFun = true) private lateinit var questionRepository: QuestionRepository
-    @MockK private lateinit var credentialService: ResearcherCredentialsService
+    @MockK private lateinit var systematicStudyRepository: SystematicStudyRepository
+    @MockK private lateinit var questionRepository: QuestionRepository
+    @MockK private lateinit var credentialService: CredentialsService
     @MockK(relaxed = true) private lateinit var presenter: AnswerRiskOfBiasQuestionPresenter
 
     private lateinit var sut: AnswerRiskOfBiasQuestionImpl
 
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     private lateinit var questionId: UUID
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialService,
             systematicStudyRepository,
             factory.researcherId,
             factory.systematicStudyId
         )
-        preconditionCheckerMocking.makeEverythingWork()
         sut = AnswerRiskOfBiasQuestionImpl(
             studyReviewRepository,
             questionRepository,
@@ -65,6 +64,7 @@ class AnswerRiskOfBiasQuestionImplTest {
             val questionDto = factory.generateQuestionTextualDto(questionId, factory.systematicStudyId)
             val request = factory.answerRequestModel(questionId, "TEXTUAL", "Answer Test")
 
+            preconditionCheckerMocking.makeEverythingWork()
 
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
             every { questionRepository.findById(request.systematicStudyId, questionId) } returns questionDto
@@ -83,6 +83,8 @@ class AnswerRiskOfBiasQuestionImplTest {
             val answer = factory.labelDto("Test Name", 1)
             val questionDto = factory.generateQuestionLabeledScaleDto(questionId, labelDto = answer)
             val request = factory.answerRequestModel(questionId, "LABELED_SCALE", answer)
+
+            preconditionCheckerMocking.makeEverythingWork()
 
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
             every { questionRepository.findById(request.systematicStudyId, questionId) } returns questionDto
@@ -107,6 +109,8 @@ class AnswerRiskOfBiasQuestionImplTest {
             val questionDto = factory.generateQuestionTextualDto(questionId, factory.systematicStudyId)
             val request = factory.answerRequestModel(questionId, "LABELED_SCALE", "Test")
 
+            preconditionCheckerMocking.makeEverythingWork()
+
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
             every { questionRepository.findById(request.systematicStudyId, questionId) } returns questionDto
 
@@ -118,6 +122,8 @@ class AnswerRiskOfBiasQuestionImplTest {
         @Test
         fun `should not work if study doesn't exist`() {
             val request = factory.answerRequestModel(questionId, "TEXTUAL", "Answer")
+
+            preconditionCheckerMocking.makeEverythingWork()
 
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns null
             sut.answerQuestion(presenter, request)
@@ -132,6 +138,8 @@ class AnswerRiskOfBiasQuestionImplTest {
             val dto = factory.generateDto()
             val request = factory.answerRequestModel(questionId, "TEXTUAL", "Testing")
 
+            preconditionCheckerMocking.makeEverythingWork()
+
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
             every { questionRepository.findById(request.systematicStudyId, questionId) } returns null
 
@@ -140,6 +148,35 @@ class AnswerRiskOfBiasQuestionImplTest {
             verify {
                 presenter.prepareFailView(any<EntityNotFoundException>())
             }
+        }
+
+        @Test
+        fun `should not answer when unauthorized`() {
+            val request = factory.answerRequestModel(questionId, "TEXTUAL", "failure test")
+
+            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
+                sut.answerQuestion(presenter, request)
+            }
+        }
+
+        @Test
+        fun `should not answer when unauthenticated`() {
+            val request = factory.answerRequestModel(questionId, "TEXTUAL", "nono")
+
+            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
+                sut.answerQuestion(presenter, request)
+            }
+
+        }
+
+        @Test
+        fun `should not answer when systematic study does not exist`() {
+            val request = factory.answerRequestModel(questionId, "TEXTUAL", "not real")
+
+            preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
+                sut.answerQuestion(presenter, request)
+            }
+
         }
     }
 

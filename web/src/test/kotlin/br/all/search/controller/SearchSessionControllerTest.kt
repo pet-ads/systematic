@@ -5,6 +5,9 @@ import br.all.infrastructure.search.MongoSearchSessionRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
+import br.all.search.shared.TestDataFactory
+import br.all.security.service.ApplicationUser
+import br.all.shared.TestHelperService
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
@@ -14,12 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.*
@@ -31,38 +33,42 @@ class SearchSessionControllerTest(
     @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
     @Autowired val studyReviewRepository: MongoStudyReviewRepository,
     @Autowired val idService: StudyReviewIdGeneratorService,
+    @Autowired private val testHelperService: TestHelperService,
     @Autowired val mockMvc: MockMvc,
 ) {
 
     private lateinit var factory: TestDataFactory
     private lateinit var systematicStudyId: UUID
-    private lateinit var researcherId: UUID
+    private lateinit var user: ApplicationUser
+    private lateinit var unauthorizedUser: ApplicationUser
 
-    fun postUrl() = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-session"
+
+    fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/search-session"
     fun findUrl(sessionId: String = "") =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-session${sessionId}"
-    fun invalidFindUrl(researcherId: String = "", sessionId: String = "") =
-        "/api/v1/researcher/${researcherId}/systematic-study/$systematicStudyId/search-session${sessionId}"
+        "/api/v1/systematic-study/$systematicStudyId/search-session${sessionId}"
+
     fun findBySourceUrl(source: String = "") =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-session-source/${source}"
+        "/api/v1/systematic-study/$systematicStudyId/search-session-source/${source}"
 
     fun putUrl(
-        researcherId: UUID = factory.researcherId,
+        userId: UUID = factory.userId,
         systematicStudyId: UUID = factory.systematicStudyId,
         searchSessionId: UUID = factory.sessionId
-    ) = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-session/$searchSessionId"
+    ) = "/api/v1/systematic-study/$systematicStudyId/search-session/$searchSessionId"
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
         repository.deleteAll()
         systematicStudyId = factory.systematicStudyId
-        researcherId = factory.researcherId
+
+        user = testHelperService.createApplicationUser()
+        unauthorizedUser = testHelperService.createUnauthorizedApplicationUser()
 
         systematicStudyRepository.save(
             br.all.review.shared.TestDataFactory().createSystematicStudyDocument(
                 id = systematicStudyId,
-                owner = researcherId,
+                owner = user.id,
             )
         )
     }
@@ -72,6 +78,7 @@ class SearchSessionControllerTest(
         repository.deleteAll()
         systematicStudyRepository.deleteAll()
         studyReviewRepository.deleteAll()
+        testHelperService.deleteApplicationUser(user.id)
         idService.reset()
     }
 
@@ -80,12 +87,15 @@ class SearchSessionControllerTest(
     inner class CreateTests {
         @Test
         fun `should create search session and return 201`() {
-            mockMvc.perform(multipart(postUrl()).file(factory.bibfile()).param("data", factory.validPostRequest()))
+            println(factory.validPostRequest())
+            mockMvc.perform(multipart(postUrl())
+                .file(factory.bibfile()).param("data", factory.validPostRequest())
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
                 .andExpect(status().isCreated)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.researcherId").value(researcherId.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.sessionId").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$.sessionId").exists())
+                .andExpect(jsonPath("$._links").exists())
                 .andReturn()
         }
 
@@ -96,29 +106,30 @@ class SearchSessionControllerTest(
                 multipart(postUrl())
                     .file("bibFile", factory.invalidBibFile())
                     .param("data", factory.validPostRequest())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
                 .andExpect(status().isBadRequest)
                 .andReturn()
         }
 
         @Test
-        fun `should return 403 when researcher is not authorized`() {
-            val unauthorizedResearcherId = UUID.randomUUID()
+        fun `should return 403 when user is not authorized`() {
 
-            mockMvc.perform(
-                multipart(postUrl()).file(factory.bibfile())
-                    .param("data", factory.validPostRequest(unauthorizedResearcherId))
+            testHelperService.testForUnauthorizedUser(mockMvc,
+                multipart(postUrl())
+                    .file(factory.bibfile())
+                    .param("data", factory.validPostRequest())
             )
-                .andExpect(status().isForbidden)
-                .andReturn()
         }
 
         @Test
-        fun `should return 404 for invalid request body`() {
+        fun `should return 403 when user is not authenticated`() {
 
-            mockMvc.perform(multipart(postUrl()).file(factory.bibfile()).param("data", factory.invalidPostRequest()))
-                .andExpect(status().isNotFound)
-                .andReturn()
+            testHelperService.testForUnauthenticatedUser(mockMvc,
+                multipart(postUrl())
+                    .file(factory.bibfile())
+                    .param("data", factory.validPostRequest()),
+            )
         }
     }
 
@@ -132,31 +143,44 @@ class SearchSessionControllerTest(
             repository.insert(searchSession)
 
             val sessionId = "/${searchSession.id}"
-            mockMvc.perform(MockMvcRequestBuilders.get(findUrl(sessionId)).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(findUrl(sessionId))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(searchSession.id.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$._links").exists())
+                .andExpect(jsonPath("$.id").value(searchSession.id.toString()))
+                .andExpect(jsonPath("$._links").exists())
         }
 
         @Test
-        fun `should return 403 when researcher is not authorized`() {
+        fun `should return 403 when user is not authorized`() {
 
             val searchSession = factory.searchSessionDocument(factory.sessionId, systematicStudyId)
             repository.insert(searchSession)
 
             val sessionId = "/${searchSession.id}"
-            val researcherId = "/${factory.invalidResearcherId}"
-            mockMvc.perform(MockMvcRequestBuilders.get(
-                invalidFindUrl(researcherId, sessionId
-                )).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden)
-                .andReturn()
+            testHelperService.testForUnauthorizedUser(
+                mockMvc,
+                get(findUrl(sessionId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
+            )
+        }
+
+        @Test
+        fun `should return 403 when user is not authenticated`() {
+
+            val searchSession = factory.searchSessionDocument(factory.sessionId, systematicStudyId)
+            repository.insert(searchSession)
+
+            val sessionId = "/${searchSession.id}"
+            testHelperService.testForUnauthenticatedUser(mockMvc, get(findUrl(sessionId)),
+            )
         }
 
         @Test
         fun `should return 404 if don't find the search session`() {
             mockMvc.perform(
-                MockMvcRequestBuilders.get(findUrl(factory.nonExistentSessionId.toString()))
+                get(findUrl(factory.nonExistentSessionId.toString()))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isNotFound)
@@ -164,7 +188,11 @@ class SearchSessionControllerTest(
 
         @Test
         fun `should return 400 if search session id is in a invalid format`() {
-            mockMvc.perform(MockMvcRequestBuilders.get(findUrl("/-1")).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(
+                get(findUrl("/-1"))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
                 .andExpect(status().isBadRequest)
         }
 
@@ -179,24 +207,30 @@ class SearchSessionControllerTest(
             repository.insert(factory.searchSessionDocument(id2, systematicStudyId))
             repository.insert(factory.searchSessionDocument(id3, wrongSystematicStudyId))
 
-            mockMvc.perform(MockMvcRequestBuilders.get(findUrl()).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(
+                get(findUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
                 .andExpect(status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(2))
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$.size").value(2))
         }
 
         @Test
         fun `should return empty list and return 200 if no search session is found`() {
-            mockMvc.perform(MockMvcRequestBuilders.get(findUrl()).contentType(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
+            mockMvc.perform(
+                get(findUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
                 .andExpect(status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(0))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.searchSessions").isEmpty())
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$.size").value(0))
+                .andExpect(jsonPath("$.searchSessions").isEmpty())
         }
 
-        //TODO make it work and make the others tests
-        /*@Test
+        @Test
         fun `should find all search sessions by source and return 200`(){
             val id1 = UUID.randomUUID()
             val id2 = UUID.randomUUID()
@@ -206,12 +240,14 @@ class SearchSessionControllerTest(
             repository.insert(factory.searchSessionDocument(id2, systematicStudyId))
             repository.insert(factory.searchSessionDocument(id3, systematicStudyId, source = "WrongSource"))
 
-            mockMvc.perform(MockMvcRequestBuilders.get(findBySourceUrl("Source")).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(findBySourceUrl("Source"))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
-                .andExpect(jsonPath("$.source").value("Source"))
                 .andExpect(jsonPath("$.size").value(2))
-        }*/
+        }
     }
 
     @Nested
@@ -234,9 +270,10 @@ class SearchSessionControllerTest(
             repository.insert(original)
 
             val request = factory.createValidPutRequest(searchString, additionalInfo, searchSource)
-            mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
+            mockMvc.perform(put(putUrl())
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON).content(request))
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("$.researcherId").value(factory.researcherId.toString()))
                 .andExpect(jsonPath("$.systematicStudyId").value(factory.systematicStudyId.toString()))
                 .andExpect(jsonPath("$.searchSessionID").value(factory.sessionId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -250,9 +287,10 @@ class SearchSessionControllerTest(
             repository.insert(document)
 
             val request = "{}"
-            mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
+            mockMvc.perform(put(putUrl())
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON).content(request))
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("$.researcherId").value(factory.researcherId.toString()))
                 .andExpect(jsonPath("$.systematicStudyId").value(factory.systematicStudyId.toString()))
                 .andExpect(jsonPath("$.searchSessionID").value(factory.sessionId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -265,19 +303,35 @@ class SearchSessionControllerTest(
             val request = factory.createValidPutRequest(
                 "New Search String", "New Additional Info", "New SearchSource"
             )
-            mockMvc.perform(put(putUrl()).contentType(MediaType.APPLICATION_JSON).content(request))
+            mockMvc.perform(put(putUrl())
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON).content(request))
                 .andExpect(status().isNotFound)
         }
 
         @Test
-        fun `should return 403 if the researcher is unauthorized`(){
-            val unauthorizedId = UUID.randomUUID()
-
+        fun `should return 403 if the user is unauthorized`(){
             val request = factory.createValidPutRequest(
                 "New Search String", "New Additional Info", "New SearchSource"
             )
-            mockMvc.perform(put(putUrl(unauthorizedId)).contentType(MediaType.APPLICATION_JSON).content(request))
-                .andExpect(status().isForbidden)
+            testHelperService.testForUnauthorizedUser(
+                mockMvc,
+                put(putUrl())
+                    .content(request)
+                    .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
+            )
+        }
+
+        @Test
+        fun `should not allow unauthenticated users to update a search session`(){
+            val request = factory.createValidPutRequest(
+                "New Search String", "New Additional Info", "New SearchSource"
+            )
+            testHelperService.testForUnauthenticatedUser(
+                mockMvc,
+                put(putUrl())
+                    .content(request)
+            )
         }
     }
 }

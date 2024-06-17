@@ -5,12 +5,12 @@ import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.repository.toDto
 import br.all.application.question.update.presenter.UpdateQuestionPresenter
 import br.all.application.question.update.services.UpdateQuestionService.*
-import br.all.application.researcher.credentials.ResearcherCredentialsService
+import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.presenter.PreconditionChecker
 import br.all.domain.model.question.QuestionBuilder
 import br.all.domain.model.question.QuestionId
-import br.all.domain.model.researcher.ResearcherId
+import br.all.domain.model.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 
 class UpdateQuestionServiceImpl(

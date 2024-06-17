@@ -1,6 +1,7 @@
 package br.all.search.controller
 
-import br.all.application.researcher.credentials.ResearcherCredentialsService
+import br.all.application.protocol.repository.ProtocolRepository
+import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.CreateSearchSessionServiceImpl
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
@@ -8,12 +9,13 @@ import br.all.application.search.find.service.FindAllSearchSessionsBySourceServi
 import br.all.application.search.find.service.FindSearchSessionServiceImpl
 import br.all.application.search.find.service.FindAllSearchSessionsServiceImpl
 import br.all.application.search.repository.SearchSessionRepository
-import br.all.application.search.update.UpdateSearchSessionService
 import br.all.application.search.update.UpdateSearchSessionServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
+import br.all.application.user.CredentialsService
 import br.all.domain.services.BibtexConverterService
 import br.all.domain.services.IdGeneratorService
 import br.all.domain.services.UuidGeneratorService
+import br.all.infrastructure.protocol.MongoProtocolRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -27,13 +29,15 @@ class SearchSessionServicesConfiguration {
     fun createSearchSession(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
+        protocolRepository: ProtocolRepository,
         uuidGeneratorService: UuidGeneratorService,
         bibtexConverterService: BibtexConverterService,
         studyReviewRepository: StudyReviewRepository,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = CreateSearchSessionServiceImpl(
         searchSessionRepository,
         systematicStudyRepository,
+        protocolRepository,
         uuidGeneratorService,
         bibtexConverterService,
         studyReviewRepository,
@@ -44,7 +48,7 @@ class SearchSessionServicesConfiguration {
     fun findSearchSession(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindSearchSessionServiceImpl (
         systematicStudyRepository,
         searchSessionRepository,
@@ -55,7 +59,7 @@ class SearchSessionServicesConfiguration {
     fun findAllSessionService(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindAllSearchSessionsServiceImpl (
         systematicStudyRepository, searchSessionRepository, credentialsService
     )
@@ -64,7 +68,7 @@ class SearchSessionServicesConfiguration {
     fun findAllSearchSessionsBySourceService(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindAllSearchSessionsBySourceServiceImpl (
         systematicStudyRepository, searchSessionRepository, credentialsService
     )
@@ -73,7 +77,7 @@ class SearchSessionServicesConfiguration {
     fun updateSessionService(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = UpdateSearchSessionServiceImpl (
         systematicStudyRepository, searchSessionRepository, credentialsService
     )

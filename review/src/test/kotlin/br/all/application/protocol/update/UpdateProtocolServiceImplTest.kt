@@ -2,12 +2,12 @@ package br.all.application.protocol.update
 
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.util.TestDataFactory
-import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
-import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.user.CredentialsService
+import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -26,20 +26,20 @@ class UpdateProtocolServiceImplTest {
     @MockK(relaxUnitFun = true)
     private lateinit var systematicStudyRepository: SystematicStudyRepository
     @MockK
-    private lateinit var credentialsService: ResearcherCredentialsService
+    private lateinit var credentialsService: CredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: UpdateProtocolPresenter
     @InjectMockKs
     private lateinit var sut: UpdateProtocolServiceImpl
 
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
         val (researcher, systematicStudy) = factory
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             systematicStudyRepository,
@@ -121,23 +121,10 @@ class UpdateProtocolServiceImplTest {
         }
 
         @Test
-        fun `should prepare fail view with UnauthorizedUserException when the researcher is not a collaborator`() {
+        fun `should not allow unauthenticated users update any protocol`() {
             val request = factory.updateRequestModel()
 
-            preconditionCheckerMocking.makeResearcherNotACollaborator()
-            sut.update(presenter, request)
-
-            verifyOrder {
-                presenter.prepareFailView(any<UnauthorizedUserException>())
-                presenter.isDone()
-            }
-        }
-
-        @Test
-        fun `should not allow unauthenticated researchers update any protocol`() {
-            val request = factory.updateRequestModel()
-
-            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            preconditionCheckerMocking.makeUserUnauthenticated()
             sut.update(presenter, request)
 
             verifyOrder {
@@ -147,10 +134,10 @@ class UpdateProtocolServiceImplTest {
         }
 
         @Test
-        fun `should not allow unauthorized researchers to update any protocol`() {
+        fun `should not allow unauthorized users to update any protocol`() {
             val request = factory.updateRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthorized()
+            preconditionCheckerMocking.makeUserUnauthorized()
             sut.update(presenter, request)
 
             verifyOrder {

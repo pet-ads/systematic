@@ -5,11 +5,9 @@ import br.all.application.question.create.CreateQuestionService.QuestionType.*
 import br.all.application.question.create.CreateQuestionService.ResponseModel
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.util.TestDataFactory
-import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.exceptions.UnauthenticatedUserException
-import br.all.application.shared.exceptions.UnauthorizedUserException
-import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.user.CredentialsService
+import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.services.UuidGeneratorService
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -33,7 +31,7 @@ class CreateQuestionServiceImplTest {
     private lateinit var repository: QuestionRepository
 
     @MockK
-    private lateinit var credentialsService: ResearcherCredentialsService
+    private lateinit var credentialsService: CredentialsService
 
     @MockK
     private lateinit var uuidGeneratorService: UuidGeneratorService
@@ -45,17 +43,13 @@ class CreateQuestionServiceImplTest {
     private lateinit var sut: CreateQuestionServiceImpl
 
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
-            presenter,
-            credentialsService,
-            systematicRepository,
-            factory.researcher,
-            factory.systematicStudy
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
+            presenter, credentialsService, systematicRepository, factory.researcher, factory.systematicStudy
         )
     }
 
@@ -97,24 +91,16 @@ class CreateQuestionServiceImplTest {
         @Test
         fun `should not the researcher be allowed to create a new question when unauthenticated`() {
             val request = factory.createTextualRequestModel()
-            preconditionCheckerMocking.makeResearcherUnauthenticated()
-            sut.create(presenter, request)
-
-            verifyOrder {
-                presenter.prepareFailView(any<UnauthenticatedUserException>())
-                presenter.isDone()
+            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
+                sut.create(presenter, request)
             }
         }
 
         @Test
         fun `should not the researcher be allowed to create a new question when unauthorized`() {
             val request = factory.createTextualRequestModel()
-            preconditionCheckerMocking.makeResearcherUnauthorized()
-            sut.create(presenter, request)
-
-            verifyOrder {
-                presenter.prepareFailView(any<UnauthorizedUserException>())
-                presenter.isDone()
+            preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
+                sut.create(presenter, request)
             }
         }
 

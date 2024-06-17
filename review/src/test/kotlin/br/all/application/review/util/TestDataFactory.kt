@@ -14,8 +14,8 @@ import java.util.*
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel as CreateRequestModel
 import br.all.application.review.create.CreateSystematicStudyService.ResponseModel as CreateResponseModel
 import br.all.application.review.find.services.FindAllSystematicStudiesService.ResponseModel as FindAllResponseModel
-import br.all.application.review.find.services.FindOneSystematicStudyService.RequestModel as FindOneRequestModel
-import br.all.application.review.find.services.FindOneSystematicStudyService.ResponseModel as FindOneResponseModel
+import br.all.application.review.find.services.FindSystematicStudyService.RequestModel as FindOneRequestModel
+import br.all.application.review.find.services.FindSystematicStudyService.ResponseModel as FindOneResponseModel
 import br.all.application.review.update.services.UpdateSystematicStudyService.RequestModel as UpdateRequestModel
 
 class TestDataFactory {
@@ -88,7 +88,7 @@ class TestDataFactory {
         researcherId: UUID = this.researcher,
         owner: UUID? = null,
     ) = FindAllResponseModel(
-        researcherId = researcherId,
+        userId = researcherId,
         ownerId = owner,
         systematicStudies = emptyList(),
     )
@@ -98,7 +98,7 @@ class TestDataFactory {
         owner: UUID = this.owner,
         researcherId: UUID = this.researcher,
     ) = FindAllResponseModel(
-        researcherId = researcherId,
+        userId = researcherId,
         ownerId = owner,
         systematicStudies = List(amountOfStudies) {
             generateDto(id = UUID.randomUUID(), ownerId = owner, collaborators = setOf(researcherId))

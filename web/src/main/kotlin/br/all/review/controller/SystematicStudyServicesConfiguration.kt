@@ -1,10 +1,10 @@
 package br.all.review.controller
 
 import br.all.application.protocol.repository.ProtocolRepository
-import br.all.application.researcher.credentials.ResearcherCredentialsService
+import br.all.application.user.CredentialsService
 import br.all.application.review.create.CreateSystematicStudyServiceImpl
 import br.all.application.review.find.services.FindAllSystematicStudiesServiceImpl
-import br.all.application.review.find.services.FindOneSystematicStudyServiceImpl
+import br.all.application.review.find.services.FindSystematicStudyServiceImpl
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.update.services.UpdateSystematicStudyServiceImpl
 import br.all.domain.services.UuidGeneratorService
@@ -18,7 +18,7 @@ class SystematicStudyServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         protocolRepository: ProtocolRepository,
         uuidGeneratorService: UuidGeneratorService,
-        credentialsService: ResearcherCredentialsService,
+        credentialsService: CredentialsService,
     ) = CreateSystematicStudyServiceImpl(
         systematicStudyRepository,
         protocolRepository,
@@ -29,18 +29,18 @@ class SystematicStudyServicesConfiguration {
     @Bean
     fun findOneSystematicStudyService(
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService,
-    ) = FindOneSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
+        credentialsService: CredentialsService,
+    ) = FindSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
 
     @Bean
     fun findAllSystematicStudiesService(
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService,
+        credentialsService: CredentialsService,
     ) = FindAllSystematicStudiesServiceImpl(systematicStudyRepository, credentialsService)
 
     @Bean
     fun updateSystematicStudyService(
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: ResearcherCredentialsService,
+        credentialsService: CredentialsService,
     ) = UpdateSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
 }

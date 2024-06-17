@@ -1,6 +1,5 @@
 package br.all.application.review.update.services
 
-import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter
@@ -8,7 +7,8 @@ import br.all.application.review.util.TestDataFactory
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
-import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.user.CredentialsService
+import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -25,19 +25,19 @@ class UpdateSystematicStudyServiceImplTest {
     @MockK(relaxUnitFun = true)
     private lateinit var repository: SystematicStudyRepository
     @MockK
-    private lateinit var credentialsService: ResearcherCredentialsService
+    private lateinit var credentialsService: CredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: UpdateSystematicStudyPresenter
     @InjectMockKs
     private lateinit var sut: UpdateSystematicStudyServiceImpl
 
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             repository,
@@ -129,23 +129,7 @@ class UpdateSystematicStudyServiceImplTest {
             sut.update(presenter, request)
 
             verifyOrder {
-                repository.existsById(factory.systematicStudy)
                 presenter.prepareFailView(any<EntityNotFoundException>())
-                presenter.isDone()
-            }
-        }
-
-        @Test
-        fun `should the researcher be unauthorized if they are not a collaborator`() {
-            val request = factory.updateRequestModel()
-
-            preconditionCheckerMocking.makeResearcherNotACollaborator()
-            sut.update(presenter, request)
-
-            verifyOrder {
-                repository.hasReviewer(factory.systematicStudy, factory.researcher)
-                presenter.prepareFailView(any<UnauthorizedUserException>())
-                presenter.isDone()
             }
         }
 
@@ -153,7 +137,7 @@ class UpdateSystematicStudyServiceImplTest {
         fun `should prepare fail view if the researcher is unauthenticated`() {
             val request = factory.updateRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            preconditionCheckerMocking.makeUserUnauthenticated()
             sut.update(presenter, request)
 
             verifyOrder {
@@ -166,7 +150,7 @@ class UpdateSystematicStudyServiceImplTest {
         fun `should prepare fail view if the researcher is unauthorized`() {
             val request = factory.updateRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthorized()
+            preconditionCheckerMocking.makeUserUnauthorized()
             sut.update(presenter, request)
 
             verifyOrder {

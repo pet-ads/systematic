@@ -17,7 +17,7 @@ class RestfulCreateSearchSessionPresenter : CreateSearchSessionPresenter {
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(
-            response.researcherId,
+            response.userId,
             response.systematicStudyId,
             response.sessionId,
         )
@@ -32,13 +32,12 @@ class RestfulCreateSearchSessionPresenter : CreateSearchSessionPresenter {
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<SearchSessionController> {
-            findSearchSession(response.researcherId, response.systematicStudyId, response.sessionId)
+            findSearchSession(response.systematicStudyId, response.sessionId)
         }.withSelfRel()
 
     private fun linkFindAllSearchSessions(response: ResponseModel) =
         linkTo<SearchSessionController> {
             findAllSearchSessions(
-                response.researcherId,
                 response.systematicStudyId
             )
         }.withRel("allSessions")
@@ -46,7 +45,6 @@ class RestfulCreateSearchSessionPresenter : CreateSearchSessionPresenter {
     private fun linkUpdateSearchSession(response: ResponseModel) =
         linkTo<SearchSessionController> {
             updateSearchSession(
-                response.researcherId,
                 response.systematicStudyId,
                 response.sessionId,
                 SearchSessionController.PutRequest("searchString",
@@ -59,7 +57,7 @@ class RestfulCreateSearchSessionPresenter : CreateSearchSessionPresenter {
     override fun isDone() = responseEntity != null
 
     private data class ViewModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val sessionId: UUID,
     ) : RepresentationModel<ViewModel>()

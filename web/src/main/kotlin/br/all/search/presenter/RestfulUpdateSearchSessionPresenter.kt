@@ -15,10 +15,10 @@ class RestfulUpdateSearchSessionPresenter : UpdateSearchSessionPresenter {
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
-        val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, response.sessionId)
+        val restfulResponse = ViewModel(response.userId, response.systematicStudyId, response.sessionId)
 
         val self = linkTo<SearchSessionController> {
-            findSearchSession(response.researcherId, response.systematicStudyId, response.sessionId)
+            findSearchSession(response.systematicStudyId, response.sessionId)
         }.withSelfRel()
 
         restfulResponse.add(self)

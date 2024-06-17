@@ -3,11 +3,14 @@ package br.all.question.controller
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.question.utils.TestDataFactory
+import br.all.security.service.ApplicationUser
+import br.all.shared.TestHelperService
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.*
@@ -22,11 +25,13 @@ class ExtractionQuestionControllerTest(
     @Autowired val repository: MongoQuestionRepository,
     @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
     @Autowired val mockMvc: MockMvc,
-) {
+    @Autowired private val testHelperService: TestHelperService,
+    ) {
     private lateinit var factory: TestDataFactory
     private lateinit var systematicStudyId: UUID
     private lateinit var researcherId: UUID
     private lateinit var questionId: UUID
+    private lateinit var user: ApplicationUser
 
     @BeforeEach
     fun setUp() {
@@ -35,22 +40,25 @@ class ExtractionQuestionControllerTest(
         systematicStudyId = factory.systematicStudyId
         researcherId = factory.researcherId
         questionId = factory.questionId
+        user = testHelperService.createApplicationUser()
         systematicStudyRepository.deleteAll()
         systematicStudyRepository.save(
             br.all.review.shared.TestDataFactory().createSystematicStudyDocument(
             id = systematicStudyId,
-            owner = researcherId,
+            owner = user.id,
         ))
     }
 
     @AfterEach
-    fun teardown() = repository.deleteAll()
+    fun teardown() {
+        repository.deleteAll()
+        testHelperService.deleteApplicationUser(user.id)
+    }
 
-
-    fun postUrl() = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/extraction-question"
+    fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/protocol/extraction-question"
 
     fun getUrl(questionId: String = "") =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/protocol/extraction-question${questionId}"
+        "/api/v1/systematic-study/$systematicStudyId/protocol/extraction-question${questionId}"
 
 
     @Nested
@@ -60,7 +68,9 @@ class ExtractionQuestionControllerTest(
         fun `should create textual question and return 201`() {
             val json = factory.validCreateTextualRequest()
             mockMvc.perform(
-                post(postUrl() + "/textual").contentType(MediaType.APPLICATION_JSON).content(json)
+                post(postUrl() + "/textual")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
             )
                 .andDo(print())
                 .andExpect(status().isCreated)
@@ -73,6 +83,7 @@ class ExtractionQuestionControllerTest(
             val json = factory.validCreatePickListRequest()
             mockMvc.perform(
                 post(postUrl() + "/pick-list").contentType(MediaType.APPLICATION_JSON).content(json)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
                 .andDo(print())
                 .andExpect(status().isCreated)
@@ -85,6 +96,7 @@ class ExtractionQuestionControllerTest(
             val json = factory.validCreateLabeledScaleRequest()
             mockMvc.perform(
                 post(postUrl() + "/labeled-scale").contentType(MediaType.APPLICATION_JSON).content(json)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
                 .andDo(print())
                 .andExpect(status().isCreated)
@@ -97,6 +109,7 @@ class ExtractionQuestionControllerTest(
             val json = factory.validCreateNumberScaleRequest()
             mockMvc.perform(
                 post(postUrl() + "/number-scale").contentType(MediaType.APPLICATION_JSON).content(json)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
                 .andDo(print())
                 .andExpect(status().isCreated)
@@ -115,7 +128,9 @@ class ExtractionQuestionControllerTest(
             repository.insert(question)
 
             val questionIdUrl = "/${questionId}"
-            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -128,7 +143,10 @@ class ExtractionQuestionControllerTest(
             repository.insert(question)
 
             val questionIdUrl = "/${questionId}"
-            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
+
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -142,7 +160,9 @@ class ExtractionQuestionControllerTest(
             repository.insert(question)
 
             val questionIdUrl = "/${questionId}"
-            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -155,7 +175,9 @@ class ExtractionQuestionControllerTest(
             repository.insert(question)
 
             val questionIdUrl = "/${questionId}"
-            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -169,7 +191,9 @@ class ExtractionQuestionControllerTest(
             repository.insert(textualQuestion)
             repository.insert(pickListQuestion)
 
-            mockMvc.perform(get(getUrl()).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(getUrl()).contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$.size").value(2))
@@ -177,7 +201,9 @@ class ExtractionQuestionControllerTest(
 
         @Test
         fun `should return an empty list and return 200 if no study is found`() {
-            mockMvc.perform(get(getUrl()).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(getUrl()).contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$.size").value(0))
@@ -198,6 +224,7 @@ class ExtractionQuestionControllerTest(
                 post(postUrl() + "/textual")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
             ).andExpect(status().isBadRequest)
         }
 
@@ -208,6 +235,7 @@ class ExtractionQuestionControllerTest(
                 post(postUrl() + "/pick-list")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
             ).andExpect(status().isBadRequest)
         }
 
@@ -218,6 +246,7 @@ class ExtractionQuestionControllerTest(
                 post(postUrl() + "/labeled-scale")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
             ).andExpect(status().isBadRequest)
         }
 
@@ -228,7 +257,24 @@ class ExtractionQuestionControllerTest(
                 post(postUrl() + "/number-scale")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
             ).andExpect(status().isBadRequest)
+        }
+
+        @Test
+        fun `should not create question when user is not authenticated`() {
+            testHelperService.testForUnauthenticatedUser(mockMvc,
+                post(postUrl() + "/textual")
+                    .content(factory.validCreateTextualRequest()),
+            )
+        }
+
+        @Test
+        fun `should not create question when user is unauthorized`() {
+            testHelperService.testForUnauthorizedUser(mockMvc,
+                post(postUrl() + "/textual")
+                    .content(factory.validCreateTextualRequest())
+            )
         }
     }
 
@@ -238,8 +284,23 @@ class ExtractionQuestionControllerTest(
     inner class WhenNotAbleToFindQuestionSuccessfully {
         @Test
         fun `should return 404 if don't find the question`() {
-            mockMvc.perform(get(getUrl(UUID.randomUUID().toString())).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(getUrl(UUID.randomUUID().toString()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
                 .andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should not find question when user is unauthenticated`(){
+            testHelperService.testForUnauthenticatedUser(mockMvc, get(getUrl()),
+            )
+        }
+
+        @Test
+        fun `should not find question when user is unauthorized`(){
+            testHelperService.testForUnauthorizedUser(mockMvc, get(getUrl())
+            )
         }
 
     }

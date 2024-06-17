@@ -124,8 +124,7 @@ class TestDataFactory {
         questionId: UUID,
         type: String,
         answer: T,
-    ) = AnswerRiskOfBiasQuestionService
-        .RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
+    ) = AnswerRiskOfBiasQuestionService.RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
 
     fun labelDto(
         name: String,

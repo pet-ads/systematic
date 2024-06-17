@@ -1,12 +1,10 @@
 package br.all.application.study.create
 
-import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.exceptions.UnauthenticatedUserException
-import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.util.TestDataFactory
-import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.user.CredentialsService
+import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.services.IdGeneratorService
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
@@ -18,21 +16,26 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(MockKExtension::class)
 class CreateStudyReviewServiceImplTest {
 
-    @MockK(relaxed = true) private lateinit var studyReviewRepository: StudyReviewRepository
-    @MockK(relaxUnitFun = true) private lateinit var systematicStudyRepository: SystematicStudyRepository
-    @MockK private lateinit var idGenerator: IdGeneratorService
-    @MockK private lateinit var credentialService: ResearcherCredentialsService
-    @MockK(relaxed = true) private lateinit var presenter: CreateStudyReviewPresenter
+    @MockK(relaxed = true)
+    private lateinit var studyReviewRepository: StudyReviewRepository
+    @MockK(relaxed = true)
+    private lateinit var systematicStudyRepository: SystematicStudyRepository
+    @MockK
+    private lateinit var idGenerator: IdGeneratorService
+    @MockK
+    private lateinit var credentialService: CredentialsService
+    @MockK(relaxUnitFun = true)
+    private lateinit var presenter: CreateStudyReviewPresenter
 
     private lateinit var sut: CreateStudyReviewServiceImpl
-
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialService,
             systematicStudyRepository,
@@ -54,6 +57,7 @@ class CreateStudyReviewServiceImplTest {
         @Test
         fun `should successfully create a Study Review`() {
             val (_, studyReviewId) = factory
+
             val request = factory.createRequestModel()
 
             preconditionCheckerMocking.makeEverythingWork()
@@ -77,26 +81,30 @@ class CreateStudyReviewServiceImplTest {
         fun `should not be allowed to create a new study when unauthenticated`() {
             val request = factory.createRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthenticated()
-            sut.createFromStudy(presenter, request)
-
-            verifyOrder {
-                presenter.prepareFailView(any<UnauthenticatedUserException>())
-                presenter.isDone()
+            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
+                sut.createFromStudy(presenter, request)
             }
+
         }
 
         @Test
         fun `should not be allowed to create a new study when unauthorized`() {
             val request = factory.createRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthorized()
-            sut.createFromStudy(presenter, request)
-
-            verifyOrder {
-                presenter.prepareFailView(any<UnauthorizedUserException>())
-                presenter.isDone()
+            preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
+                sut.createFromStudy(presenter, request)
             }
+
+        }
+
+        @Test
+        fun `should not be allowed to create a new study if systematic study does not exist`() {
+            val request = factory.createRequestModel()
+
+            preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
+                sut.createFromStudy(presenter, request)
+            }
+
         }
     }
 

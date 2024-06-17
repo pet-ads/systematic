@@ -8,6 +8,7 @@ import br.all.application.question.findAll.FindAllBySystematicStudyIdService
 import br.all.question.presenter.extraction.RestfulFindAllExtractionQuestionPresenter
 import br.all.question.presenter.riskOfBias.RestfulCreateRoBQuestionPresenter
 import br.all.question.presenter.riskOfBias.RestfulFindRoBQuestionPresenter
+import br.all.security.service.AuthenticationInfoService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -20,8 +21,9 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
-@RequestMapping("/api/v1/researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/rob-question")
+@RequestMapping("/api/v1/systematic-study/{systematicStudyId}/protocol/rob-question")
 class RiskOfBiasQuestionController(
+    val authenticationInfoService: AuthenticationInfoService,
     val createQuestionService: CreateQuestionService,
     val findOneService: FindQuestionService,
     val findAllService: FindAllBySystematicStudyIdService
@@ -46,13 +48,21 @@ class RiskOfBiasQuestionController(
                 responseCode = "400",
                 description = "Fail creating a textual question in the protocol - invalid input"
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a textual question in the protocol - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a textual question in the protocol - unauthorized user"
+            ),
         ]
     )
     fun createTextualQuestion(
-        @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: TextualRequest,
+        @PathVariable systematicStudyId: UUID, @RequestBody request: TextualRequest,
     ): ResponseEntity<*> = createQuestion(
         RequestModel(
-            researcherId,
+            authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
             TEXTUAL,
             request.code,
@@ -69,13 +79,21 @@ class RiskOfBiasQuestionController(
                 responseCode = "400",
                 description = "Fail creating a pick-list question in the protocol - invalid input"
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a pick-list question in the protocol - unauthenticated user"
+            ),ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a pick-list question in the protocol - unauthorized user"
+            ),
+
         ]
     )
     fun createPickListQuestion(
-        @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: PickListRequest,
+        @PathVariable systematicStudyId: UUID, @RequestBody request: PickListRequest,
     ): ResponseEntity<*> = createQuestion(
         RequestModel(
-            researcherId,
+            authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
             PICK_LIST,
             request.code,
@@ -96,15 +114,22 @@ class RiskOfBiasQuestionController(
                 responseCode = "400",
                 description = "Fail creating a labeled-scale question in the protocol - invalid input"
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a labeled-scale question in the protocol - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a labeled-scale question in the protocol - unauthorized user"
+            ),
         ]
     )
     fun createLabeledScaleQuestion(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @RequestBody request: LabeledScaleRequest,
     ): ResponseEntity<*> = createQuestion(
         RequestModel(
-            researcherId,
+            authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
             LABELED_SCALE,
             request.code,
@@ -122,15 +147,22 @@ class RiskOfBiasQuestionController(
                 responseCode = "400",
                 description = "Fail creating a number-scale question in the protocol - invalid input"
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a number-scale question in the protocol - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a number-scale question in the protocol - unauthorized user"
+            ),
         ]
     )
     fun createNumberScaleQuestion(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @RequestBody request: NumberScaleRequest,
     ): ResponseEntity<*> = createQuestion(
         RequestModel(
-            researcherId,
+            authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
             NUMBERED_SCALE,
             request.code,
@@ -153,6 +185,14 @@ class RiskOfBiasQuestionController(
                 )]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "Fail getting an risk of bias question of a given protocol by code - unauthenticated user",
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail getting an risk of bias question of a given protocol by code - unauthorized user",
+            ),
+            ApiResponse(
                 responseCode = "404",
                 description = "Fail getting an risk of bias question of a given protocol by code - not found",
                 content = [Content(schema = Schema(hidden = true))]
@@ -160,12 +200,11 @@ class RiskOfBiasQuestionController(
         ]
     )
     fun findQuestion(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @PathVariable questionId: UUID,
     ): ResponseEntity<*> {
         val presenter = RestfulFindRoBQuestionPresenter()
-        val request = FindQuestionService.RequestModel(researcherId, systematicStudyId, questionId)
+        val request = FindQuestionService.RequestModel(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId, questionId)
         findOneService.findOne(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -182,14 +221,21 @@ class RiskOfBiasQuestionController(
                     schema = Schema(implementation = FindAllBySystematicStudyIdService.ResponseModel::class)
                 )]
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail getting all risk of bias questions in the protocol - unauthenticated user"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail getting all risk of bias questions in the protocol - unauthorized user"
+            ),
         ]
     )
     fun findAllBySystematicStudyId(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID
     ): ResponseEntity<*> {
         val presenter = RestfulFindAllExtractionQuestionPresenter()
-        val request = FindAllBySystematicStudyIdService.RequestModel(researcherId, systematicStudyId)
+        val request = FindAllBySystematicStudyIdService.RequestModel(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId)
         findAllService.findAllBySystematicStudyId(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }

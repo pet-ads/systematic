@@ -1,12 +1,12 @@
 package br.all.application.review.create
 
 import br.all.application.protocol.repository.ProtocolRepository
-import br.all.application.researcher.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.TestDataFactory
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
-import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.user.CredentialsService
+import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.services.UuidGeneratorService
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -28,19 +28,19 @@ class CreateSystematicStudyServiceImplTest {
     @MockK
     private lateinit var uuidGeneratorService: UuidGeneratorService
     @MockK
-    private lateinit var credentialsService: ResearcherCredentialsService
+    private lateinit var credentialsService: CredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: CreateSystematicStudyPresenter
     @InjectMockKs
     private lateinit var sut: CreateSystematicStudyServiceImpl
 
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             systematicStudyRepository,
@@ -83,7 +83,7 @@ class CreateSystematicStudyServiceImplTest {
         fun `should not the researcher be allowed to create a new study when unauthenticated`() {
             val request = factory.createRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            preconditionCheckerMocking.makeUserUnauthenticated()
             sut.create(presenter, request)
 
             verifyOrder {
@@ -96,7 +96,7 @@ class CreateSystematicStudyServiceImplTest {
         fun `should not the researcher be allowed to create a study when unauthorized`() {
             val request = factory.createRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthorized()
+            preconditionCheckerMocking.makeUserUnauthorized()
             sut.create(presenter, request)
 
             verifyOrder {

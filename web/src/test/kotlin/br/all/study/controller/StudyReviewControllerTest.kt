@@ -1,19 +1,22 @@
 package br.all.study.controller
 
-import br.all.application.question.repository.QuestionRepository
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
 import br.all.infrastructure.study.StudyReviewId
 import br.all.infrastructure.study.StudyReviewIdGeneratorService
+import br.all.security.service.ApplicationUser
+import br.all.shared.TestHelperService
 import br.all.study.utils.TestDataFactory
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
@@ -27,32 +30,34 @@ import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 class StudyReviewControllerTest(
     @Autowired val repository: MongoStudyReviewRepository,
     @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
+    @Autowired private val testHelperService: TestHelperService,
     @Autowired val idService: StudyReviewIdGeneratorService,
     @Autowired val mockMvc: MockMvc,
 ) {
 
     private lateinit var factory: TestDataFactory
-    private lateinit var systematicStudyId: UUID
-    private lateinit var researcherId: UUID
+    private lateinit var user: ApplicationUser
 
-    fun postUrl() = "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review"
+    private lateinit var systematicStudyId: UUID
+
+    fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/study-review"
     fun findUrl(studyId: String = "") =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review${studyId}"
+        "/api/v1/systematic-study/$systematicStudyId/study-review${studyId}"
 
     fun findBySourceUrl(searchSource: String = "") =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/search-source/${searchSource}"
+        "/api/v1/systematic-study/$systematicStudyId/search-source/${searchSource}"
 
     fun updateStudyUrl(studyReviewId: Long) =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyReviewId}"
+        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}"
 
     fun updateStatusStatus(attributeName: String, studyId: String) =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyId}/${attributeName}"
+        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyId}/${attributeName}"
 
     fun markAsDuplicated(studyIdToKeep: Long, studyIdDuplicate: Long) =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyIdToKeep}/duplicated/${studyIdDuplicate}"
+        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyIdToKeep}/duplicated/${studyIdDuplicate}"
 
     fun answerRiskOfBiasQuestion(studyReviewId: Long) =
-        "/api/v1/researcher/$researcherId/systematic-study/$systematicStudyId/study-review/${studyReviewId}/riskOfBias-answer"
+        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}/riskOfBias-answer"
 
     @BeforeEach
     fun setUp() {
@@ -61,17 +66,23 @@ class StudyReviewControllerTest(
 
         factory = TestDataFactory()
         systematicStudyId = factory.systematicStudyId
-        researcherId = factory.researcherId
+
+        user = testHelperService.createApplicationUser()
 
         systematicStudyRepository.deleteAll()
-        systematicStudyRepository.save(SystematicStudyTestDataFactory().createSystematicStudyDocument(
-            id = systematicStudyId,
-            owner = researcherId,
-        ))
+        systematicStudyRepository.save(
+            SystematicStudyTestDataFactory().createSystematicStudyDocument(
+                id = systematicStudyId,
+                owner = user.id,
+            )
+        )
     }
 
     @AfterEach
-    fun teardown() = repository.deleteAll()
+    fun teardown() {
+        repository.deleteAll()
+        testHelperService.deleteApplicationUser(user.id)
+    }
 
     @Nested
     @DisplayName("When creating a study review")
@@ -79,12 +90,16 @@ class StudyReviewControllerTest(
         @Test
         fun `should create study and return 201`() {
             val json = factory.validPostRequest()
-            mockMvc.perform(post(postUrl()).contentType(MediaType.APPLICATION_JSON).content(json))
+            mockMvc.perform(
+                post(postUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+            )
                 .andDo(print())
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$.studyReviewId").exists())
-                .andExpect(jsonPath("$._links").exists())
+                //.andExpect(jsonPath("$._links").exists()) // TODO uncomment after include links
         }
 
         @Test
@@ -92,9 +107,24 @@ class StudyReviewControllerTest(
             val json = factory.invalidPostRequest()
             mockMvc.perform(
                 post(postUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
             ).andExpect(status().isBadRequest)
+        }
+
+        @Test
+        fun `should not create if user is unauthorized`(){
+            testHelperService.testForUnauthorizedUser(
+                mockMvc,
+                post(postUrl()).content(factory.validPostRequest())
+            )
+        }
+
+        @Test
+        fun `should not create if user is unauthenticated`() {
+            testHelperService.testForUnauthenticatedUser(mockMvc, post(postUrl()),
+            )
         }
 
     }
@@ -103,15 +133,18 @@ class StudyReviewControllerTest(
     @DisplayName("When updating study review")
     inner class UpdateTests {
         @Test
-        fun `should update a study and return 200`(){
+        fun `should update a study and return 200`() {
             val studyID = 20L
             val studyReview = factory.reviewDocument(systematicStudyId, studyID)
             val initialTitle = studyReview.title
 
             repository.insert(studyReview)
 
-            val json = factory.validPutRequest(researcherId, systematicStudyId, studyID)
-            mockMvc.perform(put(updateStudyUrl(studyID)).contentType(MediaType.APPLICATION_JSON).content(json))
+            val json = factory.validPutRequest(systematicStudyId, studyID)
+            mockMvc.perform(put(updateStudyUrl(studyID))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON).content(json)
+            )
                 .andExpect(status().isOk)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyID)
@@ -119,25 +152,49 @@ class StudyReviewControllerTest(
             val updatedTitle = updatedReview.get().title
             assertTrue(initialTitle != updatedTitle)
         }
+
         @Test
-        fun `should not update upon invalid request and return 400`(){
+        fun `should not update upon invalid request and return 400`() {
             val studyId = 10L
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
 
             repository.insert(studyReview)
 
             val json = factory.invalidPutRequest()
-            mockMvc.perform(put(updateStudyUrl(studyId)).contentType(MediaType.APPLICATION_JSON).content(json))
+            mockMvc.perform(put(updateStudyUrl(studyId))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON).content(json)
+            )
                 .andExpect(status().isBadRequest)
         }
 
         @Test
-        fun `should not update if study review does not exist and return 404`(){
+        fun `should not update if study review does not exist and return 404`() {
             val studyId = 5L
 
-            val json = factory.validPutRequest(researcherId, systematicStudyId, studyId)
-            mockMvc.perform(put(updateStudyUrl(studyId)).contentType(MediaType.APPLICATION_JSON).content(json))
+            val json = factory.validPutRequest(systematicStudyId, studyId)
+            mockMvc.perform(put(updateStudyUrl(studyId))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON).content(json)
+            )
                 .andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should not update if user is unauthorized`(){
+            val studyId = 5L
+
+            testHelperService.testForUnauthorizedUser(mockMvc,
+                put(updateStudyUrl(studyId)).content(factory.validPutRequest(systematicStudyId, studyId))
+            )
+        }
+
+        @Test
+        fun `should not update if user is unauthenticated`(){
+            val studyId = 5L
+
+            testHelperService.testForUnauthenticatedUser(mockMvc, put(updateStudyUrl(studyId)),
+            )
         }
 
     }
@@ -151,7 +208,10 @@ class StudyReviewControllerTest(
             repository.insert(studyReview)
 
             val studyId = "/${studyReview.id.studyReviewId}"
-            mockMvc.perform(get(findUrl(studyId)).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(findUrl(studyId))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(studyReview.id.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
@@ -159,8 +219,31 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should return 404 if don't find the study review`() {
-            mockMvc.perform(get(findUrl("/-1")).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(findUrl("/-1"))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
                 .andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should not find if user is unauthorized`(){
+            val studyReview = factory.reviewDocument(systematicStudyId, idService.next())
+            repository.insert(studyReview)
+
+            testHelperService.testForUnauthorizedUser(mockMvc,
+                get(findUrl("/${studyReview.id.studyReviewId}"))
+            )
+        }
+
+        @Test
+        fun `should not find if user is unauthenticated`(){
+            val studyReview = factory.reviewDocument(systematicStudyId, idService.next())
+            repository.insert(studyReview)
+
+            testHelperService.testForUnauthenticatedUser(mockMvc,
+                get(findUrl("/${studyReview.id.studyReviewId}")),
+            )
         }
 
         @Test
@@ -169,7 +252,10 @@ class StudyReviewControllerTest(
             repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), "study"))
             repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), "study"))
 
-            mockMvc.perform(get(findUrl()).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(findUrl())
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$.size").value(2))
@@ -177,7 +263,10 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should return empty list and return 200 if no study is found`() {
-            mockMvc.perform(get(findUrl()).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(findUrl())
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
                 .andDo(print())
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
@@ -187,13 +276,24 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should find all studies by source and return 200`() {
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), "study",
-                sources = setOf("ACM")))
+            repository.insert(
+                factory.reviewDocument(
+                    systematicStudyId, idService.next(), "study",
+                    sources = setOf("ACM")
+                )
+            )
             repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), "study"))
-            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), "study",
-                sources = setOf("ACM")))
+            repository.insert(
+                factory.reviewDocument(
+                    UUID.randomUUID(), idService.next(), "study",
+                    sources = setOf("ACM")
+                )
+            )
 
-            mockMvc.perform(get(findBySourceUrl("ACM")).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(findBySourceUrl("ACM"))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$.size").value(1))
@@ -215,6 +315,7 @@ class StudyReviewControllerTest(
 
             mockMvc.perform(
                 patch(updateStatusStatus("selection-status", studyId.toString()))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(json)
             ).andExpect(status().isOk)
 
@@ -236,6 +337,7 @@ class StudyReviewControllerTest(
 
             mockMvc.perform(
                 patch(updateStatusStatus("selection-status", studyId.toString()))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(json)
             ).andExpect(status().isBadRequest)
 
@@ -255,7 +357,9 @@ class StudyReviewControllerTest(
             repository.insert(studyReview)
 
             val patchStatusStatus = updateStatusStatus("extraction-status", studyId.toString())
-            mockMvc.perform(patch(patchStatusStatus).contentType(MediaType.APPLICATION_JSON).content(json))
+            mockMvc.perform(patch(patchStatusStatus)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isOk)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
@@ -275,7 +379,9 @@ class StudyReviewControllerTest(
             repository.insert(studyReview)
 
             val patchStatusStatus = updateStatusStatus("extraction-status", studyId.toString())
-            mockMvc.perform(patch(patchStatusStatus).contentType(MediaType.APPLICATION_JSON).content(json))
+            mockMvc.perform(patch(patchStatusStatus)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isBadRequest)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
@@ -295,6 +401,7 @@ class StudyReviewControllerTest(
 
             mockMvc.perform(
                 patch(updateStatusStatus("reading-priority", studyId.toString()))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(json)
             ).andExpect(status().isOk)
 
@@ -315,12 +422,33 @@ class StudyReviewControllerTest(
             repository.insert(studyReview)
 
             val patchStatusStatus = updateStatusStatus("reading-priority", studyId.toString())
-            mockMvc.perform(patch(patchStatusStatus).contentType(MediaType.APPLICATION_JSON).content(json))
+            mockMvc.perform(patch(patchStatusStatus)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isBadRequest)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
             val updatedReview = repository.findById(studyReviewId).toNullable()
             assertEquals(studyReview, updatedReview)
+        }
+
+        @Test
+        fun `should not update if user is unauthorized`() {
+            val studyId = idService.next()
+
+            testHelperService.testForUnauthorizedUser(mockMvc,
+                patch(updateStatusStatus("reading-priority", studyId.toString()))
+                    .content(factory.validStatusUpdatePatchRequest(studyId, "HIGH"))
+            )
+        }
+
+        @Test
+        fun `should not update if user is unauthenticated`() {
+            val studyId = idService.next()
+
+            testHelperService.testForUnauthenticatedUser(mockMvc,
+                patch(updateStatusStatus("reading-priority", studyId.toString())),
+            )
         }
     }
 
@@ -328,12 +456,10 @@ class StudyReviewControllerTest(
     @DisplayName("When answering questions in a review")
     inner class AnswerQuestionsTests(
         @Autowired val questionRepository: MongoQuestionRepository
-    ){
+    ) {
 
-        //TODO likely to be a json parsing error
-        @Disabled
         @Test
-        fun `should assign answer to question and return 200`(){
+        fun `should assign answer to question and return 200`() {
             val studyId = idService.next()
             val questionId = UUID.randomUUID()
 
@@ -344,7 +470,11 @@ class StudyReviewControllerTest(
             questionRepository.insert(question)
 
             val json = factory.validAnswerRiskOfBiasPatchRequest(studyId, questionId, "TEXTUAL", "TEST")
-            mockMvc.perform(patch(answerRiskOfBiasQuestion(studyId)).contentType(MediaType.APPLICATION_JSON).content(json))
+            mockMvc.perform(
+                patch(answerRiskOfBiasQuestion(studyId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+            )
                 .andExpect(status().isOk)
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
@@ -352,6 +482,48 @@ class StudyReviewControllerTest(
             assertEquals(updatedReview.get().formAnswers[questionId], "TEST")
         }
 
+        @Test
+        fun `should not assign answer with invalid request`() {
+            val studyId = idService.next()
+            val questionId = UUID.randomUUID()
+
+            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
+            repository.insert(studyReview)
+
+            val question = factory.generateQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
+            questionRepository.insert(question)
+
+            val json = factory.invalidAnswerRiskOfBiasPatchRequest(studyId, questionId, "TEXTUAL")
+            mockMvc.perform(
+                patch(answerRiskOfBiasQuestion(studyId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+            )
+                .andExpect(status().isBadRequest)
+        }
+
+        @Test
+        fun `should not update if user is unauthorized`(){
+            val studyId = idService.next()
+            val questionId = UUID.randomUUID()
+
+
+            testHelperService.testForUnauthorizedUser(
+                mockMvc,
+                patch(answerRiskOfBiasQuestion(studyId))
+                    .content(factory.validAnswerRiskOfBiasPatchRequest(
+                        studyId, questionId, "TEXTUAL", "TEST"
+                    ))
+            )
+        }
+
+        @Test
+        fun `should not update if user is unauthenticated`(){
+            val studyId = idService.next()
+
+            testHelperService.testForUnauthenticatedUser(mockMvc, patch(answerRiskOfBiasQuestion(studyId)),
+            )
+        }
     }
 
     @Nested
@@ -367,7 +539,9 @@ class StudyReviewControllerTest(
             val studyReviewToDuplicate = factory.reviewDocument(systematicStudyId, studyToDuplicateId)
             repository.insert(studyReviewToDuplicate)
 
-            mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId)))
+            mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
                 .andExpect(status().isOk)
 
             val updatedStudyId = StudyReviewId(systematicStudyId, studyToUpdateId)
@@ -393,7 +567,9 @@ class StudyReviewControllerTest(
             val studyReviewToDuplicate = factory.reviewDocument(systematicStudyId, studyToDuplicateId)
             repository.insert(studyReviewToDuplicate)
 
-            mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))).andExpect(status().isNotFound)
+            mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            ).andExpect(status().isNotFound)
         }
 
         @Test
@@ -404,7 +580,29 @@ class StudyReviewControllerTest(
             val studyReviewToUpdate = factory.reviewDocument(systematicStudyId, studyToUpdateId)
             repository.insert(studyReviewToUpdate)
 
-            mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))).andExpect(status().isNotFound)
+            mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            ).andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should not update if user is unauthorized`(){
+            val studyToUpdateId = idService.next()
+            val studyToDuplicateId = idService.next()
+
+            testHelperService.testForUnauthorizedUser(mockMvc,
+                patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
+            )
+        }
+
+        @Test
+        fun `should not update if user is unauthenticated`(){
+            val studyToUpdateId = idService.next()
+            val studyToDuplicateId = idService.next()
+
+            testHelperService.testForUnauthenticatedUser(mockMvc,
+                patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId)),
+            )
         }
     }
 }

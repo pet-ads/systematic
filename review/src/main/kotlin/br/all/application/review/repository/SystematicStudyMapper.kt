@@ -1,7 +1,7 @@
 package br.all.application.review.repository
 
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel
-import br.all.domain.model.researcher.ResearcherId
+import br.all.domain.model.user.ResearcherId
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.SystematicStudyId
 import java.util.*
@@ -18,7 +18,7 @@ fun SystematicStudy.Companion.fromRequestModel(id: UUID, requestModel: RequestMo
     SystematicStudyId(id),
     requestModel.title,
     requestModel.description,
-    ResearcherId(requestModel.researcher),
+    ResearcherId(requestModel.userId),
 )
 
 fun SystematicStudy.Companion.fromDto(dto: SystematicStudyDto) = SystematicStudy(

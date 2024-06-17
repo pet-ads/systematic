@@ -1,11 +1,11 @@
 package br.all.study.presenter
 
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresenter
-import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.ResponseModel
 import br.all.shared.error.createErrorResponseFrom
 import br.all.shared.util.generateTimestamp
 import br.all.study.controller.StudyReviewController
+import br.all.study.requests.PatchStatusStudyReviewRequest
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
@@ -29,7 +29,7 @@ class RestfulUpdateStudyReviewStatusPresenter : UpdateStudyReviewStatusPresenter
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<StudyReviewController> {
-            findStudyReview(response.researcherId,
+            findStudyReview(
                 response.systematicStudyId,
                 response.studyReviewId)
         }.withSelfRel()
@@ -37,11 +37,10 @@ class RestfulUpdateStudyReviewStatusPresenter : UpdateStudyReviewStatusPresenter
     private fun linkUpdateExtractionStatus(response: ResponseModel) =
         linkTo<StudyReviewController> {
             updateStudyReviewExtractionStatus(
-                response.researcherId,
                 response.systematicStudyId,
                 response.studyReviewId,
-                request = UpdateStudyReviewStatusService.RequestModel(
-                    response.researcherId, response.systematicStudyId, response.studyReviewId, status = "status"
+                patchRequest = PatchStatusStudyReviewRequest(
+                    status = "status"
                 )
             )
         }.withRel("updateExtractionStatus")
