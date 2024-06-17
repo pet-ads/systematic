@@ -49,4 +49,49 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
             .toList()
     }
 
+    private fun convert(ris: String): Study {
+        require(ris.isNotBlank()) { "RIS must not be blank." }
+
+        val fieldMap = parseRisFields(ris) // coloca o RIS em um FieldMap
+        val venue = fieldMap["JO"] ?: ""
+        val primaryTitle = fieldMap["TI"] ?: ""
+        val secondaryTitle = fieldMap["T2"] ?: ""
+        val year = fieldMap["PY"]?.toIntOrNull() ?: 0
+        val authors = parseAuthors(fieldMap)
+        val type = extractStudyType(ris)
+        val abs = fieldMap["AB"] ?: ""
+        val keywords = parseKeywords(fieldMap["KW"])
+        val references = parseReferences(fieldMap["CR"])
+        val doi = fieldMap["DO"]?.let { Doi("https://doi.org/$it") }
+
+        return Study(type, ("$primaryTitle $secondaryTitle").trim(), year, authors, venue, treatAbstract(abs), keywords, references, doi)
+    }
+
+    fun parseRisFields(ris: String): Map<String, String> {
+        val fieldMap = mutableMapOf<String, String>()
+        val lines = ris.trim().lines()
+        var currentKey: String? = null
+
+        for (line in lines) {
+            val trimmedLine = line.trim()
+            if (trimmedLine.contains(" - ")) {
+                val keyValuePair = trimmedLine.split(" - ", limit = 2)
+                if (keyValuePair.size == 2) {
+                    currentKey = keyValuePair[0].trim()
+                    val value = keyValuePair[1].trim()
+                    if (currentKey == "AU") {
+                        fieldMap[currentKey] = fieldMap.getOrDefault(currentKey, "") + value + "; "
+                    } else if (currentKey == "KW"){
+                        fieldMap[currentKey] = fieldMap.getOrDefault(currentKey, "") + value + "; "
+                    } else {
+                        fieldMap[currentKey] = value
+                    }
+                }
+            } else if (currentKey != null) {
+                fieldMap[currentKey] = "${fieldMap[currentKey]} $trimmedLine".trim()
+            }
+        }
+        return fieldMap
+    }
+
 }
