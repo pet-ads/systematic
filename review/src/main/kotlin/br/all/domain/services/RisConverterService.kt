@@ -176,4 +176,14 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
     private fun parseReferences(references: String?): List<String> {
         return references?.split(";")?.map { it.trim() }?.filter { it.isNotBlank() }?.toList()?: emptyList()
     }
+
+    fun parseAuthors(fieldMap: Map<String, String>): String {
+        val auEntries = fieldMap["AU"]?.split(";")?.map { it.trim() }?.filter { it.isNotBlank() }
+        return auEntries?.joinToString(", ") ?: ""
+    }
+
+    fun treatAbstract(abstract: String): String {
+        val AB = abstract.split("ER").first().trim()
+        return AB
+    }
 }
