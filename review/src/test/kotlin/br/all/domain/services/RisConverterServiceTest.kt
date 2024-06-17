@@ -389,6 +389,14 @@ class RisConverterServiceTest {
             }
         }
 
+        @Test
+        fun `should throw IllegalArgumentException for invalid venue entry`() {
+            val bibtex = testInput["invalid venue"]!!
+            assertThrows<IllegalArgumentException> {
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            }
+        }
+
 
     }
 
