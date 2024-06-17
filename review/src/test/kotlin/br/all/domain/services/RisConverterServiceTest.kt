@@ -245,6 +245,30 @@ class RisConverterServiceTest {
             )
         }
 
+        @Test
+        fun `should create phdthesis from valid input`() {
+            val bibtex = testInput["valid masterthesis"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+
+            assertAll(
+                { assertEquals("1", studyReview.id.toString()) },
+                { assertEquals(StudyType.MASTERSTHESIS, studyReview.studyType) },
+                { assertEquals("Rempel, Robert Charles", studyReview.authors) },
+                { assertEquals("Relaxation Effects for Coupled Nuclear Spins", studyReview.title) },
+                { assertEquals("Stanford University", studyReview.venue) },
+                { assertEquals(1956, studyReview.year) },
+                { assertEquals("Lorem Ipsum", studyReview.abstract) },
+                { assertEquals(1, studyReview.searchSources.size) },
+                { assertTrue(studyReview.criteria.isEmpty()) },
+                { assertTrue(studyReview.formAnswers.isEmpty()) },
+                { assertTrue(studyReview.robAnswers.isEmpty()) },
+                { assertEquals("", studyReview.comments) },
+                { assertEquals(ReadingPriority.LOW, studyReview.readingPriority) },
+                { assertEquals(SelectionStatus.UNCLASSIFIED, studyReview.selectionStatus) },
+                { assertEquals(ExtractionStatus.UNCLASSIFIED, studyReview.extractionStatus) }
+            )
+        }
+
     }
 
 }
