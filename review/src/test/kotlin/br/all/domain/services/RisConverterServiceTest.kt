@@ -317,6 +317,29 @@ class RisConverterServiceTest {
             )
         }
 
+        @Test
+        fun `should create misc from valid input`() {
+            val bibtex = testInput["valid misc"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+
+            assertAll(
+                { assertEquals("1", studyReview.id.toString()) },
+                { assertEquals(StudyType.MISC, studyReview.studyType) },
+                { assertEquals("NASA", studyReview.authors) },
+                { assertEquals("Pluto: The 'Other' Red Planet", studyReview.title) },
+                { assertEquals("\\url{https://www.nasa.gov/nh/pluto-the-other-red-planet}", studyReview.venue) },
+                { assertEquals(2015, studyReview.year) },
+                { assertEquals("Lorem Ipsum", studyReview.abstract) },
+                { assertEquals(1, studyReview.searchSources.size) },
+                { assertTrue(studyReview.criteria.isEmpty()) },
+                { assertTrue(studyReview.formAnswers.isEmpty()) },
+                { assertTrue(studyReview.robAnswers.isEmpty()) },
+                { assertEquals("", studyReview.comments) },
+                { assertEquals(ReadingPriority.LOW, studyReview.readingPriority) },
+                { assertEquals(SelectionStatus.UNCLASSIFIED, studyReview.selectionStatus) },
+                { assertEquals(ExtractionStatus.UNCLASSIFIED, studyReview.extractionStatus) }
+            )
+        }
     }
 
 }
