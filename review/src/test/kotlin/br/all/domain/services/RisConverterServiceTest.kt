@@ -109,7 +109,37 @@ class RisConverterServiceTest {
 
     @Nested
     inner class ValidClasses() {
-
+        @Test
+        fun `should create article from valid input`() {
+            val ris = testInput["valid RIS entrie"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
+            assertAll(
+                { assertEquals("1", studyReview.id.toString()) },
+                { assertEquals(StudyType.ARTICLE, studyReview.studyType) },
+                {
+                    assertEquals(
+                        "Sampling for Scalable Visual Analytics IEEE Computer Graphics and Applications",
+                        studyReview.title
+                    )
+                },
+                { assertEquals(2017, studyReview.year) },
+                { assertEquals("B. C. Kwon, P. J. Haas", studyReview.authors) },
+                { assertEquals("IEEE Computer Graphics and Applications", studyReview.venue) },
+                { assertEquals("Lorem Ipsum", studyReview.abstract) },
+                { assertTrue("Temperature sensors" in studyReview.keywords) },
+                { assertTrue("Data visualization" in studyReview.keywords) },
+                { assertEquals(0, studyReview.references.size) },
+                { assertEquals("https://doi.org/10.1109/MCG.2017.6", studyReview.doi?.value) },
+                { assertEquals(1, studyReview.searchSources.size) },
+                { assertTrue(studyReview.criteria.isEmpty()) },
+                { assertTrue(studyReview.formAnswers.isEmpty()) },
+                { assertTrue(studyReview.robAnswers.isEmpty()) },
+                { assertEquals("", studyReview.comments) },
+                { assertEquals(ReadingPriority.LOW, studyReview.readingPriority) },
+                { assertEquals(SelectionStatus.UNCLASSIFIED, studyReview.selectionStatus) },
+                { assertEquals(ExtractionStatus.UNCLASSIFIED, studyReview.extractionStatus) }
+            )
+        }
     }
 
 }
