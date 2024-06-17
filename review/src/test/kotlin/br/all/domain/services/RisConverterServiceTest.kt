@@ -194,6 +194,30 @@ class RisConverterServiceTest {
             )
         }
 
+        @Test
+        fun `should create book from valid input`() {
+            val bibtex = testInput["valid book"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+
+            assertAll(
+                { assertEquals("1", studyReview.id.toString()) },
+                { assertEquals(StudyType.BOOK, studyReview.studyType) },
+                { assertEquals("Len Bass, Paul Clements, Rick Kazman", studyReview.authors) },
+                { assertEquals("Software Architecture in Practice", studyReview.title) },
+                { assertEquals("Addison-Wesley", studyReview.venue) },
+                { assertEquals(2012, studyReview.year) },
+                { assertEquals("Lorem Ipsum", studyReview.abstract) },
+                { assertEquals(1, studyReview.searchSources.size) },
+                { assertTrue(studyReview.criteria.isEmpty()) },
+                { assertTrue(studyReview.formAnswers.isEmpty()) },
+                { assertTrue(studyReview.robAnswers.isEmpty()) },
+                { assertEquals("", studyReview.comments) },
+                { assertEquals(ReadingPriority.LOW, studyReview.readingPriority) },
+                { assertEquals(SelectionStatus.UNCLASSIFIED, studyReview.selectionStatus) },
+                { assertEquals(ExtractionStatus.UNCLASSIFIED, studyReview.extractionStatus) }
+            )
+        }
+
     }
 
 }
