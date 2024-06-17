@@ -98,4 +98,11 @@ class RisConverterServiceTest {
         assertEquals(expectedDoi, studyReview.doi?.value)
     }
 
+    @Test
+    fun `should return list of ris entries`() {
+        val ris = testInput["multiple RIS entries"]!!
+        val study: List<Study> = sut.convertMany(ris)
+        assertEquals(3, study.size)
+    }
+
 }
