@@ -34,4 +34,12 @@ class RisConverterServiceTest {
             assertEquals(3, studyReviewList.size)
         }
 
+        @Test
+        fun `Should return correct study type`() {
+            val ris = testInput["valid RIS entrie"]!!
+            val art = StudyType.valueOf("ARTICLE")
+            val study = sut.extractStudyType(ris)
+            assertEquals(art, study)
+        }
+
 }
