@@ -89,4 +89,13 @@ class RisConverterServiceTest {
             { assertTrue("Data visualization" in studyReview.keywords) }
         )
     }
+
+    @Test
+    fun `should return correct doi`() {
+        val ris = testInput["valid RIS entrie"]!!
+        val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
+        val expectedDoi = "https://doi.org/10.1109/MCG.2017.6"
+        assertEquals(expectedDoi, studyReview.doi?.value)
+    }
+
 }
