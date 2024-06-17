@@ -344,7 +344,12 @@ class RisConverterServiceTest {
 
     @Nested
     inner class InvalidClasses() {
-
+        @Test
+        fun `convertManyToStudyReview should not accept a blank ris entry as input`() {
+            assertThrows<IllegalArgumentException> {
+                sut.convertManyToStudyReview(SystematicStudyId(UUID.randomUUID()), "")
+            }
+        }
     }
 
 }
