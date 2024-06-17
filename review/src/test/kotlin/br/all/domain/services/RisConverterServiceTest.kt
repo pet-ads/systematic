@@ -373,6 +373,14 @@ class RisConverterServiceTest {
             }
         }
 
+        @Test
+        fun `should throw IllegalArgumentException for invalid author entry`() {
+            val bibtex = testInput["invalid authors"]!!
+            assertThrows<IllegalArgumentException> {
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            }
+        }
+
 
     }
 
