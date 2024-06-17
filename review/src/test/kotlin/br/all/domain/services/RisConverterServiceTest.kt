@@ -381,6 +381,14 @@ class RisConverterServiceTest {
             }
         }
 
+        @Test
+        fun `should throw IllegalArgumentException for invalid year entry`() {
+            val bibtex = testInput["invalid year"]!!
+            assertThrows<IllegalArgumentException> {
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            }
+        }
+
 
     }
 
