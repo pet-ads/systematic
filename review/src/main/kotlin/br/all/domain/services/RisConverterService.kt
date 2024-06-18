@@ -101,7 +101,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         return studyTypeName
     }
 
-    fun translateToStudyType(studyType: String): StudyType {
+    private fun translateToStudyType(studyType: String): StudyType {
         val risMap = mapOf(
             "ABST" to StudyType.ARTICLE,
             "ADVS" to StudyType.MISC,
@@ -165,7 +165,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
             "UNPD" to StudyType.UNPUBLISHED,
             "VIDEO" to StudyType.MISC
         )
-        val st = risMap.getOrDefault(studyType, StudyType.MISC)
+        val st = risMap.getOrElse(studyType) { throw IllegalArgumentException() }
         return st;
     }
 

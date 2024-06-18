@@ -63,7 +63,6 @@ object RisTestData {
         AB  - ABSTRACT2
         ER  -
 
-
         TY  - ABST
         TI  - TITLE3
         T2  - TITLE33

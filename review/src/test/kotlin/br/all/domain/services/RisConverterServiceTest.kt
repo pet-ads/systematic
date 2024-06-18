@@ -2,12 +2,10 @@ package br.all.domain.services
 
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.*
-import br.all.domain.services.BibtexTestData.testInputs
 import br.all.domain.services.RisTestData.testInput
 import org.junit.jupiter.api.*
 import java.util.*
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class RisConverterServiceTest {
@@ -28,13 +26,6 @@ class RisConverterServiceTest {
     }
     @Nested
     inner class IndividualTests() {
-        @Test
-        fun `Should create a StudyReview list from multiple bibtex entries as input`() {
-            val ris = testInput["multiple RIS entries"]!!
-            val studyReviewList = sut.convertManyToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
-            assertEquals(3, studyReviewList.size)
-        }
-
         @Test
         fun `Should return correct study type`() {
             val ris = testInput["valid RIS entrie"]!!
@@ -97,13 +88,6 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
             val expectedDoi = "https://doi.org/10.1109/MCG.2017.6"
             assertEquals(expectedDoi, studyReview.doi?.value)
-        }
-
-        @Test
-        fun `should return list of ris entries`() {
-            val ris = testInput["multiple RIS entries"]!!
-            val study: List<Study> = sut.convertMany(ris)
-            assertEquals(3, study.size)
         }
 }
 
@@ -360,56 +344,56 @@ class RisConverterServiceTest {
 
         @Test
         fun `should throw IllegalArgumentException for unknown type entry`() {
-            val bibtex = testInput["unknown ris"]!!
+            val ris = testInput["unknown ris"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
             }
         }
         @Test
         fun `should throw IllegalArgumentException for invalid title entry`() {
-            val bibtex = testInput["invalid title"].toString()
+            val ris = testInput["invalid title"].toString()
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
             }
         }
 
         @Test
         fun `should throw IllegalArgumentException for invalid author entry`() {
-            val bibtex = testInput["invalid authors"]!!
+            val ris = testInput["invalid authors"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
             }
         }
 
         @Test
         fun `should throw IllegalArgumentException for invalid year entry`() {
-            val bibtex = testInput["invalid year"]!!
+            val ris = testInput["invalid year"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
             }
         }
 
         @Test
         fun `should throw IllegalArgumentException for invalid venue entry`() {
-            val bibtex = testInput["invalid venue"]!!
+            val ris = testInput["invalid venue"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
             }
         }
 
         @Test
         fun `should throw IllegalArgumentException for invalid abstract entry`() {
-            val bibtex = testInput["invalid abstract"]!!
+            val ris = testInput["invalid abstract"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
             }
         }
 
         @Test
         fun `should throw IllegalArgumentException for invalid doi`() {
-            val bibtex = testInput["invalid doi"]!!
+            val ris = testInput["invalid doi"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
             }
         }
     }
