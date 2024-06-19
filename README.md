@@ -7,7 +7,7 @@ Currently planned to work as a web app ([systematic-front](https://github.com/pe
 Systematic is being developed using the **Kotlin** programming language. To run the project, you will need an IDE (ex: [IntelliJ](https://www.jetbrains.com/idea/)).
 Then, you may download or clone the application and open the project there. It was created using JDK 17, which can be downloaded externally or through the IDE.
 
-Following that, you will need to run the [Docker Engine](https://www.docker.com/products/docker-desktop/) It has to be running on your computer for the program to function.
+Following that, you will need to run the [Docker Engine](https://www.docker.com/products/docker-desktop/). It has to be running on your computer for the program to function.
 Then, you must open a terminal on the folder the project is on (or click on the terminal button in your IDE), and run the following command to initialize the container:
 
 `docker-compose up -d --build`
