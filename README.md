@@ -1,6 +1,6 @@
 # systematic
 ## Overview
-A new, unique back-end for the StArt systematic study tool. Helps researchers easily create, develop and organize their systematic studies.
+A new, unique back-end for the [StArt](https://www.lapes.ufscar.br/resources/tools-1/start-1) systematic study tool. Helps researchers easily create, develop and organize their systematic studies.
 Currently planned to work as a web app ([systematic-front](https://github.com/pet-ads/systematic-front)).
 
 ## How to install and run
