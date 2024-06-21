@@ -56,7 +56,14 @@ class CreateSearchSessionServiceImpl(
         val searchSession = SearchSession.fromRequestModel(sessionId, request)
 
         val studyReviews = bibtexConverterService.convertManyToStudyReview(request.systematicStudyId.toSystematicStudyId() , file)
+        /*
+        criar os request StudyInfo a partir dos studyReviews (infos)
+        val selectionSuggestions = selectionSuggestion.buildSuggestions(infos)
+        studyReviews.foreach(it.setSuggestedStatus(selectionsuggstion.filter(it.getId)
+         */
         studyReviewRepository.saveOrUpdateBatch(studyReviews.map { it.toDto() })
+
+
 
         searchSessionRepository.create(searchSession.toDto())
         presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, sessionId.value))
