@@ -3,6 +3,9 @@ package br.all.user.controller
 import br.all.application.user.create.RegisterUserAccountService
 import br.all.application.user.create.RegisterUserAccountService.RequestModel
 import br.all.user.presenter.RestfullRegisterUserAccountPresenter
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -19,6 +22,19 @@ class UserAccountController(
 ) {
 
     @PostMapping
+    @Operation(summary = "Create a new user")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "201",
+                description = "Success creating a user"
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail creating a user - invalid input"
+            ),
+        ]
+    )
     fun registerUser(@RequestBody request: RequestModel): ResponseEntity<*> {
         val presenter = RestfullRegisterUserAccountPresenter()
         val encodedPasswordRequest = request.copy(password = encoder.encode(request.password))
