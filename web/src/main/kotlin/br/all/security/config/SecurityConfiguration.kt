@@ -58,9 +58,9 @@ class SecurityConfiguration(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val config = CorsConfiguration()
-        //TODO: set allowed origins to only receive the address of the front end
-        config.allowedOrigins = listOf("*")
-        config.allowedMethods = listOf("*")
+
+        config.allowedOrigins = listOf("http://localhost:5173")
+        config.allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
         config.allowedHeaders = listOf("*")
 
         val source = UrlBasedCorsConfigurationSource()
