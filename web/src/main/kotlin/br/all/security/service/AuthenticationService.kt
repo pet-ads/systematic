@@ -46,7 +46,7 @@ class AuthenticationService(
 
     private fun linkToFindAllByOwner(ownerId: UUID) = linkTo<SystematicStudyController> {
         findAllSystematicStudiesByOwner(ownerId)
-    }.withRel("my-reviews")
+    }.withRel("find-my-reviews")
 
     private fun linkToPostSystematicStudy() = linkTo<SystematicStudyController> {
         postSystematicStudy(PostRequest("title", "description", setOf(UUID.randomUUID())))
