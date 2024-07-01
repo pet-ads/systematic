@@ -49,7 +49,7 @@ class AuthenticationService(
     }.withRel("find-my-reviews")
 
     private fun linkToPostSystematicStudy() = linkTo<SystematicStudyController> {
-        postSystematicStudy(PostRequest("title", "description", setOf(UUID.randomUUID())))
+        postSystematicStudy(PostRequest("title", "description", setOf()))
     }.withRel("create-review")
 
     private fun generateToken(user: ApplicationUser, duration: Long) = tokenService.generateToken(
