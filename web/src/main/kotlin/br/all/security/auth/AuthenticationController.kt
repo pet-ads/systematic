@@ -34,7 +34,7 @@ class AuthenticationController(private val authenticationService: Authentication
             description = "Fail authentication - user not found",
             content = [Content(schema = Schema(hidden = true))]),
     ])
-    fun authenticate(@RequestBody authRequest: AuthenticationRequest): AuthenticationResponse =
+    fun authenticate(@RequestBody authRequest: AuthenticationRequest): AuthenticationService.AuthenticationResponseModel =
         authenticationService.authenticate(authRequest)
 
     @PostMapping("/refresh")
