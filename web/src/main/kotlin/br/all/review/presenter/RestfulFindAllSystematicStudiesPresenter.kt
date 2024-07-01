@@ -33,15 +33,15 @@ class RestfulFindAllSystematicStudiesPresenter: FindAllSystematicStudyPresenter 
 
     private fun linkToFindAllByOwner(ownerId: UUID) = linkTo<SystematicStudyController> {
         findAllSystematicStudiesByOwner(ownerId)
-    }.withSelfRel()
+    }.withRel("find-my-reviews")
 
     private fun linkToFindAll() = linkTo<SystematicStudyController> {
         findAllSystematicStudies()
-    }.withSelfRel()
+    }.withRel("find-all-reviews")
 
     private fun postSystematicStudy() = linkTo<SystematicStudyController> {
         postSystematicStudy(PostRequest("title", "description", setOf(UUID.randomUUID())))
-    }.withSelfRel()
+    }.withRel("create-review")
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 

@@ -27,7 +27,7 @@ class RestfulUpdateSystematicStudyPresenter: UpdateSystematicStudyPresenter {
 
     private fun postSystematicStudy() = linkTo<SystematicStudyController> {
         postSystematicStudy(PostRequest("title", "description", setOf(UUID.randomUUID())))
-    }.withSelfRel()
+    }.withRel("create-review")
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 

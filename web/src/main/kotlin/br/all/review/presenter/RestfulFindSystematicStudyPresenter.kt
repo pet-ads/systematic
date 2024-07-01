@@ -33,11 +33,11 @@ class RestfulFindSystematicStudyPresenter : FindSystematicStudyPresenter {
 
     private fun postSystematicStudy() = linkTo<SystematicStudyController> {
         postSystematicStudy(PostRequest("title", "description", setOf(UUID.randomUUID())))
-    }.withSelfRel()
+    }.withRel("create-review")
 
     private fun updateSystematicStudy(systematicStudyId: UUID) = linkTo<SystematicStudyController> {
         updateSystematicStudy(systematicStudyId, PutRequest("title", "description"))
-    }.withSelfRel()
+    }.withRel("update-review")
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 

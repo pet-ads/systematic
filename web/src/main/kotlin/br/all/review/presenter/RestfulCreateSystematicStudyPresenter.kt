@@ -35,17 +35,17 @@ class RestfulCreateSystematicStudyPresenter: CreateSystematicStudyPresenter {
                 response.systematicStudyId,
                 PutRequest("title", "description"),
             )
-        }.withRel("updateStudy")
+        }.withRel("update-review")
 
     private fun linkForAllStudiesByOwner(response: ResponseModel) =
         linkTo<SystematicStudyController> {
             findAllSystematicStudiesByOwner(response.userId)
-        }.withRel("allStudiesByOwner")
+        }.withRel("find-my-reviews")
 
     private fun linkForAllStudies() =
         linkTo<SystematicStudyController> {
             findAllSystematicStudies()
-        }.withRel("allStudies")
+        }.withRel("find-all-reviews")
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<SystematicStudyController> {
