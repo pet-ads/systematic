@@ -26,7 +26,7 @@ class RestfulFindProtocolPresenter: FindProtocolPresenter {
                 response.systematicStudyId,
                 request = PutRequest()
             )
-        }.withRel("putProtocol")
+        }.withRel("update-protocol")
 
         viewModel.add(link, putProtocol)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(viewModel)
