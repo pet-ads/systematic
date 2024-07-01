@@ -33,6 +33,10 @@ class UserAccountController(
                 responseCode = "400",
                 description = "Fail creating a user - invalid input"
             ),
+            ApiResponse(
+                responseCode = "409",
+                description = "Fail creating a user - user already exists"
+            ),
         ]
     )
     fun registerUser(@RequestBody request: RequestModel): ResponseEntity<*> {
