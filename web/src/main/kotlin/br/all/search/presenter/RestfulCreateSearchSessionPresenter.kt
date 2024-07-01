@@ -40,7 +40,7 @@ class RestfulCreateSearchSessionPresenter : CreateSearchSessionPresenter {
             findAllSearchSessions(
                 response.systematicStudyId
             )
-        }.withRel("allSessions")
+        }.withRel("find-all-sessions")
 
     private fun linkUpdateSearchSession(response: ResponseModel) =
         linkTo<SearchSessionController> {
@@ -50,7 +50,7 @@ class RestfulCreateSearchSessionPresenter : CreateSearchSessionPresenter {
                 SearchSessionController.PutRequest("searchString",
                     "additionalInfo", "source")
             )
-        }.withRel("updateSession")
+        }.withRel("update-session")
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 

@@ -43,7 +43,7 @@ class RestfulCreateRoBQuestionPresenter : CreateQuestionPresenter {
                 "code", "description", listOf("option1")
             )
         )
-    }.withRel("pickList")
+    }.withRel("create-pick-list-rob-question")
 
     private fun linkCreateLabeledScale(response: ResponseModel) =
         linkTo<RiskOfBiasQuestionController> {
@@ -53,7 +53,7 @@ class RestfulCreateRoBQuestionPresenter : CreateQuestionPresenter {
                 "code", "description", mapOf("scale1" to 1)
             )
         )
-    }.withRel("labeledScale")
+    }.withRel("create-labeled-scale-rob-question")
 
 
     private fun linkCreateNumberScale(response: ResponseModel) =
@@ -64,12 +64,12 @@ class RestfulCreateRoBQuestionPresenter : CreateQuestionPresenter {
                 "code", "description", 0, 0
             )
         )
-    }.withRel("numberScale")
+    }.withRel("create-numberScale-rob-question")
 
     private fun linkFindAll(response: ResponseModel) =
         linkTo<RiskOfBiasQuestionController> {
         findAllBySystematicStudyId(response.systematicStudyId)
-    }.withRel("findAll")
+    }.withRel("find-all-review-rob-questions")
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
     override fun isDone() = responseEntity != null

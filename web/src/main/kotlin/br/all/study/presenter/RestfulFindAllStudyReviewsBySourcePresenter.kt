@@ -38,7 +38,7 @@ class RestfulFindAllStudyReviewsBySourcePresenter : FindAllStudyReviewsBySourceP
     private fun linkFindAllStudiesReviews(response: ResponseModel) =
         linkTo<StudyReviewController> {
             findAllStudyReviews(response.systematicStudyId)
-        }.withRel("allStudyReview")
+        }.withRel("find-all-studies")
 
     private fun linkCreateStudyReview(response: ResponseModel) =
         linkTo<StudyReviewController> {
@@ -55,7 +55,7 @@ class RestfulFindAllStudyReviewsBySourcePresenter : FindAllStudyReviewsBySourceP
                     source = ""
                 )
             )
-        }.withRel("createStudyReview")
+        }.withRel("create-study")
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 

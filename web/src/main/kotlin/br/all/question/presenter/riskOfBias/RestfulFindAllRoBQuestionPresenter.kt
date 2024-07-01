@@ -42,7 +42,7 @@ class RestfulFindAllRoBQuestionPresenter : FindAllBySystematicStudyIdPresenter {
                     "code", "description"
                 )
             )
-        }.withRel("createQuestion")
+        }.withRel("create-textual-rob-question")
 
 
     private fun linkCreatePickList(response: FindAllBySystematicStudyIdService.ResponseModel) =
@@ -53,7 +53,7 @@ class RestfulFindAllRoBQuestionPresenter : FindAllBySystematicStudyIdPresenter {
                     "code", "description", listOf("option1")
                 )
             )
-        }.withRel("createPickList")
+        }.withRel("create-pick-list-rob-question")
 
 
     private fun linkCreateLabeledScale(response: FindAllBySystematicStudyIdService.ResponseModel) =
@@ -64,7 +64,7 @@ class RestfulFindAllRoBQuestionPresenter : FindAllBySystematicStudyIdPresenter {
                     "code", "description", mapOf("scale1" to 1)
                 )
             )
-        }.withRel("createLabeledScale")
+        }.withRel("create-labeled-scale-rob-question")
 
 
     private fun linkCreateNumberScale(response: FindAllBySystematicStudyIdService.ResponseModel) =
@@ -75,7 +75,7 @@ class RestfulFindAllRoBQuestionPresenter : FindAllBySystematicStudyIdPresenter {
                     "code", "description", 0, 0
                 )
             )
-        }.withRel("createNumberScale")
+        }.withRel("create-numberScale-rob-question")
 
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }

@@ -42,7 +42,7 @@ class RestfulCreateExtractionQuestionPresenter : CreateQuestionPresenter {
                     "code", "description", listOf("option1")
                 )
             )
-        }.withRel("pickList")
+        }.withRel("create-pick-list-extraction-question")
 
     private fun linkCreateLabeledScale(response: ResponseModel) =
         linkTo<ExtractionQuestionController> {
@@ -52,7 +52,7 @@ class RestfulCreateExtractionQuestionPresenter : CreateQuestionPresenter {
                     "code", "description", mapOf("scale1" to 1)
                 )
             )
-        }.withRel("labeledScale")
+        }.withRel("create-labeled-scale-extraction-question")
 
     private fun linkCreateNumberScale(response: ResponseModel) =
         linkTo<ExtractionQuestionController> {
@@ -62,11 +62,11 @@ class RestfulCreateExtractionQuestionPresenter : CreateQuestionPresenter {
                     "code", "description", 0, 0
                 )
             )
-        }.withRel("numberScale")
+        }.withRel("create-numberScale-extraction-question")
     private fun linkFindAll(response: ResponseModel) =
         linkTo<ExtractionQuestionController> {
             findAllBySystematicStudyId(response.systematicStudyId)
-        }.withRel("findAll")
+        }.withRel("find-all-review-extraction-questions")
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 
