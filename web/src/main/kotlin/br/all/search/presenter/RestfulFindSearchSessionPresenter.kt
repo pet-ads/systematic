@@ -33,7 +33,7 @@ class RestfulFindSearchSessionPresenter : FindSearchSessionPresenter {
     private fun linkFindAllSession(response: ResponseModel) =
         linkTo<SearchSessionController> {
             findAllSearchSessions(response.content.systematicStudyId)
-        }.withRel("allSessions")
+        }.withRel("find-all-sessions")
 
     /*
 
