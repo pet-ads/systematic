@@ -43,7 +43,7 @@ class RestfulUpdateStudyReviewStatusPresenter : UpdateStudyReviewStatusPresenter
                     status = "status"
                 )
             )
-        }.withRel("updateExtractionStatus")
+        }.withRel("update-study-extraction-status")
 
 
     override fun prepareFailView(throwable: Throwable) =

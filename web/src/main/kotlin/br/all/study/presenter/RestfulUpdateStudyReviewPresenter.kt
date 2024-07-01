@@ -28,7 +28,7 @@ class RestfulUpdateStudyReviewPresenter : UpdateStudyReviewPresenter {
 
         val linkFindAllStudyReview = linkTo<StudyReviewController> {
             findAllStudyReviews(response.systematicStudyId)
-        }.withRel("allStudyReview")
+        }.withRel("find-all-studies")
 
         restfulResponse.add(linkSelfRef, linkFindAllStudyReview)
         responseEntity = status(HttpStatus.OK).body(restfulResponse)

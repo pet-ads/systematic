@@ -42,7 +42,7 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
     private fun linkFindAllStudyReview(response: ResponseModel) =
         linkTo<StudyReviewController> {
             findAllStudyReviews(response.systematicStudyId)
-        }.withRel("allStudyReview")
+        }.withRel("find-all-studies")
 
     private fun linkUpdateSelectionStatus(response: ResponseModel) =
         linkTo<StudyReviewController> {
@@ -53,7 +53,7 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
                     "status"
                 )
             )
-        }.withRel("updateSelectionStatus")
+        }.withRel("update-study-selection-status")
 
     private fun linkUpdateExtractionStatus(response: ResponseModel) =
         linkTo<StudyReviewController> {
@@ -64,7 +64,7 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
                    "status"
                 )
             )
-        }.withRel("updateExtractionStatus")
+        }.withRel("update-study-extraction-status")
 
     private fun linkUpdateReadingPriority(response: ResponseModel) =
         linkTo<StudyReviewController> {
@@ -75,7 +75,7 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
                     "status"
                 )
             )
-        }.withRel("updateReadingPriority")
+        }.withRel("update-study-reading-priority")
 
     private fun linkMarkAsDuplicated(response: ResponseModel) =
         linkTo<StudyReviewController> {
@@ -84,7 +84,7 @@ class RestfulCreateStudyReviewPresenter : CreateStudyReviewPresenter {
                 response.studyReviewId,
                 response.studyReviewId
             )
-        }.withRel("markAsDuplicated")
+        }.withRel("mark-study-as-duplicated")
 
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
