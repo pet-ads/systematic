@@ -6,10 +6,12 @@ import br.all.application.user.update.UpdateRefreshTokenService.RequestModel
 import br.all.review.controller.SystematicStudyController
 import br.all.review.requests.PostRequest
 import br.all.security.auth.AuthenticationRequest
-import br.all.security.auth.AuthenticationResponse
 import br.all.security.config.JwtProperties
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
+import org.springframework.http.HttpHeaders
+import org.springframework.http.ResponseCookie
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -25,7 +27,7 @@ class AuthenticationService(
     private val loadCredentialsService: LoadAccountCredentialsService,
     private val updateRefreshTokenService: UpdateRefreshTokenService
 ) {
-    fun authenticate(request: AuthenticationRequest): AuthenticationResponseModel {
+    fun authenticate(request: AuthenticationRequest, response: HttpServletResponse): AuthenticationResponseModel {
         authManager.authenticate(UsernamePasswordAuthenticationToken(request.username, request.password))
         val user = userDetailService.loadUserByUsername(request.username) as ApplicationUser
 
@@ -34,6 +36,15 @@ class AuthenticationService(
 
         val  updateTokenRequest = RequestModel(user.id, refreshToken)
         updateRefreshTokenService.update(updateTokenRequest)
+
+        val cookie = ResponseCookie.from("accessToken", token)
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(jwtProperties.accessTokenExpiration)
+            .build()
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
 
         val responseModel = AuthenticationResponseModel(token, refreshToken)
         val ownerStudies = linkToFindAllByOwner(user.id)
