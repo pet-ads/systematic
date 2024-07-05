@@ -12,11 +12,13 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
 @Service
@@ -83,14 +85,17 @@ class AuthenticationService(
         if(request.cookies.isNullOrEmpty()) return null
 
         val refreshToken = request.cookies.firstOrNull { cookie -> cookie.name.equals("refreshToken") }?.value
-        if(refreshToken == null) return null
+        if(refreshToken == null) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Refresh token not found")
 
         val username = tokenService.extractUsername(refreshToken) ?: return null
 
         val currentUserDetails = userDetailService.loadUserByUsername(username) as ApplicationUser
         val tokenUserCredentials = loadCredentialsService.loadSimpleCredentialsByToken(refreshToken)
 
-        if(canNotRefreshAccessToken(refreshToken, currentUserDetails.id, tokenUserCredentials.id)) return null
+        if(tokenService.isExpired(refreshToken))
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Expired refresh token")
+
+        if(currentUserDetails.id != tokenUserCredentials.id) return null
 
         val accessToken = generateToken(currentUserDetails, jwtProperties.accessTokenExpiration)
 
@@ -105,12 +110,6 @@ class AuthenticationService(
 
         return accessToken
     }
-
-    private fun canNotRefreshAccessToken(
-        refreshToken: String,
-        currentUserId: UUID,
-        refreshTokenUserId: UUID?
-    ) = tokenService.isExpired(refreshToken) || currentUserId != refreshTokenUserId
 
     inner class AuthenticationResponseModel: RepresentationModel<AuthenticationResponseModel>()
 }
