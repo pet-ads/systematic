@@ -55,7 +55,7 @@ class AuthenticationService(
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString())
 
-        val responseModel = AuthenticationResponseModel(token, refreshToken)
+        val responseModel = AuthenticationResponseModel()
         val ownerStudies = linkToFindAllByOwner(user.id)
         val createSystematicStudy = linkToPostSystematicStudy()
 
@@ -121,8 +121,5 @@ class AuthenticationService(
         refreshTokenUserId: UUID?
     ) = tokenService.isExpired(refreshToken) || currentUserId != refreshTokenUserId
 
-    data class AuthenticationResponseModel(
-        val accessToken: String,
-        val refreshToken: String
-    ): RepresentationModel<AuthenticationResponseModel>()
+    inner class AuthenticationResponseModel: RepresentationModel<AuthenticationResponseModel>()
 }

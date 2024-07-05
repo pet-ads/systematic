@@ -60,10 +60,10 @@ class AuthenticationController(private val authenticationService: Authentication
             content = [Content(schema = Schema(hidden = true))]),
     ])
     fun refreshToken(request: HttpServletRequest,
-                     response: HttpServletResponse,): TokenResponse =
+                     response: HttpServletResponse,){
         authenticationService.refreshAccessToken(request, response)
             ?.mapToTokenResponse()
             ?: throw ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid refresh token")
-
+    }
     private fun String.mapToTokenResponse() = TokenResponse(this)
 }
