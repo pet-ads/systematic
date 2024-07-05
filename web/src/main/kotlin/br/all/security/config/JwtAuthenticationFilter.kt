@@ -23,7 +23,9 @@ class JwtAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        if(request.cookies.isNullOrEmpty()){
+
+        if(request.cookies.isNullOrEmpty() || request.servletPath.equals("/api/v1/user")
+            || request.servletPath.equals("/api/v1/auth")){
             filterChain.doFilter(request, response)
             return
         }
