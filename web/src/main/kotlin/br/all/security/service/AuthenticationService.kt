@@ -80,19 +80,10 @@ class AuthenticationService(
 
     fun refreshAccessToken(request: HttpServletRequest,
                            response: HttpServletResponse): String? {
-        var refreshToken: String? = null
+        if(request.cookies.isNullOrEmpty()) return null
 
-        if(request.cookies != null){
-            for(cookie in request.cookies){
-                if(cookie.name.equals("refreshToken")){
-                    refreshToken = cookie.value
-                }
-            }
-        }
-
-        if(refreshToken == null){
-            return null
-        }
+        val refreshToken = request.cookies.firstOrNull { cookie -> cookie.name.equals("refreshToken") }?.value
+        if(refreshToken == null) return null
 
         val username = tokenService.extractUsername(refreshToken) ?: return null
 

@@ -23,15 +23,12 @@ class JwtAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        var jwtToken: String? = null
-
-        if(request.cookies != null){
-            for(cookie in request.cookies){
-                if(cookie.name.equals("accessToken")){
-                    jwtToken = cookie.value
-                }
-            }
+        if(request.cookies.isNullOrEmpty()){
+            filterChain.doFilter(request, response)
+            return
         }
+
+        val jwtToken = request.cookies.firstOrNull {cookie -> cookie.name.equals("accessToken") }?.value
 
         if(jwtToken == null){
             filterChain.doFilter(request, response)
