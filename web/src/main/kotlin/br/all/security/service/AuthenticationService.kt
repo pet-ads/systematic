@@ -7,6 +7,7 @@ import br.all.review.controller.SystematicStudyController
 import br.all.review.requests.PostRequest
 import br.all.security.auth.AuthenticationRequest
 import br.all.security.config.JwtProperties
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
@@ -44,7 +45,15 @@ class AuthenticationService(
             .maxAge(jwtProperties.accessTokenExpiration)
             .build()
 
+        val refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+            .httpOnly(true)
+            .secure(true)
+            .path("/api/v1/auth/refresh")
+            .maxAge(jwtProperties.refreshTokenExpiration)
+            .build()
+
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString())
 
         val responseModel = AuthenticationResponseModel(token, refreshToken)
         val ownerStudies = linkToFindAllByOwner(user.id)
@@ -69,14 +78,41 @@ class AuthenticationService(
         mapOf("id" to user.id)
     )
 
-    fun refreshAccessToken(refreshToken: String): String? {
+    fun refreshAccessToken(request: HttpServletRequest,
+                           response: HttpServletResponse): String? {
+        var refreshToken: String? = null
+
+        if(request.cookies != null){
+            for(cookie in request.cookies){
+                if(cookie.name.equals("refreshToken")){
+                    refreshToken = cookie.value
+                }
+            }
+        }
+
+        if(refreshToken == null){
+            return null
+        }
+
         val username = tokenService.extractUsername(refreshToken) ?: return null
 
         val currentUserDetails = userDetailService.loadUserByUsername(username) as ApplicationUser
         val tokenUserCredentials = loadCredentialsService.loadSimpleCredentialsByToken(refreshToken)
 
         if(canNotRefreshAccessToken(refreshToken, currentUserDetails.id, tokenUserCredentials.id)) return null
-        return generateToken(currentUserDetails, jwtProperties.accessTokenExpiration)
+
+        val accessToken = generateToken(currentUserDetails, jwtProperties.accessTokenExpiration)
+
+        val cookie = ResponseCookie.from("accessToken", accessToken)
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(jwtProperties.accessTokenExpiration)
+            .build()
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
+
+        return accessToken
     }
 
     private fun canNotRefreshAccessToken(
