@@ -9,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
@@ -18,14 +20,26 @@ class JwtAuthenticationFilter(
     private val tokenService: TokenService
 ) : OncePerRequestFilter() {
 
+    private val matchersToSkip: List<RequestMatcher> = listOf(
+        AntPathRequestMatcher("/api/v1/user"),
+        AntPathRequestMatcher("/api/v1/auth"),
+        AntPathRequestMatcher("/webjars/**"),
+        AntPathRequestMatcher("/error"),
+        AntPathRequestMatcher("/swagger-ui.html"),
+        AntPathRequestMatcher("/swagger-ui/**"),
+        AntPathRequestMatcher("/swagger-resources/**"),
+        AntPathRequestMatcher("/v3/api-docs/**"),
+        AntPathRequestMatcher("/configuration/ui"),
+        AntPathRequestMatcher("/configuration/security"),
+    )
+
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
 
-        if(request.cookies.isNullOrEmpty() || request.servletPath.equals("/api/v1/user")
-            || request.servletPath.equals("/api/v1/auth")){
+        if(request.cookies.isNullOrEmpty() || matchersToSkip.any { it.matches(request) }){
             filterChain.doFilter(request, response)
             return
         }
