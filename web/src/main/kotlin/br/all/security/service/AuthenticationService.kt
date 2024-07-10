@@ -30,6 +30,10 @@ class AuthenticationService(
     private val loadCredentialsService: LoadAccountCredentialsService,
     private val updateRefreshTokenService: UpdateRefreshTokenService
 ) {
+
+    private val accessCookieExpiration = jwtProperties.accessTokenExpiration / 1000
+    private val refreshCookieExpiration = jwtProperties.refreshTokenExpiration / 1000
+
     fun authenticate(request: AuthenticationRequest, response: HttpServletResponse): AuthenticationResponseModel {
         authManager.authenticate(UsernamePasswordAuthenticationToken(request.username, request.password))
         val user = userDetailService.loadUserByUsername(request.username) as ApplicationUser
@@ -45,7 +49,7 @@ class AuthenticationService(
             .secure(true)
             .sameSite("None")
             .path("/")
-            .maxAge(jwtProperties.accessTokenExpiration)
+            .maxAge(accessCookieExpiration)
             .build()
 
         val refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
@@ -53,7 +57,7 @@ class AuthenticationService(
             .secure(true)
             .sameSite("None")
             .path("/api/v1/auth/refresh")
-            .maxAge(jwtProperties.refreshTokenExpiration)
+            .maxAge(refreshCookieExpiration)
             .build()
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -106,7 +110,7 @@ class AuthenticationService(
             .secure(true)
             .sameSite("None")
             .path("/")
-            .maxAge(jwtProperties.accessTokenExpiration)
+            .maxAge(accessCookieExpiration)
             .build()
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
