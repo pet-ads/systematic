@@ -43,18 +43,22 @@ class ExtractionQuestionController(
     @PostMapping("/textual")
     @Operation(summary = "Create a extraction textual question in the protocol")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "Success creating a textual question in the protocol"),
+        ApiResponse(responseCode = "201", description = "Success creating a textual question in the protocol",
+            content = [Content(schema = Schema(hidden = true))]),
         ApiResponse(
             responseCode = "400",
-            description = "Fail creating a textual question in the protocol - invalid input"
+            description = "Fail creating a textual question in the protocol - invalid input",
+            content = [Content(schema = Schema(hidden = true))]
         ),
         ApiResponse(
             responseCode = "401",
-            description = "Fail creating a textual question in the protocol - unauthenticated user"
+            description = "Fail creating a textual question in the protocol - unauthenticated user",
+            content = [Content(schema = Schema(hidden = true))]
         ),
         ApiResponse(
             responseCode = "403",
-            description = "Fail creating a textual question in the protocol - unauthorized user"
+            description = "Fail creating a textual question in the protocol - unauthorized user",
+            content = [Content(schema = Schema(hidden = true))]
         ),
     ]
     )
@@ -74,17 +78,21 @@ class ExtractionQuestionController(
     @Operation(summary = "Create a extraction pick-list question in the protocol")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "201", description = "Success creating a pick-list question in the protocol"),
+            ApiResponse(responseCode = "201", description = "Success creating a pick-list question in the protocol",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a pick-list question in the protocol - invalid input"
+                description = "Fail creating a pick-list question in the protocol - invalid input",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail creating a pick-list question in the protocol - unauthenticated user"
+                description = "Fail creating a pick-list question in the protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),ApiResponse(
                 responseCode = "403",
-                description = "Fail creating a pick-list question in the protocol - unauthorized user"
+                description = "Fail creating a pick-list question in the protocol - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -107,18 +115,22 @@ class ExtractionQuestionController(
         value = [
             ApiResponse(
                 responseCode = "201",
-                description = "Success creating a labeled-scale question in the protocol"
+                description = "Success creating a labeled-scale question in the protocol",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a labeled-scale question in the protocol - invalid input"
+                description = "Fail creating a labeled-scale question in the protocol - invalid input",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail creating a labeled-scale question in the protocol - unauthenticated user"
+                description = "Fail creating a labeled-scale question in the protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),ApiResponse(
                 responseCode = "403",
-                description = "Fail creating a labeled-scale question in the protocol - unauthorized user"
+                description = "Fail creating a labeled-scale question in the protocol - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -140,18 +152,22 @@ class ExtractionQuestionController(
     @Operation(summary = "Create a extraction number-scale question in the protocol")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "201", description = "Success creating a number-scale question in the protocol"),
+            ApiResponse(responseCode = "201", description = "Success creating a number-scale question in the protocol",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a number-scale question in the protocol - invalid input"
+                description = "Fail creating a number-scale question in the protocol - invalid input",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail creating a number-scale question in the protocol - unauthenticated user"
+                description = "Fail creating a number-scale question in the protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail creating a number-scale question in the protocol - unauthorized user"
+                description = "Fail creating a number-scale question in the protocol - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -223,11 +239,13 @@ class ExtractionQuestionController(
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail getting all extraction questions in the protocol - unauthenticated user"
+                description = "Fail getting all extraction questions in the protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail getting all extraction questions in the protocol - unauthorized user"
+                description = "Fail getting all extraction questions in the protocol - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
