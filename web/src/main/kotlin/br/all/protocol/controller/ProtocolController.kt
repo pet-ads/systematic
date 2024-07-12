@@ -63,10 +63,14 @@ class ProtocolController(
     @PutMapping
     @Operation(summary = "update the protocol of a systematic study")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Success updating the protocol of a systematic study"),
-        ApiResponse(responseCode = "404", description = "Fail updating the protocol of a systematic study - nonexistent protocol or systematic study"),
-        ApiResponse(responseCode = "403", description = "Fail updating the protocol of a systematic study - unauthorized collaborator"),
-        ApiResponse(responseCode = "401", description = "Fail updating the protocol of a systematic study - unauthenticated collaborator")
+        ApiResponse(responseCode = "200", description = "Success updating the protocol of a systematic study",
+            content = [Content(schema = Schema(hidden = true))]),
+        ApiResponse(responseCode = "404", description = "Fail updating the protocol of a systematic study - nonexistent protocol or systematic study",
+            content = [Content(schema = Schema(hidden = true))]),
+        ApiResponse(responseCode = "403", description = "Fail updating the protocol of a systematic study - unauthorized collaborator",
+            content = [Content(schema = Schema(hidden = true))]),
+        ApiResponse(responseCode = "401", description = "Fail updating the protocol of a systematic study - unauthenticated collaborator",
+            content = [Content(schema = Schema(hidden = true))])
     ])
     fun putProtocol(
         @PathVariable systematicStudyId: UUID,
