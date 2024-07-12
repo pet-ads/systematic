@@ -37,18 +37,22 @@ class SystematicStudyController(
     @Operation(summary = "Create a systematic study")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "201", description = "Success creating a systematic study"),
+            ApiResponse(responseCode = "201", description = "Success creating a systematic study",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a systematic study - invalid systematic study"
+                description = "Fail creating a systematic study - invalid systematic study",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail creating a systematic study - unauthenticated user"
+                description = "Fail creating a systematic study - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail creating a systematic study - unauthorized user"
+                description = "Fail creating a systematic study - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -74,7 +78,8 @@ class SystematicStudyController(
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail creating a systematic study - unauthenticated user"
+                description = "Fail creating a systematic study - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
@@ -166,20 +171,25 @@ class SystematicStudyController(
     @Operation(summary = "Update an existing systematic study")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Success updating an existing systematic study"),
+            ApiResponse(responseCode = "200", description = "Success updating an existing systematic study",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail updating an existing systematic study - invalid systematic study"
+                description = "Fail updating an existing systematic study - invalid systematic study",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail updating an existing systematic study - unauthenticated user"
+                description = "Fail updating an existing systematic study - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail updating an existing systematic study - unauthorized user"
+                description = "Fail updating an existing systematic study - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
-            ApiResponse(responseCode = "404", description = "Fail updating an existing systematic study - not found"),
+            ApiResponse(responseCode = "404", description = "Fail updating an existing systematic study - not found",
+                content = [Content(schema = Schema(hidden = true))]),
         ]
     )
     fun updateSystematicStudy(@PathVariable systematicStudyId: UUID,
