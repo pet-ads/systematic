@@ -1,9 +1,12 @@
 package br.all.user.controller
 
+import br.all.application.user.CredentialsService
 import br.all.application.user.create.RegisterUserAccountService
 import br.all.application.user.create.RegisterUserAccountService.RequestModel
 import br.all.user.presenter.RestfullRegisterUserAccountPresenter
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.HttpStatus
@@ -27,15 +30,21 @@ class UserAccountController(
         value = [
             ApiResponse(
                 responseCode = "201",
-                description = "Success creating a user"
+                description = "Success creating a user",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = CredentialsService.ResponseModel::class)
+                )]
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a user - invalid input"
+                description = "Fail creating a user - invalid input",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "409",
-                description = "Fail creating a user - user already exists"
+                description = "Fail creating a user - user already exists",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
