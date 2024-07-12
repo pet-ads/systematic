@@ -49,7 +49,7 @@ class RestfulCreateSystematicStudyPresenter: CreateSystematicStudyPresenter {
 
     private fun linkSelfRef(response: ResponseModel) =
         linkTo<SystematicStudyController> {
-            findSystematicStudy(response.userId)
+            findSystematicStudy(response.systematicStudyId)
         }.withSelfRel()
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
