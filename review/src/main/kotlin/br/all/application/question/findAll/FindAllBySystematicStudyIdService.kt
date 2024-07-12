@@ -1,6 +1,7 @@
 package br.all.application.question.findAll
 
 import br.all.application.question.repository.QuestionDto
+import io.swagger.v3.oas.annotations.media.Schema
 import java.util.UUID
 
 interface FindAllBySystematicStudyIdService {
@@ -11,6 +12,7 @@ interface FindAllBySystematicStudyIdService {
         val systematicStudyId: UUID
     )
 
+    @Schema(name = "FindAllBySystematicStudyIdServiceResponseModel")
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
