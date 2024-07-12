@@ -44,7 +44,7 @@ class JwtAuthenticationFilter(
             return
         }
 
-        val jwtToken = request.cookies.firstOrNull {cookie -> cookie.name.equals("accessToken") }?.value
+        val jwtToken = request.cookies.lastOrNull {cookie -> cookie.name.equals("accessToken") }?.value
 
         if(jwtToken == null){
             filterChain.doFilter(request, response)

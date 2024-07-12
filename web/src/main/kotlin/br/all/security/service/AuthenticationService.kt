@@ -44,21 +44,9 @@ class AuthenticationService(
         val  updateTokenRequest = RequestModel(user.id, refreshToken)
         updateRefreshTokenService.update(updateTokenRequest)
 
-        val cookie = ResponseCookie.from("accessToken", token)
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("None")
-            .path("/")
-            .maxAge(accessCookieExpiration)
-            .build()
+        val cookie = generateCookieFromToken("accessToken", token, accessCookieExpiration)
 
-        val refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("None")
-            .path("/api/v1/auth/refresh")
-            .maxAge(refreshCookieExpiration)
-            .build()
+        val refreshCookie = generateCookieFromToken("refreshToken", refreshToken, refreshCookieExpiration)
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString())
@@ -90,7 +78,7 @@ class AuthenticationService(
                            response: HttpServletResponse): String? {
         if(request.cookies.isNullOrEmpty()) return null
 
-        val refreshToken = request.cookies.firstOrNull { cookie -> cookie.name.equals("refreshToken") }?.value
+        val refreshToken = request.cookies.lastOrNull { cookie -> cookie.name.equals("refreshToken") }?.value
         if(refreshToken == null) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Refresh token not found")
 
         val username = tokenService.extractUsername(refreshToken) ?: return null
@@ -105,18 +93,24 @@ class AuthenticationService(
 
         val accessToken = generateToken(currentUserDetails, jwtProperties.accessTokenExpiration)
 
-        val cookie = ResponseCookie.from("accessToken", accessToken)
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("None")
-            .path("/")
-            .maxAge(accessCookieExpiration)
-            .build()
+        val cookie = generateCookieFromToken("accessToken", accessToken, accessCookieExpiration)
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
 
         return accessToken
     }
+
+    private fun generateCookieFromToken(
+        name: String,
+        token: String,
+        maxAge: Long
+    ) = ResponseCookie.from(name, token)
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("None")
+            .path("/")
+            .maxAge(maxAge)
+            .build()
 
     inner class AuthenticationResponseModel: RepresentationModel<AuthenticationResponseModel>()
 }
