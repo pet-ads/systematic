@@ -1,5 +1,6 @@
 package br.all.application.study.update.interfaces
 
+import io.swagger.v3.oas.annotations.media.Schema
 import java.util.UUID
 
 interface MarkAsDuplicatedService {
@@ -13,6 +14,7 @@ interface MarkAsDuplicatedService {
         val studyReviewSource: Long,
     )
 
+    @Schema(name = "MarkAsDuplicatedServiceResponseModel")
     class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,

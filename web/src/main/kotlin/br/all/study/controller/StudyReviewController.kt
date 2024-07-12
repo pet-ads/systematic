@@ -1,5 +1,6 @@
 package br.all.study.controller
 
+import br.all.application.search.update.UpdateSearchSessionService
 import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService
 import br.all.application.study.find.service.FindAllStudyReviewsService
@@ -50,10 +51,17 @@ class StudyReviewController(
     @Operation(summary = "Create a study review in the systematic study")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "201", description = "Success creating study review"),
-            ApiResponse(responseCode = "400", description = "Fail creating study review - invalid input"),
-            ApiResponse(responseCode = "401", description = "Fail creating study review - unauthenticated user"),
-            ApiResponse(responseCode = "403", description = "Fail creating study review - unauthorized user"),
+            ApiResponse(responseCode = "201", description = "Success creating study review",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = CreateStudyReviewService.ResponseModel::class)
+                )]),
+            ApiResponse(responseCode = "400", description = "Fail creating study review - invalid input",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "401", description = "Fail creating study review - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "403", description = "Fail creating study review - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]),
         ]
     )
     fun createStudyReview(
@@ -79,8 +87,10 @@ class StudyReviewController(
                     schema = Schema(implementation = FindAllStudyReviewsService.ResponseModel::class)
                 )]
             ),
-            ApiResponse(responseCode = "401", description = "Fail getting all study reviews - unauthenticated user"),
-            ApiResponse(responseCode = "403", description = "Fail getting all study reviews - unauthorized user"),
+            ApiResponse(responseCode = "401", description = "Fail getting all study reviews - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "403", description = "Fail getting all study reviews - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]),
         ]
     )
     fun findAllStudyReviews(
@@ -105,8 +115,10 @@ class StudyReviewController(
                     schema = Schema(implementation = FindAllStudyReviewsBySourceService.ResponseModel::class)
                 )]
             ),
-            ApiResponse(responseCode = "401", description = "Fail getting all study reviews by source - unauthenticated user"),
-            ApiResponse(responseCode = "403", description = "Fail getting all study reviews by source - unauthorized user"),
+            ApiResponse(responseCode = "401", description = "Fail getting all study reviews by source - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "403", description = "Fail getting all study reviews by source - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]),
         ]
     )
     fun findAllStudyReviewsBySource(
@@ -131,8 +143,10 @@ class StudyReviewController(
                     schema = Schema(implementation = FindStudyReviewService.ResponseModel::class)
                 )]
             ),
-            ApiResponse(responseCode = "401", description = "Fail getting study review - unauthenticated user"),
-            ApiResponse(responseCode = "403", description = "Fail getting study review - unauthorized user"),
+            ApiResponse(responseCode = "401", description = "Fail getting study review - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "403", description = "Fail getting study review - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "404",
                 description = "Fail getting study review - not found",
@@ -157,19 +171,27 @@ class StudyReviewController(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Success updating an existing study review of a systematic study"
+                description = "Success updating an existing study review of a systematic study",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = UpdateStudyReviewService.ResponseModel::class)
+                )]
             ),
-            ApiResponse(responseCode = "400", description = "Fail to update an existing study review - invalid status"),
+            ApiResponse(responseCode = "400", description = "Fail to update an existing study review - invalid status",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail to update an existing study review - unauthenticated user"
+                description = "Fail to update an existing study review - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),ApiResponse(
                 responseCode = "403",
-                description = "Fail to update an existing study review - unauthorized user"
+                description = "Fail to update an existing study review - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "Fail to update an existing study review - study not found"
+                description = "Fail to update an existing study review - study not found",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -189,18 +211,22 @@ class StudyReviewController(
     @Operation(summary = "Update the selection status of study review")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Success updating selection status of study review"),
+            ApiResponse(responseCode = "200", description = "Success updating selection status of study review",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail updating selection status of study review - invalid status"
+                description = "Fail updating selection status of study review - invalid status",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail updating selection status of study review - unauthenticated user"
+                description = "Fail updating selection status of study review - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail updating selection status of study review - unauthorized user"
+                description = "Fail updating selection status of study review - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -220,18 +246,22 @@ class StudyReviewController(
     @Operation(summary = "Update a extraction status of study review")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Success updating extraction status of study review"),
+            ApiResponse(responseCode = "200", description = "Success updating extraction status of study review",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail updating extraction status of study review - invalid status"
+                description = "Fail updating extraction status of study review - invalid status",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail updating extraction status of study review - unauthenticated user"
+                description = "Fail updating extraction status of study review - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail updating extraction status of study review - unauthorized user"
+                description = "Fail updating extraction status of study review - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -251,18 +281,22 @@ class StudyReviewController(
     @Operation(summary = "Update the reading priority of study review")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Success updating reading priority of study review"),
+            ApiResponse(responseCode = "200", description = "Success updating reading priority of study review",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail updating reading priority of study review - invalid status"
+                description = "Fail updating reading priority of study review - invalid status",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail updating reading priority of study review - unauthenticated user"
+                description = "Fail updating reading priority of study review - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail updating reading priority of study review - unauthorized user"
+                description = "Fail updating reading priority of study review - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -283,18 +317,26 @@ class StudyReviewController(
     @Operation(summary = "Update the answer of a risk of bias question")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Success updating answer to risk of bias question"),
+            ApiResponse(responseCode = "200", description = "Success updating answer to risk of bias question",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = AnswerRiskOfBiasQuestionService.ResponseModel::class)
+                )]
+            ),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail updating answer to risk of bias question"
+                description = "Fail updating answer to risk of bias question",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail updating answer to risk of bias question - unauthenticated user"
+                description = "Fail updating answer to risk of bias question - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail updating answer to risk of bias question - unauthorized user"
+                description = "Fail updating answer to risk of bias question - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -316,18 +358,25 @@ class StudyReviewController(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Success marking an existing study as duplicated in the systematic study"
+                description = "Success marking an existing study as duplicated in the systematic study",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = MarkAsDuplicatedService.ResponseModel::class)
+                )]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail marking an existing study as duplicated in the systematic study - unauthenticated user"
+                description = "Fail marking an existing study as duplicated in the systematic study - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),ApiResponse(
                 responseCode = "403",
-                description = "Fail marking an existing study as duplicated in the systematic study - unauthorized user"
+                description = "Fail marking an existing study as duplicated in the systematic study - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "Fail marking an existing study as duplicated in the systematic study - not found"
+                description = "Fail marking an existing study as duplicated in the systematic study - not found",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
