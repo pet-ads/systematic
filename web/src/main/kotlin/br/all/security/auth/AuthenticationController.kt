@@ -20,7 +20,8 @@ class AuthenticationController(private val authenticationService: Authentication
     @PostMapping
     @Operation(summary = "Performs a authentication operation")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Success authentication"),
+        ApiResponse(responseCode = "200", description = "Success authentication",
+            content = [Content(schema = Schema(hidden = true))]),
         ApiResponse(
             responseCode = "400",
             description = "Fail authentication - invalid input",
