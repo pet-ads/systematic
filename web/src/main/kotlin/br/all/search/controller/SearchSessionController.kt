@@ -1,5 +1,6 @@
 package br.all.search.controller
 
+import br.all.application.review.find.services.FindSystematicStudyService
 import br.all.application.search.create.CreateSearchSessionService
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindSearchSessionService
@@ -34,6 +35,7 @@ class SearchSessionController(
     val authenticationInfoService: AuthenticationInfoService
 ) {
 
+    @Schema(name = "UpdateSearchSessionPutRequest")
     data class PutRequest(
         val searchString: String?,
         val additionalInfo: String?,
@@ -51,23 +53,31 @@ class SearchSessionController(
         value = [
             ApiResponse(
                 responseCode = "201",
-                description = "Success creating a search session in the systematic study"
+                description = "Success creating a search session in the systematic study",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = CreateSearchSessionService.ResponseModel::class)
+                )]
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a search session in the systematic study - invalid BibTeX format"
+                description = "Fail creating a search session in the systematic study - invalid BibTeX format",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail creating a search session in the systematic study - unauthenticated user"
+                description = "Fail creating a search session in the systematic study - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail creating a search session in the systematic study - unauthorized user"
+                description = "Fail creating a search session in the systematic study - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "Fail creating a search session in the systematic study - invalid request body"
+                description = "Fail creating a search session in the systematic study - invalid request body",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -104,11 +114,13 @@ class SearchSessionController(
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail finding search sessions in the systematic study - unauthenticated user"
+                description = "Fail finding search sessions in the systematic study - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail finding search sessions in the systematic study - unauthorized user"
+                description = "Fail finding search sessions in the systematic study - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             )
         ]
     )
@@ -181,11 +193,13 @@ class SearchSessionController(
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail finding search sessions in the systematic study - unauthenticated user"
+                description = "Fail finding search sessions in the systematic study - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail finding search sessions in the systematic study - unauthorized user"
+                description = "Fail finding search sessions in the systematic study - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             )
         ]
     )
@@ -205,19 +219,26 @@ class SearchSessionController(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Success updating an existing search session of a systematic study"
+                description = "Success updating an existing search session of a systematic study",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = UpdateSearchSessionService.ResponseModel::class)
+                )]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail to update an existing search session - unauthenticated user"
+                description = "Fail to update an existing search session - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail to update an existing search session - unauthorized user"
+                description = "Fail to update an existing search session - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "Fail to update an existing search session - study not found"
+                description = "Fail to update an existing search session - study not found",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )

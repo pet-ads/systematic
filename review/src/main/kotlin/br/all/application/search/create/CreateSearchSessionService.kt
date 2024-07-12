@@ -1,5 +1,6 @@
 package br.all.application.search.create
 
+import io.swagger.v3.oas.annotations.media.Schema
 import java.util.*
 
 interface CreateSearchSessionService {
@@ -13,6 +14,7 @@ interface CreateSearchSessionService {
         val additionalInfo: String?,
     )
 
+    @Schema(name = "CreateSearchSessionServiceResponseModel")
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
