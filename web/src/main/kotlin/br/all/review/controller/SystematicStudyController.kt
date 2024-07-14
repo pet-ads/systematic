@@ -12,6 +12,7 @@ import br.all.review.presenter.RestfulUpdateSystematicStudyPresenter
 import br.all.review.requests.PostRequest
 import br.all.review.requests.PutRequest
 import br.all.security.service.AuthenticationInfoService
+import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -30,7 +31,8 @@ class SystematicStudyController(
     private val findSystematicStudyServiceImpl: FindSystematicStudyService,
     private val findAllSystematicStudiesService: FindAllSystematicStudiesService,
     private val updateSystematicStudyService: UpdateSystematicStudyService,
-    private val authenticationInfoService: AuthenticationInfoService
+    private val authenticationInfoService: AuthenticationInfoService,
+    private val linksFactory: LinksFactory
 ) {
 
     @PostMapping
@@ -57,7 +59,7 @@ class SystematicStudyController(
         ]
     )
     fun postSystematicStudy(@RequestBody request: PostRequest): ResponseEntity<*> {
-        val presenter = RestfulCreateSystematicStudyPresenter()
+        val presenter = RestfulCreateSystematicStudyPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val requestModel = request.toCreateRequestModel(userId)
 
@@ -94,7 +96,7 @@ class SystematicStudyController(
         ]
     )
     fun findSystematicStudy(@PathVariable systematicStudyId: UUID): ResponseEntity<*> {
-        val presenter = RestfulFindSystematicStudyPresenter()
+        val presenter = RestfulFindSystematicStudyPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindOneRequestModel(userId, systematicStudyId)
 
@@ -127,7 +129,7 @@ class SystematicStudyController(
         ]
     )
     fun findAllSystematicStudies(): ResponseEntity<*> {
-        val presenter = RestfulFindAllSystematicStudiesPresenter()
+        val presenter = RestfulFindAllSystematicStudiesPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
 
         findAllSystematicStudiesService.findAllByCollaborator(presenter, userId)
@@ -159,7 +161,7 @@ class SystematicStudyController(
         ]
     )
     fun findAllSystematicStudiesByOwner(@PathVariable ownerId: UUID): ResponseEntity<*> {
-        val presenter = RestfulFindAllSystematicStudiesPresenter()
+        val presenter = RestfulFindAllSystematicStudiesPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindByOwnerRequest(userId, ownerId)
 
@@ -194,7 +196,7 @@ class SystematicStudyController(
     )
     fun updateSystematicStudy(@PathVariable systematicStudyId: UUID,
                               @RequestBody request: PutRequest): ResponseEntity<*> {
-        val presenter = RestfulUpdateSystematicStudyPresenter()
+        val presenter = RestfulUpdateSystematicStudyPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val requestModel = request.toUpdateRequestModel(userId, systematicStudyId)
 
