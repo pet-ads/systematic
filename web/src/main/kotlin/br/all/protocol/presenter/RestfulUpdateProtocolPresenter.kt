@@ -4,6 +4,7 @@ import br.all.application.protocol.update.UpdateProtocolPresenter
 import br.all.application.protocol.update.UpdateProtocolService
 import br.all.protocol.controller.ProtocolController
 import br.all.shared.error.createErrorResponseFrom
+import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
@@ -12,15 +13,15 @@ import java.util.*
 
 class RestfulUpdateProtocolPresenter: UpdateProtocolPresenter {
     var responseEntity: ResponseEntity<*>? = null
+    private lateinit var linksFactory: LinksFactory
 
     override fun prepareSuccessView(response: UpdateProtocolService.ResponseModel) {
         val (researcher, systematicStudy) = response
         val viewModel = ViewModel(researcher, systematicStudy)
 
-        val link = linkTo<ProtocolController> {
-            findById(systematicStudy)
-        }.withSelfRel()
-        viewModel.add(link)
+        val findProtocol = linksFactory.findProtocol(systematicStudy)
+
+        viewModel.add(findProtocol)
 
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(viewModel)
     }
