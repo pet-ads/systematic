@@ -4,6 +4,7 @@ import br.all.application.question.create.CreateQuestionPresenter
 import br.all.application.question.create.CreateQuestionService.*
 import br.all.question.controller.ExtractionQuestionController
 import br.all.shared.error.createErrorResponseFrom
+import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
@@ -13,60 +14,23 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class RestfulCreateExtractionQuestionPresenter : CreateQuestionPresenter {
+class RestfulCreateExtractionQuestionPresenter(
+    private val linksFactory: LinksFactory
+) : CreateQuestionPresenter {
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
         val viewModel = ViewModel(response.userId, response.systematicStudyId, response.questionId)
 
-        val selfRef = linkSelfRef(response)
-        val pickList = linkCreatePickList(response)
-        val labeledScale = linkCreateLabeledScale(response)
-        val numberScale = linkCreateNumberScale(response)
-        val findAll = linkFindAll(response)
+        val selfRef = linksFactory.findExtractionQuestion(response.systematicStudyId, response.questionId)
+        val pickList = linksFactory.createPickListExtractionQuestion(response.systematicStudyId)
+        val labeledScale = linksFactory.createLabeledScaleExtractionQuestion(response.systematicStudyId)
+        val numberScale = linksFactory.createNumberScaleExtractionQuestion(response.systematicStudyId)
+        val findAll = linksFactory.findAllReviewExtractionQuestions(response.systematicStudyId)
 
         viewModel.add(selfRef, pickList, labeledScale, numberScale, findAll)
         responseEntity = status(HttpStatus.CREATED).body(viewModel)
     }
-
-    private fun linkSelfRef(response: ResponseModel) =
-        linkTo<ExtractionQuestionController> {
-            findQuestion(response.systematicStudyId, response.questionId)
-        }.withSelfRel()
-
-    private fun linkCreatePickList(response: ResponseModel) =
-        linkTo<ExtractionQuestionController> {
-            createPickListQuestion(
-                response.systematicStudyId,
-                request = ExtractionQuestionController.PickListRequest(
-                    "code", "description", listOf("option1")
-                )
-            )
-        }.withRel("create-pick-list-extraction-question")
-
-    private fun linkCreateLabeledScale(response: ResponseModel) =
-        linkTo<ExtractionQuestionController> {
-            createLabeledScaleQuestion(
-                response.systematicStudyId,
-                request = ExtractionQuestionController.LabeledScaleRequest(
-                    "code", "description", mapOf("scale1" to 1)
-                )
-            )
-        }.withRel("create-labeled-scale-extraction-question")
-
-    private fun linkCreateNumberScale(response: ResponseModel) =
-        linkTo<ExtractionQuestionController> {
-            createNumberScaleQuestion(
-                response.systematicStudyId,
-                request = ExtractionQuestionController.NumberScaleRequest(
-                    "code", "description", 0, 0
-                )
-            )
-        }.withRel("create-numberScale-extraction-question")
-    private fun linkFindAll(response: ResponseModel) =
-        linkTo<ExtractionQuestionController> {
-            findAllBySystematicStudyId(response.systematicStudyId)
-        }.withRel("find-all-review-extraction-questions")
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 
