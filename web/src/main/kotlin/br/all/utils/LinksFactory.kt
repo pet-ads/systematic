@@ -7,6 +7,9 @@ import br.all.question.controller.RiskOfBiasQuestionController
 import br.all.review.controller.SystematicStudyController
 import br.all.review.requests.PostRequest
 import br.all.search.controller.SearchSessionController
+import br.all.study.controller.StudyReviewController
+import br.all.study.requests.PatchStatusStudyReviewRequest
+import br.all.study.requests.PostStudyReviewRequest
 import org.springframework.hateoas.Link
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.stereotype.Component
@@ -160,5 +163,72 @@ class LinksFactory {
                 "additionalInfo", "source")
         )
     }.withRel("update-session").withType("PUT")
+
+    fun createStudy(systematicStudyId: UUID): Link = linkTo<StudyReviewController> {
+        createStudyReview(
+            systematicStudyId,
+            PostStudyReviewRequest(
+                type = "",
+                title = "",
+                year = 2024,
+                authors = "",
+                venue = "",
+                abstract = "",
+                keywords = emptySet(),
+                source = ""
+            )
+        )
+    }.withRel("create-study").withType("POST")
+
+    fun findStudy(systematicStudyId: UUID, studyId: Long): Link = linkTo<StudyReviewController> {
+        findStudyReview(systematicStudyId, studyId)
+    }.withRel("find-study").withType("GET")
+
+    fun findAllStudies(systematicStudyId: UUID): Link = linkTo<StudyReviewController> {
+        findAllStudyReviews(systematicStudyId)
+    }.withRel("find-all-studies").withType("GET")
+
+    fun findAllStudiesBySource(systematicStudyId: UUID, source: String): Link = linkTo<StudyReviewController> {
+        findAllStudyReviewsBySource(systematicStudyId, source)
+    }.withRel("find-all-studies-by-source").withType("GET")
+
+    fun updateStudySelectionStatus(systematicStudyId: UUID, studyId: Long): Link = linkTo<StudyReviewController> {
+        updateStudyReviewSelectionStatus(
+            systematicStudyId,
+            studyId,
+            patchRequest = PatchStatusStudyReviewRequest(
+                "status"
+            )
+        )
+    }.withRel("update-study-selection-status").withType("PATCH")
+
+    fun updateStudyExtractionStatus(systematicStudyId: UUID, studyId: Long): Link = linkTo<StudyReviewController> {
+        updateStudyReviewExtractionStatus(
+            systematicStudyId,
+            studyId,
+            patchRequest = PatchStatusStudyReviewRequest(
+                "status"
+            )
+        )
+    }.withRel("update-study-extraction-status").withType("PATCH")
+
+    fun updateStudyReadingPriority(systematicStudyId: UUID, studyId: Long): Link = linkTo<StudyReviewController> {
+        updateStudyReviewReadingPriority(
+            systematicStudyId,
+            studyId,
+            patchRequest = PatchStatusStudyReviewRequest(
+                "status"
+            )
+        )
+    }.withRel("update-study-reading-priority").withType("PATCH")
+
+    fun markStudyAsDuplicated(systematicStudyId: UUID, studyId: Long): Link = linkTo<StudyReviewController> {
+        markAsDuplicated(
+            systematicStudyId,
+            studyId,
+            studyId
+        )
+    }.withRel("mark-study-as-duplicated").withType("PATCH")
+
 }
 
