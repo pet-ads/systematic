@@ -6,6 +6,7 @@ import br.all.question.controller.ExtractionQuestionController
 import br.all.question.controller.RiskOfBiasQuestionController
 import br.all.review.controller.SystematicStudyController
 import br.all.review.requests.PostRequest
+import br.all.search.controller.SearchSessionController
 import org.springframework.hateoas.Link
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.stereotype.Component
@@ -136,5 +137,28 @@ class LinksFactory {
             )
         )
     }.withRel("create-numberScale-rob-question").withType("POST")
+
+    fun findSession(systematicStudyId: UUID, sessionId: UUID): Link = linkTo<SearchSessionController> {
+        findSearchSession(systematicStudyId, sessionId)
+    }.withRel("find-session").withType("GET")
+
+    fun findAllSessions(systematicStudyId: UUID): Link = linkTo<SearchSessionController> {
+        findAllSearchSessions(
+            systematicStudyId
+        )
+    }.withRel("find-all-sessions").withType("GET")
+
+    fun findSessionsBySource(systematicStudyId: UUID, source:String): Link = linkTo<SearchSessionController> {
+        findSearchSessionsBySource(systematicStudyId, source)
+    }.withRel("find-sessions-by-source").withType("GET")
+
+    fun updateSession(systematicStudyId: UUID, sessionId: UUID): Link = linkTo<SearchSessionController> {
+        updateSearchSession(
+            systematicStudyId,
+            sessionId,
+            SearchSessionController.PutRequest("searchString",
+                "additionalInfo", "source")
+        )
+    }.withRel("update-session").withType("PUT")
 }
 
