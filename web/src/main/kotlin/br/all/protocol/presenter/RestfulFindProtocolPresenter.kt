@@ -13,9 +13,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.util.*
 
-class RestfulFindProtocolPresenter: FindProtocolPresenter {
+class RestfulFindProtocolPresenter(
+    private val linksFactory: LinksFactory
+): FindProtocolPresenter {
     var responseEntity: ResponseEntity<*>? = null
-    lateinit var linksFactory: LinksFactory
 
     override fun prepareSuccessView(response: ResponseModel) {
         val (researcher, systematicStudy, content) = response
