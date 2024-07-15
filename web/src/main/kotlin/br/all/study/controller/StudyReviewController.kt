@@ -17,6 +17,7 @@ import br.all.study.requests.PatchRiskOfBiasAnswerStudyReviewRequest
 import br.all.study.requests.PatchStatusStudyReviewRequest
 import br.all.study.requests.PostStudyReviewRequest
 import br.all.study.requests.PutStudyReviewRequest
+import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -43,7 +44,8 @@ class StudyReviewController(
     private val updateReadingPriorityService: UpdateStudyReviewPriorityService,
     private val markAsDuplicatedService: MarkAsDuplicatedService,
     private val answerRiskOfBiasQuestionService: AnswerRiskOfBiasQuestionService,
-    private val authenticationInfoService: AuthenticationInfoService
+    private val authenticationInfoService: AuthenticationInfoService,
+    private val linksFactory: LinksFactory
 
 ) {
 
@@ -68,7 +70,7 @@ class StudyReviewController(
         @PathVariable systematicStudy: UUID,
         @RequestBody postRequest: PostStudyReviewRequest
     ): ResponseEntity<*> {
-        val presenter = RestfulCreateStudyReviewPresenter()
+        val presenter = RestfulCreateStudyReviewPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = postRequest.toRequestModel(userId, systematicStudy)
         createService.createFromStudy(presenter, request)
@@ -96,7 +98,7 @@ class StudyReviewController(
     fun findAllStudyReviews(
         @PathVariable systematicStudy: UUID,
     ): ResponseEntity<*> {
-        val presenter = RestfulFindAllStudyReviewsPresenter()
+        val presenter = RestfulFindAllStudyReviewsPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindAllStudyReviewsService.RequestModel(userId, systematicStudy)
         findAllService.findAllFromReview(presenter, request)
@@ -125,7 +127,7 @@ class StudyReviewController(
         @PathVariable systematicStudy: UUID,
         @PathVariable searchSource: String,
     ): ResponseEntity<*> {
-        val presenter = RestfulFindAllStudyReviewsBySourcePresenter()
+        val presenter = RestfulFindAllStudyReviewsBySourcePresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindAllBySourceRequest(userId, systematicStudy, searchSource)
         findAllBySourceService.findAllFromSearchSession(presenter, request)
@@ -158,7 +160,7 @@ class StudyReviewController(
         @PathVariable systematicStudy: UUID,
         @PathVariable studyReview: Long,
     ): ResponseEntity<*> {
-        val presenter = RestfulFindStudyReviewPresenter()
+        val presenter = RestfulFindStudyReviewPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindOneRequest(userId, systematicStudy, studyReview)
         findOneService.findOne(presenter, request)
@@ -200,7 +202,7 @@ class StudyReviewController(
         @PathVariable studyReview: Long,
         @RequestBody putRequest: PutStudyReviewRequest
     ): ResponseEntity<*> {
-        val presenter = RestfulUpdateStudyReviewPresenter()
+        val presenter = RestfulUpdateStudyReviewPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = putRequest.toRequestModel(userId, systematicStudy, studyReview)
         updateService.updateFromStudy(presenter, request)
@@ -235,7 +237,7 @@ class StudyReviewController(
         @PathVariable studyReview: Long,
         @RequestBody patchRequest: PatchStatusStudyReviewRequest
     ): ResponseEntity<*> {
-        val presenter = RestfulUpdateStudyReviewStatusPresenter()
+        val presenter = RestfulUpdateStudyReviewStatusPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
         updateSelectionService.changeStatus(presenter, request)
@@ -270,7 +272,7 @@ class StudyReviewController(
         @PathVariable studyReview: Long,
         @RequestBody patchRequest: PatchStatusStudyReviewRequest
     ): ResponseEntity<*> {
-        val presenter = RestfulUpdateStudyReviewStatusPresenter()
+        val presenter = RestfulUpdateStudyReviewStatusPresenter(linksFactory)
         val userID = authenticationInfoService.getAuthenticatedUserId()
         val request = patchRequest.toRequestModel(userID, systematicStudy, studyReview)
         updateExtractionService.changeStatus(presenter, request)
@@ -305,7 +307,7 @@ class StudyReviewController(
         @PathVariable studyReview: Long,
         @RequestBody patchRequest: PatchStatusStudyReviewRequest
     ): ResponseEntity<*> {
-        val presenter = RestfulUpdateStudyReviewStatusPresenter()
+        val presenter = RestfulUpdateStudyReviewStatusPresenter(linksFactory)
         val userID = authenticationInfoService.getAuthenticatedUserId()
         val request = patchRequest.toRequestModel(userID, systematicStudy, studyReview)
         updateReadingPriorityService.changeStatus(presenter, request)
@@ -345,7 +347,7 @@ class StudyReviewController(
         @PathVariable studyReview: Long,
         @RequestBody patchRequest: PatchRiskOfBiasAnswerStudyReviewRequest<*>,
     ) : ResponseEntity<*> {
-        val presenter = RestfulAnswerRiskOfBiasQuestionPresenter()
+        val presenter = RestfulAnswerRiskOfBiasQuestionPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
         answerRiskOfBiasQuestionService.answerQuestion(presenter, request)
@@ -385,7 +387,7 @@ class StudyReviewController(
         @PathVariable studyReviewIdToKeep: Long,
         @PathVariable studyReviewToMarkAsDuplicated: Long,
     ): ResponseEntity<*> {
-        val presenter = RestfulMarkAsDuplicatedPresenter()
+        val presenter = RestfulMarkAsDuplicatedPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = DuplicatedRequest(userId, systematicStudy, studyReviewIdToKeep, studyReviewToMarkAsDuplicated)
         markAsDuplicatedService.markAsDuplicated(presenter, request)

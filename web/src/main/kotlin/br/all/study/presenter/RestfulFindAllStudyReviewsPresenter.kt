@@ -6,6 +6,7 @@ import br.all.application.study.repository.StudyReviewDto
 import br.all.shared.error.createErrorResponseFrom
 import br.all.study.controller.StudyReviewController
 import br.all.study.requests.PostStudyReviewRequest
+import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
@@ -14,49 +15,22 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class RestfulFindAllStudyReviewsPresenter : FindAllStudyReviewsPresenter {
+class RestfulFindAllStudyReviewsPresenter(
+    private val linksFactory: LinksFactory
+) : FindAllStudyReviewsPresenter {
 
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.systematicStudyId, response.studyReviews.size, response.studyReviews)
 
-        val selfRef = linkSelfRef(response)
-        val allBySource = linkFindAllBySource(response)
-        val createStudyReview = linkCreateStudyReview(response)
+        val selfRef = linksFactory.findAllStudies(response.systematicStudyId)
+        val allBySource = linksFactory.findAllStudiesBySource(response.systematicStudyId, "")
+        val createStudyReview = linksFactory.createStudy(response.systematicStudyId)
 
         restfulResponse.add(selfRef, allBySource, createStudyReview)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
-
-    private fun linkSelfRef(response: ResponseModel) =
-        linkTo<StudyReviewController> {
-            findAllStudyReviews(response.systematicStudyId)
-        }.withSelfRel()
-
-    private fun linkFindAllBySource(response: ResponseModel) =
-        linkTo<StudyReviewController> {
-            findAllStudyReviewsBySource(response.systematicStudyId, searchSource = "")
-        }.withRel("find-all-studies-by-source")
-
-
-    private fun linkCreateStudyReview(response: ResponseModel) =
-        linkTo<StudyReviewController> {
-            createStudyReview(
-                response.systematicStudyId,
-                PostStudyReviewRequest(
-                    type = "",
-                    title = "",
-                    year = 2024,
-                    authors = "",
-                    venue = "",
-                    abstract = "",
-                    keywords = emptySet(),
-                    source = ""
-                )
-            )
-        }.withRel("create-study")
-
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
 
