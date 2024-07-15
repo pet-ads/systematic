@@ -9,6 +9,7 @@ import br.all.security.auth.AuthenticationRequest
 import br.all.security.config.JwtProperties
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpHeaders
@@ -28,7 +29,8 @@ class AuthenticationService(
     private val tokenService: TokenService,
     private val jwtProperties: JwtProperties,
     private val loadCredentialsService: LoadAccountCredentialsService,
-    private val updateRefreshTokenService: UpdateRefreshTokenService
+    private val updateRefreshTokenService: UpdateRefreshTokenService,
+    private val linksFactory: LinksFactory
 ) {
 
     private val accessCookieExpiration = jwtProperties.accessTokenExpiration / 1000
@@ -52,21 +54,14 @@ class AuthenticationService(
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString())
 
         val responseModel = AuthenticationResponseModel()
-        val ownerStudies = linkToFindAllByOwner(user.id)
-        val createSystematicStudy = linkToPostSystematicStudy()
+
+        val ownerStudies = linksFactory.findMyReviews(user.id)
+        val createSystematicStudy = linksFactory.createReview()
 
         responseModel.add(ownerStudies, createSystematicStudy)
 
         return responseModel
     }
-
-    private fun linkToFindAllByOwner(ownerId: UUID) = linkTo<SystematicStudyController> {
-        findAllSystematicStudiesByOwner(ownerId)
-    }.withRel("find-my-reviews")
-
-    private fun linkToPostSystematicStudy() = linkTo<SystematicStudyController> {
-        postSystematicStudy(PostRequest("title", "description", setOf()))
-    }.withRel("create-review")
 
     private fun generateToken(user: ApplicationUser, duration: Long) = tokenService.generateToken(
         user,
