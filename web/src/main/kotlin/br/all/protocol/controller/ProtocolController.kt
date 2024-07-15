@@ -6,6 +6,7 @@ import br.all.protocol.presenter.RestfulFindProtocolPresenter
 import br.all.protocol.presenter.RestfulUpdateProtocolPresenter
 import br.all.protocol.requests.PutRequest
 import br.all.security.service.AuthenticationInfoService
+import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -22,7 +23,8 @@ import br.all.application.protocol.find.FindProtocolService.RequestModel as Find
 class ProtocolController(
     private val findProtocolService: FindProtocolService,
     private val updateProtocolService: UpdateProtocolService,
-    private val authenticationInfoService: AuthenticationInfoService
+    private val authenticationInfoService: AuthenticationInfoService,
+    private val linksFactory: LinksFactory
 ) {
 
     @GetMapping
@@ -52,7 +54,7 @@ class ProtocolController(
     fun findById(
         @PathVariable systematicStudyId: UUID
     ): ResponseEntity<*> {
-        val presenter = RestfulFindProtocolPresenter()
+        val presenter = RestfulFindProtocolPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindOneRequestModel(userId, systematicStudyId)
 
@@ -76,7 +78,7 @@ class ProtocolController(
         @PathVariable systematicStudyId: UUID,
         @RequestBody request: PutRequest,
     ): ResponseEntity<*> {
-        val presenter = RestfulUpdateProtocolPresenter()
+        val presenter = RestfulUpdateProtocolPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val requestModel = request.toUpdateRequestModel(userId, systematicStudyId)
 

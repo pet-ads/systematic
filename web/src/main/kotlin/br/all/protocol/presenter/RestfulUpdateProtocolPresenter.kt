@@ -11,9 +11,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.util.*
 
-class RestfulUpdateProtocolPresenter: UpdateProtocolPresenter {
+class RestfulUpdateProtocolPresenter(
+    private val linksFactory: LinksFactory
+): UpdateProtocolPresenter {
     var responseEntity: ResponseEntity<*>? = null
-    private lateinit var linksFactory: LinksFactory
 
     override fun prepareSuccessView(response: UpdateProtocolService.ResponseModel) {
         val (researcher, systematicStudy) = response
