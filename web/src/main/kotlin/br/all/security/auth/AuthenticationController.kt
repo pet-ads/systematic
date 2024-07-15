@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -34,8 +36,11 @@ class AuthenticationController(private val authenticationService: Authentication
             description = "Fail authentication - user not found",
             content = [Content(schema = Schema(hidden = true))]),
     ])
-    fun authenticate(@RequestBody authRequest: AuthenticationRequest): AuthenticationService.AuthenticationResponseModel =
-        authenticationService.authenticate(authRequest)
+    fun authenticate(
+        @RequestBody authRequest: AuthenticationRequest,
+        response: HttpServletResponse
+    ): AuthenticationService.AuthenticationResponseModel =
+        authenticationService.authenticate(authRequest, response)
 
     @PostMapping("/refresh")
     @Operation(summary = "Performs a refresh token operation")
@@ -54,10 +59,11 @@ class AuthenticationController(private val authenticationService: Authentication
             description = "Fail refresh - invalid refresh token",
             content = [Content(schema = Schema(hidden = true))]),
     ])
-    fun refreshToken(@RequestBody request: RefreshTokenRequest): TokenResponse =
-        authenticationService.refreshAccessToken(request.refreshToken)
+    fun refreshToken(request: HttpServletRequest,
+                     response: HttpServletResponse,){
+        authenticationService.refreshAccessToken(request, response)
             ?.mapToTokenResponse()
             ?: throw ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid refresh token")
-
+    }
     private fun String.mapToTokenResponse() = TokenResponse(this)
 }

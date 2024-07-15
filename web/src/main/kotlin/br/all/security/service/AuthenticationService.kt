@@ -6,14 +6,19 @@ import br.all.application.user.update.UpdateRefreshTokenService.RequestModel
 import br.all.review.controller.SystematicStudyController
 import br.all.review.requests.PostRequest
 import br.all.security.auth.AuthenticationRequest
-import br.all.security.auth.AuthenticationResponse
 import br.all.security.config.JwtProperties
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseCookie
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
 @Service
@@ -25,7 +30,11 @@ class AuthenticationService(
     private val loadCredentialsService: LoadAccountCredentialsService,
     private val updateRefreshTokenService: UpdateRefreshTokenService
 ) {
-    fun authenticate(request: AuthenticationRequest): AuthenticationResponseModel {
+
+    private val accessCookieExpiration = jwtProperties.accessTokenExpiration / 1000
+    private val refreshCookieExpiration = jwtProperties.refreshTokenExpiration / 1000
+
+    fun authenticate(request: AuthenticationRequest, response: HttpServletResponse): AuthenticationResponseModel {
         authManager.authenticate(UsernamePasswordAuthenticationToken(request.username, request.password))
         val user = userDetailService.loadUserByUsername(request.username) as ApplicationUser
 
@@ -35,7 +44,14 @@ class AuthenticationService(
         val  updateTokenRequest = RequestModel(user.id, refreshToken)
         updateRefreshTokenService.update(updateTokenRequest)
 
-        val responseModel = AuthenticationResponseModel(token, refreshToken)
+        val cookie = generateCookieFromToken("accessToken", token, accessCookieExpiration)
+
+        val refreshCookie = generateCookieFromToken("refreshToken", refreshToken, refreshCookieExpiration)
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+
+        val responseModel = AuthenticationResponseModel()
         val ownerStudies = linkToFindAllByOwner(user.id)
         val createSystematicStudy = linkToPostSystematicStudy()
 
@@ -58,24 +74,43 @@ class AuthenticationService(
         mapOf("id" to user.id)
     )
 
-    fun refreshAccessToken(refreshToken: String): String? {
+    fun refreshAccessToken(request: HttpServletRequest,
+                           response: HttpServletResponse): String? {
+        if(request.cookies.isNullOrEmpty()) return null
+
+        val refreshToken = request.cookies.lastOrNull { cookie -> cookie.name.equals("refreshToken") }?.value
+        if(refreshToken == null) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Refresh token not found")
+
         val username = tokenService.extractUsername(refreshToken) ?: return null
 
         val currentUserDetails = userDetailService.loadUserByUsername(username) as ApplicationUser
         val tokenUserCredentials = loadCredentialsService.loadSimpleCredentialsByToken(refreshToken)
 
-        if(canNotRefreshAccessToken(refreshToken, currentUserDetails.id, tokenUserCredentials.id)) return null
-        return generateToken(currentUserDetails, jwtProperties.accessTokenExpiration)
+        if(tokenService.isExpired(refreshToken))
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Expired refresh token")
+
+        if(currentUserDetails.id != tokenUserCredentials.id) return null
+
+        val accessToken = generateToken(currentUserDetails, jwtProperties.accessTokenExpiration)
+
+        val cookie = generateCookieFromToken("accessToken", accessToken, accessCookieExpiration)
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
+
+        return accessToken
     }
 
-    private fun canNotRefreshAccessToken(
-        refreshToken: String,
-        currentUserId: UUID,
-        refreshTokenUserId: UUID?
-    ) = tokenService.isExpired(refreshToken) || currentUserId != refreshTokenUserId
+    private fun generateCookieFromToken(
+        name: String,
+        token: String,
+        maxAge: Long
+    ) = ResponseCookie.from(name, token)
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("None")
+            .path("/")
+            .maxAge(maxAge)
+            .build()
 
-    data class AuthenticationResponseModel(
-        val accessToken: String,
-        val refreshToken: String
-    ): RepresentationModel<AuthenticationResponseModel>()
+    inner class AuthenticationResponseModel: RepresentationModel<AuthenticationResponseModel>()
 }
