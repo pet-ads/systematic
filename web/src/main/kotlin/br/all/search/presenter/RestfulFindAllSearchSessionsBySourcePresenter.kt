@@ -2,19 +2,19 @@ package br.all.search.presenter
 
 import br.all.application.search.find.presenter.FindAllSearchSessionsBySourcePresenter
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceService.ResponseModel
-import br.all.application.search.find.service.FindAllSearchSessionsService
 import br.all.application.search.repository.SearchSessionDto
-import br.all.search.controller.SearchSessionController
 import br.all.shared.error.createErrorResponseFrom
+import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
-import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class RestfulFindAllSearchSessionsBySourcePresenter: FindAllSearchSessionsBySourcePresenter {
+class RestfulFindAllSearchSessionsBySourcePresenter(
+    private val linksFactory: LinksFactory
+): FindAllSearchSessionsBySourcePresenter {
 
     var responseEntity: ResponseEntity<*>? = null
 
@@ -26,9 +26,7 @@ class RestfulFindAllSearchSessionsBySourcePresenter: FindAllSearchSessionsBySour
             response.searchSessions
         )
 
-        val self = linkTo<SearchSessionController> {
-            findSearchSessionsBySource(response.systematicStudyId, response.source)
-        }.withSelfRel()
+        val self = linksFactory.findSessionsBySource(response.systematicStudyId, response.source)
 
         restfulResponse.add(self)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)

@@ -12,6 +12,7 @@ import br.all.review.presenter.RestfulUpdateSystematicStudyPresenter
 import br.all.review.requests.PostRequest
 import br.all.review.requests.PutRequest
 import br.all.security.service.AuthenticationInfoService
+import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -30,30 +31,35 @@ class SystematicStudyController(
     private val findSystematicStudyServiceImpl: FindSystematicStudyService,
     private val findAllSystematicStudiesService: FindAllSystematicStudiesService,
     private val updateSystematicStudyService: UpdateSystematicStudyService,
-    private val authenticationInfoService: AuthenticationInfoService
+    private val authenticationInfoService: AuthenticationInfoService,
+    private val linksFactory: LinksFactory
 ) {
 
     @PostMapping
     @Operation(summary = "Create a systematic study")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "201", description = "Success creating a systematic study"),
+            ApiResponse(responseCode = "201", description = "Success creating a systematic study",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a systematic study - invalid systematic study"
+                description = "Fail creating a systematic study - invalid systematic study",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail creating a systematic study - unauthenticated user"
+                description = "Fail creating a systematic study - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail creating a systematic study - unauthorized user"
+                description = "Fail creating a systematic study - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
     fun postSystematicStudy(@RequestBody request: PostRequest): ResponseEntity<*> {
-        val presenter = RestfulCreateSystematicStudyPresenter()
+        val presenter = RestfulCreateSystematicStudyPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val requestModel = request.toCreateRequestModel(userId)
 
@@ -74,7 +80,8 @@ class SystematicStudyController(
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail creating a systematic study - unauthenticated user"
+                description = "Fail creating a systematic study - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
@@ -89,7 +96,7 @@ class SystematicStudyController(
         ]
     )
     fun findSystematicStudy(@PathVariable systematicStudyId: UUID): ResponseEntity<*> {
-        val presenter = RestfulFindSystematicStudyPresenter()
+        val presenter = RestfulFindSystematicStudyPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindOneRequestModel(userId, systematicStudyId)
 
@@ -122,7 +129,7 @@ class SystematicStudyController(
         ]
     )
     fun findAllSystematicStudies(): ResponseEntity<*> {
-        val presenter = RestfulFindAllSystematicStudiesPresenter()
+        val presenter = RestfulFindAllSystematicStudiesPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
 
         findAllSystematicStudiesService.findAllByCollaborator(presenter, userId)
@@ -154,7 +161,7 @@ class SystematicStudyController(
         ]
     )
     fun findAllSystematicStudiesByOwner(@PathVariable ownerId: UUID): ResponseEntity<*> {
-        val presenter = RestfulFindAllSystematicStudiesPresenter()
+        val presenter = RestfulFindAllSystematicStudiesPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindByOwnerRequest(userId, ownerId)
 
@@ -166,25 +173,30 @@ class SystematicStudyController(
     @Operation(summary = "Update an existing systematic study")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Success updating an existing systematic study"),
+            ApiResponse(responseCode = "200", description = "Success updating an existing systematic study",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail updating an existing systematic study - invalid systematic study"
+                description = "Fail updating an existing systematic study - invalid systematic study",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail updating an existing systematic study - unauthenticated user"
+                description = "Fail updating an existing systematic study - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail updating an existing systematic study - unauthorized user"
+                description = "Fail updating an existing systematic study - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
-            ApiResponse(responseCode = "404", description = "Fail updating an existing systematic study - not found"),
+            ApiResponse(responseCode = "404", description = "Fail updating an existing systematic study - not found",
+                content = [Content(schema = Schema(hidden = true))]),
         ]
     )
     fun updateSystematicStudy(@PathVariable systematicStudyId: UUID,
                               @RequestBody request: PutRequest): ResponseEntity<*> {
-        val presenter = RestfulUpdateSystematicStudyPresenter()
+        val presenter = RestfulUpdateSystematicStudyPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val requestModel = request.toUpdateRequestModel(userId, systematicStudyId)
 

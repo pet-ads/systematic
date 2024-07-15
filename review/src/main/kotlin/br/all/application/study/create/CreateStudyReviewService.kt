@@ -1,5 +1,6 @@
 package br.all.application.study.create
 
+import io.swagger.v3.oas.annotations.media.Schema
 import java.util.*
 
 
@@ -19,6 +20,7 @@ interface CreateStudyReviewService {
         val source: String,
     )
 
+    @Schema(name = "CreateStudyReviewServiceResponseModel")
     open class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,

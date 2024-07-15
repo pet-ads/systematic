@@ -9,6 +9,7 @@ import br.all.question.presenter.extraction.RestfulFindAllExtractionQuestionPres
 import br.all.question.presenter.riskOfBias.RestfulCreateRoBQuestionPresenter
 import br.all.question.presenter.riskOfBias.RestfulFindRoBQuestionPresenter
 import br.all.security.service.AuthenticationInfoService
+import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -26,7 +27,8 @@ class RiskOfBiasQuestionController(
     val authenticationInfoService: AuthenticationInfoService,
     val createQuestionService: CreateQuestionService,
     val findOneService: FindQuestionService,
-    val findAllService: FindAllBySystematicStudyIdService
+    val findAllService: FindAllBySystematicStudyIdService,
+    val linksFactory: LinksFactory
 ) {
     data class TextualRequest(val code: String, val description: String)
     data class PickListRequest(val code: String, val description: String, val options: List<String>)
@@ -34,7 +36,7 @@ class RiskOfBiasQuestionController(
     data class NumberScaleRequest(val code: String, val description: String, val lower: Int, val higher: Int)
 
     fun createQuestion(request: CreateRequest): ResponseEntity<*> {
-        val presenter = RestfulCreateRoBQuestionPresenter()
+        val presenter = RestfulCreateRoBQuestionPresenter(linksFactory)
         createQuestionService.create(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -43,18 +45,22 @@ class RiskOfBiasQuestionController(
     @Operation(summary = "Create a risk of bias textual question in the protocol")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "201", description = "Success creating a textual question in the protocol"),
+            ApiResponse(responseCode = "201", description = "Success creating a textual question in the protocol",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a textual question in the protocol - invalid input"
+                description = "Fail creating a textual question in the protocol - invalid input",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail creating a textual question in the protocol - unauthenticated user"
+                description = "Fail creating a textual question in the protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail creating a textual question in the protocol - unauthorized user"
+                description = "Fail creating a textual question in the protocol - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -74,17 +80,21 @@ class RiskOfBiasQuestionController(
     @Operation(summary = "Create a risk of bias pick-list question in the protocol")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "201", description = "Success creating a pick-list question in the protocol"),
+            ApiResponse(responseCode = "201", description = "Success creating a pick-list question in the protocol",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a pick-list question in the protocol - invalid input"
+                description = "Fail creating a pick-list question in the protocol - invalid input",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail creating a pick-list question in the protocol - unauthenticated user"
+                description = "Fail creating a pick-list question in the protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),ApiResponse(
                 responseCode = "403",
-                description = "Fail creating a pick-list question in the protocol - unauthorized user"
+                description = "Fail creating a pick-list question in the protocol - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
 
         ]
@@ -108,19 +118,23 @@ class RiskOfBiasQuestionController(
         value = [
             ApiResponse(
                 responseCode = "201",
-                description = "Success creating a labeled-scale question in the protocol"
+                description = "Success creating a labeled-scale question in the protocol",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a labeled-scale question in the protocol - invalid input"
+                description = "Fail creating a labeled-scale question in the protocol - invalid input",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail creating a labeled-scale question in the protocol - unauthenticated user"
+                description = "Fail creating a labeled-scale question in the protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail creating a labeled-scale question in the protocol - unauthorized user"
+                description = "Fail creating a labeled-scale question in the protocol - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -142,18 +156,22 @@ class RiskOfBiasQuestionController(
     @Operation(summary = "Create a risk of bias number-scale question in the protocol")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "201", description = "Success creating a number-scale question in the protocol"),
+            ApiResponse(responseCode = "201", description = "Success creating a number-scale question in the protocol",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a number-scale question in the protocol - invalid input"
+                description = "Fail creating a number-scale question in the protocol - invalid input",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail creating a number-scale question in the protocol - unauthenticated user"
+                description = "Fail creating a number-scale question in the protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail creating a number-scale question in the protocol - unauthorized user"
+                description = "Fail creating a number-scale question in the protocol - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -187,10 +205,12 @@ class RiskOfBiasQuestionController(
             ApiResponse(
                 responseCode = "401",
                 description = "Fail getting an risk of bias question of a given protocol by code - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))],
             ),
             ApiResponse(
                 responseCode = "403",
                 description = "Fail getting an risk of bias question of a given protocol by code - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))],
             ),
             ApiResponse(
                 responseCode = "404",
@@ -203,7 +223,7 @@ class RiskOfBiasQuestionController(
         @PathVariable systematicStudyId: UUID,
         @PathVariable questionId: UUID,
     ): ResponseEntity<*> {
-        val presenter = RestfulFindRoBQuestionPresenter()
+        val presenter = RestfulFindRoBQuestionPresenter(linksFactory)
         val request = FindQuestionService.RequestModel(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId, questionId)
         findOneService.findOne(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -223,18 +243,20 @@ class RiskOfBiasQuestionController(
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail getting all risk of bias questions in the protocol - unauthenticated user"
+                description = "Fail getting all risk of bias questions in the protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail getting all risk of bias questions in the protocol - unauthorized user"
+                description = "Fail getting all risk of bias questions in the protocol - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
     fun findAllBySystematicStudyId(
         @PathVariable systematicStudyId: UUID
     ): ResponseEntity<*> {
-        val presenter = RestfulFindAllExtractionQuestionPresenter()
+        val presenter = RestfulFindAllExtractionQuestionPresenter(linksFactory)
         val request = FindAllBySystematicStudyIdService.RequestModel(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId)
         findAllService.findAllBySystematicStudyId(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
