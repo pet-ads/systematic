@@ -1,5 +1,6 @@
 package br.all.application.study.update.interfaces
 
+import io.swagger.v3.oas.annotations.media.Schema
 import java.util.*
 
 
@@ -20,6 +21,7 @@ interface UpdateStudyReviewService {
         val studyReviewId: Long,
     )
 
+    @Schema(name = "UpdateStudyReviewService")
     open class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,

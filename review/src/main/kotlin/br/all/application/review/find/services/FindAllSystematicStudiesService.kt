@@ -2,6 +2,7 @@ package br.all.application.review.find.services
 
 import br.all.application.review.find.presenter.FindAllSystematicStudyPresenter
 import br.all.application.review.repository.SystematicStudyDto
+import io.swagger.v3.oas.annotations.media.Schema
 import java.util.*
 
 interface FindAllSystematicStudiesService {
@@ -13,7 +14,7 @@ interface FindAllSystematicStudiesService {
         val userId: UUID,
         val ownerId: UUID,
     )
-
+    @Schema(name = "FindAllSystematicStudiesServiceResponseModel")
     data class ResponseModel(
         val userId: UUID,
         val systematicStudies: List<SystematicStudyDto>,
