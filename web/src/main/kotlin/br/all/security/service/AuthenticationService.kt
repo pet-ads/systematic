@@ -3,15 +3,12 @@ package br.all.security.service
 import br.all.application.user.find.LoadAccountCredentialsService
 import br.all.application.user.update.UpdateRefreshTokenService
 import br.all.application.user.update.UpdateRefreshTokenService.RequestModel
-import br.all.review.controller.SystematicStudyController
-import br.all.review.requests.PostRequest
 import br.all.security.auth.AuthenticationRequest
 import br.all.security.config.JwtProperties
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
-import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
@@ -93,6 +90,16 @@ class AuthenticationService(
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
 
         return accessToken
+    }
+
+    fun logout(request: HttpServletRequest, response: HttpServletResponse) {
+        if(request.cookies.isNullOrEmpty()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "No login found")
+
+        val accessCookie = generateCookieFromToken("accessToken", null.toString(), 0)
+        val refreshCookie = generateCookieFromToken("refreshToken", null.toString(), 0)
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString())
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString())
     }
 
     private fun generateCookieFromToken(

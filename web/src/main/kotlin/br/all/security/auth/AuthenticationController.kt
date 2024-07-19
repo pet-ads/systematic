@@ -66,5 +66,12 @@ class AuthenticationController(private val authenticationService: Authentication
             ?.mapToTokenResponse()
             ?: throw ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid refresh token")
     }
+
+    @PostMapping("/logout")
+    fun logout(request: HttpServletRequest,
+               response: HttpServletResponse){
+        authenticationService.logout(request, response)
+    }
+
     private fun String.mapToTokenResponse() = TokenResponse(this)
 }
