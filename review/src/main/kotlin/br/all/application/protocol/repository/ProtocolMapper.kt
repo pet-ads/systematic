@@ -89,31 +89,42 @@ fun Criterion.Companion.fromDto(dto: CriterionDto) = Criterion(dto.description, 
 fun Protocol.copyUpdates(request: UpdateProtocolService.RequestModel) = apply {
     goal = request.goal ?: goal
     justification = request.justification ?: justification
-    request.researchQuestions
-        .map { it.toResearchQuestion() }
-        .toSet()
-        .let { replaceResearchQuestions(it) }
-    replaceKeywords(request.keywords)
+
+    if(request.researchQuestions.isNotEmpty()) {
+        request.researchQuestions
+            .map { it.toResearchQuestion() }
+            .toSet()
+            .let { replaceResearchQuestions(it) } }
+
+    if(request.keywords.isNotEmpty())
+        replaceKeywords(request.keywords)
 
     searchString = request.searchString ?: searchString
-    request.informationSources
-        .map { it.toSearchSource() }
-        .toSet()
-        .let { replaceInformationSources(it) }
+
+    if(request.informationSources.isNotEmpty()) {
+        request.informationSources
+            .map { it.toSearchSource() }
+            .toSet()
+            .let { replaceInformationSources(it) } }
+
     sourcesSelectionCriteria = request.sourcesSelectionCriteria ?: sourcesSelectionCriteria
     searchMethod = request.searchMethod ?: searchMethod
 
-    request.studiesLanguages
-        .map { Language(LangType.valueOf(it)) }
-        .toSet()
-        .let { replaceLanguages(it) }
+    if(request.studiesLanguages.isNotEmpty()) {
+        request.studiesLanguages
+            .map { Language(LangType.valueOf(it)) }
+            .toSet()
+            .let { replaceLanguages(it) } }
+
     studyTypeDefinition = request.studyTypeDefinition ?: studyTypeDefinition
 
     selectionProcess = request.selectionProcess ?: selectionProcess
-    request.eligibilityCriteria
-        .map { Criterion.fromDto(it) }
-        .toSet()
-        .let { replaceEligibilityCriteria(it) }
+
+    if(request.eligibilityCriteria.isNotEmpty()) {
+        request.eligibilityCriteria
+            .map { Criterion.fromDto(it) }
+            .toSet()
+            .let { replaceEligibilityCriteria(it) } }
 
     dataCollectionProcess = request.dataCollectionProcess ?: dataCollectionProcess
     analysisAndSynthesisProcess = request.analysisAndSynthesisProcess ?: analysisAndSynthesisProcess
