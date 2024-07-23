@@ -53,7 +53,8 @@ fun Protocol.Companion.fromDto(dto: ProtocolDto) = write(SystematicStudyId(dto.s
         dto.informationSources
             .map { it.toSearchSource() }
             .toSet(),
-    ).searchingStudiesIn(
+    ).selectedBecause(dto.sourcesSelectionCriteria)
+    .searchingStudiesIn(
         dto.studiesLanguages
             .map { Language(LangType.valueOf(it)) }
             .toSet(),
