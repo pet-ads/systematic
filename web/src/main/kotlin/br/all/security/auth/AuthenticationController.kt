@@ -68,6 +68,13 @@ class AuthenticationController(private val authenticationService: Authentication
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "Performs a logout operation")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Success logout"),
+        ApiResponse(responseCode = "401",
+            description = "Fail logout - unauthenticated user"
+        )
+    ])
     fun logout(request: HttpServletRequest,
                response: HttpServletResponse){
         authenticationService.logout(request, response)
