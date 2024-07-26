@@ -24,8 +24,9 @@ class RestfulFindProtocolPresenter(
 
         val findProtocol = linksFactory.findProtocol(systematicStudy)
         val updateProtocol = linksFactory.updateProtocol(systematicStudy)
+        val findAllExtractionQuestions = linksFactory.findAllReviewExtractionQuestions(systematicStudy)
 
-        viewModel.add(findProtocol, updateProtocol)
+        viewModel.add(findProtocol, updateProtocol, findAllExtractionQuestions)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(viewModel)
     }
 
