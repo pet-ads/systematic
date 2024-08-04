@@ -130,5 +130,6 @@ fun Protocol.copyUpdates(request: UpdateProtocolService.RequestModel) = apply {
     dataCollectionProcess = request.dataCollectionProcess ?: dataCollectionProcess
     analysisAndSynthesisProcess = request.analysisAndSynthesisProcess ?: analysisAndSynthesisProcess
 
-    picoc = request.picoc?.let { Picoc.fromDto(it) }
+    if(request.picoc != null)
+        picoc = Picoc.fromDto(request.picoc)
 }
