@@ -52,6 +52,11 @@ class JwtAuthenticationFilter(
 
         val jwtToken = authHeader!!.extractBearerToken()
 
+        if(!isValidJwtFormat(jwtToken) || tokenService.isExpired(jwtToken)){
+            filterChain.doFilter(request, response)
+            return
+        }
+
         val username = tokenService.extractUsername(jwtToken)
 
         if (username != null && SecurityContextHolder.getContext().authentication == null) {
@@ -73,5 +78,9 @@ class JwtAuthenticationFilter(
 
     private fun String.extractBearerToken(): String = this.substringAfter("Bearer ")
 
+    fun isValidJwtFormat(token: String): Boolean {
+        val jwtPattern = "^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.?[A-Za-z0-9-_.+/=]*$"
+        return token.matches(jwtPattern.toRegex())
+    }
 }
 
