@@ -174,6 +174,25 @@ class ProtocolControllerTest(
                         && updated.robQuestions.isNotEmpty())
             }
 
+            @Test
+            fun `should update an existing protocol without losing sourcesSelectionCriteria`() {
+                val document = factory.createProtocolDocument()
+                val json = factory.validPutRequest()
+
+                protocolRepository.save(document)
+
+                mockMvc.perform(put(putUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+                )
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.systematicStudyId").exists())
+                    .andExpect(jsonPath("$._links").exists())
+
+                val updated = protocolRepository.findById(document.id).get()
+                assert(updated.sourcesSelectionCriteria != null)
+            }
+
 
         }
 
