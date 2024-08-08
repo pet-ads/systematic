@@ -193,7 +193,26 @@ class ProtocolControllerTest(
                 assert(updated.sourcesSelectionCriteria != null)
             }
 
+            @Test
+            fun `should update an existing protocol without deleting existing picoc`() {
+                val document = factory.createProtocolDocument(
+                    picoc = PicocDto("1","2","3","4","5")
+                )
+                val json = factory.validPutRequest()
 
+                protocolRepository.save(document)
+
+                mockMvc.perform(put(putUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+                )
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.systematicStudyId").exists())
+                    .andExpect(jsonPath("$._links").exists())
+
+                val updated = protocolRepository.findById(document.id).get()
+                assert(updated.picoc != null)
+            }
         }
 
         @Nested
