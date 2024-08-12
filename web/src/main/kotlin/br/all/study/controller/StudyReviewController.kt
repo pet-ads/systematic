@@ -1,5 +1,6 @@
 package br.all.study.controller
 
+import br.all.application.search.update.UpdateSearchSessionService
 import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService
 import br.all.application.study.find.service.FindAllStudyReviewsService
@@ -16,6 +17,7 @@ import br.all.study.requests.PatchRiskOfBiasAnswerStudyReviewRequest
 import br.all.study.requests.PatchStatusStudyReviewRequest
 import br.all.study.requests.PostStudyReviewRequest
 import br.all.study.requests.PutStudyReviewRequest
+import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -42,7 +44,8 @@ class StudyReviewController(
     private val updateReadingPriorityService: UpdateStudyReviewPriorityService,
     private val markAsDuplicatedService: MarkAsDuplicatedService,
     private val answerRiskOfBiasQuestionService: AnswerRiskOfBiasQuestionService,
-    private val authenticationInfoService: AuthenticationInfoService
+    private val authenticationInfoService: AuthenticationInfoService,
+    private val linksFactory: LinksFactory
 
 ) {
 
@@ -50,15 +53,24 @@ class StudyReviewController(
     @Operation(summary = "Create a study review in the systematic study")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "201", description = "Success creating study review"),
-            ApiResponse(responseCode = "400", description = "Fail creating study review - invalid input"),
+            ApiResponse(responseCode = "201", description = "Success creating study review",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = CreateStudyReviewService.ResponseModel::class)
+                )]),
+            ApiResponse(responseCode = "400", description = "Fail creating study review - invalid input",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "401", description = "Fail creating study review - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "403", description = "Fail creating study review - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]),
         ]
     )
     fun createStudyReview(
         @PathVariable systematicStudy: UUID,
         @RequestBody postRequest: PostStudyReviewRequest
     ): ResponseEntity<*> {
-        val presenter = RestfulCreateStudyReviewPresenter()
+        val presenter = RestfulCreateStudyReviewPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = postRequest.toRequestModel(userId, systematicStudy)
         createService.createFromStudy(presenter, request)
@@ -77,12 +89,16 @@ class StudyReviewController(
                     schema = Schema(implementation = FindAllStudyReviewsService.ResponseModel::class)
                 )]
             ),
+            ApiResponse(responseCode = "401", description = "Fail getting all study reviews - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "403", description = "Fail getting all study reviews - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]),
         ]
     )
     fun findAllStudyReviews(
         @PathVariable systematicStudy: UUID,
     ): ResponseEntity<*> {
-        val presenter = RestfulFindAllStudyReviewsPresenter()
+        val presenter = RestfulFindAllStudyReviewsPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindAllStudyReviewsService.RequestModel(userId, systematicStudy)
         findAllService.findAllFromReview(presenter, request)
@@ -100,14 +116,18 @@ class StudyReviewController(
                     mediaType = "application/json",
                     schema = Schema(implementation = FindAllStudyReviewsBySourceService.ResponseModel::class)
                 )]
-            )
+            ),
+            ApiResponse(responseCode = "401", description = "Fail getting all study reviews by source - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "403", description = "Fail getting all study reviews by source - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]),
         ]
     )
     fun findAllStudyReviewsBySource(
         @PathVariable systematicStudy: UUID,
         @PathVariable searchSource: String,
     ): ResponseEntity<*> {
-        val presenter = RestfulFindAllStudyReviewsBySourcePresenter()
+        val presenter = RestfulFindAllStudyReviewsBySourcePresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindAllBySourceRequest(userId, systematicStudy, searchSource)
         findAllBySourceService.findAllFromSearchSession(presenter, request)
@@ -125,6 +145,10 @@ class StudyReviewController(
                     schema = Schema(implementation = FindStudyReviewService.ResponseModel::class)
                 )]
             ),
+            ApiResponse(responseCode = "401", description = "Fail getting study review - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "403", description = "Fail getting study review - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "404",
                 description = "Fail getting study review - not found",
@@ -136,7 +160,7 @@ class StudyReviewController(
         @PathVariable systematicStudy: UUID,
         @PathVariable studyReview: Long,
     ): ResponseEntity<*> {
-        val presenter = RestfulFindStudyReviewPresenter()
+        val presenter = RestfulFindStudyReviewPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindOneRequest(userId, systematicStudy, studyReview)
         findOneService.findOne(presenter, request)
@@ -149,12 +173,27 @@ class StudyReviewController(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Success updating an existing study review of a systematic study"
+                description = "Success updating an existing study review of a systematic study",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = UpdateStudyReviewService.ResponseModel::class)
+                )]
             ),
-            ApiResponse(responseCode = "400", description = "Fail to update an existing study review - invalid status"),
+            ApiResponse(responseCode = "400", description = "Fail to update an existing study review - invalid status",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail to update an existing study review - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),ApiResponse(
+                responseCode = "403",
+                description = "Fail to update an existing study review - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
             ApiResponse(
                 responseCode = "404",
-                description = "Fail to update an existing study review - study not found"
+                description = "Fail to update an existing study review - study not found",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -163,7 +202,7 @@ class StudyReviewController(
         @PathVariable studyReview: Long,
         @RequestBody putRequest: PutStudyReviewRequest
     ): ResponseEntity<*> {
-        val presenter = RestfulUpdateStudyReviewPresenter()
+        val presenter = RestfulUpdateStudyReviewPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = putRequest.toRequestModel(userId, systematicStudy, studyReview)
         updateService.updateFromStudy(presenter, request)
@@ -174,10 +213,22 @@ class StudyReviewController(
     @Operation(summary = "Update the selection status of study review")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Success updating selection status of study review"),
+            ApiResponse(responseCode = "200", description = "Success updating selection status of study review",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail updating selection status of study review - invalid status"
+                description = "Fail updating selection status of study review - invalid status",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail updating selection status of study review - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail updating selection status of study review - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -186,7 +237,7 @@ class StudyReviewController(
         @PathVariable studyReview: Long,
         @RequestBody patchRequest: PatchStatusStudyReviewRequest
     ): ResponseEntity<*> {
-        val presenter = RestfulUpdateStudyReviewStatusPresenter()
+        val presenter = RestfulUpdateStudyReviewStatusPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
         updateSelectionService.changeStatus(presenter, request)
@@ -197,10 +248,22 @@ class StudyReviewController(
     @Operation(summary = "Update a extraction status of study review")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Success updating extraction status of study review"),
+            ApiResponse(responseCode = "200", description = "Success updating extraction status of study review",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail updating extraction status of study review - invalid status"
+                description = "Fail updating extraction status of study review - invalid status",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail updating extraction status of study review - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail updating extraction status of study review - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -209,7 +272,7 @@ class StudyReviewController(
         @PathVariable studyReview: Long,
         @RequestBody patchRequest: PatchStatusStudyReviewRequest
     ): ResponseEntity<*> {
-        val presenter = RestfulUpdateStudyReviewStatusPresenter()
+        val presenter = RestfulUpdateStudyReviewStatusPresenter(linksFactory)
         val userID = authenticationInfoService.getAuthenticatedUserId()
         val request = patchRequest.toRequestModel(userID, systematicStudy, studyReview)
         updateExtractionService.changeStatus(presenter, request)
@@ -220,10 +283,22 @@ class StudyReviewController(
     @Operation(summary = "Update the reading priority of study review")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Success updating reading priority of study review"),
+            ApiResponse(responseCode = "200", description = "Success updating reading priority of study review",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail updating reading priority of study review - invalid status"
+                description = "Fail updating reading priority of study review - invalid status",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail updating reading priority of study review - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail updating reading priority of study review - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -232,7 +307,7 @@ class StudyReviewController(
         @PathVariable studyReview: Long,
         @RequestBody patchRequest: PatchStatusStudyReviewRequest
     ): ResponseEntity<*> {
-        val presenter = RestfulUpdateStudyReviewStatusPresenter()
+        val presenter = RestfulUpdateStudyReviewStatusPresenter(linksFactory)
         val userID = authenticationInfoService.getAuthenticatedUserId()
         val request = patchRequest.toRequestModel(userID, systematicStudy, studyReview)
         updateReadingPriorityService.changeStatus(presenter, request)
@@ -244,10 +319,26 @@ class StudyReviewController(
     @Operation(summary = "Update the answer of a risk of bias question")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Success updating answer to risk of bias question"),
+            ApiResponse(responseCode = "200", description = "Success updating answer to risk of bias question",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = AnswerRiskOfBiasQuestionService.ResponseModel::class)
+                )]
+            ),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail updating answer to risk of bias question"
+                description = "Fail updating answer to risk of bias question",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail updating answer to risk of bias question - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail updating answer to risk of bias question - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -256,7 +347,7 @@ class StudyReviewController(
         @PathVariable studyReview: Long,
         @RequestBody patchRequest: PatchRiskOfBiasAnswerStudyReviewRequest<*>,
     ) : ResponseEntity<*> {
-        val presenter = RestfulAnswerRiskOfBiasQuestionPresenter()
+        val presenter = RestfulAnswerRiskOfBiasQuestionPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
         answerRiskOfBiasQuestionService.answerQuestion(presenter, request)
@@ -269,11 +360,25 @@ class StudyReviewController(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Success marking an existing study as duplicated in the systematic study"
+                description = "Success marking an existing study as duplicated in the systematic study",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = MarkAsDuplicatedService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail marking an existing study as duplicated in the systematic study - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),ApiResponse(
+                responseCode = "403",
+                description = "Fail marking an existing study as duplicated in the systematic study - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "Fail marking an existing study as duplicated in the systematic study - not found"
+                description = "Fail marking an existing study as duplicated in the systematic study - not found",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
@@ -282,7 +387,7 @@ class StudyReviewController(
         @PathVariable studyReviewIdToKeep: Long,
         @PathVariable studyReviewToMarkAsDuplicated: Long,
     ): ResponseEntity<*> {
-        val presenter = RestfulMarkAsDuplicatedPresenter()
+        val presenter = RestfulMarkAsDuplicatedPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = DuplicatedRequest(userId, systematicStudy, studyReviewIdToKeep, studyReviewToMarkAsDuplicated)
         markAsDuplicatedService.markAsDuplicated(presenter, request)

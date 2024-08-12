@@ -9,6 +9,8 @@ import br.all.application.question.findAll.FindAllBySystematicStudyIdService.Req
 import br.all.question.presenter.extraction.RestfulFindExtractionQuestionPresenter
 import br.all.question.presenter.extraction.RestfulCreateExtractionQuestionPresenter
 import br.all.question.presenter.extraction.RestfulFindAllExtractionQuestionPresenter
+import br.all.security.service.AuthenticationInfoService
+import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -21,11 +23,13 @@ import java.util.*
 import br.all.application.question.create.CreateQuestionService.RequestModel as CreateRequest
 
 @RestController
-@RequestMapping("/api/v1/researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol/extraction-question")
+@RequestMapping("/api/v1/systematic-study/{systematicStudyId}/protocol/extraction-question")
 class ExtractionQuestionController(
+    val authenticationInfoService: AuthenticationInfoService,
     val createQuestionService: CreateQuestionService,
     val findOneService: FindQuestionService,
     val findAllService: FindAllBySystematicStudyIdService,
+    val linksFactory: LinksFactory
 ) {
     data class TextualRequest(val code: String, val description: String)
     data class PickListRequest(val code: String, val description: String, val options: List<String>)
@@ -33,27 +37,38 @@ class ExtractionQuestionController(
     data class NumberScaleRequest(val code: String, val description: String, val lower: Int, val higher: Int)
 
     fun createQuestion(request: CreateRequest): ResponseEntity<*> {
-        val presenter = RestfulCreateExtractionQuestionPresenter()
+        val presenter = RestfulCreateExtractionQuestionPresenter(linksFactory)
         createQuestionService.create(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @PostMapping("/textual")
     @Operation(summary = "Create a extraction textual question in the protocol")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "201", description = "Success creating a textual question in the protocol"),
-            ApiResponse(
-                responseCode = "400",
-                description = "Fail creating a textual question in the protocol - invalid input"
-            ),
-        ]
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "201", description = "Success creating a textual question in the protocol",
+            content = [Content(schema = Schema(hidden = true))]),
+        ApiResponse(
+            responseCode = "400",
+            description = "Fail creating a textual question in the protocol - invalid input",
+            content = [Content(schema = Schema(hidden = true))]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Fail creating a textual question in the protocol - unauthenticated user",
+            content = [Content(schema = Schema(hidden = true))]
+        ),
+        ApiResponse(
+            responseCode = "403",
+            description = "Fail creating a textual question in the protocol - unauthorized user",
+            content = [Content(schema = Schema(hidden = true))]
+        ),
+    ]
     )
     fun createTextualQuestion(
-        @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: TextualRequest,
+        @PathVariable systematicStudyId: UUID, @RequestBody request: TextualRequest,
     ): ResponseEntity<*> = createQuestion(
         RequestModel(
-            researcherId,
+            authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
             TEXTUAL,
             request.code,
@@ -65,18 +80,29 @@ class ExtractionQuestionController(
     @Operation(summary = "Create a extraction pick-list question in the protocol")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "201", description = "Success creating a pick-list question in the protocol"),
+            ApiResponse(responseCode = "201", description = "Success creating a pick-list question in the protocol",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a pick-list question in the protocol - invalid input"
+                description = "Fail creating a pick-list question in the protocol - invalid input",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a pick-list question in the protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a pick-list question in the protocol - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
     fun createPickListQuestion(
-        @PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID, @RequestBody request: PickListRequest,
+        @PathVariable systematicStudyId: UUID, @RequestBody request: PickListRequest,
     ): ResponseEntity<*> = createQuestion(
         RequestModel(
-            researcherId,
+            authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
             PICK_LIST,
             request.code,
@@ -91,21 +117,31 @@ class ExtractionQuestionController(
         value = [
             ApiResponse(
                 responseCode = "201",
-                description = "Success creating a labeled-scale question in the protocol"
+                description = "Success creating a labeled-scale question in the protocol",
+                content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a labeled-scale question in the protocol - invalid input"
+                description = "Fail creating a labeled-scale question in the protocol - invalid input",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a labeled-scale question in the protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a labeled-scale question in the protocol - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
     fun createLabeledScaleQuestion(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @RequestBody request: LabeledScaleRequest,
     ): ResponseEntity<*> = createQuestion(
         RequestModel(
-            researcherId,
+            authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
             LABELED_SCALE,
             request.code,
@@ -118,20 +154,31 @@ class ExtractionQuestionController(
     @Operation(summary = "Create a extraction number-scale question in the protocol")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "201", description = "Success creating a number-scale question in the protocol"),
+            ApiResponse(responseCode = "201", description = "Success creating a number-scale question in the protocol",
+                content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a number-scale question in the protocol - invalid input"
+                description = "Fail creating a number-scale question in the protocol - invalid input",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a number-scale question in the protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a number-scale question in the protocol - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
     fun createNumberScaleQuestion(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @RequestBody request: NumberScaleRequest,
     ): ResponseEntity<*> = createQuestion(
         RequestModel(
-            researcherId,
+            authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
             NUMBERED_SCALE,
             request.code,
@@ -158,15 +205,24 @@ class ExtractionQuestionController(
                 description = "Fail getting an extraction question of a given protocol by code - not found",
                 content = [Content(schema = Schema(hidden = true))]
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail getting an extraction question of a given protocol by code - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail getting an extraction question of a given protocol by code - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
         ]
     )
     fun findQuestion(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
         @PathVariable questionId: UUID,
     ): ResponseEntity<*> {
-        val presenter = RestfulFindExtractionQuestionPresenter()
-        val request = FindQuestionService.RequestModel(researcherId, systematicStudyId, questionId)
+        val presenter = RestfulFindExtractionQuestionPresenter(linksFactory)
+        val request = FindQuestionService.RequestModel(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId, questionId)
         findOneService.findOne(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -183,14 +239,23 @@ class ExtractionQuestionController(
                     schema = Schema(implementation = FindAllBySystematicStudyIdService.ResponseModel::class)
                 )]
             ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail getting all extraction questions in the protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail getting all extraction questions in the protocol - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
         ]
     )
     fun findAllBySystematicStudyId(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID
     ): ResponseEntity<*> {
-        val presenter = RestfulFindAllExtractionQuestionPresenter()
-        val request = FindAllRequest(researcherId, systematicStudyId)
+        val presenter = RestfulFindAllExtractionQuestionPresenter(linksFactory)
+        val request = FindAllRequest(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId)
         findAllService.findAllBySystematicStudyId(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }

@@ -5,6 +5,7 @@ import br.all.application.study.update.interfaces.MarkAsDuplicatedPresenter
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService.*
 import br.all.shared.error.createErrorResponseFrom
 import br.all.study.controller.StudyReviewController
+import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class RestfulMarkAsDuplicatedPresenter : MarkAsDuplicatedPresenter {
+class RestfulMarkAsDuplicatedPresenter(
+    private val linksFactory: LinksFactory
+) : MarkAsDuplicatedPresenter {
 
     var responseEntity: ResponseEntity<*>? = null
 
@@ -30,9 +33,7 @@ class RestfulMarkAsDuplicatedPresenter : MarkAsDuplicatedPresenter {
 
     private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
 
-        val self = linkTo<StudyReviewController> {
-            findStudyReview(response.systematicStudyId, response.duplicatedStudyReview)
-        }.withSelfRel()
+        val self = linksFactory.findStudy(response.systematicStudyId, response.updatedStudyReview)
 
         restfulResponse.add(self)
         responseEntity = status(HttpStatus.OK).body(restfulResponse)

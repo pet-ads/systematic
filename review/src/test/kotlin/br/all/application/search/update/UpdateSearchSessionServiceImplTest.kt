@@ -1,6 +1,5 @@
 package br.all.application.search.update
 
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.repository.SearchSessionRepository
@@ -8,7 +7,8 @@ import br.all.application.search.util.TestDataFactory
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
-import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.user.CredentialsService
+import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -29,7 +29,7 @@ class UpdateSearchSessionServiceImplTest {
     private lateinit var searchSessionRepository: SearchSessionRepository
 
     @MockK
-    private lateinit var credentialsService: ResearcherCredentialsService
+    private lateinit var credentialService: CredentialsService
 
     @MockK(relaxed = true)
     private lateinit var presenter: UpdateSearchSessionPresenter
@@ -37,16 +37,16 @@ class UpdateSearchSessionServiceImplTest {
     private lateinit var sut: UpdateSearchSessionServiceImpl
 
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     @BeforeEach
     fun setUp() = run {
         factory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
-            credentialsService,
+            credentialService,
             systematicStudyRepository,
-            factory.researcherId,
+            factory.userId,
             factory.systematicStudyId,
         )
     }
@@ -175,7 +175,7 @@ class UpdateSearchSessionServiceImplTest {
         fun `should the researcher be unauthorized if they are not a collaborator`() {
             val request = factory.updateRequestModel()
 
-            preconditionCheckerMocking.makeResearcherNotACollaborator()
+            preconditionCheckerMocking.makeUserUnauthorized()
             sut.updateSession(presenter, request)
 
             verifyOrder {
@@ -188,7 +188,7 @@ class UpdateSearchSessionServiceImplTest {
         fun `should prepare fail view if the researcher is unauthenticated`() {
             val request = factory.updateRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthenticated()
+            preconditionCheckerMocking.makeUserUnauthenticated()
             sut.updateSession(presenter, request)
 
             verifyOrder {
@@ -201,7 +201,7 @@ class UpdateSearchSessionServiceImplTest {
         fun `should prepare fail view if the researcher is unauthorized`() {
             val request = factory.updateRequestModel()
 
-            preconditionCheckerMocking.makeResearcherUnauthorized()
+            preconditionCheckerMocking.makeUserUnauthorized()
             sut.updateSession(presenter, request)
 
             verifyOrder {

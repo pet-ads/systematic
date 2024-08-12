@@ -3,8 +3,9 @@ package br.all.review.presenter
 import br.all.application.review.create.CreateSystematicStudyPresenter
 import br.all.application.review.create.CreateSystematicStudyService.ResponseModel
 import br.all.review.controller.SystematicStudyController
-import br.all.review.controller.SystematicStudyController.PutRequest
+import br.all.review.requests.PutRequest
 import br.all.shared.error.createErrorResponseFrom
+import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
@@ -14,43 +15,20 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class RestfulCreateSystematicStudyPresenter: CreateSystematicStudyPresenter {
+class RestfulCreateSystematicStudyPresenter(private val linksFactory: LinksFactory): CreateSystematicStudyPresenter {
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
-        val viewModel = ViewModel(response.researcherId, response.systematicStudyId)
+        val viewModel = ViewModel(response.userId, response.systematicStudyId)
 
-        val selfRef = linkSelfRef(response)
-        val allStudies = linkForAllStudies(response)
-        val allStudiesByOwner = linkForAllStudiesByOwner(response)
-        val updateStudy = linkForUpdatingTheStudy(response)
+        val selfRef = linksFactory.findReview(response.systematicStudyId)
+        val allStudies = linksFactory.findAllReviews()
+        val allStudiesByOwner = linksFactory.findMyReviews(response.userId)
+        val updateStudy = linksFactory.updateReview(response.systematicStudyId)
 
         viewModel.add(selfRef, allStudies, allStudiesByOwner, updateStudy)
         responseEntity = status(HttpStatus.CREATED).body(viewModel)
     }
-
-    private fun linkForUpdatingTheStudy(response: ResponseModel) =
-        linkTo<SystematicStudyController> {
-            updateSystematicStudy(
-                response.systematicStudyId,
-                PutRequest("title", "description"),
-            )
-        }.withRel("updateStudy")
-
-    private fun linkForAllStudiesByOwner(response: ResponseModel) =
-        linkTo<SystematicStudyController> {
-            findAllSystematicStudiesByOwner(response.researcherId)
-        }.withRel("allStudiesByOwner")
-
-    private fun linkForAllStudies(response: ResponseModel) =
-        linkTo<SystematicStudyController> {
-            findAllSystematicStudies()
-        }.withRel("allStudies")
-
-    private fun linkSelfRef(response: ResponseModel) =
-        linkTo<SystematicStudyController> {
-            findSystematicStudy(response.researcherId)
-        }.withSelfRel()
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
 

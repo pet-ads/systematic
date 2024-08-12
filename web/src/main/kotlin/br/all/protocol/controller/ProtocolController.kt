@@ -1,11 +1,12 @@
 package br.all.protocol.controller
 
 import br.all.application.protocol.find.FindProtocolService
-import br.all.application.protocol.repository.CriterionDto
-import br.all.application.protocol.repository.PicocDto
 import br.all.application.protocol.update.UpdateProtocolService
 import br.all.protocol.presenter.RestfulFindProtocolPresenter
 import br.all.protocol.presenter.RestfulUpdateProtocolPresenter
+import br.all.protocol.requests.PutRequest
+import br.all.security.service.AuthenticationInfoService
+import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -18,10 +19,12 @@ import java.util.*
 import br.all.application.protocol.find.FindProtocolService.RequestModel as FindOneRequestModel
 
 @RestController
-@RequestMapping("/researcher/{researcherId}/systematic-study/{systematicStudyId}/protocol")
+@RequestMapping("/systematic-study/{systematicStudyId}/protocol")
 class ProtocolController(
     private val findProtocolService: FindProtocolService,
     private val updateProtocolService: UpdateProtocolService,
+    private val authenticationInfoService: AuthenticationInfoService,
+    private val linksFactory: LinksFactory
 ) {
 
     @GetMapping
@@ -32,12 +35,28 @@ class ProtocolController(
                 mediaType = "application/json",
                 schema = Schema(implementation = FindProtocolService.ResponseModel::class)
             )]),
-        ApiResponse(responseCode = "404", description = "Fail getting the protocol of a systematic study - nonexistent protocol or systematic study", content = [Content(schema = Schema(hidden = true))]),
-        ApiResponse(responseCode = "403", description = "Fail getting the protocol of a systematic study - unauthorized collaborator", content = [Content(schema = Schema(hidden = true))])
+        ApiResponse(
+            responseCode = "401",
+            description = "Fail getting the protocol of a systematic study - unauthenticated collaborator",
+            content = [Content(schema = Schema(hidden = true))]
+        ),
+        ApiResponse(
+            responseCode = "403",
+            description = "Fail getting the protocol of a systematic study - unauthorized collaborator",
+            content = [Content(schema = Schema(hidden = true))]
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "Fail getting the protocol of a systematic study - nonexistent protocol or systematic study",
+            content = [Content(schema = Schema(hidden = true))]
+        ),
     ])
-    fun findById(@PathVariable researcherId: UUID, @PathVariable systematicStudyId: UUID): ResponseEntity<*> {
-        val presenter = RestfulFindProtocolPresenter()
-        val request = FindOneRequestModel(researcherId, systematicStudyId)
+    fun findById(
+        @PathVariable systematicStudyId: UUID
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindProtocolPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindOneRequestModel(userId, systematicStudyId)
 
         findProtocolService.findById(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -46,70 +65,25 @@ class ProtocolController(
     @PutMapping
     @Operation(summary = "update the protocol of a systematic study")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Success updating the protocol of a systematic study"),
-        ApiResponse(responseCode = "404", description = "Fail updating the protocol of a systematic study - nonexistent protocol or systematic study"),
-        ApiResponse(responseCode = "403", description = "Fail updating the protocol of a systematic study - unauthorized collaborator")
+        ApiResponse(responseCode = "200", description = "Success updating the protocol of a systematic study",
+            content = [Content(schema = Schema(hidden = true))]),
+        ApiResponse(responseCode = "404", description = "Fail updating the protocol of a systematic study - nonexistent protocol or systematic study",
+            content = [Content(schema = Schema(hidden = true))]),
+        ApiResponse(responseCode = "403", description = "Fail updating the protocol of a systematic study - unauthorized collaborator",
+            content = [Content(schema = Schema(hidden = true))]),
+        ApiResponse(responseCode = "401", description = "Fail updating the protocol of a systematic study - unauthenticated collaborator",
+            content = [Content(schema = Schema(hidden = true))])
     ])
     fun putProtocol(
-        @PathVariable researcherId: UUID,
         @PathVariable systematicStudyId: UUID,
-        @RequestBody request: ProtocolRequest,
+        @RequestBody request: PutRequest,
     ): ResponseEntity<*> {
-        val presenter = RestfulUpdateProtocolPresenter()
-        val requestModel = request.toUpdateRequestModel(researcherId, systematicStudyId)
+        val presenter = RestfulUpdateProtocolPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val requestModel = request.toUpdateRequestModel(userId, systematicStudyId)
 
         updateProtocolService.update(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    data class ProtocolRequest(
-        val goal: String? = null,
-        val justification: String? = null,
-        val researchQuestions: Set<String> = emptySet(),
-        val keywords: Set<String> = emptySet(),
-
-        val searchString: String? = null,
-        val informationSources: Set<String> = emptySet(),
-        val sourcesSelectionCriteria: String? = null,
-        val searchMethod: String? = null,
-
-        val studiesLanguages: Set<String> = emptySet(),
-        val studyTypeDefinition: String? = null,
-
-        val selectionProcess: String? = null,
-        val eligibilityCriteria: Set<CriterionDto> = emptySet(),
-
-        val dataCollectionProcess: String? = null,
-        val analysisAndSynthesisProcess: String? = null,
-
-        val picoc: PicocRequest? = null,
-    ) {
-        fun toUpdateRequestModel(researcher: UUID, systematicStudy: UUID) = UpdateProtocolService.RequestModel(
-            researcher,
-            systematicStudy,
-            goal,
-            justification,
-            researchQuestions,
-            keywords,
-            searchString,
-            informationSources,
-            sourcesSelectionCriteria,
-            searchMethod,
-            studiesLanguages,
-            studyTypeDefinition,
-            selectionProcess,
-            eligibilityCriteria,
-            dataCollectionProcess,
-            analysisAndSynthesisProcess,
-            picoc?.let { PicocDto(it.population, it.intervention, it.control, it.outcome, it.context) },
-        )
-
-        data class PicocRequest(
-            val population: String,
-            val intervention: String,
-            val control: String,
-            val outcome: String,
-            val context: String? = null,
-        )
-    }
 }

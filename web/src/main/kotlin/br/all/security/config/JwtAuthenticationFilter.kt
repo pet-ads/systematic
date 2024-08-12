@@ -9,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
@@ -18,18 +20,37 @@ class JwtAuthenticationFilter(
     private val tokenService: TokenService
 ) : OncePerRequestFilter() {
 
+    private val matchersToSkip: List<RequestMatcher> = listOf(
+        AntPathRequestMatcher("/api/v1/user"),
+        AntPathRequestMatcher("/api/v1/auth"),
+        AntPathRequestMatcher("/webjars/**"),
+        AntPathRequestMatcher("/error"),
+        AntPathRequestMatcher("/swagger-ui.html"),
+        AntPathRequestMatcher("/swagger-ui/**"),
+        AntPathRequestMatcher("/swagger-resources/**"),
+        AntPathRequestMatcher("/v3/api-docs/**"),
+        AntPathRequestMatcher("/configuration/ui"),
+        AntPathRequestMatcher("/configuration/security"),
+    )
+
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val authHeader = request.getHeader("Authorization")
-        if (authHeader.doesNotContainBearerToken()) {
+
+        if(request.cookies.isNullOrEmpty() || matchersToSkip.any { it.matches(request) }){
             filterChain.doFilter(request, response)
             return
         }
 
-        val jwtToken = authHeader!!.extractBearerToken()
+        val jwtToken = request.cookies.lastOrNull {cookie -> cookie.name.equals("accessToken") }?.value
+
+        if(jwtToken == null){
+            filterChain.doFilter(request, response)
+            return
+        }
+
         val username = tokenService.extractUsername(jwtToken)
 
         if (username != null && SecurityContextHolder.getContext().authentication == null) {
@@ -46,10 +67,6 @@ class JwtAuthenticationFilter(
         authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
         SecurityContextHolder.getContext().authentication = authToken
     }
-
-    private fun String?.doesNotContainBearerToken() = this == null || !this.startsWith("Bearer ")
-
-    private fun String.extractBearerToken(): String = this.substringAfter("Bearer ")
 
 }
 

@@ -88,7 +88,7 @@ class TestDataFactory {
         researcherId: UUID = this.researcher,
         owner: UUID? = null,
     ) = FindAllResponseModel(
-        researcherId = researcherId,
+        userId = researcherId,
         ownerId = owner,
         systematicStudies = emptyList(),
     )
@@ -98,7 +98,7 @@ class TestDataFactory {
         owner: UUID = this.owner,
         researcherId: UUID = this.researcher,
     ) = FindAllResponseModel(
-        researcherId = researcherId,
+        userId = researcherId,
         ownerId = owner,
         systematicStudies = List(amountOfStudies) {
             generateDto(id = UUID.randomUUID(), ownerId = owner, collaborators = setOf(researcherId))

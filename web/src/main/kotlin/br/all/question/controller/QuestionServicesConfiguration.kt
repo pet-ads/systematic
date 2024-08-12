@@ -6,6 +6,7 @@ import br.all.application.question.findAll.FindAllBySystematicStudyIdServiceImpl
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.user.CredentialsService
 import br.all.domain.services.UuidGeneratorService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -16,7 +17,7 @@ class QuestionServicesConfiguration {
     fun createQuestionService(
         systematicStudyRepository: SystematicStudyRepository,
         questionRepository: QuestionRepository,
-        credentialsService: ResearcherCredentialsService,
+        credentialsService: CredentialsService,
         idGenerator: UuidGeneratorService,
     ) = CreateQuestionServiceImpl(
         systematicStudyRepository,
@@ -29,7 +30,7 @@ class QuestionServicesConfiguration {
     fun findQuestionService(
         systematicStudyRepository: SystematicStudyRepository,
         questionRepository: QuestionRepository,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindQuestionServiceImpl(
         systematicStudyRepository, questionRepository, credentialsService
     )
@@ -38,7 +39,7 @@ class QuestionServicesConfiguration {
     fun findAllBySystematicStudyIdService(
         systematicStudyRepository: SystematicStudyRepository,
         questionRepository: QuestionRepository,
-        credentialsService: ResearcherCredentialsService
+        credentialsService: CredentialsService
     ) = FindAllBySystematicStudyIdServiceImpl(
         systematicStudyRepository, questionRepository, credentialsService
     )

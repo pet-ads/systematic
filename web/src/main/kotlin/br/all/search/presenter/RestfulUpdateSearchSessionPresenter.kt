@@ -4,22 +4,23 @@ import br.all.application.search.update.UpdateSearchSessionPresenter
 import br.all.application.search.update.UpdateSearchSessionService.ResponseModel
 import br.all.search.controller.SearchSessionController
 import br.all.shared.error.createErrorResponseFrom
+import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.util.*
 
-class RestfulUpdateSearchSessionPresenter : UpdateSearchSessionPresenter {
+class RestfulUpdateSearchSessionPresenter(
+    private val linksFactory: LinksFactory
+) : UpdateSearchSessionPresenter {
 
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
-        val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, response.sessionId)
+        val restfulResponse = ViewModel(response.userId, response.systematicStudyId, response.sessionId)
 
-        val self = linkTo<SearchSessionController> {
-            findSearchSession(response.researcherId, response.systematicStudyId, response.sessionId)
-        }.withSelfRel()
+        val self = linksFactory.findSession(response.systematicStudyId, response.sessionId)
 
         restfulResponse.add(self)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)

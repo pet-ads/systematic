@@ -5,34 +5,30 @@ import br.all.application.search.find.service.FindAllSearchSessionsService.Respo
 import br.all.application.search.repository.SearchSessionDto
 import br.all.search.controller.SearchSessionController
 import br.all.shared.error.createErrorResponseFrom
+import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
-import org.springframework.web.multipart.MultipartFile
-import java.io.File
 import java.util.UUID
 
 @Component
-class RestfulFindAllSearchSessionsPresenter : FindAllSearchSessionsPresenter {
+class RestfulFindAllSearchSessionsPresenter(
+    private val linksFactory: LinksFactory
+) : FindAllSearchSessionsPresenter {
 
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(response.systematicStudyId, response.searchSessions.size, response.searchSessions)
 
-        val selfRef = linkSelfRef(response)
+        val selfRef = linksFactory.findAllSessions(response.systematicStudyId)
 //      val createSession = linkCreateSearchSession(response)
 
         restfulResponse.add(selfRef)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
-
-    private fun linkSelfRef(response: ResponseModel) =
-        linkTo<SearchSessionController> {
-            findAllSearchSessions(response.researcherId, response.systematicStudyId)
-        }.withSelfRel()
 
     /*
     private fun linkCreateSearchSession(response: ResponseModel) =

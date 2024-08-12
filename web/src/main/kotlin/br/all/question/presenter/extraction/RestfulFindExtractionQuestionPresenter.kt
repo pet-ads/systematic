@@ -5,6 +5,7 @@ import br.all.application.question.find.FindQuestionPresenter
 import br.all.application.question.find.FindQuestionService.*
 import br.all.question.controller.ExtractionQuestionController
 import br.all.shared.error.createErrorResponseFrom
+import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
@@ -12,16 +13,15 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
 @Component
-class RestfulFindExtractionQuestionPresenter : FindQuestionPresenter {
+class RestfulFindExtractionQuestionPresenter(
+    private val linksFactory: LinksFactory
+) : FindQuestionPresenter {
     var responseEntity: ResponseEntity<*>? = null
     override fun prepareSuccessView(response: ResponseModel) {
         val content = response.content
         val restfulResponse = ViewModel(content)
 
-        val self = linkTo<ExtractionQuestionController> {
-            findQuestion(response.researcherId, content.systematicStudyId, content.questionId)
-        }.withSelfRel()
-
+        val self = linksFactory.findExtractionQuestion(content.systematicStudyId, content.questionId)
         restfulResponse.add(self)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }

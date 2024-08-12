@@ -1,8 +1,7 @@
 package br.all.domain.model.search
 
-import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.protocol.SearchSource
-import br.all.domain.model.researcher.ResearcherId
+import br.all.domain.model.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -10,7 +9,6 @@ import java.time.LocalDateTime
 import java.util.*
 
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class SearchSessionTest {
 

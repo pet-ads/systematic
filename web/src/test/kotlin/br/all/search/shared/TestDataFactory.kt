@@ -1,10 +1,7 @@
-package br.all.search.controller
+package br.all.search.shared
 
-import br.all.application.search.create.CreateSearchSessionService
-import br.all.domain.model.protocol.SearchSource
 import br.all.domain.shared.utils.paragraph
 import br.all.infrastructure.search.SearchSessionDocument
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.serpro69.kfaker.Faker
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
@@ -12,17 +9,16 @@ import java.time.LocalDateTime
 import java.util.*
 
 class TestDataFactory {
-    val researcherId: UUID = UUID.randomUUID()
+    val userId: UUID = UUID.randomUUID()
     val systematicStudyId: UUID = UUID.randomUUID()
     val sessionId: UUID = UUID.randomUUID()
     val nonExistentSessionId: UUID = UUID.randomUUID()
-    val invalidResearcherId: UUID = UUID.randomUUID()
     private val faker = Faker()
 
-    fun validPostRequest(researcher: UUID = this.researcherId, systematicStudyId: UUID = this.systematicStudyId) =
+    fun validPostRequest(user: UUID = userId, systematicStudyId: UUID = this.systematicStudyId) =
         """
         {
-            "researcherId": "$researcher",
+            "userId": "$user",
             "systematicStudyId": "$systematicStudyId",
             "source": "${faker.lorem.words()}",
             "searchString": "${faker.paragraph(5)}",
@@ -30,7 +26,7 @@ class TestDataFactory {
         }
         """.trimIndent()
 
-    fun uniquenessViolationPostRequest(researcher: UUID = this.researcherId, systematicStudyId: UUID = this.systematicStudyId) =
+    fun uniquenessViolationPostRequest(researcher: UUID = this.userId, systematicStudyId: UUID = this.systematicStudyId) =
         """
         {
             "researcherId": "$researcher",
@@ -42,11 +38,11 @@ class TestDataFactory {
         """.trimIndent()
 
     fun invalidPostRequest(
-        researcherId: UUID = UUID.randomUUID(),
+        userId: UUID = UUID.randomUUID(),
         systematicStudyId: UUID = UUID.randomUUID()
     ) = """
         {
-            "researcherId": "$researcherId",
+            "userId": "$userId",
             "systematicStudyId": "$systematicStudyId",
             "source": "",
             "searchString": "",
@@ -103,7 +99,7 @@ class TestDataFactory {
     fun searchSessionDocument(
         id: UUID = this.sessionId,
         systematicStudyId: UUID = this.systematicStudyId,
-        researcher: UUID = this.researcherId,
+        user: UUID = this.userId,
         searchString: String = "SearchString",
         additionalInfo: String = "AdditionalInfo",
         timeStamp: LocalDateTime = LocalDateTime.of(2022, 1, 1, 0, 0),
@@ -112,7 +108,7 @@ class TestDataFactory {
         return SearchSessionDocument(
             id,
             systematicStudyId,
-            researcher,
+            user,
             searchString,
             additionalInfo,
             timeStamp,

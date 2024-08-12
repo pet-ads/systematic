@@ -4,6 +4,7 @@ import br.all.application.question.create.CreateQuestionPresenter
 import br.all.application.question.create.CreateQuestionService.*
 import br.all.question.controller.RiskOfBiasQuestionController
 import br.all.shared.error.createErrorResponseFrom
+import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
@@ -13,71 +14,27 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class RestfulCreateRoBQuestionPresenter : CreateQuestionPresenter {
+class RestfulCreateRoBQuestionPresenter(
+    private val linksFactory: LinksFactory
+) : CreateQuestionPresenter {
     var responseEntity: ResponseEntity<*>? = null
     override fun prepareSuccessView(response: ResponseModel) {
-        val restfulResponse = ViewModel(response.researcherId, response.systematicStudyId, response.questionId)
+        val restfulResponse = ViewModel(response.userId, response.systematicStudyId, response.questionId)
 
-        val selfRef = linkSelfRef(response)
-        val pickList = linkCreatePickList(response)
-        val labeledScale = linkCreateLabeledScale(response)
-        val numberScale = linkCreateNumberScale(response)
-        val findAll = linkFindAll(response)
+        val selfRef = linksFactory.findRobQuestion(response.systematicStudyId, response.questionId)
+        val pickList = linksFactory.createPickListRobQuestion(response.systematicStudyId)
+        val labeledScale = linksFactory.createLabeledScaleRobQuestion(response.systematicStudyId)
+        val numberScale = linksFactory.createNumberScaleRobQuestion(response.systematicStudyId)
+        val findAll = linksFactory.findAllReviewRobQuestions(response.systematicStudyId)
 
         restfulResponse.add(selfRef, pickList, labeledScale, numberScale, findAll)
         responseEntity = status(HttpStatus.CREATED).body(restfulResponse)
     }
 
-
-    private fun linkSelfRef(response: ResponseModel) =
-        linkTo<RiskOfBiasQuestionController> {
-        findQuestion(response.researcherId, response.systematicStudyId, response.questionId)
-    }.withSelfRel()
-
-
-    private fun linkCreatePickList(response: ResponseModel) =
-        linkTo<RiskOfBiasQuestionController> {
-        createPickListQuestion(
-            response.researcherId,
-            response.systematicStudyId,
-            request = RiskOfBiasQuestionController.PickListRequest(
-                "code", "description", listOf("option1")
-            )
-        )
-    }.withRel("pickList")
-
-    private fun linkCreateLabeledScale(response: ResponseModel) =
-        linkTo<RiskOfBiasQuestionController> {
-        createLabeledScaleQuestion(
-            response.researcherId,
-            response.systematicStudyId,
-            request = RiskOfBiasQuestionController.LabeledScaleRequest(
-                "code", "description", mapOf("scale1" to 1)
-            )
-        )
-    }.withRel("labeledScale")
-
-
-    private fun linkCreateNumberScale(response: ResponseModel) =
-        linkTo<RiskOfBiasQuestionController> {
-        createNumberScaleQuestion(
-            response.researcherId,
-            response.systematicStudyId,
-            request = RiskOfBiasQuestionController.NumberScaleRequest(
-                "code", "description", 0, 0
-            )
-        )
-    }.withRel("numberScale")
-
-    private fun linkFindAll(response: ResponseModel) =
-        linkTo<RiskOfBiasQuestionController> {
-        findAllBySystematicStudyId(response.researcherId, response.systematicStudyId)
-    }.withRel("findAll")
-
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
     override fun isDone() = responseEntity != null
     private data class ViewModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val questionId: UUID
     ): RepresentationModel<ViewModel>()
