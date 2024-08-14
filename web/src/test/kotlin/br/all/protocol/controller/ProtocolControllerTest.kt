@@ -213,6 +213,26 @@ class ProtocolControllerTest(
                 val updated = protocolRepository.findById(document.id).get()
                 assert(updated.picoc != null)
             }
+
+            @Test
+            fun `should update an existing protocol without replacing question ids`() {
+                val document = factory.createProtocolDocument()
+                val json = factory.validPutRequest()
+
+                protocolRepository.save(document)
+
+                mockMvc.perform(put(putUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+                )
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.systematicStudyId").exists())
+                    .andExpect(jsonPath("$._links").exists())
+
+                val updated = protocolRepository.findById(document.id).get()
+                assert(updated.extractionQuestions == document.extractionQuestions)
+                assert(updated.robQuestions == document.robQuestions)
+            }
         }
 
         @Nested
