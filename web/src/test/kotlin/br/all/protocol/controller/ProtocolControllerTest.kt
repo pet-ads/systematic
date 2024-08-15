@@ -1,5 +1,6 @@
 package br.all.protocol.controller
 
+import br.all.application.protocol.repository.PicocDto
 import br.all.infrastructure.protocol.MongoProtocolRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.review.SystematicStudyDocument
@@ -150,6 +151,87 @@ class ProtocolControllerTest(
                     .andExpect(status().isOk)
                     .andExpect(jsonPath("$.systematicStudyId").exists())
                     .andExpect(jsonPath("$._links").exists())
+            }
+
+            @Test
+            fun `should update an existing protocol without deleting existing collection-type variables`() {
+                val document = factory.createProtocolDocument()
+                val json = factory.validPutRequest()
+
+                protocolRepository.save(document)
+
+                mockMvc.perform(put(putUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+                )
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.systematicStudyId").exists())
+                    .andExpect(jsonPath("$._links").exists())
+
+                val updated = protocolRepository.findById(document.id).get()
+                assert(updated.keywords.isNotEmpty()
+                        && updated.selectionCriteria.isNotEmpty()
+                        && updated.robQuestions.isNotEmpty())
+            }
+
+            @Test
+            fun `should update an existing protocol without losing sourcesSelectionCriteria`() {
+                val document = factory.createProtocolDocument()
+                val json = factory.validPutRequest()
+
+                protocolRepository.save(document)
+
+                mockMvc.perform(put(putUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+                )
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.systematicStudyId").exists())
+                    .andExpect(jsonPath("$._links").exists())
+
+                val updated = protocolRepository.findById(document.id).get()
+                assert(updated.sourcesSelectionCriteria != null)
+            }
+
+            @Test
+            fun `should update an existing protocol without deleting existing picoc`() {
+                val document = factory.createProtocolDocument(
+                    picoc = PicocDto("1","2","3","4","5")
+                )
+                val json = factory.validPutRequest()
+
+                protocolRepository.save(document)
+
+                mockMvc.perform(put(putUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+                )
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.systematicStudyId").exists())
+                    .andExpect(jsonPath("$._links").exists())
+
+                val updated = protocolRepository.findById(document.id).get()
+                assert(updated.picoc != null)
+            }
+
+            @Test
+            fun `should update an existing protocol without replacing question ids`() {
+                val document = factory.createProtocolDocument()
+                val json = factory.validPutRequest()
+
+                protocolRepository.save(document)
+
+                mockMvc.perform(put(putUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+                )
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.systematicStudyId").exists())
+                    .andExpect(jsonPath("$._links").exists())
+
+                val updated = protocolRepository.findById(document.id).get()
+                assert(updated.extractionQuestions == document.extractionQuestions)
+                assert(updated.robQuestions == document.robQuestions)
             }
         }
 
