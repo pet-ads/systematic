@@ -32,6 +32,8 @@ class PicocTest {
         }
     }
 
+    //picoc validator was cleared to allow partial filling of its fields
+    @Disabled
     @Nested
     @Tag("InvalidClasses")
     @DisplayName("When invalid arguments are provided")

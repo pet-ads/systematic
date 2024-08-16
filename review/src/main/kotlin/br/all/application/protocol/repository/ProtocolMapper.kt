@@ -67,12 +67,12 @@ fun Protocol.Companion.fromDto(dto: ProtocolDto) = write(SystematicStudyId(dto.s
     ).followingDataCollectionProcess(dto.dataCollectionProcess)
     .extractDataByAnswering(
         dto.extractionQuestions
-            .map { QuestionId(dto.id) }
+            .map { QuestionId(it) }
             .toSet(),
     ).followingSynthesisProcess(dto.analysisAndSynthesisProcess)
     .qualityFormConsiders(
         dto.robQuestions
-            .map { QuestionId(dto.id) }
+            .map { QuestionId(it) }
             .toSet(),
     ).withPICOC(dto.picoc?.let { Picoc.fromDto(it) })
     .build()
@@ -130,5 +130,6 @@ fun Protocol.copyUpdates(request: UpdateProtocolService.RequestModel) = apply {
     dataCollectionProcess = request.dataCollectionProcess ?: dataCollectionProcess
     analysisAndSynthesisProcess = request.analysisAndSynthesisProcess ?: analysisAndSynthesisProcess
 
-    picoc = request.picoc?.let { Picoc.fromDto(it) }
+    if(request.picoc != null)
+        picoc = Picoc.fromDto(request.picoc)
 }
