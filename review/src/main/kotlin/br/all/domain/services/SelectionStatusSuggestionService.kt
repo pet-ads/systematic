@@ -1,13 +1,11 @@
 package br.all.domain.services
 
-import br.all.domain.model.study.StudyReview
-
 interface SelectionStatusSuggestionService {
     fun buildSuggestions(request: RequestModel) : ResponseModel
 
     data class RequestModel(val studiesInfo: List<StudyReviewInfo>)
 
-    data class ResponseModel(val studySuggestions: List<StudyReview>)
+    data class ResponseModel(val studySuggestions: List<StudyStatusSuggestion>)
 
     data class StudyReviewInfo(
         val studyReviewId: Long,
