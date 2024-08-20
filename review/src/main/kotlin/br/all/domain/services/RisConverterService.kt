@@ -6,7 +6,7 @@ import java.util.*
 
 class RisConverterService(private val studyReviewIdGeneratorService: IdGeneratorService) {
     fun convertToStudyReview(systematicStudyId: SystematicStudyId, ris: String): StudyReview {
-        require(ris.isNotBlank()) { "RIS must not be blank." }
+        require(ris.isNotBlank()) { "convertToStudyReview: RIS must not be blank." }
 
         val studyReviewId = StudyReviewId(studyReviewIdGeneratorService.next())
         val study = convert(ris)
@@ -35,13 +35,13 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
     }
 
     fun convertManyToStudyReview(systematicStudyId: SystematicStudyId, ris: String): List<StudyReview> {
-        require(ris.isNotBlank()) { "RIS must not be blank." }
+        require(ris.isNotBlank()) { "convertManyToStudyReview: RIS must not be blank." }
         val studies = convertMany(ris)
         return studies.map { convertToStudyReview(systematicStudyId, ris) }
     }
 
     fun convertMany(ris: String): List<Study> {
-        require(ris.isNotBlank()) { "RIS must not be blank." }
+        require(ris.isNotBlank()) { "convertMany: RIS must not be blank." }
         return ris.splitToSequence("TY")
             .map { it.trim() }
             .filter { it.isNotBlank() }
@@ -50,7 +50,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
     }
 
     private fun convert(ris: String): Study {
-        require(ris.isNotBlank()) { "RIS must not be blank." }
+        require(ris.isNotBlank()) { "convert: RIS must not be blank." }
 
         val fieldMap = parseRisFields(ris) // coloca o RIS em um FieldMap
         val venue = fieldMap["JO"] ?: ""
@@ -102,6 +102,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
     }
 
     private fun translateToStudyType(studyType: String): StudyType {
+        require(studyType.isNotBlank()) { "translateToStudyType: studytype must not be blank." }
         val risMap = mapOf(
             "ABST" to StudyType.ARTICLE,
             "ADVS" to StudyType.MISC,
