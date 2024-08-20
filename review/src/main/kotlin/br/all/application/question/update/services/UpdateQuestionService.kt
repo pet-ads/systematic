@@ -8,7 +8,7 @@ interface UpdateQuestionService {
     fun update(presenter: UpdateQuestionPresenter, request: RequestModel)
 
     data class RequestModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val questionId: UUID,
         val questionType: QuestionType,
@@ -21,7 +21,7 @@ interface UpdateQuestionService {
     )
 
     data class ResponseModel(
-        val researcherId: UUID,
+        val userId: UUID,
         val systematicStudyId: UUID,
         val questionId: UUID,
     )
