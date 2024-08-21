@@ -157,6 +157,10 @@ class Protocol internal constructor(
         _keywords.removeIf { it !in keywords }
     }
 
+    fun clearKeyWords(){
+        _keywords.clear()
+    }
+
     fun addInformationSource(searchSource: SearchSource) = _informationSources.add(searchSource)
 
     fun hasInformationSource(searchSource: SearchSource) = _informationSources.contains(searchSource)

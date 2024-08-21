@@ -99,6 +99,8 @@ fun Protocol.copyUpdates(request: UpdateProtocolService.RequestModel) = apply {
 
     if(request.keywords.isNotEmpty())
         replaceKeywords(request.keywords)
+    else
+        clearKeyWords()
 
     searchString = request.searchString ?: searchString
 
