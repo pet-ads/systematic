@@ -18,7 +18,7 @@ class ConverterFactoryServiceTest {
     @BeforeEach fun setup() {
         sut = ConverterFactoryService(
             bibtexConverterService,
-            //risConverterService
+            risConverterService
         )
     }
 
