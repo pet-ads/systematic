@@ -48,10 +48,10 @@ data class PutRequest(
     )
 
     data class PicocRequest(
-        val population: String,
-        val intervention: String,
-        val control: String,
-        val outcome: String,
+        val population: String? = null,
+        val intervention: String? = null,
+        val control: String? = null,
+        val outcome: String? = null,
         val context: String? = null,
     )
 }
