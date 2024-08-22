@@ -67,12 +67,12 @@ fun Protocol.Companion.fromDto(dto: ProtocolDto) = write(SystematicStudyId(dto.s
     ).followingDataCollectionProcess(dto.dataCollectionProcess)
     .extractDataByAnswering(
         dto.extractionQuestions
-            .map { QuestionId(dto.id) }
+            .map { QuestionId(it) }
             .toSet(),
     ).followingSynthesisProcess(dto.analysisAndSynthesisProcess)
     .qualityFormConsiders(
         dto.robQuestions
-            .map { QuestionId(dto.id) }
+            .map { QuestionId(it) }
             .toSet(),
     ).withPICOC(dto.picoc?.let { Picoc.fromDto(it) })
     .build()

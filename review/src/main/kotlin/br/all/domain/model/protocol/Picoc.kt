@@ -4,10 +4,10 @@ import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.ddd.ValueObject
 
 data class Picoc(
-    val population: String,
-    val intervention: String,
-    val control: String,
-    val outcome: String,
+    val population: String? = null,
+    val intervention: String? = null,
+    val control: String? = null,
+    val outcome: String? = null,
     val context: String? = null,
 ) : ValueObject() {
     init {
@@ -15,18 +15,7 @@ data class Picoc(
         require(notification.hasNoErrors()) { notification.message() }
     }
 
-    override fun validate() = Notification().also {
-        if (population.isBlank())
-            it.addError("The population described in the PICOC must not be blank!")
-        if (intervention.isBlank())
-            it.addError("The intervention described in the PICOC must not be blank!")
-        if (control.isBlank())
-            it.addError("The control described in the PICOC must not be blank!")
-        if (outcome.isBlank())
-            it.addError("The outcome described in the PICOC must not be blank!")
-        if (context != null && context.isBlank())
-            it.addError("The context, when provided, must not be blank!")
-    }
+    override fun validate() = Notification()
 
     companion object
 }
