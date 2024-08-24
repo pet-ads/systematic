@@ -22,7 +22,8 @@ class JwtAuthenticationFilter(
 
     private val matchersToSkip: List<RequestMatcher> = listOf(
         AntPathRequestMatcher("/api/v1/user"),
-        AntPathRequestMatcher("/api/v1/auth"),
+        AntPathRequestMatcher("/api/v1/auth/"),
+        AntPathRequestMatcher("/api/v1/auth/logout/"),
         AntPathRequestMatcher("/webjars/**"),
         AntPathRequestMatcher("/error"),
         AntPathRequestMatcher("/swagger-ui.html"),

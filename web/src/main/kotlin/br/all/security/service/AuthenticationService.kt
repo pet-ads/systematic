@@ -1,5 +1,6 @@
 package br.all.security.service
 
+import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.user.find.LoadAccountCredentialsService
 import br.all.application.user.update.UpdateRefreshTokenService
 import br.all.application.user.update.UpdateRefreshTokenService.RequestModel
@@ -40,8 +41,8 @@ class AuthenticationService(
         val refreshToken = generateToken(user, jwtProperties.refreshTokenExpiration)
 
         val  updateTokenRequest = RequestModel(user.id, refreshToken)
-        updateRefreshTokenService.update(updateTokenRequest)
 
+        updateRefreshTokenService.update(updateTokenRequest)
 
         val refreshCookie = generateCookieFromToken("refreshToken", refreshToken, refreshCookieExpiration)
 
@@ -86,7 +87,12 @@ class AuthenticationService(
     }
 
     fun logout(request: HttpServletRequest, response: HttpServletResponse) {
-        if(request.cookies.isNullOrEmpty()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "No login found")
+        val incomingRefreshCookie = request.cookies?.lastOrNull { cookie -> cookie.name.equals("refreshToken") }
+        val refreshToken = incomingRefreshCookie?.value ?: throw UnauthorizedUserException("No refresh token found.")
+
+        val userId = refreshToken.let { loadCredentialsService.loadSimpleCredentialsByToken(it) }.id
+
+        updateRefreshTokenService.update(RequestModel(userId, null))
 
         val refreshCookie = generateCookieFromToken("refreshToken", null.toString(), 0)
 
