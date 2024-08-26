@@ -83,7 +83,6 @@ object RisTestData {
         ER  -
         """,
 
-
         "valid inproceedings" to """TY  - CPAPER
         TI  - Muitos testes
         SP  - 100
@@ -124,7 +123,6 @@ object RisTestData {
         ER  - 
         """,
 
-
         "valid book" to """TY  - BOOK
         TI  - Software Architecture in Practice
         SP  - 100
@@ -146,7 +144,6 @@ object RisTestData {
         ER  - 
         """,
 
-
         "valid proceedings" to """TY  - CONF
         TI  - Proceedings of the 17th International Conference on Computation
         T2  - and Natural Computation, Fontainebleau, France
@@ -167,7 +164,6 @@ object RisTestData {
         ER  - 
         """,
 
-
         "valid masterthesis" to """TY  - THES
         TI  - Relaxation Effects for Coupled Nuclear Spins
         SP  - 100
@@ -187,7 +183,6 @@ object RisTestData {
         AB  - Lorem Ipsum
         ER  - 
         """,
-
 
         "valid inbook" to """TY  - ECHAP
         TI  - Relaxation Effects for Coupled Nuclear Spins
