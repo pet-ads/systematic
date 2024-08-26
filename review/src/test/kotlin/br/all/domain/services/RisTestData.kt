@@ -23,8 +23,7 @@ object RisTestData {
         AB  - Lorem Ipsum
         ER  - 
         """,
-        "multiple RIS entries" to """
-        TY  - CHAP
+        "multiple RIS entries" to """TY  - CHAP
         TI  - TITLE1
         T2  - TITLE12
         SP  - 1
@@ -42,7 +41,7 @@ object RisTestData {
         Y1  - 3-7 May 2010
         AB  - ABSTRACT1 
         ER  -
-
+        
         TY  - CONF
         TI  - TITLE2
         T2  - TITLE22
@@ -62,7 +61,7 @@ object RisTestData {
         Y1  - 2-5 Dec. 2013
         AB  - ABSTRACT2
         ER  -
-
+        
         TY  - ABST
         TI  - TITLE3
         T2  - TITLE33
