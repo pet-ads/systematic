@@ -5,9 +5,12 @@ import br.all.application.question.create.CreateQuestionService.QuestionType.*
 import br.all.application.question.create.CreateQuestionService.RequestModel
 import br.all.application.question.find.FindQuestionService
 import br.all.application.question.findAll.FindAllBySystematicStudyIdService
+import br.all.application.question.update.services.UpdateQuestionService
 import br.all.question.presenter.extraction.RestfulFindAllExtractionQuestionPresenter
+import br.all.question.presenter.extraction.RestfulUpdateExtractionQuestionPresenter
 import br.all.question.presenter.riskOfBias.RestfulCreateRoBQuestionPresenter
 import br.all.question.presenter.riskOfBias.RestfulFindRoBQuestionPresenter
+import br.all.question.requests.PutRequest
 import br.all.security.service.AuthenticationInfoService
 import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
@@ -28,6 +31,7 @@ class RiskOfBiasQuestionController(
     val createQuestionService: CreateQuestionService,
     val findOneService: FindQuestionService,
     val findAllService: FindAllBySystematicStudyIdService,
+    val updateQuestionService: UpdateQuestionService,
     val linksFactory: LinksFactory
 ) {
     data class TextualRequest(val code: String, val description: String)
@@ -259,6 +263,53 @@ class RiskOfBiasQuestionController(
         val presenter = RestfulFindAllExtractionQuestionPresenter(linksFactory)
         val request = FindAllBySystematicStudyIdService.RequestModel(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId)
         findAllService.findAllBySystematicStudyId(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @PutMapping("/{questionId}")
+    @Operation(summary = "Update a risk of bias question")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success updating a extraction question",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = UpdateQuestionService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail updating question - invalid request",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail updating question - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail updating question - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail updating question - question not found",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+        ]
+    )
+    fun updateQuestion(
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable questionId: UUID,
+        @RequestBody request: PutRequest
+    ): ResponseEntity<*> {
+        val presenter = RestfulUpdateExtractionQuestionPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val requestModel = request.toUpdateRequestModel(userId, systematicStudyId, questionId)
+
+        updateQuestionService.update(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
