@@ -2,6 +2,7 @@ package br.all.application.question.update.services
 
 import br.all.application.question.create.CreateQuestionService.QuestionType
 import br.all.application.question.update.presenter.UpdateQuestionPresenter
+import io.swagger.v3.oas.annotations.media.Schema
 import java.util.*
 
 interface UpdateQuestionService {
@@ -20,6 +21,7 @@ interface UpdateQuestionService {
         val options: List<String>? = null,
     )
 
+    @Schema(name = "UpdateQuestionResponseModel")
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
