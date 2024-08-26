@@ -99,6 +99,14 @@ class RisConverterServiceTest {
 
     @Nested
     inner class ValidClasses() {
+
+        @Test fun `Should create a StudyReview list from multiple RIS entries as input`() {
+            val ris = testInput["multiple RIS entries"]!!
+            val studyReviewList = sut.convertManyToStudyReview(SystematicStudyId(UUID.randomUUID()), ris)
+            assertEquals(3, studyReviewList.size)
+        }
+
+
         @Test
         fun `should create article from valid input`() {
             val ris = testInput["valid RIS entrie"]!!
