@@ -42,12 +42,16 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
 
     fun convertMany(ris: String): List<Study> {
         require(ris.isNotBlank()) { "convertMany: RIS must not be blank." }
+
         return ris.splitToSequence("TY")
-            .map { it.trim() }
+            .mapIndexed { index, entry ->
+                if (index == 0) entry.trim() else "TY$entry".trim()
+            }
             .filter { it.isNotBlank() }
             .map { convert(it) }
             .toList()
     }
+
 
     private fun convert(ris: String): Study {
         require(ris.isNotBlank()) { "convert: RIS must not be blank." }
