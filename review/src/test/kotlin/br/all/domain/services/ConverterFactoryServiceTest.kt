@@ -14,12 +14,23 @@ class ConverterFactoryServiceTest {
     private lateinit var sut: ConverterFactoryService
     private lateinit var bibtexConverterService: BibtexConverterService
     private lateinit var risConverterService: RisConverterService
+    private lateinit var idGeneratorService: IdGeneratorService
 
-    @BeforeEach fun setup() {
+    @BeforeEach
+    fun setup() {
+        idGeneratorService = FakeIdGeneratorService
+
+        bibtexConverterService = BibtexConverterService(idGeneratorService)
+        risConverterService = RisConverterService(idGeneratorService)
         sut = ConverterFactoryService(
             bibtexConverterService,
             risConverterService
         )
+    }
+
+    @AfterEach fun teardown() {
+        val fake = idGeneratorService as FakeIdGeneratorService
+        fake.reset()
     }
 
     @Test fun `Should return study review successfully`() {
