@@ -10,6 +10,7 @@ import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.toDto
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
+import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.services.ConverterFactoryService
 
 class PatchSearchSessionServiceImpl (
@@ -34,7 +35,7 @@ class PatchSearchSessionServiceImpl (
         if(presenter.isDone()) return
 
         if (searchSessionRepository.existsById(request.sessionId)) {
-            val studyReviews = converterFactoryService.extractReferences(file)
+            val studyReviews = converterFactoryService.extractReferences(request.systematicStudyId.toSystematicStudyId() ,file)
             studyReviewRepository.saveOrUpdateBatch(studyReviews.map { it.toDto() })
             presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, request.sessionId))
 
