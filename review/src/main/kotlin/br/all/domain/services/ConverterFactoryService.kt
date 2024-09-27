@@ -10,8 +10,7 @@ class ConverterFactoryService(
     private val bibtexConverterService: BibtexConverterService,
     private val risConverterService: RisConverterService
 ){
-    // , request: RequestModel
-    fun extractReferences(file: String): List<StudyReview> {
+    fun extractReferences(systematicStudyId: SystematicStudyId ,file: String): List<StudyReview> {
         var studyReviews = listOf<StudyReview>()
 
         val bibtexPattern = Regex("""@\s*(article|book|conference|inproceedings|techreport|phdthesis|mastersthesis)\s*""", RegexOption.IGNORE_CASE)
@@ -19,9 +18,9 @@ class ConverterFactoryService(
         val risPattern = Regex("""^TY\s+-\s+""", RegexOption.MULTILINE)
 
         if (bibtexPattern.containsMatchIn(file)) {
-            studyReviews = bibtexConverterService.convertManyToStudyReview(SystematicStudyId(UUID.randomUUID()), file)
+            studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudyId, file)
         } else if (risPattern.containsMatchIn(file)) {
-            studyReviews = risConverterService.convertManyToStudyReview(SystematicStudyId(UUID.randomUUID()), file)
+            studyReviews = risConverterService.convertManyToStudyReview(systematicStudyId, file)
         }
 
         return studyReviews
