@@ -257,4 +257,12 @@ class SearchSessionController(
         updateService.updateSession(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
+//    fun patchSearchSession(
+//        @PathVariable systematicStudyId: UUID,
+//        @PathVariable sessionId: UUID,
+//        @RequestParam filter: MultipartFile,
+//        @RequestParam data: String
+//    ): ResponseEntity<*> {
+//        return
+//    }
 }
