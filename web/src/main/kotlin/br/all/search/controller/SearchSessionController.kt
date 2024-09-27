@@ -5,9 +5,13 @@ import br.all.application.search.create.CreateSearchSessionService
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindSearchSessionService
 import br.all.application.search.find.service.FindAllSearchSessionsService
+import br.all.application.search.update.PatchSearchSessionPresenter
+import br.all.application.search.update.PatchSearchSessionService
+import br.all.application.search.update.PatchSearchSessionServiceImpl
 import br.all.application.search.update.UpdateSearchSessionService
 import br.all.search.presenter.*
 import br.all.security.service.AuthenticationInfoService
+import br.all.study.requests.PatchStatusStudyReviewRequest
 import br.all.utils.LinksFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -27,6 +31,7 @@ import br.all.application.search.find.service.FindAllSearchSessionsService.Reque
 @RestController
 @RequestMapping("api/v1/systematic-study/{systematicStudyId}")
 class SearchSessionController(
+    val patchService: PatchSearchSessionService,
     val createService: CreateSearchSessionService,
     val findOneService: FindSearchSessionService,
     val findAllService: FindAllSearchSessionsService,
@@ -257,12 +262,54 @@ class SearchSessionController(
         updateService.updateSession(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
-//    fun patchSearchSession(
-//        @PathVariable systematicStudyId: UUID,
-//        @PathVariable sessionId: UUID,
-//        @RequestParam filter: MultipartFile,
-//        @RequestParam data: String
-//    ): ResponseEntity<*> {
-//        return
-//    }
+
+    @Operation(summary = "Patch existing search string of a systematic study")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success updating an existing search session of a systematic study",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = UpdateSearchSessionService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail to update an existing search session - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail to update an existing search session - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail to update an existing search session - study not found",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+        ]
+    )
+    // CHANGE API RESPONSE TEXT
+    @PatchMapping("/patch-search-session/{sessionId}")
+    fun patchSearchSession(
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable sessionId: UUID,
+        @RequestParam file: MultipartFile,
+        @RequestParam data: String
+    ): ResponseEntity<*> {
+        val presenter = RestfulPatchSearchSessionPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val jsonData: Map<String, Any> = mapper.readValue(data)
+        val request = PatchSearchSessionService.RequestModel(
+            userId, systematicStudyId, sessionId
+        )
+        patchService.patchSession(
+            presenter,
+            request,
+            String(file.bytes)
+        )
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
 }
