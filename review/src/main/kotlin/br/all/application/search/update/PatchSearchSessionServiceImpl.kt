@@ -3,23 +3,26 @@ package br.all.application.search.update
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.search.repository.SearchSessionRepository
-import br.all.application.search.repository.fromDto
-import br.all.application.search.repository.toDto
-import br.all.application.search.update.UpdateSearchSessionService.RequestModel
-import br.all.application.search.update.UpdateSearchSessionService.ResponseModel
+import br.all.application.search.update.PatchSearchSessionService.ResponseModel
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
+import br.all.application.study.repository.StudyReviewRepository
+import br.all.application.study.repository.toDto
 import br.all.application.user.CredentialsService
-import br.all.domain.model.protocol.toSearchSource
 import br.all.domain.model.review.SystematicStudy
-import br.all.domain.model.search.SearchSession
+import br.all.domain.services.ConverterFactoryService
 
 class PatchSearchSessionServiceImpl (
     private val systematicStudyRepository: SystematicStudyRepository,
     private val searchSessionRepository: SearchSessionRepository,
     private val credentialsService: CredentialsService,
-) : UpdateSearchSessionService {
-    override fun updateSession(presenter: UpdateSearchSessionPresenter, request: RequestModel
+    private val studyReviewRepository: StudyReviewRepository,
+    private val converterFactoryService: ConverterFactoryService
+) : PatchSearchSessionService {
+    override fun patchSession(
+        presenter: PatchSearchSessionPresenter,
+        request: PatchSearchSessionService.RequestModel,
+        file: String
     ) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
@@ -28,19 +31,11 @@ class PatchSearchSessionServiceImpl (
 
         presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
-
         if(presenter.isDone()) return
 
         if (searchSessionRepository.existsById(request.sessionId)) {
-            val dto = searchSessionRepository.findById(request.sessionId) ?: return
-            val patch = SearchSession.fromDto(dto).apply {
-                searchString += request.searchString ?: searchString
-                additionalInfo += request.additionalInfo ?: additionalInfo
-                source = (source.toString() + request.source).toSearchSource()
-            }.toDto()
-
-            if (patch != dto) searchSessionRepository.saveOrUpdate(patch)
-
+            val studyReviews = converterFactoryService.extractReferences(file)
+            studyReviewRepository.saveOrUpdateBatch(studyReviews.map { it.toDto() })
             presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, request.sessionId))
 
         } else {
