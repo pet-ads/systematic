@@ -9,6 +9,8 @@ import br.all.application.search.find.service.FindAllSearchSessionsBySourceServi
 import br.all.application.search.find.service.FindSearchSessionServiceImpl
 import br.all.application.search.find.service.FindAllSearchSessionsServiceImpl
 import br.all.application.search.repository.SearchSessionRepository
+import br.all.application.search.update.PatchSearchSessionPresenter
+import br.all.application.search.update.PatchSearchSessionService
 import br.all.application.search.update.PatchSearchSessionServiceImpl
 import br.all.application.search.update.UpdateSearchSessionServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
@@ -31,6 +33,21 @@ class SearchSessionServicesConfiguration {
     fun converterFactoryService(idGenerator: IdGeneratorService) = ConverterFactoryService(
         bibtexConverterService(idGenerator),
         risConverterService(idGenerator)
+    )
+
+    @Bean
+    fun patchSearchSessionService(
+        systematicStudyRepository: SystematicStudyRepository,
+        searchSessionRepository: SearchSessionRepository,
+        credentialsService: CredentialsService,
+        studyReviewRepository: StudyReviewRepository,
+        converterFactoryService: ConverterFactoryService
+    ) = PatchSearchSessionServiceImpl(
+        systematicStudyRepository,
+        searchSessionRepository,
+        credentialsService,
+        studyReviewRepository,
+        converterFactoryService
     )
 
     @Bean
@@ -89,13 +106,4 @@ class SearchSessionServicesConfiguration {
     ) = UpdateSearchSessionServiceImpl (
         systematicStudyRepository, searchSessionRepository, credentialsService
     )
-
-//    @Bean
-//    fun patchSearchSessionService(
-//        searchSessionRepository: SearchSessionRepository,
-//        systematicStudyRepository: SystematicStudyRepository,
-//        credentialsService: CredentialsService
-//    ) = PatchSearchSessionServiceImpl (
-//        systematicStudyRepository, searchSessionRepository, credentialsService
-//    )
 }
