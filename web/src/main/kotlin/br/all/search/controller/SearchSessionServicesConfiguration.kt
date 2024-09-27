@@ -13,10 +13,7 @@ import br.all.application.search.update.PatchSearchSessionServiceImpl
 import br.all.application.search.update.UpdateSearchSessionServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
-import br.all.domain.services.BibtexConverterService
-import br.all.domain.services.ConverterFactoryService
-import br.all.domain.services.IdGeneratorService
-import br.all.domain.services.UuidGeneratorService
+import br.all.domain.services.*
 import br.all.infrastructure.protocol.MongoProtocolRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -24,9 +21,17 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class SearchSessionServicesConfiguration {
 
-    // CRIAR BEAN DA FACTORY
     @Bean
     fun bibtexConverterService(idGenerator: IdGeneratorService) = BibtexConverterService(idGenerator)
+
+    @Bean
+    fun risConverterService(idGenerator: IdGeneratorService) = RisConverterService(idGenerator)
+
+    @Bean
+    fun converterFactoryService(idGenerator: IdGeneratorService) = ConverterFactoryService(
+        bibtexConverterService(idGenerator),
+        risConverterService(idGenerator)
+    )
 
     @Bean
     fun createSearchSession(
@@ -85,12 +90,12 @@ class SearchSessionServicesConfiguration {
         systematicStudyRepository, searchSessionRepository, credentialsService
     )
 
-    @Bean
-    fun patchSearchSessionService(
-        searchSessionRepository: SearchSessionRepository,
-        systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: CredentialsService
-    ) = PatchSearchSessionServiceImpl (
-        systematicStudyRepository, searchSessionRepository, credentialsService
-    )
+//    @Bean
+//    fun patchSearchSessionService(
+//        searchSessionRepository: SearchSessionRepository,
+//        systematicStudyRepository: SystematicStudyRepository,
+//        credentialsService: CredentialsService
+//    ) = PatchSearchSessionServiceImpl (
+//        systematicStudyRepository, searchSessionRepository, credentialsService
+//    )
 }
