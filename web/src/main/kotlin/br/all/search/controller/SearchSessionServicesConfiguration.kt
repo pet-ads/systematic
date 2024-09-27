@@ -14,6 +14,7 @@ import br.all.application.search.update.UpdateSearchSessionServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.services.BibtexConverterService
+import br.all.domain.services.ConverterFactoryService
 import br.all.domain.services.IdGeneratorService
 import br.all.domain.services.UuidGeneratorService
 import br.all.infrastructure.protocol.MongoProtocolRepository
@@ -23,6 +24,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class SearchSessionServicesConfiguration {
 
+    // CRIAR BEAN DA FACTORY
     @Bean
     fun bibtexConverterService(idGenerator: IdGeneratorService) = BibtexConverterService(idGenerator)
 
@@ -32,7 +34,7 @@ class SearchSessionServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         protocolRepository: ProtocolRepository,
         uuidGeneratorService: UuidGeneratorService,
-        bibtexConverterService: BibtexConverterService,
+        converterFactoryService: ConverterFactoryService,
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService
     ) = CreateSearchSessionServiceImpl(
@@ -40,7 +42,7 @@ class SearchSessionServicesConfiguration {
         systematicStudyRepository,
         protocolRepository,
         uuidGeneratorService,
-        bibtexConverterService,
+        converterFactoryService,
         studyReviewRepository,
         credentialsService
     )
