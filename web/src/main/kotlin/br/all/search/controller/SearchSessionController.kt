@@ -301,7 +301,6 @@ class SearchSessionController(
     ): ResponseEntity<*> {
         val presenter = RestfulPatchSearchSessionPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val jsonData: Map<String, Any> = mapper.readValue(data)
         val request = PatchSearchSessionService.RequestModel(
             userId, systematicStudyId, sessionId
         )
