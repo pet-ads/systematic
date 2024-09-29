@@ -35,14 +35,16 @@ class ConverterFactoryServiceTest {
 
     @Test fun `Should return study review successfully`() {
         val bibtex = bibtexInput["multiple bibtex entries"]!!
-        val studyReviewList = sut.extractReferences(bibtex)
+        val fake = SystematicStudyId(UUID.randomUUID())
+        val studyReviewList = sut.extractReferences(fake, bibtex)
         assertEquals(7, studyReviewList.size)
     }
 
     @Test
     fun `Should correctly identify a ris file`(){
         val ris = risInput["multiple RIS entries"]!!
-        val studyReviewList = sut.extractReferences(ris)
+        val fake = SystematicStudyId(UUID.randomUUID())
+        val studyReviewList = sut.extractReferences(fake, ris)
         assertEquals(3, studyReviewList.size)
     }
 }
