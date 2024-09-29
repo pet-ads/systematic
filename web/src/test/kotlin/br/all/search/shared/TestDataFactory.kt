@@ -145,4 +145,17 @@ class TestDataFactory {
         jsonFields.add("\"source\": \"$source\"")
         return "{ ${jsonFields.joinToString(", ")} }"
     }
+
+    fun validPatchRequest(
+        user: UUID = userId,
+        systematicStudyId: UUID = this.systematicStudyId
+    ) = """
+        {
+            "userId": "$user",
+            "systematicStudyId": "$systematicStudyId",
+            "source": "${faker.lorem.words()}",
+            "searchString": "${faker.paragraph(5)}",
+            "additionalInfo": "${faker.paragraph(30)}"
+        }
+        """.trimIndent()
 }
