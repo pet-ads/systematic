@@ -5,7 +5,7 @@ import br.all.application.study.repository.StudyReviewDto
 import io.swagger.v3.oas.annotations.media.Schema
 import java.util.*
 
-interface FindAllStudyReviewsBySessionPresenter {
+interface FindAllStudyReviewsBySessionService {
 
     fun findAllBySearchSession(presenter: FindAllStudyReviewsBySessionPresenter, request: RequestModel)
 
