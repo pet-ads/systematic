@@ -4,6 +4,7 @@ import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import java.util.*
 
 data class PutStudyReviewRequest(
+    val searchSessionId: UUID,
     val type: String,
     val title: String,
     val year: Int,
@@ -16,6 +17,7 @@ data class PutStudyReviewRequest(
     fun toRequestModel(userId: UUID, systematicStudyId: UUID, studyReviewId: Long) = UpdateStudyReviewService.RequestModel(
         userId,
         systematicStudyId,
+        searchSessionId,
         type,
         title,
         year,
