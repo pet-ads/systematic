@@ -1,4 +1,6 @@
 package br.all.application.study.find.presenter
 
-interface FindAllStudyReviewsBySessionPresenter {
-}
+import br.all.application.shared.presenter.GenericPresenter
+import br.all.application.study.find.service.FindAllStudyReviewsBySessionService.ResponseModel
+
+interface FindAllStudyReviewsBySessionPresenter: GenericPresenter<ResponseModel>
