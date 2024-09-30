@@ -168,6 +168,7 @@ class LinksFactory {
         createStudyReview(
             systematicStudyId,
             PostStudyReviewRequest(
+                searchSessionId = UUID.randomUUID(),
                 type = "",
                 title = "",
                 year = 2024,
