@@ -350,7 +350,7 @@ class SearchSessionControllerTest(
                 .file(factory.bibfile()).param("data", request)
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
-            assertNotEquals(searchSession.searchString, "SearchString")
+                .andExpect(status().isOk)
         }
     }
 
