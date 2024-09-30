@@ -1,6 +1,7 @@
 package br.all.domain.services
 
 import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.study.*
 import br.all.domain.services.BibtexTestData.testInputs
 import org.junit.jupiter.api.*
@@ -28,13 +29,13 @@ class BibtexConverterServiceTest {
 
         @Test fun `Should create a StudyReview list from multiple bibtex entries as input`() {
             val bibtex = testInputs["multiple bibtex entries"]!!
-            val studyReviewList = sut.convertManyToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            val studyReviewList = sut.convertManyToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
             assertEquals(7, studyReviewList.size)
         }
 
         @Test fun `should create article from valid input`() {
             val bibtex = testInputs["valid article"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
 
             assertAll(
                 "bibtex",
@@ -62,7 +63,7 @@ class BibtexConverterServiceTest {
 
         @Test fun `should create inproceedings from valid input`() {
             val bibtex = testInputs["valid inproceedings"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
             assertAll(
                 "bibtex",
                 { assertEquals("1", studyReview.id.toString()) },
@@ -87,7 +88,7 @@ class BibtexConverterServiceTest {
 
         @Test fun `should create techreport from valid input`() {
             val bibtex = testInputs["valid techreport"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
             val expected = "Uma abordagem apoiada por linguagens específicas de domínio " +
             "para a criação de linhas de produto de software embarcado"
 
@@ -113,7 +114,7 @@ class BibtexConverterServiceTest {
 
         @Test fun `should create book from valid input`() {
             val bibtex = testInputs["valid book"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
 
             assertAll(
                 "bibtex",
@@ -137,7 +138,7 @@ class BibtexConverterServiceTest {
 
         @Test fun `should create proceedings from valid input`() {
             val bibtex = testInputs["valid proceedings"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
 
             val expected = "Proceedings of the 17th International Conference on Computation " +
                     "and Natural Computation, Fontainebleau, France"
@@ -164,7 +165,7 @@ class BibtexConverterServiceTest {
 
         @Test fun `should create phdthesis from valid input`() {
             val bibtex = testInputs["valid phdthesis"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
 
             assertAll(
                 "bibtex",
@@ -188,7 +189,7 @@ class BibtexConverterServiceTest {
 
         @Test fun `should create mastersthesis from valid input`() {
             val bibtex = testInputs["valid mastersthesis"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
 
             assertAll(
                 "bibtex",
@@ -212,7 +213,7 @@ class BibtexConverterServiceTest {
 
         @Test fun `should create inbook from valid input`() {
             val bibtex = testInputs["valid inbook"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
 
             val expected = "Lisa A. Urry and Michael L. Cain and Steven A. Wasserman " +
                 "and Peter V. Minorsky and Jane B. Reece"
@@ -239,7 +240,7 @@ class BibtexConverterServiceTest {
 
         @Test fun `should create booklet from valid input`() {
             val bibtex = testInputs["valid booklet"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
 
             assertAll(
                 "bibtex",
@@ -263,7 +264,7 @@ class BibtexConverterServiceTest {
 
         @Test fun `should create manual from valid input`() {
             val bibtex = testInputs["valid manual"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
 
             assertAll(
                 "bibtex",
@@ -287,7 +288,7 @@ class BibtexConverterServiceTest {
 
         @Test fun `should create misc from valid input`() {
             val bibtex = testInputs["valid misc"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
 
             assertAll(
                 "bibtex",
@@ -311,7 +312,7 @@ class BibtexConverterServiceTest {
 
         @Test fun `should create unpublished from valid input`() {
             val bibtex = testInputs["valid unpublished"].toString()
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
 
             assertAll(
                 "bibtex",
@@ -337,62 +338,62 @@ class BibtexConverterServiceTest {
     @Nested inner class InvalidClasses() {
         @Test fun `convertManyToStudyReview should not accept a blank bibtex entry as input`() {
             assertThrows<IllegalArgumentException> {
-                sut.convertManyToStudyReview(SystematicStudyId(UUID.randomUUID()), "")
+                sut.convertManyToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), "")
             }
         }
 
         @Test fun `convertToStudyReview should not accept a blank bibtex entry as input`() {
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), "")
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), "")
             }
         }
 
         @Test fun `should throw IllegalArgumentException for unknown type entry`() {
             val bibtex = testInputs["unknown type of bibtex"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
             }
         }
 
         @Test fun `should throw IllegalArgumentException for invalid title entry`() {
             val bibtex = testInputs["invalid title"].toString()
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
             }
         }
 
         @Test fun `should throw IllegalArgumentException for invalid author entry`() {
             val bibtex = testInputs["invalid authors"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
             }
         }
 
         @Test fun `should throw IllegalArgumentException for invalid year entry`() {
             val bibtex = testInputs["invalid year"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
             }
         }
 
         @Test fun `should throw IllegalArgumentException for invalid venue entry`() {
             val bibtex = testInputs["invalid venue"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
             }
         }
 
         @Test fun `should throw IllegalArgumentException for invalid abstract entry`() {
             val bibtex = testInputs["invalid abstract"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
             }
         }
 
         @Test fun `should throw IllegalArgumentException for invalid doi`() {
             val bibtex = testInputs["invalid doi"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), bibtex)
+                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
             }
         }
     }
