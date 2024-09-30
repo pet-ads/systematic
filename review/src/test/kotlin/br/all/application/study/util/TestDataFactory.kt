@@ -24,11 +24,13 @@ class TestDataFactory {
     val researcherId: UUID = UUID.randomUUID()
     val studyReviewId: Long = Random(1).nextLong()
     val systematicStudyId: UUID = UUID.randomUUID()
+    val searchSessionId: UUID = UUID.randomUUID()
     private val faker = Faker()
 
     fun generateDto(
         systematicStudyId: UUID = this.systematicStudyId,
         studyReviewId: Long = this.studyReviewId,
+        searchSessionId: UUID = this.searchSessionId,
         type: String = faker.random.nextEnum(StudyType::class.java).toString(),
         title: String = faker.book.title(),
         year: Int = faker.year(),
@@ -48,7 +50,7 @@ class TestDataFactory {
         readingPriority: String = "LOW"
     ): StudyReviewDto {
         return StudyReviewDto(
-            studyReviewId, systematicStudyId, type, title, year,
+            studyReviewId, systematicStudyId, searchSessionId, type, title, year,
             authors, venue, abstract, keywords, references, doi, sources,
             criteria, formAnswers, robAnswers, comments, readingPriority,
             extractionStatus, selectionStatus
@@ -58,6 +60,7 @@ class TestDataFactory {
     fun createRequestModel(
         researcherId: UUID = this.researcherId,
         systematicStudyId: UUID = this.systematicStudyId,
+        searchSessionId: UUID = this.searchSessionId,
         type: String = faker.random.nextEnum(StudyType::class.java).toString(),
         title: String = faker.book.title(),
         year: Int = faker.year(),
@@ -66,7 +69,7 @@ class TestDataFactory {
         abstract: String = faker.lorem.words(),
         keywords: Set<String> = setOf(faker.lorem.words(), faker.lorem.words()),
         source: String = faker.lorem.words(),
-    ) = CreateStudyReviewService.RequestModel(researcherId, systematicStudyId, type, title, year, authors, venue, abstract, keywords, source)
+    ) = CreateStudyReviewService.RequestModel(researcherId, systematicStudyId, searchSessionId, type, title, year, authors, venue, abstract, keywords, source)
 
     fun findRequestModel(
     ) = FindStudyReviewService.RequestModel(researcherId, systematicStudyId, studyReviewId)
@@ -101,6 +104,7 @@ class TestDataFactory {
     fun updateRequestModel(
         researcherId: UUID = this.researcherId,
         systematicStudyId: UUID = this.systematicStudyId,
+        searchSessionId: UUID = this.searchSessionId,
         type: String = faker.random.nextEnum(StudyType::class.java).toString(),
         title: String = faker.book.title(),
         year: Int = faker.year(),
@@ -110,7 +114,7 @@ class TestDataFactory {
         keywords: Set<String> = setOf(faker.lorem.words(), faker.lorem.words()),
         source: String = faker.lorem.words(),
         studyReviewId: Long = this.studyReviewId
-    ) = UpdateStudyReviewService.RequestModel(researcherId, systematicStudyId, type, title, year, authors, venue, abstract, keywords, source, studyReviewId)
+    ) = UpdateStudyReviewService.RequestModel(researcherId, systematicStudyId, searchSessionId, type, title, year, authors, venue, abstract, keywords, source, studyReviewId)
 
     fun updateStatusRequestModel(
         status: String,
