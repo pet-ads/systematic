@@ -12,6 +12,7 @@ import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.search.SearchSessionID
 import br.all.domain.services.BibtexConverterService
 import br.all.domain.services.UuidGeneratorService
 import io.mockk.*
@@ -90,7 +91,7 @@ class CreateSearchSessionServiceImplTest {
             preconditionCheckerMocking.makeEverythingWork()
             every { protocolRepository.findById(systematicStudyUuid) } returns protocol
             every { uuidGeneratorService.next() } returns searchSessionId
-            every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
+            every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, SearchSessionID(searchSessionId), any()) } returns emptyList()
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
@@ -114,7 +115,7 @@ class CreateSearchSessionServiceImplTest {
                 searchSessionRepository.existsBySearchSource(systematicStudyUuid, request.source)
             } returns false
             every { uuidGeneratorService.next() } returns searchSessionId
-            every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
+            every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, SearchSessionID(searchSessionId), any()) } returns emptyList()
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
@@ -132,7 +133,7 @@ class CreateSearchSessionServiceImplTest {
                 searchSessionRepository.existsBySearchSource(systematicStudyUuid, request.source)
             } returns false
             every { uuidGeneratorService.next() } returns searchSessionId
-            every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
+            every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, SearchSessionID(searchSessionId), any()) } returns emptyList()
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
@@ -150,7 +151,7 @@ class CreateSearchSessionServiceImplTest {
                 searchSessionRepository.existsBySearchSource(systematicStudyUuid, request.source)
             } returns false
             every { uuidGeneratorService.next() } returns searchSessionId
-            every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, any()) } returns emptyList()
+            every { bibtexConverterService.convertManyToStudyReview(systematicStudyId, SearchSessionID(searchSessionId), any()) } returns emptyList()
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
             verify {presenter.prepareFailView(match { it is EntityNotFoundException }) }
