@@ -39,6 +39,7 @@ class StudyReviewControllerTest(
     private lateinit var user: ApplicationUser
 
     private lateinit var systematicStudyId: UUID
+    private lateinit var searchSessionId: UUID
 
     fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/study-review"
     fun findUrl(studyId: String = "") =
@@ -66,6 +67,7 @@ class StudyReviewControllerTest(
 
         factory = TestDataFactory()
         systematicStudyId = factory.systematicStudyId
+        searchSessionId = factory.searchSessionId
 
         user = testHelperService.createApplicationUser()
 
@@ -248,9 +250,9 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should find all studies and return 200`() {
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), "study"))
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), "study"))
-            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), "study"))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId, "study"))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId, "study"))
+            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), searchSessionId, "study"))
 
             mockMvc.perform(get(findUrl())
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
@@ -278,14 +280,14 @@ class StudyReviewControllerTest(
         fun `should find all studies by source and return 200`() {
             repository.insert(
                 factory.reviewDocument(
-                    systematicStudyId, idService.next(), "study",
+                    systematicStudyId, idService.next(), searchSessionId, "study",
                     sources = setOf("ACM")
                 )
             )
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), "study"))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId, "study"))
             repository.insert(
                 factory.reviewDocument(
-                    UUID.randomUUID(), idService.next(), "study",
+                    UUID.randomUUID(), idService.next(), searchSessionId, "study",
                     sources = setOf("ACM")
                 )
             )
