@@ -8,6 +8,7 @@ import java.util.*
 @Document("study_review")
 data class StudyReviewDocument (
     @Id val id: StudyReviewId,
+    val searchSessionId: UUID,
     val type: String,
     val title: String,
     val year: Int,
