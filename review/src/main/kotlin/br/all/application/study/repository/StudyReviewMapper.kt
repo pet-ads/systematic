@@ -31,7 +31,7 @@ fun StudyReview.toDto() = StudyReviewDto(
 
 fun StudyReview.Companion.fromDto(dto: StudyReviewDto) = StudyReview(
     StudyReviewId(dto.studyReviewId),
-    SystematicStudyId(dto.systematicStudyId),
+    SystematicStudyId(dto.systematicStudyId),,
     StudyType.valueOf(dto.studyType),
     dto.title,
     dto.year,
@@ -53,7 +53,7 @@ fun StudyReview.Companion.fromDto(dto: StudyReviewDto) = StudyReview(
 
 fun StudyReview.Companion.fromStudyRequestModel(studyId: Long, request: RequestModel) = StudyReview(
     StudyReviewId(studyId),
-    SystematicStudyId(request.systematicStudyId),
+    SystematicStudyId(request.systematicStudyId),,
     StudyType.valueOf(request.type.uppercase()),
     request.title,
     request.year,
@@ -66,7 +66,7 @@ fun StudyReview.Companion.fromStudyRequestModel(studyId: Long, request: RequestM
 
 fun StudyReview.Companion.fromStudyUpdateRequestModel(studyId: Long, request: UpdateStudyReviewService.RequestModel) = StudyReview(
     StudyReviewId(studyId),
-    SystematicStudyId(request.systematicStudyId),
+    SystematicStudyId(request.systematicStudyId),,
     StudyType.valueOf(request.type.uppercase()),
     request.title,
     request.year,

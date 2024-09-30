@@ -24,7 +24,7 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
 
         return StudyReview(
             studyReviewId,
-            systematicStudyId,
+            systematicStudyId,,
             study.type,
             study.title,
             study.year,

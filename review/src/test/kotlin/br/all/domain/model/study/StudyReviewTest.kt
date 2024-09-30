@@ -167,7 +167,14 @@ class StudyReviewTest {
         authors: String = faker.book.author(),
         searchSources: MutableSet<String> = mutableSetOf(faker.book.publisher())
     ) = StudyReview(
-        StudyReviewId(studyReviewId), SystematicStudyId(systematicStudyId),
-        studyType, title, year, venue, authors, abstract, searchSources = searchSources
+        StudyReviewId(studyReviewId),
+        SystematicStudyId(systematicStudyId),,
+        studyType,
+        title,
+        year,
+        venue,
+        authors,
+        abstract,
+        searchSources = searchSources
     )
 }

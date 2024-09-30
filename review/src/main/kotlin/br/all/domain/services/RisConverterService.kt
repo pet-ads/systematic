@@ -2,7 +2,6 @@ package br.all.domain.services
 
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.*
-import java.util.*
 
 class RisConverterService(private val studyReviewIdGeneratorService: IdGeneratorService) {
     fun convertToStudyReview(systematicStudyId: SystematicStudyId, ris: String): StudyReview {
@@ -13,7 +12,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
 
         return StudyReview(
             studyReviewId,
-            systematicStudyId,
+            systematicStudyId,,
             study.type,
             study.title,
             study.year,
