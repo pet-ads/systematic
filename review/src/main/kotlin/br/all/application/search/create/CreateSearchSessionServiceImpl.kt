@@ -55,7 +55,7 @@ class CreateSearchSessionServiceImpl(
         val sessionId = SearchSessionID(uuidGeneratorService.next())
         val searchSession = SearchSession.fromRequestModel(sessionId, request)
 
-        val studyReviews = bibtexConverterService.convertManyToStudyReview(request.systematicStudyId.toSystematicStudyId() , file)
+        val studyReviews = bibtexConverterService.convertManyToStudyReview(request.systematicStudyId.toSystematicStudyId(), sessionId, file)
         studyReviewRepository.saveOrUpdateBatch(studyReviews.map { it.toDto() })
 
         searchSessionRepository.create(searchSession.toDto())
