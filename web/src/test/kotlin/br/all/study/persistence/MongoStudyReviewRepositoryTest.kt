@@ -73,6 +73,15 @@ class MongoStudyReviewRepositoryTest (
         assertTrue(result.size == 1)
     }
 
+    @Test
+    fun `Should find all study reviews in a review by search session`(){
+        sut.insert(factory.reviewDocument(reviewId, idService.next(), sessionId))
+        sut.insert(factory.reviewDocument(reviewId, idService.next(), UUID.randomUUID()))
+        sut.insert(factory.reviewDocument(UUID.randomUUID(), idService.next()))
+        val result = sut.findAllById_SystematicStudyIdAndSearchSessionId(reviewId, sessionId)
+        assertTrue(result.size == 1)
+    }
+
     @Test fun `Should update study reviews selection status`(){
         val studyId = idService.next()
         val studyReview = factory.reviewDocument(reviewId, studyId)
