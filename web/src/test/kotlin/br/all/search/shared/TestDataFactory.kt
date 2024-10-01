@@ -148,14 +148,13 @@ class TestDataFactory {
 
     fun validPatchRequest(
         user: UUID = userId,
-        systematicStudyId: UUID = this.systematicStudyId
+        systematicStudyId: UUID = this.systematicStudyId,
+        searchSessionId: UUID = this.sessionId
     ) = """
         {
             "userId": "$user",
             "systematicStudyId": "$systematicStudyId",
-            "source": "${faker.lorem.words()}",
-            "searchString": "${faker.paragraph(5)}",
-            "additionalInfo": "${faker.paragraph(30)}"
+            "searchSessionId": "$searchSessionId"
         }
         """.trimIndent()
 }

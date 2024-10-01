@@ -347,8 +347,13 @@ class SearchSessionControllerTest(
 
             val sessionId = "/${searchSession.id}"
             mockMvc.perform(multipart(patchUrl(sessionId))
-                .file(factory.bibfile()).param("data", request)
+                .file(factory.bibfile())
+                .param("data", request)
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .with { request ->
+                    request.method = "PATCH"
+                    request
+                }
             )
                 .andExpect(status().isOk)
         }
