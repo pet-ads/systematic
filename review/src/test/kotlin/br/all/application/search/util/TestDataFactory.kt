@@ -91,7 +91,8 @@ class TestDataFactory {
         searchString: String = "SearchString",
         additionalInfo: String = "",
         timeStamp: LocalDateTime = LocalDateTime.now(),
-        source: String = "SearchSource"
+        source: String = "SearchSource",
+        numberOfRelatedStudies: Int = 0
     ) = SearchSessionDto(
         id,
         systematicStudyId,
@@ -99,7 +100,8 @@ class TestDataFactory {
         searchString,
         additionalInfo,
         timeStamp,
-        source
+        source,
+        numberOfRelatedStudies
     )
 
     fun generateProtocol(

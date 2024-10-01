@@ -1,5 +1,6 @@
 package br.all.application.study.update.interfaces
 
+import br.all.domain.model.search.SearchSessionID
 import io.swagger.v3.oas.annotations.media.Schema
 import java.util.*
 
@@ -10,6 +11,7 @@ interface UpdateStudyReviewService {
     data class RequestModel(
         val userId: UUID,
         val systematicStudyId: UUID,
+        val searchSessionId: UUID,
         val type: String,
         val title: String,
         val year: Int,

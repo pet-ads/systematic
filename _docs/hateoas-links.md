@@ -63,6 +63,7 @@
 |-----------------------------------|--------------------------------|
 | createStudyReview                 | create-study                   |
 | findAllStudyReviews               | find-all-studies               |
+| findAllStudyReviewsBySession      | find-all-studies-by-session    |
 | findAllStudyReviewsBySource       | find-all-studies-by-source     |
 | findStudyReview                   | find-study                     |
 | updateStudyReview                 | update-study                   |

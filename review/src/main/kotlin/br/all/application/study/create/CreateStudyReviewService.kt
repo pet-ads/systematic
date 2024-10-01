@@ -10,6 +10,7 @@ interface CreateStudyReviewService {
     data class RequestModel(
         val userId: UUID,
         val systematicStudyId: UUID,
+        val searchSessionId: UUID,
         val type: String,
         val title: String,
         val year: Int,

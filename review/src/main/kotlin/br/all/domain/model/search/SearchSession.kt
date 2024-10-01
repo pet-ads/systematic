@@ -16,7 +16,8 @@ class SearchSession(
     var searchString: String,
     var additionalInfo: String?,
     var timestamp: LocalDateTime = LocalDateTime.now(),
-    var source: SearchSource
+    var source: SearchSource,
+    var numberOfRelatedStudies: Int = 0
 ) : Entity<UUID>(searchSessionId){
     init {
         val notification = validate()

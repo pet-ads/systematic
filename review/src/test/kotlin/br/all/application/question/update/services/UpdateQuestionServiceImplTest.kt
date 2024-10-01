@@ -7,7 +7,10 @@ import br.all.application.question.update.presenter.UpdateQuestionPresenter
 import br.all.application.question.util.TestDataFactory
 import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.search.repository.SearchSessionRepository
+import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMocking
+import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.services.UuidGeneratorService
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -30,7 +33,7 @@ class UpdateQuestionServiceImplTest {
     private lateinit var repository: QuestionRepository
 
     @MockK
-    private lateinit var credentialsService: ResearcherCredentialsService
+    private lateinit var credentialsService: CredentialsService
 
     @MockK
     private lateinit var uuidGeneratorService: UuidGeneratorService
@@ -42,12 +45,12 @@ class UpdateQuestionServiceImplTest {
     private lateinit var sut: UpdateQuestionServiceImpl
 
     private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMocking
+    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
-        preconditionCheckerMocking = PreconditionCheckerMocking(
+        preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             systematicRepository,
