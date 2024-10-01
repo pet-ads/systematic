@@ -155,7 +155,7 @@ class StudyReviewController(
                 content = [Content(schema = Schema(hidden = true))]),
         ]
     )
-    fun findAllStudyReviewsBySource(
+    fun findAllStudyReviewsBySession(
         @PathVariable systematicStudy: UUID,
         @PathVariable searchSessionId: UUID,
     ): ResponseEntity<*> {
