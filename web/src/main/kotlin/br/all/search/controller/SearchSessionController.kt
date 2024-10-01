@@ -297,7 +297,6 @@ class SearchSessionController(
         @PathVariable systematicStudyId: UUID,
         @PathVariable sessionId: UUID,
         @RequestParam file: MultipartFile,
-        @RequestParam data: String
     ): ResponseEntity<*> {
         val presenter = RestfulPatchSearchSessionPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
