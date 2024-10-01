@@ -109,7 +109,7 @@ class TestDataFactory {
     fun reviewDocument(
         systematicStudyId: UUID,
         studyReviewId: Long,
-        seachSessionId: UUID = UUID.randomUUID(),
+        searchSessionId: UUID = UUID.randomUUID(),
         type: String = faker.random.nextEnum(StudyType::class.java).toString(),
         title: String = faker.book.title(),
         year: Int = faker.year(),
@@ -130,7 +130,7 @@ class TestDataFactory {
     ): StudyReviewDocument {
         val studyId = StudyReviewId(systematicStudyId, studyReviewId)
         return StudyReviewDocument(
-            studyId, seachSessionId, type, title, year,
+            studyId, searchSessionId, type, title, year,
             authors, venue, abstract, keywords, references, doi, sources,
             criteria, formAnswers, robAnswers, comments, readingPriority,
             extractionStatus, selectionStatus
