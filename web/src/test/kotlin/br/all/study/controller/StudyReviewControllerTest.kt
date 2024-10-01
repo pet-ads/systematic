@@ -48,6 +48,9 @@ class StudyReviewControllerTest(
     fun findBySourceUrl(searchSource: String = "") =
         "/api/v1/systematic-study/$systematicStudyId/search-source/${searchSource}"
 
+    fun findBySessionUrl(sessionId: String = "") =
+        "/api/v1/systematic-study/$systematicStudyId/find-by-search-session/${sessionId}"
+
     fun updateStudyUrl(studyReviewId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}"
 
@@ -293,6 +296,21 @@ class StudyReviewControllerTest(
             )
 
             mockMvc.perform(get(findBySourceUrl("ACM"))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$.size").value(1))
+        }
+
+        @Test
+        fun `should find all studies by session and return 200`() {
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId,))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), UUID.randomUUID()))
+            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), UUID.randomUUID()))
+
+            mockMvc.perform(get(findBySessionUrl(searchSessionId.toString()))
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
                 .contentType(MediaType.APPLICATION_JSON)
             )
