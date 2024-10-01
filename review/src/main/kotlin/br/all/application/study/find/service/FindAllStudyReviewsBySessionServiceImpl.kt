@@ -31,7 +31,7 @@ class FindAllStudyReviewsBySessionServiceImpl (
         presenter.prepareSuccessView(
             FindAllStudyReviewsBySessionService.ResponseModel(
                 request.userId, request.systematicStudyId,
-                request.systematicStudyId, studyReviews
+                request.searchSessionId, studyReviews
             )
         )
     }
