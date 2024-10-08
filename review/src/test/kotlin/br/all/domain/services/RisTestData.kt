@@ -236,6 +236,50 @@ object RisTestData {
         ER  - 
         """,
 
+        "multiple A1" to """TY  - JOUR
+        TI  - Sampling for Scalable Visual Analytics
+        T2  - IEEE Computer Graphics and Applications
+        SP  - 100
+        EP  - 108
+        A1  - B. C. Kwon
+        A1  - P. J. Haas
+        PY  - 2017
+        KW  - Temperature sensors
+        KW  - Data visualization
+        DO  - 10.1109/MCG.2017.6
+        JO  - IEEE Computer Graphics and Applications
+        IS  - 1
+        SN  - 1558-1756
+        VO  - 37
+        VL  - 37
+        JA  - IEEE Computer Graphics and Applications
+        Y1  - Jan.-Feb. 2017
+        AB  - Lorem Ipsum
+        ER  - 
+        """,
+
+        "T1 test" to """TY  - JOUR
+        T1  - Sampling for Scalable Visual Analytics
+        T2  - IEEE Computer Graphics and Applications
+        SP  - 100
+        EP  - 108
+        AU  - B. C. Kwon
+        AU  - P. J. Haas
+        PY  - 2017
+        KW  - Temperature sensors
+        KW  - Data visualization
+        DO  - 10.1109/MCG.2017.6
+        JO  - IEEE Computer Graphics and Applications
+        IS  - 1
+        SN  - 1558-1756
+        VO  - 37
+        VL  - 37
+        JA  - IEEE Computer Graphics and Applications
+        Y1  - Jan.-Feb. 2017
+        AB  - Lorem Ipsum
+        ER  - 
+        """,
+
         "unknown ris" to """TY  - SALAME
         TI  - Pluto: The 'Other' Red Planet
         AU  - NASA
