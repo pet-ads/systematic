@@ -63,7 +63,9 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         val venue = fieldMap["JO"] ?: ""
         val primaryTitle = getValueFromFieldMap(fieldMap, titleTypes)
         val secondaryTitle = fieldMap["T2"] ?: ""
-        val year = fieldMap["PY"]?.toIntOrNull() ?: 0
+        val year = fieldMap["PY"]?.toIntOrNull()
+            ?: fieldMap["Y1"]?.let { extractYear(it) }
+            ?: 0
         val authors = parseAuthors(fieldMap)
         val type = extractStudyType(ris)
         val abs = fieldMap["AB"] ?: ""
@@ -183,6 +185,11 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
             if (value != null) return value
         }
         return ""
+    }
+
+    private fun extractYear(y1: String): Int? {
+        val yearRegex = Regex("""\b\d{4}\b""")
+        return yearRegex.find(y1)?.value?.toIntOrNull()
     }
 
     private fun parseKeywords(keywords: String?): Set<String> {
