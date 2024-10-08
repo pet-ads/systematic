@@ -40,8 +40,8 @@ class PatchSearchSessionServiceImpl (
 
         if (searchSessionRepository.existsById(request.sessionId)) {
             val studyReviews = converterFactoryService.extractReferences(request.systematicStudyId.toSystematicStudyId(), request.sessionId.toSearchSessionID() ,file)
-            val studia = studyReviews.size
-            searchSessionDto.numberOfRelatedStudies = studia
+            val studies = studyReviews.size
+            searchSessionDto.numberOfRelatedStudies += studies
             searchSessionRepository.saveOrUpdate(searchSessionDto)
             studyReviewRepository.saveOrUpdateBatch(studyReviews.map { it.toDto() })
             presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, request.sessionId))
