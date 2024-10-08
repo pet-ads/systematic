@@ -11,5 +11,5 @@ data class SearchSessionDto(
     val additionalInfo: String?,
     val timestamp: LocalDateTime,
     val source: String,
-    val numberOfRelatedStudies: Int
+    var numberOfRelatedStudies: Int
 )
