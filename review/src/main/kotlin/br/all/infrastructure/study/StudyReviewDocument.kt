@@ -14,7 +14,7 @@ data class StudyReviewDocument (
     val year: Int,
     val authors: String,
     val venue: String,
-    val abstractText: String,
+    val abstractText: String?,
     val keywords: Set<String>,
     val references: List<String>,
     val doi: String?,
