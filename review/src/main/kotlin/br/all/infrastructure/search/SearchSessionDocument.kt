@@ -14,5 +14,6 @@ data class SearchSessionDocument(
     val searchString: String,
     val additionalInfo: String?,
     val timestamp: LocalDateTime,
-    val source: String
+    val source: String,
+    val numberOfRelatedStudies: Int
 )

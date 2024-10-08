@@ -1,11 +1,11 @@
 package br.all.domain.services
 
 import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.study.*
-import java.util.*
 
 class RisConverterService(private val studyReviewIdGeneratorService: IdGeneratorService) {
-    fun convertToStudyReview(systematicStudyId: SystematicStudyId, ris: String): StudyReview {
+    fun convertToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, ris: String): StudyReview {
         require(ris.isNotBlank()) { "convertToStudyReview: RIS must not be blank." }
 
         val studyReviewId = StudyReviewId(studyReviewIdGeneratorService.next())
@@ -14,6 +14,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         return StudyReview(
             studyReviewId,
             systematicStudyId,
+            searchSessionId,
             study.type,
             study.title,
             study.year,
@@ -34,10 +35,10 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         )
     }
 
-    fun convertManyToStudyReview(systematicStudyId: SystematicStudyId, ris: String): List<StudyReview> {
+    fun convertManyToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, ris: String): List<StudyReview> {
         require(ris.isNotBlank()) { "convertManyToStudyReview: RIS must not be blank." }
         val studies = convertMany(ris)
-        return studies.map { convertToStudyReview(systematicStudyId, ris) }
+        return studies.map { convertToStudyReview(systematicStudyId, searchSessionId, ris) }
     }
 
     fun convertMany(ris: String): List<Study> {

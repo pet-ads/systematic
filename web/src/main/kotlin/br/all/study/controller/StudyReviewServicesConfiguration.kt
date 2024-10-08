@@ -6,9 +6,7 @@ import br.all.application.study.create.CreateStudyReviewServiceImpl
 import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresenter
 import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
 import br.all.application.study.find.presenter.FindStudyReviewPresenter
-import br.all.application.study.find.service.FindAllStudyReviewsBySourceServiceImpl
-import br.all.application.study.find.service.FindAllStudyReviewsServiceImpl
-import br.all.application.study.find.service.FindStudyReviewServiceImpl
+import br.all.application.study.find.service.*
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.update.implementation.*
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresenter
@@ -60,6 +58,14 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
+    @Bean
+    fun findAllReviewBySessionService(
+        systematicStudyRepository: SystematicStudyRepository,
+        studyReviewRepository: StudyReviewRepository,
+        credentialsService: CredentialsService
+    ) = FindAllStudyReviewsBySessionServiceImpl(
+        systematicStudyRepository, studyReviewRepository, credentialsService
+    )
     @Bean
     fun findReviewService(
         systematicStudyRepository: SystematicStudyRepository,

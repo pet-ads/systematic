@@ -4,6 +4,7 @@ import br.all.application.study.create.CreateStudyReviewService
 import java.util.*
 
 data class PostStudyReviewRequest(
+    val searchSessionId: UUID,
     val type: String,
     val title: String,
     val year: Int,
@@ -16,6 +17,7 @@ data class PostStudyReviewRequest(
     fun toRequestModel(userId: UUID, systematicStudyId: UUID) = CreateStudyReviewService.RequestModel(
         userId,
         systematicStudyId,
+        searchSessionId,
         type,
         title,
         year,

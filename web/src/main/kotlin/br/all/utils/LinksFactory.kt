@@ -168,6 +168,7 @@ class LinksFactory {
         createStudyReview(
             systematicStudyId,
             PostStudyReviewRequest(
+                searchSessionId = UUID.randomUUID(),
                 type = "",
                 title = "",
                 year = 2024,
@@ -191,6 +192,10 @@ class LinksFactory {
     fun findAllStudiesBySource(systematicStudyId: UUID, source: String): Link = linkTo<StudyReviewController> {
         findAllStudyReviewsBySource(systematicStudyId, source)
     }.withRel("find-all-studies-by-source").withType("GET")
+
+    fun findAllStudiesBySession(systematicStudyId: UUID, searchSessionId: UUID): Link = linkTo<StudyReviewController> {
+        findAllStudyReviewsBySession(systematicStudyId, searchSessionId)
+    }.withRel("find-all-studies-by-session").withType("GET")
 
     fun updateStudySelectionStatus(systematicStudyId: UUID, studyId: Long): Link = linkTo<StudyReviewController> {
         updateStudyReviewSelectionStatus(

@@ -9,7 +9,8 @@ fun SearchSessionDto.toDocument() = SearchSessionDocument(
     searchString,
     additionalInfo,
     timestamp,
-    source
+    source,
+    numberOfRelatedStudies
 )
 
 fun SearchSessionDocument.toDto() = SearchSessionDto(
@@ -19,5 +20,6 @@ fun SearchSessionDocument.toDto() = SearchSessionDto(
     searchString,
     additionalInfo,
     timestamp,
-    source
+    source,
+    numberOfRelatedStudies
 )

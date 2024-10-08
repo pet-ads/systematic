@@ -3,10 +3,12 @@ package br.all.domain.model.study
 import br.all.domain.model.protocol.Criterion
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.search.SearchSessionID
 
 class StudyReview(
     studyId: StudyReviewId,
     val systematicStudyId: SystematicStudyId,
+    val searchSessionId: SearchSessionID,
     val studyType: StudyType,
     val title: String,
     val year: Int,

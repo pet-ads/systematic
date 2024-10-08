@@ -39,6 +39,7 @@ class StudyReviewControllerTest(
     private lateinit var user: ApplicationUser
 
     private lateinit var systematicStudyId: UUID
+    private lateinit var searchSessionId: UUID
 
     fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/study-review"
     fun findUrl(studyId: String = "") =
@@ -46,6 +47,9 @@ class StudyReviewControllerTest(
 
     fun findBySourceUrl(searchSource: String = "") =
         "/api/v1/systematic-study/$systematicStudyId/search-source/${searchSource}"
+
+    fun findBySessionUrl(sessionId: String = "") =
+        "/api/v1/systematic-study/$systematicStudyId/find-by-search-session/${sessionId}"
 
     fun updateStudyUrl(studyReviewId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}"
@@ -66,6 +70,7 @@ class StudyReviewControllerTest(
 
         factory = TestDataFactory()
         systematicStudyId = factory.systematicStudyId
+        searchSessionId = factory.searchSessionId
 
         user = testHelperService.createApplicationUser()
 
@@ -248,9 +253,9 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should find all studies and return 200`() {
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), "study"))
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), "study"))
-            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), "study"))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId, "study"))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId, "study"))
+            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), searchSessionId, "study"))
 
             mockMvc.perform(get(findUrl())
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
@@ -278,19 +283,34 @@ class StudyReviewControllerTest(
         fun `should find all studies by source and return 200`() {
             repository.insert(
                 factory.reviewDocument(
-                    systematicStudyId, idService.next(), "study",
+                    systematicStudyId, idService.next(), searchSessionId, "study",
                     sources = setOf("ACM")
                 )
             )
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), "study"))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId, "study"))
             repository.insert(
                 factory.reviewDocument(
-                    UUID.randomUUID(), idService.next(), "study",
+                    UUID.randomUUID(), idService.next(), searchSessionId, "study",
                     sources = setOf("ACM")
                 )
             )
 
             mockMvc.perform(get(findBySourceUrl("ACM"))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$.size").value(1))
+        }
+
+        @Test
+        fun `should find all studies by session and return 200`() {
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId,))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), UUID.randomUUID()))
+            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), UUID.randomUUID()))
+
+            mockMvc.perform(get(findBySessionUrl(searchSessionId.toString()))
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
                 .contentType(MediaType.APPLICATION_JSON)
             )

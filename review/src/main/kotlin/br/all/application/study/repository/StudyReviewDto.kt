@@ -5,6 +5,7 @@ import java.util.*
 data class StudyReviewDto(
     val studyReviewId: Long,
     val systematicStudyId: UUID,
+    val searchSessionId: UUID,
     val studyType: String,
     val title: String,
     val year: Int,

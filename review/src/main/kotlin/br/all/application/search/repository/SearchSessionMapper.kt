@@ -13,7 +13,8 @@ fun SearchSession.toDto() = SearchSessionDto(
     searchString,
     additionalInfo,
     timestamp,
-    source.toString()
+    source.toString(),
+    numberOfRelatedStudies
 )
 
 fun SearchSession.Companion.fromRequestModel(id: SearchSessionID, request: RequestModel) = SearchSession(
@@ -32,5 +33,6 @@ fun SearchSession.Companion.fromDto(dto: SearchSessionDto) = SearchSession(
     dto.searchString,
     dto.additionalInfo,
     dto.timestamp,
-    SearchSource(dto.source)
+    SearchSource(dto.source),
+    dto.numberOfRelatedStudies
 )
