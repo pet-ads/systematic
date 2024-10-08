@@ -14,7 +14,7 @@ class StudyReview(
     val year: Int,
     val authors: String,
     val venue: String,
-    val abstract: String?,
+    val abstract: String? = null,
     val doi: Doi? = null,
     keywords: Set<String> = mutableSetOf(),
     searchSources: MutableSet<String>,
