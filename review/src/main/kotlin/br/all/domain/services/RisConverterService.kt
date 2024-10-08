@@ -5,6 +5,8 @@ import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.study.*
 
 class RisConverterService(private val studyReviewIdGeneratorService: IdGeneratorService) {
+
+    private val titleTypes = listOf("TI", "T1")
     fun convertToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, ris: String): StudyReview {
         require(ris.isNotBlank()) { "convertToStudyReview: RIS must not be blank." }
 
@@ -59,7 +61,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
 
         val fieldMap = parseRisFields(ris) // coloca o RIS em um FieldMap
         val venue = fieldMap["JO"] ?: ""
-        val primaryTitle = fieldMap["TI"] ?: ""
+        val primaryTitle = getValueFromFieldMap(fieldMap, titleTypes)
         val secondaryTitle = fieldMap["T2"] ?: ""
         val year = fieldMap["PY"]?.toIntOrNull() ?: 0
         val authors = parseAuthors(fieldMap)
@@ -84,7 +86,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
                 if (keyValuePair.size == 2) {
                     currentKey = keyValuePair[0].trim()
                     val value = keyValuePair[1].trim()
-                    if (currentKey == "AU") {
+                    if (currentKey == "AU" || currentKey == "A1") {
                         fieldMap[currentKey] = fieldMap.getOrDefault(currentKey, "") + value + "; "
                     } else if (currentKey == "KW"){
                         fieldMap[currentKey] = fieldMap.getOrDefault(currentKey, "") + value + "; "
@@ -175,6 +177,14 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         return st;
     }
 
+    private fun getValueFromFieldMap(fieldMap: Map<String, String>, keys: List<String>): String {
+        for (key in keys) {
+            val value = fieldMap[key]
+            if (value != null) return value
+        }
+        return ""
+    }
+
     private fun parseKeywords(keywords: String?): Set<String> {
         return keywords?.split(";")?.map { it.trim() }?.filter { it.isNotBlank() }?.toSet()?: emptySet()
     }
@@ -183,12 +193,15 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         return references?.split(";")?.map { it.trim() }?.filter { it.isNotBlank() }?.toList()?: emptyList()
     }
 
-    fun parseAuthors(fieldMap: Map<String, String>): String {
-        val auEntries = fieldMap["AU"]?.split(";")?.map { it.trim() }?.filter { it.isNotBlank() }
-        return auEntries?.joinToString(", ") ?: ""
+    private fun parseAuthors(fieldMap: Map<String, String>): String {
+        val authorKeys = listOf("AU", "A1")
+        val authors = authorKeys.flatMap { key ->
+            fieldMap[key]?.split(";")?.map { it.trim() }?.filter { it.isNotBlank() } ?: emptyList()
+        }
+        return authors.joinToString(", ")
     }
 
-    fun treatAbstract(abstract: String): String {
+    private fun treatAbstract(abstract: String): String {
         val AB = abstract.split("ER").first().trim()
         return AB
     }
