@@ -69,6 +69,13 @@ class RisConverterServiceTest {
         }
 
         @Test
+        fun `should return correct publication year from Y1 key`() {
+            val ris = testInput["Y1 test"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            assertEquals(studyReview.year, 2017)
+        }
+
+        @Test
         fun `should return correct list of authors`() {
             val ris = testInput["valid RIS entrie"]!!
             val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
