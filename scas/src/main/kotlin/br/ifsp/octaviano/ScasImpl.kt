@@ -2,6 +2,7 @@ package br.ifsp.octaviano
 
 import br.all.domain.services.SelectionStatusSuggestionService
 import br.all.domain.services.SelectionStatusSuggestionService.*
+import java.math.RoundingMode
 
 class ScasImpl : SelectionStatusSuggestionService {
     private enum class HazyValues {
@@ -29,6 +30,7 @@ class ScasImpl : SelectionStatusSuggestionService {
         calculateCitationCoefficients(studiesInfo, mostRecentYear)
         normalizeScores(studiesInfo)
         normalizeCitationCoefficients(studiesInfo)
+
         classifyNormalizedScores(studiesInfo)
         classifyNormalizedCitationCoefficients(studiesInfo)
         val studySuggestions = suggestStudiesClassification(studiesInfo)
@@ -54,60 +56,72 @@ class ScasImpl : SelectionStatusSuggestionService {
     ) {
         studiesInfo.forEach {
             it.studyReviewCitationCoefficient =
-                (1 + it.studyReviewCitations) * (1 - index * (mostRecentYear - it.studyReviewYear))
+                ((1 + it.studyReviewCitations) * (1 - index * (mostRecentYear - it.studyReviewYear))).toBigDecimal().setScale(2, RoundingMode.HALF_EVEN).toDouble()
         }
     }
 
     private fun normalizeScores(studiesInfo: List<StudyInfo>) {
         val scores = studiesInfo.map { it.studyReviewScore }
-        val max = scores.max()
-        studiesInfo.forEach { it.studyReviewNormalizedScore = it.studyReviewScore.toDouble() / max }
+        val max = scores.max().toDouble()
+        studiesInfo.forEach { it.studyReviewNormalizedScore = (it.studyReviewScore / max).toBigDecimal().setScale(2, RoundingMode.HALF_EVEN).toDouble()
+        }
     }
 
     private fun normalizeCitationCoefficients(studiesInfo: List<StudyInfo>) {
-        val citationCoefficients = studiesInfo.map { it.studyReviewCitationCoefficient!! }
+        val citationCoefficients = studiesInfo.mapNotNull { it.studyReviewCitationCoefficient }
         val max = citationCoefficients.max()
         studiesInfo.forEach {
-            it.studyReviewNormalizedCitationCoefficient = it.studyReviewCitationCoefficient?.div(max)
+            it.studyReviewNormalizedCitationCoefficient = (it.studyReviewCitationCoefficient?.div(max))?.toBigDecimal()?.setScale(2, RoundingMode.HALF_EVEN)?.toDouble()
         }
     }
 
     private fun classifyNormalizedScores(studiesInfo: List<StudyInfo>) {
         studiesInfo.forEach {
-            it.studyScoreClassification = when (it.studyReviewNormalizedScore!!) {
-                in 0.0..0.14 -> HazyValues.LOW
-                in 0.15..0.45 -> HazyValues.MEDIUM
-                else -> HazyValues.HIGH
+            it.studyReviewNormalizedScore?.let { studyReviewNormalizedScore -> run {
+                it.studyScoreClassification = when {
+                    studyReviewNormalizedScore >= 0.46 -> HazyValues.HIGH
+                    studyReviewNormalizedScore >= 0.13 -> HazyValues.MEDIUM
+                    else -> HazyValues.LOW
+                }
             }
-        }
+        }}
     }
 
     private fun classifyNormalizedCitationCoefficients(studiesInfo: List<StudyInfo>) {
         studiesInfo.forEach {
-            it.studyCitationCoefficientClassification = when (it.studyReviewNormalizedCitationCoefficient!!) {
-                in 0.0..0.1 -> HazyValues.LOW
-                in 0.11..0.19 -> HazyValues.MEDIUM
-                else -> HazyValues.HIGH
+            it.studyReviewNormalizedCitationCoefficient?.let { studyReviewNormalizedCitationCoefficient -> run {
+                it.studyCitationCoefficientClassification = when {
+                    studyReviewNormalizedCitationCoefficient >= 0.395 -> HazyValues.HIGH
+                    studyReviewNormalizedCitationCoefficient >= 0.12 -> HazyValues.MEDIUM
+                    else -> HazyValues.LOW
+                }
             }
-        }
+        }}
     }
 
     private fun suggestStudiesClassification(studiesInfo: List<StudyInfo>): List<StudyStatusSuggestion> {
         studiesInfo.forEach {
             it.studyReviewSuggestion = when {
-                it.studyScoreClassification == HazyValues.HIGH
-                        && it.studyCitationCoefficientClassification == HazyValues.HIGH
-                        || it.studyCitationCoefficientClassification == HazyValues.MEDIUM
+                (it.studyScoreClassification == HazyValues.HIGH
+                        && (it.studyCitationCoefficientClassification == HazyValues.HIGH
+                            || it.studyCitationCoefficientClassification == HazyValues.MEDIUM)
+                ) || (it.studyScoreClassification == HazyValues.MEDIUM
+                        && it.studyCitationCoefficientClassification == HazyValues.HIGH)
                 -> "Automatic inclusion"
 
                 it.studyScoreClassification == HazyValues.LOW
-                        && it.studyCitationCoefficientClassification == HazyValues.MEDIUM
-                        || it.studyCitationCoefficientClassification == HazyValues.LOW
+                        && (it.studyCitationCoefficientClassification == HazyValues.MEDIUM
+                            || it.studyCitationCoefficientClassification == HazyValues.LOW)
                 -> "Automatic exclusion"
 
                 else -> "Manual review"
             }
         }
-        return studiesInfo.map { StudyStatusSuggestion(it.studyReviewId, it.studyReviewSuggestion!!) }
+
+        return studiesInfo.mapNotNull { it.studyReviewSuggestion?.let { studyReviewSuggestion ->
+            StudyStatusSuggestion(it.studyReviewId,
+                studyReviewSuggestion
+            )
+        } }
     }
 }
