@@ -65,10 +65,14 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
         val year = fieldMap["year"]?.toIntOrNull() ?: 0
         val authors = getValueFromFieldMap(fieldMap, authorTypes)
         val venue = getValueFromFieldMap(fieldMap, venueTypes)
-        val abstract = fieldMap["abstract"] ?: ""
+        val abstract = fieldMap["abstract"] ?: " "
         val keywords = parseKeywords(fieldMap["keywords"])
         val references = parseReferences(fieldMap["references"])
-        val doi = fieldMap["doi"]?.let { Doi("https://doi.org/$it") }
+        val doi = fieldMap["doi"]?.let {
+            val cleanDoi = it.replace(Regex("}"), "")
+            Doi("https://doi.org/$cleanDoi")
+        }
+
 
         val type = extractStudyType(bibtexEntry)
 
