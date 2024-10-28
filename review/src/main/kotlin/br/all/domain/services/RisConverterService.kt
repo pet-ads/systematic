@@ -7,12 +7,8 @@ import br.all.domain.model.study.*
 class RisConverterService(private val studyReviewIdGeneratorService: IdGeneratorService) {
 
     private val titleTypes = listOf("TI", "T1")
-    fun convertToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, ris: String): StudyReview {
-        require(ris.isNotBlank()) { "convertToStudyReview: RIS must not be blank." }
-
+    fun convertToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, study: Study): StudyReview {
         val studyReviewId = StudyReviewId(studyReviewIdGeneratorService.next())
-
-        val study = convert(ris)
 
         return StudyReview(
             studyReviewId,
@@ -41,7 +37,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
     fun convertManyToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, ris: String): List<StudyReview> {
         require(ris.isNotBlank()) { "convertManyToStudyReview: RIS must not be blank." }
         val studies = convertMany(ris)
-        return studies.map { convertToStudyReview(systematicStudyId, searchSessionId, ris) }
+        return studies.map { study -> convertToStudyReview(systematicStudyId, searchSessionId, study) }
     }
 
     fun convertMany(ris: String): List<Study> {
@@ -57,7 +53,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
     }
 
 
-    private fun convert(ris: String): Study {
+    fun convert(ris: String): Study {
         require(ris.isNotBlank()) { "convert: RIS must not be blank." }
 
         val fieldMap = parseRisFields(ris) // coloca o RIS em um FieldMap
