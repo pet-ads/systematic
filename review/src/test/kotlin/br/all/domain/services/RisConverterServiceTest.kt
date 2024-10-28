@@ -15,7 +15,6 @@ class RisConverterServiceTest {
 
     @BeforeEach
     fun setup() {
-        val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         idGeneratorService = FakeIdGeneratorService
         sut = RisConverterService(idGeneratorService)
     }
@@ -25,26 +24,43 @@ class RisConverterServiceTest {
         val fake = idGeneratorService as FakeIdGeneratorService
         fake.reset()
     }
+
     @Nested
-    inner class IndividualTests() {
-        @Test fun `Should create a StudyReview list from multiple ris entries`() {
-            val ris = testInput["multiple RIS entries"]!!
-            val studyReviewList = sut.convertManyToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
-            assertEquals(studyReviewList.size, 3)
+    inner class IndividualTests {
+        @Test
+        fun `Should create a StudyReview list from multiple ris entries`() {
+            val ris = testInput["error ris"]!!
+            val studyReviewList = sut.convertManyToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                ris
+            )
+            println(studyReviewList)
+            assertEquals(studyReviewList.size, 10)
         }
 
         @Test
         fun `Should return correct study type`() {
             val ris = testInput["valid RIS entrie"]!!
             val art = StudyType.valueOf("ARTICLE")
-            val study = sut.extractStudyType(ris)
-            assertEquals(art, study)
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
+            assertEquals(art, studyReview.studyType)
         }
 
         @Test
         fun `should return correct title`() {
             val ris = testInput["valid RIS entrie"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
             assertEquals(
                 studyReview.title,
                 "Sampling for Scalable Visual Analytics IEEE Computer Graphics and Applications"
@@ -54,7 +70,12 @@ class RisConverterServiceTest {
         @Test
         fun `should return correct title from T1 key`() {
             val ris = testInput["T1 test"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
             assertEquals(
                 studyReview.title,
                 "Sampling for Scalable Visual Analytics IEEE Computer Graphics and Applications"
@@ -64,49 +85,84 @@ class RisConverterServiceTest {
         @Test
         fun `should return correct publication year`() {
             val ris = testInput["valid RIS entrie"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
             assertEquals(studyReview.year, 2017)
         }
 
         @Test
         fun `should return correct publication year from Y1 key`() {
             val ris = testInput["Y1 test"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
             assertEquals(studyReview.year, 2017)
         }
 
         @Test
         fun `should return correct list of authors`() {
             val ris = testInput["valid RIS entrie"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
             assertEquals("B. C. Kwon, P. J. Haas", studyReview.authors)
         }
 
         @Test
         fun `should return correct list of authors from A1 keys`() {
             val ris = testInput["multiple A1"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
             assertEquals("B. C. Kwon, P. J. Haas", studyReview.authors)
         }
 
         @Test
         fun `should return the correct venue`() {
             val ris = testInput["valid RIS entrie"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
             assertEquals("IEEE Computer Graphics and Applications", studyReview.venue)
         }
 
         @Test
         fun `should return the correct abstract`() {
             val ris = testInput["valid RIS entrie"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
             assertEquals("Lorem Ipsum", studyReview.abstract)
         }
 
         @Test
         fun `should return the correct keywords`() {
             val ris = testInput["valid RIS entrie"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
             assertAll(
                 { assertTrue("Temperature sensors" in studyReview.keywords) },
                 { assertTrue("Data visualization" in studyReview.keywords) }
@@ -116,26 +172,40 @@ class RisConverterServiceTest {
         @Test
         fun `should return correct doi`() {
             val ris = testInput["valid RIS entrie"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
             val expectedDoi = "https://doi.org/10.1109/MCG.2017.6"
             assertEquals(expectedDoi, studyReview.doi?.value)
         }
-}
+    }
 
     @Nested
-    inner class ValidClasses() {
+    inner class ValidClasses {
 
-        @Test fun `Should create a StudyReview list from multiple RIS entries as input`() {
+        @Test
+        fun `Should create a StudyReview list from multiple RIS entries as input`() {
             val ris = testInput["multiple RIS entries"]!!
-            val studyReviewList = sut.convertManyToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            val studyReviewList = sut.convertManyToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                ris
+            )
             assertEquals(3, studyReviewList.size)
         }
-
 
         @Test
         fun `should create article from valid input`() {
             val ris = testInput["valid RIS entrie"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
             assertAll(
                 { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.ARTICLE, studyReview.studyType) },
@@ -167,7 +237,12 @@ class RisConverterServiceTest {
         @Test
         fun `should create inproceedings from valid input`() {
             val ris = testInput["valid inproceedings"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
             assertAll(
                 { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.INPROCEEDINGS, studyReview.studyType) },
@@ -193,8 +268,13 @@ class RisConverterServiceTest {
 
         @Test
         fun `should create techreport from valid input`() {
-            val bibtex = testInput["valid techreport"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
+            val ris = testInput["valid techreport"]!!
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
             val expected = "Uma abordagem apoiada por linguagens específicas de domínio " +
                     "para a criação de linhas de produto de software embarcado"
 
@@ -219,8 +299,13 @@ class RisConverterServiceTest {
 
         @Test
         fun `should create book from valid input`() {
-            val bibtex = testInput["valid book"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
+            val ris = testInput["valid book"]!!
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
 
             assertAll(
                 { assertEquals("1", studyReview.id.toString()) },
@@ -243,8 +328,13 @@ class RisConverterServiceTest {
 
         @Test
         fun `should create proceedings from valid input`() {
-            val bibtex = testInput["valid proceedings"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
+            val ris = testInput["valid proceedings"]!!
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
 
             val expected = "Proceedings of the 17th International Conference on Computation " +
                     "and Natural Computation, Fontainebleau, France"
@@ -270,8 +360,13 @@ class RisConverterServiceTest {
 
         @Test
         fun `should create phdthesis from valid input`() {
-            val bibtex = testInput["valid masterthesis"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
+            val ris = testInput["valid masterthesis"]!!
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
 
             assertAll(
                 { assertEquals("1", studyReview.id.toString()) },
@@ -294,8 +389,13 @@ class RisConverterServiceTest {
 
         @Test
         fun `should create inbook from valid input`() {
-            val bibtex = testInput["valid inbook"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
+            val ris = testInput["valid inbook"]!!
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
 
             assertAll(
                 { assertEquals("1", studyReview.id.toString()) },
@@ -318,8 +418,13 @@ class RisConverterServiceTest {
 
         @Test
         fun `should create booklet from valid input`() {
-            val bibtex = testInput["valid booklet"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
+            val ris = testInput["valid booklet"]!!
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
 
             assertAll(
                 { assertEquals("1", studyReview.id.toString()) },
@@ -342,8 +447,13 @@ class RisConverterServiceTest {
 
         @Test
         fun `should create misc from valid input`() {
-            val bibtex = testInput["valid misc"]!!
-            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex)
+            val ris = testInput["valid misc"]!!
+            val study = sut.convert(ris)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study
+            )
 
             assertAll(
                 { assertEquals("1", studyReview.id.toString()) },
@@ -366,18 +476,27 @@ class RisConverterServiceTest {
     }
 
     @Nested
-    inner class InvalidClasses() {
+    inner class InvalidClasses {
         @Test
         fun `convertManyToStudyReview should not accept a blank ris entry as input`() {
             assertThrows<IllegalArgumentException> {
-                sut.convertManyToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), "")
+                sut.convertManyToStudyReview(
+                    SystematicStudyId(UUID.randomUUID()),
+                    SearchSessionID(UUID.randomUUID()),
+                    ""
+                )
             }
         }
 
         @Test
         fun `convertToStudyReview should not accept a blank ris entry as input`() {
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), "")
+                val study = sut.convert("")
+                sut.convertToStudyReview(
+                    SystematicStudyId(UUID.randomUUID()),
+                    SearchSessionID(UUID.randomUUID()),
+                    study
+                )
             }
         }
 
@@ -385,14 +504,25 @@ class RisConverterServiceTest {
         fun `should throw IllegalArgumentException for unknown type entry`() {
             val ris = testInput["unknown ris"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+                val study = sut.convert(ris)
+                sut.convertToStudyReview(
+                    SystematicStudyId(UUID.randomUUID()),
+                    SearchSessionID(UUID.randomUUID()),
+                    study
+                )
             }
         }
+
         @Test
         fun `should throw IllegalArgumentException for invalid title entry`() {
             val ris = testInput["invalid title"].toString()
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+                val study = sut.convert(ris)
+                sut.convertToStudyReview(
+                    SystematicStudyId(UUID.randomUUID()),
+                    SearchSessionID(UUID.randomUUID()),
+                    study
+                )
             }
         }
 
@@ -400,7 +530,12 @@ class RisConverterServiceTest {
         fun `should throw IllegalArgumentException for invalid author entry`() {
             val ris = testInput["invalid authors"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+                val study = sut.convert(ris)
+                sut.convertToStudyReview(
+                    SystematicStudyId(UUID.randomUUID()),
+                    SearchSessionID(UUID.randomUUID()),
+                    study
+                )
             }
         }
 
@@ -408,7 +543,12 @@ class RisConverterServiceTest {
         fun `should throw IllegalArgumentException for invalid year entry`() {
             val ris = testInput["invalid year"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+                val study = sut.convert(ris)
+                sut.convertToStudyReview(
+                    SystematicStudyId(UUID.randomUUID()),
+                    SearchSessionID(UUID.randomUUID()),
+                    study
+                )
             }
         }
 
@@ -416,7 +556,12 @@ class RisConverterServiceTest {
         fun `should throw IllegalArgumentException for invalid venue entry`() {
             val ris = testInput["invalid venue"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+                val study = sut.convert(ris)
+                sut.convertToStudyReview(
+                    SystematicStudyId(UUID.randomUUID()),
+                    SearchSessionID(UUID.randomUUID()),
+                    study
+                )
             }
         }
 
@@ -424,7 +569,12 @@ class RisConverterServiceTest {
         fun `should throw IllegalArgumentException for invalid abstract entry`() {
             val ris = testInput["invalid abstract"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+                val study = sut.convert(ris)
+                sut.convertToStudyReview(
+                    SystematicStudyId(UUID.randomUUID()),
+                    SearchSessionID(UUID.randomUUID()),
+                    study
+                )
             }
         }
 
@@ -432,9 +582,13 @@ class RisConverterServiceTest {
         fun `should throw IllegalArgumentException for invalid doi`() {
             val ris = testInput["invalid doi"]!!
             assertThrows<IllegalArgumentException> {
-                sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+                val study = sut.convert(ris)
+                sut.convertToStudyReview(
+                    SystematicStudyId(UUID.randomUUID()),
+                    SearchSessionID(UUID.randomUUID()),
+                    study
+                )
             }
         }
     }
-
 }
