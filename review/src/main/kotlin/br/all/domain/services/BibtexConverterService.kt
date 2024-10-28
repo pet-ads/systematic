@@ -14,14 +14,11 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     fun convertManyToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, bibtex: String): List<StudyReview> {
         require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
         val studies = convertMany(bibtex)
-        return studies.map { convertToStudyReview(systematicStudyId, searchSessionId, bibtex) }
+        return studies.map { study -> convertToStudyReview(systematicStudyId, searchSessionId, study) }
     }
 
-    fun convertToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, bibtex: String): StudyReview {
-        require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
-
+    fun convertToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, study: Study): StudyReview {
         val studyReviewId = StudyReviewId(studyReviewIdGeneratorService.next())
-        val study = convert(bibtex)
 
         return StudyReview(
             studyReviewId,
@@ -56,7 +53,7 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
             .toList()
     }
 
-    private fun convert(bibtexEntry: String): Study {
+    fun convert(bibtexEntry: String): Study {
         require(bibtexEntry.isNotBlank()) { "BibTeX entry must not be blank." }
 
         val fieldMap = parseBibtexFields(bibtexEntry)
@@ -72,7 +69,6 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
             val cleanDoi = it.replace(Regex("}"), "")
             Doi("https://doi.org/$cleanDoi")
         }
-
 
         val type = extractStudyType(bibtexEntry)
 
