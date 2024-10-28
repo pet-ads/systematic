@@ -16,3 +16,5 @@ value class SearchSessionID(val value: UUID) : Identifier <UUID>{
     override fun value(): UUID = value
     override fun toString(): String = value.toString()
 }
+
+fun UUID.toSearchSessionID() = SearchSessionID(this)

@@ -9,7 +9,7 @@ data class Study(
     val year: Int,
     val authors: String,
     val venue: String,
-    val abstract: String,
+    val abstract: String?,
     val keywords: Set<String>,
     val references: List<String>,
     val doi: Doi?

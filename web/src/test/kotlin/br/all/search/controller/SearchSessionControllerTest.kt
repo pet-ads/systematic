@@ -44,6 +44,7 @@ class SearchSessionControllerTest(
 
 
     fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/search-session"
+    fun patchUrl(sessionId: String = "") = "/api/v1/systematic-study/$systematicStudyId/patch-search-session${sessionId}"
     fun findUrl(sessionId: String = "") =
         "/api/v1/systematic-study/$systematicStudyId/search-session${sessionId}"
 
@@ -334,5 +335,29 @@ class SearchSessionControllerTest(
             )
         }
     }
+
+    @Nested
+    @DisplayName("When patching search session")
+    inner class WhenPatchingSearchSession {
+        @Test
+        fun `should patch the search session and return 200`() {
+            val request = factory.validPatchRequest()
+            val searchSession = factory.searchSessionDocument(factory.sessionId, systematicStudyId)
+            repository.insert(searchSession)
+
+            val sessionId = "/${searchSession.id}"
+            mockMvc.perform(multipart(patchUrl(sessionId))
+                .file(factory.bibfile())
+                .param("data", request)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .with { request ->
+                    request.method = "PATCH"
+                    request
+                }
+            )
+                .andExpect(status().isOk)
+        }
+    }
+
 }
 

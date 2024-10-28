@@ -52,6 +52,16 @@ class RisConverterServiceTest {
         }
 
         @Test
+        fun `should return correct title from T1 key`() {
+            val ris = testInput["T1 test"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            assertEquals(
+                studyReview.title,
+                "Sampling for Scalable Visual Analytics IEEE Computer Graphics and Applications"
+            )
+        }
+
+        @Test
         fun `should return correct publication year`() {
             val ris = testInput["valid RIS entrie"]!!
             val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
@@ -59,8 +69,22 @@ class RisConverterServiceTest {
         }
 
         @Test
+        fun `should return correct publication year from Y1 key`() {
+            val ris = testInput["Y1 test"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            assertEquals(studyReview.year, 2017)
+        }
+
+        @Test
         fun `should return correct list of authors`() {
             val ris = testInput["valid RIS entrie"]!!
+            val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
+            assertEquals("B. C. Kwon, P. J. Haas", studyReview.authors)
+        }
+
+        @Test
+        fun `should return correct list of authors from A1 keys`() {
+            val ris = testInput["multiple A1"]!!
             val studyReview = sut.convertToStudyReview(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), ris)
             assertEquals("B. C. Kwon, P. J. Haas", studyReview.authors)
         }

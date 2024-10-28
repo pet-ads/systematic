@@ -19,6 +19,7 @@ import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.services.BibtexConverterService
+import br.all.domain.services.ConverterFactoryService
 import br.all.domain.services.UuidGeneratorService
 
 class CreateSearchSessionServiceImpl(
@@ -26,7 +27,7 @@ class CreateSearchSessionServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val protocolRepository: ProtocolRepository,
     private val uuidGeneratorService: UuidGeneratorService,
-    private val bibtexConverterService: BibtexConverterService,
+    private val converterFactoryService: ConverterFactoryService,
     private val studyReviewRepository: StudyReviewRepository,
     private val credentialsService: CredentialsService,
 ) : CreateSearchSessionService {
@@ -55,7 +56,7 @@ class CreateSearchSessionServiceImpl(
         val sessionId = SearchSessionID(uuidGeneratorService.next())
         val searchSession = SearchSession.fromRequestModel(sessionId, request)
 
-        val studyReviews = bibtexConverterService.convertManyToStudyReview(request.systematicStudyId.toSystematicStudyId(), sessionId, file)
+        val studyReviews = converterFactoryService.extractReferences(request.systematicStudyId.toSystematicStudyId(), sessionId, file)
         studyReviewRepository.saveOrUpdateBatch(studyReviews.map { it.toDto() })
 
         val numberOfRelatedStudies = studyReviews.size
