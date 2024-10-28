@@ -11,6 +11,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         require(ris.isNotBlank()) { "convertToStudyReview: RIS must not be blank." }
 
         val studyReviewId = StudyReviewId(studyReviewIdGeneratorService.next())
+
         val study = convert(ris)
 
         return StudyReview(
