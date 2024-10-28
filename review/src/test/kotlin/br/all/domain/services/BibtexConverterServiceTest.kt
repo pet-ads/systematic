@@ -31,14 +31,13 @@ class BibtexConverterServiceTest {
 
         @Test
         fun `Should create a StudyReview list from multiple bibtex entries as input`() {
-            val bibtex = testInputs["not working"]!!
+            val bibtex = testInputs["multiple bibtex entries"]!!
             val studyReviewList = sut.convertManyToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
                 bibtex
             )
-            println(studyReviewList)
-            assertEquals(10, studyReviewList.size)
+            assertEquals(7, studyReviewList.size)
         }
 
         @Test
