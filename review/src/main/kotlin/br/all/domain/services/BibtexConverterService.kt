@@ -11,10 +11,17 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     private val venueTypes = listOf("journal", "booktitle", "institution",
         "organization", "publisher", "series", "school", "howpublished")
 
-    fun convertManyToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, bibtex: String): List<StudyReview> {
+    fun convertManyToStudyReview(
+        systematicStudyId: SystematicStudyId,
+        searchSessionId: SearchSessionID,
+        bibtex: String
+    ): Pair<List<StudyReview>, List<String>> {
         require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
-        val studies = convertMany(bibtex)
-        return studies.map { study -> convertToStudyReview(systematicStudyId, searchSessionId, study) }
+
+        val (validStudies, invalidEntries) = convertMany(bibtex)
+        val studyReviews = validStudies.map { study -> convertToStudyReview(systematicStudyId, searchSessionId, study) }
+
+        return Pair(studyReviews, invalidEntries)
     }
 
     fun convertToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, study: Study): StudyReview {
@@ -44,13 +51,23 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
         )
     }
 
-    private fun convertMany(bibtex: String): List<Study> {
-        require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
-        return bibtex.splitToSequence("@")
+    private fun convertMany(bibtex: String): Pair<List<Study>, List<String>> {
+        val validStudies = mutableListOf<Study>()
+        val invalidEntries = mutableListOf<String>()
+
+        bibtex.splitToSequence("@")
             .map { it.trim() }
             .filter { it.isNotBlank() }
-            .map { convert(it) }
-            .toList()
+            .forEach { entry ->
+                try {
+                    val study = convert(entry)
+                    validStudies.add(study)
+                } catch (e: Exception) {
+                    val entryName = extractEntryName(entry)
+                    invalidEntries.add(entryName)
+                }
+            }
+        return Pair(validStudies, invalidEntries)
     }
 
     fun convert(bibtexEntry: String): Study {
@@ -116,5 +133,11 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
         val matchResult = entryTypeRegex.find(bibtexEntry)
         val studyTypeName = matchResult?.groupValues?.get(1)?.uppercase(Locale.getDefault()) ?: "UNKNOWN"
         return StudyType.valueOf(studyTypeName)
+    }
+
+    private fun extractEntryName(bibtexEntry: String): String {
+        val nameRegex = Regex("""\{(\w+),""")
+        val matchResult = nameRegex.find(bibtexEntry)
+        return matchResult?.groupValues?.get(1) ?: "UNKNOWN"
     }
 }
