@@ -23,7 +23,7 @@ class ConverterFactoryService(
         val risPattern = Regex("""^TY\s+-\s+""", RegexOption.MULTILINE)
 
         if (bibtexPattern.containsMatchIn(file)) {
-            studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, file)
+            studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, file).first
         } else if (risPattern.containsMatchIn(file)) {
             studyReviews = risConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, file)
         }
