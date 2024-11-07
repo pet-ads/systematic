@@ -37,7 +37,7 @@ class BibtexConverterServiceTest {
                 SearchSessionID(UUID.randomUUID()),
                 bibtex
             )
-            assertEquals(7, studyReviewList.size)
+            assertEquals(7, studyReviewList.first.size)
         }
 
         @Test
@@ -477,6 +477,27 @@ class BibtexConverterServiceTest {
             assertThrows<IllegalArgumentException> {
                 sut.convert(bibtex)
             }
+        }
+
+        @Test
+        fun `Should create a StudyReview list from multiple bibtex entries even when there are invalid entries`() {
+            val bibtex = testInputs["multiple bibtex entries with some invalid"]!!
+            val studyReviewList = sut.convertManyToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                bibtex
+            )
+            studyReviewList.second.forEach { invalidEntryName ->
+                println("Invalid BibTeX entry: $invalidEntryName")
+            }
+            studyReviewList.first.forEach { studyReview ->
+                println("Valid StudyReview: ${studyReview.title}")
+            }
+            assertAll(
+                {assertEquals(4, studyReviewList.first.size)},
+
+            )
+
         }
     }
 }
