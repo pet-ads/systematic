@@ -153,8 +153,6 @@ class ProtocolControllerTest(
                     .andExpect(jsonPath("$._links").exists())
             }
 
-            //TODO fix it, the modifications in the keywords need to be corrected
-            @Disabled
             @Test
             fun `should update an existing protocol without deleting existing collection-type variables`() {
                 val document = factory.createProtocolDocument()
