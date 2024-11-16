@@ -2,10 +2,7 @@ package br.all.study.controller
 
 import br.all.application.search.update.UpdateSearchSessionService
 import br.all.application.study.create.CreateStudyReviewService
-import br.all.application.study.find.service.FindAllStudyReviewsBySessionService
-import br.all.application.study.find.service.FindAllStudyReviewsBySourceService
-import br.all.application.study.find.service.FindAllStudyReviewsService
-import br.all.application.study.find.service.FindStudyReviewService
+import br.all.application.study.find.service.*
 import br.all.application.study.update.implementation.UpdateStudyReviewExtractionService
 import br.all.application.study.update.implementation.UpdateStudyReviewPriorityService
 import br.all.application.study.update.implementation.UpdateStudyReviewSelectionService
@@ -40,6 +37,7 @@ class StudyReviewController(
     private val findAllService: FindAllStudyReviewsService,
     private val findAllBySourceService: FindAllStudyReviewsBySourceService,
     private val findAllBySessionService: FindAllStudyReviewsBySessionService,
+    private val findAllByAuthorService: FindAllStudyReviewsByAuthorService,
     private val findOneService: FindStudyReviewService,
     private val updateSelectionService: UpdateStudyReviewSelectionService,
     private val updateExtractionService: UpdateStudyReviewExtractionService,
@@ -163,6 +161,35 @@ class StudyReviewController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindAllStudyReviewsBySessionService.RequestModel(userId, systematicStudy, searchSessionId)
         findAllBySessionService.findAllBySearchSession(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("/study-review/author/{author}")
+    @Operation(summary = "Get all existing study reviews of a systematic study by author")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success getting study reviews of a systematic study by author, either found studies or found none",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = FindAllStudyReviewsByAuthorService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(responseCode = "401", description = "Fail getting study reviews by author - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "403", description = "Fail getting study reviews by author - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]),
+        ]
+    )
+    fun findAllStudyReviewsByAuthor(
+        @PathVariable systematicStudy: UUID,
+        @PathVariable author: String
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindAllStudyReviewsByAuthorPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindAllStudyReviewsByAuthorService.RequestModel(userId, systematicStudy, author)
+        findAllByAuthorService.findAllByAuthor(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 

@@ -3,6 +3,7 @@ package br.all.study.controller
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.create.CreateStudyReviewServiceImpl
+import br.all.application.study.find.presenter.FindAllStudyReviewsByAuthorPresenter
 import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresenter
 import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
 import br.all.application.study.find.presenter.FindStudyReviewPresenter
@@ -75,6 +76,16 @@ class StudyReviewServicesConfiguration {
     ) = FindStudyReviewServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
+
+    @Bean
+    fun findAllByAuthorService(
+        systematicStudyRepository: SystematicStudyRepository,
+        studyReviewRepository: StudyReviewRepository,
+        credentialsService: CredentialsService
+    ) = FindAllStudyReviewsByAuthorServiceImpl(
+        systematicStudyRepository, studyReviewRepository, credentialsService
+    )
+
 
     @Bean
     fun updateReviewSelectionService(
