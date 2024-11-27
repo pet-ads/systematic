@@ -34,22 +34,41 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         )
     }
 
-    fun convertManyToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, ris: String): List<StudyReview> {
+    fun convertManyToStudyReview(
+        systematicStudyId: SystematicStudyId,
+        searchSessionId: SearchSessionID,
+        ris: String
+    ): Pair<List<StudyReview>, List<String>> {
         require(ris.isNotBlank()) { "convertManyToStudyReview: RIS must not be blank." }
-        val studies = convertMany(ris)
-        return studies.map { study -> convertToStudyReview(systematicStudyId, searchSessionId, study) }
+
+        val (validStudies, invalidEntries) = convertMany(ris)
+        val studyReviews = validStudies.map { study -> convertToStudyReview(systematicStudyId, searchSessionId, study) }
+
+        return Pair(studyReviews, invalidEntries)
     }
 
-    fun convertMany(ris: String): List<Study> {
-        require(ris.isNotBlank()) { "convertMany: RIS must not be blank." }
+    private fun convertMany(ris: String): Pair<List<Study>, List<String>> {
+        val validStudies = mutableListOf<Study>()
+        val invalidEntries = mutableListOf<String>()
 
-        return ris.splitToSequence("TY")
-            .mapIndexed { index, entry ->
-                if (index == 0) entry.trim() else "TY$entry".trim()
+        // Regex ajustado para lidar com espaços e inconsistências
+        val regex = Regex(
+            "(?i)\\bTY\\b\\s*-.*?(?=(\\bTY\\b\\s*-|\\bER\\b\\s*-|\\z))",
+            RegexOption.DOT_MATCHES_ALL
+        )
+
+        val entries = regex.findAll(ris).map { it.value.trim() }
+
+        entries.forEach { entry ->
+            try {
+                val study = convert(entry) // Tenta converter o registro
+                validStudies.add(study)
+            } catch (e: Exception) {
+                val entryName = extractInvalidRis(entry) // Extrai o nome para entradas inválidas
+                invalidEntries.add(entryName)
             }
-            .filter { it.isNotBlank() }
-            .map { convert(it) }
-            .toList()
+        }
+        return Pair(validStudies, invalidEntries)
     }
 
 
@@ -173,7 +192,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
             "VIDEO" to StudyType.MISC
         )
         val st = risMap.getOrElse(studyType) { throw IllegalArgumentException() }
-        return st;
+        return st
     }
 
     private fun getValueFromFieldMap(fieldMap: Map<String, String>, keys: List<String>): String {
@@ -208,5 +227,11 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
     private fun treatAbstract(abstract: String): String {
         val AB = abstract.split("ER").first().trim()
         return AB
+    }
+
+    private fun extractInvalidRis(risEntry: String): String {
+        val idRegex = Regex("""ER\s*-\s*([\s\S]*?)(?=^TY\s*-)""")
+        val matchResult = idRegex.find(risEntry)
+        return matchResult?.groupValues?.get(1)?.trim() ?: "UNKNOWN"
     }
 }
