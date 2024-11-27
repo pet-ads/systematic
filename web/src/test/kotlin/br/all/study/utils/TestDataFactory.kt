@@ -113,7 +113,7 @@ class TestDataFactory {
         type: String = faker.random.nextEnum(StudyType::class.java).toString(),
         title: String = faker.book.title(),
         year: Int = faker.year(),
-        authors: String = faker.science.scientist(),
+        authors: String = "Marie Curie",
         venue: String = faker.book.publisher(),
         abstract: String = faker.paragraph(20),
         keywords: Set<String> = faker.wordsList(5).toSet(),
