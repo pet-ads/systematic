@@ -11,7 +11,6 @@ class ConverterFactoryService(
     private val bibtexConverterService: BibtexConverterService,
     private val risConverterService: RisConverterService
 ){
-    // , request: RequestModel
     fun extractReferences(
         systematicStudyId: SystematicStudyId,
         searchSessionId: SearchSessionID,
@@ -25,7 +24,7 @@ class ConverterFactoryService(
         if (bibtexPattern.containsMatchIn(file)) {
             studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, file).first
         } else if (risPattern.containsMatchIn(file)) {
-            studyReviews = risConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, file)
+            studyReviews = risConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, file).first
         }
 
         return studyReviews
