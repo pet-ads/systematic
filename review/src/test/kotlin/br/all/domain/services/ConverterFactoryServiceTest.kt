@@ -1,6 +1,5 @@
 package br.all.domain.services
 
-import br.all.application.search.create.CreateSearchSessionService
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.services.BibtexTestData.testInputs as bibtexInput
