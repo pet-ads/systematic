@@ -29,14 +29,13 @@ class RisConverterServiceTest {
     inner class IndividualTests {
         @Test
         fun `Should create a StudyReview list from multiple ris entries`() {
-            val ris = testInput["error ris"]!!
+            val ris = testInput["multiple RIS entries"]!!
             val studyReviewList = sut.convertManyToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
                 ris
             )
-            println(studyReviewList)
-            assertEquals(studyReviewList.size, 10)
+            assertEquals(3, studyReviewList.first.size)
         }
 
         @Test
@@ -194,7 +193,7 @@ class RisConverterServiceTest {
                 SearchSessionID(UUID.randomUUID()),
                 ris
             )
-            assertEquals(3, studyReviewList.size)
+            assertEquals(3, studyReviewList.first.size)
         }
 
         @Test
@@ -589,6 +588,23 @@ class RisConverterServiceTest {
                     study
                 )
             }
+        }
+
+        @Test
+        fun `should return the correct number of invalid ris files`() {
+            val ris = testInput["three error ris"]!!
+            val studyReviewList = sut.convertManyToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                ris
+            )
+
+            println("Valid Study Reviews: ${studyReviewList.first}")
+            println("Invalid RIS Entries: ${studyReviewList.second}")
+
+            assertEquals(2, studyReviewList.first.size)
+
+            assertEquals(3, studyReviewList.second.size)
         }
     }
 }
