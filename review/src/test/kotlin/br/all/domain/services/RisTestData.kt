@@ -379,6 +379,75 @@ object RisTestData {
         Y1  - Jan.-Feb. 2017
         AB  - Lorem Ipsum
         ER  - 
+        """,
+
+        "three error ris" to """
+        TY  - JOUR
+TI  - Sampling for Scalable Visual Analytics
+T2  - IEEE Computer Graphics and Applications
+SP  - 100
+EP  - 108
+AU  - B. C. Kwon
+AU  - P. J. Haas
+PY  - 2017
+KW  - Temperature sensors
+KW  - Data visualization
+DO  - 10.1109/MCG.2017.6
+JO  - IEEE Computer Graphics and Applications
+IS  - 1
+SN  - 1558-1756
+VL  - 37
+JA  - IEEE Computer Graphics and Applications
+Y1  - 2017-01
+AB  - Lorem Ipsum
+ER  -
+
+TY  - CHAP
+TI  - TITLE12
+SP  - 1
+EP  - 10
+AU  - K. Shvachko
+PY  - 2010
+KW  - File systems
+DO  - 10.1109/MSST
+JO  - 2010 IEEE 26th Symposium on Mass Storage Systems and Technologies (MSST)
+SN  - 2160-1968
+Y1  - 2010-05
+AB  - ABSTRACT1
+ER  -
+
+TY  - CONF
+TI  - TITLE2
+SP  - 250
+EP  - 257
+PY  - 2013
+JA  - 2013 IEEE
+Y1  - 2013-12
+AB  - ABSTRACT2
+ER  -
+
+TY  - CONF
+TI  - TITLE
+KW  - Partitioning algorithms
+DO  - 10.1109/PDGC.2016.7913137
+Y1  - 2016-12
+AB  - ABSTRACT3
+ER  -
+
+TY  - JOUR
+T2  - IEEE Computer Graphics and Applications
+SP  - 100
+EP  - 108
+AU  - B. C. Kwon
+PY  - 2017
+KW  - Temperature sensors
+KW  - Data visualization
+DO  - 10.1109/MCG.2017.6
+IS  - 1
+SN  - 1558-1756
+VL  - 37
+Y1  - 2017-01
+ER  -
         """
     )
 }
