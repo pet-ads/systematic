@@ -4,7 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.util.*
 
 interface CreateSearchSessionService {
-    fun createSession(presenter: CreateSearchSessionPresenter, request: RequestModel, file: String)
+    fun createSession(
+        presenter: CreateSearchSessionPresenter,
+        request: RequestModel,
+        file: String
+    )
 
     data class RequestModel(
         val userId: UUID,
@@ -19,5 +23,6 @@ interface CreateSearchSessionService {
         val userId: UUID,
         val systematicStudyId: UUID,
         val sessionId: UUID,
+        val invalidEntries: List<String>
     )
 }
