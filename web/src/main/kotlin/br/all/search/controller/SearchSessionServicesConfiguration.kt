@@ -4,6 +4,7 @@ import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.CreateSearchSessionServiceImpl
+import br.all.application.search.delete.DeleteSearchSessionServiceImpl
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceServiceImpl
 import br.all.application.search.find.service.FindSearchSessionServiceImpl
@@ -106,4 +107,16 @@ class SearchSessionServicesConfiguration {
     ) = UpdateSearchSessionServiceImpl (
         systematicStudyRepository, searchSessionRepository, credentialsService
     )
+
+    @Bean
+    fun deleteSearchSessionService(
+        credentialsService: CredentialsService,
+        searchSessionRepository: SearchSessionRepository,
+        systematicStudyRepository: SystematicStudyRepository
+    ) = DeleteSearchSessionServiceImpl(
+        systematicStudyRepository,
+        searchSessionRepository,
+        credentialsService
+    )
+
 }
