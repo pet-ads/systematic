@@ -30,21 +30,34 @@ class PatchSearchSessionServiceImpl (
     ) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
-        val searchSessionDto = searchSessionRepository.findById(request.sessionId)!!
+        val searchSessionDto = searchSessionRepository.findById(request.sessionId)
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
 
         presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
-        if(presenter.isDone()) return
+        if (presenter.isDone()) return
 
-        if (searchSessionRepository.existsById(request.sessionId)) {
-            val studyReviews = converterFactoryService.extractReferences(request.systematicStudyId.toSystematicStudyId(), request.sessionId.toSearchSessionID() ,file)
+        if (searchSessionDto != null) {
+            val (studyReviews, invalidEntries) = converterFactoryService.extractReferences(
+                systematicStudyId = request.systematicStudyId.toSystematicStudyId(),
+                searchSessionId = request.sessionId.toSearchSessionID(),
+                file = file
+            )
+
             val studies = studyReviews.size
             searchSessionDto.numberOfRelatedStudies += studies
             searchSessionRepository.saveOrUpdate(searchSessionDto)
             studyReviewRepository.saveOrUpdateBatch(studyReviews.map { it.toDto() })
-            presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, request.sessionId))
+
+            presenter.prepareSuccessView(
+                ResponseModel(
+                    userId = request.userId,
+                    systematicStudyId = request.systematicStudyId,
+                    sessionId = request.sessionId,
+                    invalidEntries = invalidEntries
+                )
+            )
 
         } else {
             val message = "There is no search session of id ${request.sessionId}"
