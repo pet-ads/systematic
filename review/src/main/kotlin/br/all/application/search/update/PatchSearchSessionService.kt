@@ -16,6 +16,7 @@ interface PatchSearchSessionService {
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val sessionId: UUID
+        val sessionId: UUID,
+        val invalidEntries: List<String>
     )
 }
