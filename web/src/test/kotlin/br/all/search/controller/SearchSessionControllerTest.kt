@@ -359,5 +359,62 @@ class SearchSessionControllerTest(
         }
     }
 
+    @Nested
+    @DisplayName("When deleting a search session")
+    inner class DeleteTests {
+
+        @Test
+        fun `should delete the search session and return 204`() {
+            val searchSession = factory.searchSessionDocument(factory.sessionId, systematicStudyId)
+            repository.insert(searchSession)
+
+            val sessionId = "/${searchSession.id}"
+            mockMvc.perform(
+                delete(findUrl(sessionId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isNoContent)
+        }
+
+        @Test
+        fun `should return 404 when search session does not exist`() {
+            val nonExistentSessionId = UUID.randomUUID()
+            val sessionId = "/$nonExistentSessionId"
+            mockMvc.perform(
+                delete(findUrl(sessionId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should return 403 when user is not authorized`() {
+            val searchSession = factory.searchSessionDocument(factory.sessionId, systematicStudyId)
+            repository.insert(searchSession)
+
+            val sessionId = "/${searchSession.id}"
+            testHelperService.testForUnauthorizedUser(
+                mockMvc,
+                delete(findUrl(sessionId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
+            )
+        }
+
+        @Test
+        fun `should return 403 when user is not authenticated`() {
+            val searchSession = factory.searchSessionDocument(factory.sessionId, systematicStudyId)
+            repository.insert(searchSession)
+
+            val sessionId = "/${searchSession.id}"
+            testHelperService.testForUnauthenticatedUser(
+                mockMvc,
+                delete(findUrl(sessionId))
+            )
+        }
+    }
+
+
 }
 
