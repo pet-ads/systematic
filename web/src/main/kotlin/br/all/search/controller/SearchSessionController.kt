@@ -2,6 +2,7 @@ package br.all.search.controller
 
 import br.all.application.review.find.services.FindSystematicStudyService
 import br.all.application.search.create.CreateSearchSessionService
+import br.all.application.search.delete.DeleteSearchSessionService
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindSearchSessionService
 import br.all.application.search.find.service.FindAllSearchSessionsService
@@ -32,6 +33,7 @@ import br.all.application.search.find.service.FindAllSearchSessionsService.Reque
 @RequestMapping("api/v1/systematic-study/{systematicStudyId}")
 class SearchSessionController(
     val patchService: PatchSearchSessionService,
+    val deleteService: DeleteSearchSessionService,
     val createService: CreateSearchSessionService,
     val findOneService: FindSearchSessionService,
     val findAllService: FindAllSearchSessionsService,
@@ -310,4 +312,48 @@ class SearchSessionController(
         )
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
+
+    @DeleteMapping("/search-session/{sessionId}")
+    @Operation(summary = "Delete an existing search session of a systematic study")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "204",
+                description = "Successfully deleted the search session"
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail to delete search session - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail to delete search session - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail to delete search session - session not found",
+                content = [Content(schema = Schema(hidden = true))]
+            )
+        ]
+    )
+    fun deleteSession(
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable sessionId: UUID
+    ): ResponseEntity<Void> {
+        val presenter = RestfulDeleteSearchSessionPresenter()
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = DeleteSearchSessionService.RequestModel(
+            userId = userId,
+            systematicStudyId = systematicStudyId,
+            sessionId = sessionId
+        )
+
+        deleteService.delete(presenter, request)
+
+        return presenter.responseEntity as? ResponseEntity<Void> ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+
+    }
+
 }
