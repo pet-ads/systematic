@@ -12,4 +12,5 @@ interface SearchSessionRepository {
     fun existsBySearchSource(systematicStudyId: UUID, source: String): Boolean
     fun saveOrUpdate(dto: SearchSessionDto)
     fun existsById(searchSessionId: UUID): Boolean
+    fun deleteById(id: UUID)
 }
