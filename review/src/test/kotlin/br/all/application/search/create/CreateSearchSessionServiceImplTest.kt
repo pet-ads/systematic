@@ -92,7 +92,7 @@ class CreateSearchSessionServiceImplTest {
             preconditionCheckerMocking.makeEverythingWork()
             every { protocolRepository.findById(systematicStudyUuid) } returns protocol
             every { uuidGeneratorService.next() } returns searchSessionId
-            every { converterFactoryService.extractReferences(systematicStudyId, SearchSessionID(searchSessionId), any()) } returns emptyList()
+            every { converterFactoryService.extractReferences(systematicStudyId, SearchSessionID(searchSessionId), any()) } returns Pair(emptyList(), emptyList())
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
@@ -116,7 +116,7 @@ class CreateSearchSessionServiceImplTest {
                 searchSessionRepository.existsBySearchSource(systematicStudyUuid, request.source)
             } returns false
             every { uuidGeneratorService.next() } returns searchSessionId
-            every { converterFactoryService.extractReferences(systematicStudyId, SearchSessionID(searchSessionId), any()) } returns emptyList()
+            every { converterFactoryService.extractReferences(systematicStudyId, SearchSessionID(searchSessionId), any()) } returns Pair(emptyList(), emptyList())
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
@@ -134,7 +134,7 @@ class CreateSearchSessionServiceImplTest {
                 searchSessionRepository.existsBySearchSource(systematicStudyUuid, request.source)
             } returns false
             every { uuidGeneratorService.next() } returns searchSessionId
-            every { converterFactoryService.extractReferences(systematicStudyId, SearchSessionID(searchSessionId), any()) } returns emptyList()
+            every { converterFactoryService.extractReferences(systematicStudyId, SearchSessionID(searchSessionId), any()) } returns Pair(emptyList(), emptyList())
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
@@ -152,7 +152,7 @@ class CreateSearchSessionServiceImplTest {
                 searchSessionRepository.existsBySearchSource(systematicStudyUuid, request.source)
             } returns false
             every { uuidGeneratorService.next() } returns searchSessionId
-            every { converterFactoryService.extractReferences(systematicStudyId, SearchSessionID(searchSessionId), any()) } returns emptyList()
+            every { converterFactoryService.extractReferences(systematicStudyId, SearchSessionID(searchSessionId), any()) } returns Pair(emptyList(), emptyList())
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
             verify {presenter.prepareFailView(match { it is EntityNotFoundException }) }
