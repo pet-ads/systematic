@@ -23,6 +23,7 @@ class RestfulCreateSearchSessionPresenter(
             response.userId,
             response.systematicStudyId,
             response.sessionId,
+            response.invalidEntries
         )
 
         val selfRef = linksFactory.findSession(response.systematicStudyId, response.sessionId)
@@ -41,5 +42,6 @@ class RestfulCreateSearchSessionPresenter(
         val userId: UUID,
         val systematicStudyId: UUID,
         val sessionId: UUID,
+        val invalidEntries: List<String>
     ) : RepresentationModel<ViewModel>()
 }

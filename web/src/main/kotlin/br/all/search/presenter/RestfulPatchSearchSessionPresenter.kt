@@ -16,7 +16,12 @@ class RestfulPatchSearchSessionPresenter (
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: PatchSearchSessionService.ResponseModel) {
-        val restfulResponse = ViewModel(response.userId, response.systematicStudyId, response.sessionId)
+        val restfulResponse = ViewModel(
+            response.userId,
+            response.systematicStudyId,
+            response.sessionId,
+            response.invalidEntries
+        )
 
         val self = linksFactory.findSession(response.systematicStudyId, response.sessionId)
 
@@ -32,5 +37,6 @@ class RestfulPatchSearchSessionPresenter (
         val researcherId: UUID,
         val systematicStudyId: UUID,
         val searchSessionID: UUID,
+        val invalidEntries: List<String>
     ) : RepresentationModel<ViewModel>()
 }
