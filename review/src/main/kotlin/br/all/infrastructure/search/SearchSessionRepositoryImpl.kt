@@ -30,4 +30,8 @@ open class SearchSessionRepositoryImpl(val repository: MongoSearchSessionReposit
     override fun saveOrUpdate(dto: SearchSessionDto) {
         repository.save(dto.toDocument())
     }
+
+    override fun deleteById(id: UUID) {
+        repository.deleteById(id)
+    }
 }
