@@ -230,8 +230,8 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
     }
 
     private fun extractInvalidRis(risEntry: String): String {
-        val idRegex = Regex("""ER\s*-\s*([\s\S]*?)(?=^TY\s*-)""")
-        val matchResult = idRegex.find(risEntry)
-        return matchResult?.groupValues?.get(1)?.trim() ?: "UNKNOWN"
+        val risRegex = Regex("""TY\s*-\s*[\s\S]*?ER\s*-\s*""", RegexOption.MULTILINE)
+        val matchResult = risRegex.find(risEntry)
+        return matchResult?.value?.trim() ?: "UNKNOWN"
     }
 }
