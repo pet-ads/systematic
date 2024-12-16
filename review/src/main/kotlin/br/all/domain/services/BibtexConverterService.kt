@@ -135,9 +135,9 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
         return StudyType.valueOf(studyTypeName)
     }
 
-    private fun extractEntryName(bibtexEntry: String): String {
-        val nameRegex = Regex("""\{([^}]*)""")
+     fun extractEntryName(bibtexEntry: String): String {
+        val nameRegex = Regex("""\{(.*)}""", RegexOption.DOT_MATCHES_ALL)
         val matchResult = nameRegex.find(bibtexEntry)
-        return matchResult?.groupValues?.get(1) ?: "UNKNOWN"
+        return matchResult?.groupValues?.get(1)?.trim() ?: "UNKNOWN"
     }
 }
