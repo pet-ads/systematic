@@ -17,4 +17,6 @@ data class Doi(val value: String) : ValueObject() {
         if (!value.matches(regex)) notification.addError("Wrong DOI format: $value")
         return notification
     }
+
+    override fun toString(): String = value
 }
