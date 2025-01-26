@@ -48,7 +48,7 @@ class UpdateStudyReviewSelectionService(
         when(newStatus){
             "UNCLASSIFIED" -> studyReview.declassifyInSelection()
             "INCLUDED" -> studyReview.includeInSelection()
-            "EXCLUDED" -> studyReview.includeInSelection()
+            "EXCLUDED" -> studyReview.excludeInSelection()
             else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
         }
         studyReviewRepository.saveOrUpdate(studyReview.toDto())
