@@ -41,7 +41,7 @@ class CreateQuestionServiceImpl(
             presenter.prepareFailView(IllegalArgumentException("Options must not be null or empty."))
             return
         }
-        if (type == NUMBERED_SCALE && (request.lower == null || request.higher == null)) {
+        if (type == NUMBERED_SCALE && (request.higher == null || request.lower == null)) {
             presenter.prepareFailView(IllegalArgumentException("Scale boundaries must not be null."))
             return
         }
@@ -57,7 +57,7 @@ class CreateQuestionServiceImpl(
         val question = when (request.questionType) {
             TEXTUAL -> builder.buildTextual()
             PICK_LIST -> builder.buildPickList(request.options!!)
-            NUMBERED_SCALE -> builder.buildNumberScale(request.lower!!, request.higher!!)
+            NUMBERED_SCALE -> builder.buildNumberScale(request.higher!!, request.lower!!)
             LABELED_SCALE -> builder.buildLabeledScale(request.scales!!)
         }
 

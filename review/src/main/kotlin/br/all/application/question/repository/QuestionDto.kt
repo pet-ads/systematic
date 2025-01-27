@@ -9,7 +9,7 @@ data class QuestionDto(
     val description: String,
     val questionType: String,
     val scales: Map<String, Int>? = null,
-    val lower: Int? = null,
     val higher: Int? = null,
+    val lower: Int? = null,
     val options: List<String>? = null,
 )

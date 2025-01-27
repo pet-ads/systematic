@@ -10,8 +10,8 @@ fun Question<*>.toDto(type: QuestionType) = QuestionDto(
     this.description,
     type.toString(),
     (this as? LabeledScale)?.scales?.mapValues { it.value.value },
-    (this as? NumberScale)?.lower,
     (this as? NumberScale)?.higher,
+    (this as? NumberScale)?.lower,
     (this as? PickList)?.options
 )
 
