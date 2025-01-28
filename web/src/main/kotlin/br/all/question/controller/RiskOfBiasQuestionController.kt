@@ -6,10 +6,10 @@ import br.all.application.question.create.CreateQuestionService.RequestModel
 import br.all.application.question.find.FindQuestionService
 import br.all.application.question.findAll.FindAllBySystematicStudyIdService
 import br.all.application.question.update.services.UpdateQuestionService
-import br.all.question.presenter.extraction.RestfulFindAllExtractionQuestionPresenter
-import br.all.question.presenter.extraction.RestfulUpdateExtractionQuestionPresenter
 import br.all.question.presenter.riskOfBias.RestfulCreateRoBQuestionPresenter
+import br.all.question.presenter.riskOfBias.RestfulFindAllRoBQuestionPresenter
 import br.all.question.presenter.riskOfBias.RestfulFindRoBQuestionPresenter
+import br.all.question.presenter.riskOfBias.RestfulUpdateRoBQuestionPresenter
 import br.all.question.requests.PutRequest
 import br.all.security.service.AuthenticationInfoService
 import br.all.utils.LinksFactory
@@ -260,7 +260,7 @@ class RiskOfBiasQuestionController(
     fun findAllBySystematicStudyId(
         @PathVariable systematicStudyId: UUID
     ): ResponseEntity<*> {
-        val presenter = RestfulFindAllExtractionQuestionPresenter(linksFactory)
+        val presenter = RestfulFindAllRoBQuestionPresenter(linksFactory)
         val request = FindAllBySystematicStudyIdService.RequestModel(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId)
         findAllService.findAllBySystematicStudyId(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -272,7 +272,7 @@ class RiskOfBiasQuestionController(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Success updating a extraction question",
+                description = "Success updating a rob question",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(implementation = UpdateQuestionService.ResponseModel::class)
@@ -305,7 +305,7 @@ class RiskOfBiasQuestionController(
         @PathVariable questionId: UUID,
         @RequestBody request: PutRequest
     ): ResponseEntity<*> {
-        val presenter = RestfulUpdateExtractionQuestionPresenter(linksFactory)
+        val presenter = RestfulUpdateRoBQuestionPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val requestModel = request.toUpdateRequestModel(userId, systematicStudyId, questionId)
 
