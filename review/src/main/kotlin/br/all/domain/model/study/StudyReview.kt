@@ -68,10 +68,14 @@ class StudyReview(
 
     fun answerFormQuestionOf(answer: Answer<*>) = _formAnswers.add(answer)
 
-    fun includeInSelection() = apply { selectionStatus = SelectionStatus.INCLUDED }
+    fun includeInSelection(criterion: Criterion) = apply {
+        selectionStatus = SelectionStatus.INCLUDED
+        this.addCriterion(criterion)
+    }
 
-    fun excludeInSelection() {
+    fun excludeInSelection(criterion: Criterion) {
         selectionStatus = SelectionStatus.EXCLUDED
+        this.addCriterion(criterion)
         if (shouldNotConsiderForExtraction()) extractionStatus = ExtractionStatus.EXCLUDED
     }
 

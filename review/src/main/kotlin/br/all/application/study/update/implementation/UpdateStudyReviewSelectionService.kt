@@ -38,6 +38,14 @@ class UpdateStudyReviewSelectionService(
         }
 
         val newStatus = request.status.uppercase()
+        val criterion = request.criterion
+
+        if(criterion == null) {
+            val message = "There should be an inclusion/exclusion criteria in the request!"
+            presenter.prepareFailView(IllegalArgumentException(message));
+            return
+        }
+
         if(newStatus == "DUPLICATED" ) {
             val message = "Duplication request must indicate the duplicate study. Please use the proper feature."
             presenter.prepareFailView(IllegalArgumentException(message))
@@ -47,8 +55,8 @@ class UpdateStudyReviewSelectionService(
         val studyReview = StudyReview.fromDto(studyReviewDto)
         when(newStatus){
             "UNCLASSIFIED" -> studyReview.declassifyInSelection()
-            "INCLUDED" -> studyReview.includeInSelection()
-            "EXCLUDED" -> studyReview.excludeInSelection()
+            "INCLUDED" -> studyReview.includeInSelection(criterion!!)
+            "EXCLUDED" -> studyReview.excludeInSelection(criterion!!)
             else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
         }
         studyReviewRepository.saveOrUpdate(studyReview.toDto())

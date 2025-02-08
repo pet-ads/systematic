@@ -1,5 +1,6 @@
 package br.all.application.study.update.interfaces
 
+import br.all.domain.model.protocol.Criterion
 import java.util.*
 
 interface UpdateStudyReviewStatusService {
@@ -9,7 +10,8 @@ interface UpdateStudyReviewStatusService {
         val userId: UUID,
         val systematicStudyId: UUID,
         val studyReviewId: Long,
-        val status: String
+        val status: String,
+        val criterion: Criterion? = null
     )
 
     class ResponseModel(
