@@ -12,4 +12,5 @@ data class QuestionDto(
     val higher: Int? = null,
     val lower: Int? = null,
     val options: List<String>? = null,
+    val context: String
 )
