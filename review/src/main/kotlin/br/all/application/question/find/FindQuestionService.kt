@@ -11,7 +11,8 @@ interface FindQuestionService {
     data class RequestModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val questionId: UUID
+        val questionId: UUID,
+        val context: String? = null
     )
 
     @Schema(name = "FindQuestionServiceResponseModel", description = "Response model for Find Question Service")
