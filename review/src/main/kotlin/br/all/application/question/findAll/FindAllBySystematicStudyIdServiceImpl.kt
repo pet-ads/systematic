@@ -14,17 +14,25 @@ class FindAllBySystematicStudyIdServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val questionRepository: QuestionRepository,
     private val credentialsService: CredentialsService
-): FindAllBySystematicStudyIdService {
+) : FindAllBySystematicStudyIdService {
+
     override fun findAllBySystematicStudyId(presenter: FindAllBySystematicStudyIdPresenter, request: RequestModel) {
         val userId = request.userId
         val user = credentialsService.loadCredentials(userId)?.toUser()
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
-        presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
         if (presenter.isDone()) return
 
-        val questions = questionRepository.findAllBySystematicStudyId(request.systematicStudyId)
-        presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, questions))
+        val questions = questionRepository.findAllBySystematicStudyId(request.systematicStudyId, request.context)
+
+        presenter.prepareSuccessView(
+            ResponseModel(
+                userId = request.userId,
+                systematicStudyId = request.systematicStudyId,
+                questions = questions
+            )
+        )
     }
 }
