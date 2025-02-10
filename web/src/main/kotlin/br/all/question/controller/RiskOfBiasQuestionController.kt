@@ -74,6 +74,7 @@ class RiskOfBiasQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
+            CreateQuestionService.QuestionContext.ROB,
             TEXTUAL,
             request.code,
             request.description
@@ -109,6 +110,7 @@ class RiskOfBiasQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
+            CreateQuestionService.QuestionContext.ROB,
             PICK_LIST,
             request.code,
             request.description,
@@ -149,6 +151,7 @@ class RiskOfBiasQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
+            CreateQuestionService.QuestionContext.ROB,
             LABELED_SCALE,
             request.code,
             request.description,
@@ -186,6 +189,7 @@ class RiskOfBiasQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
+            CreateQuestionService.QuestionContext.ROB,
             NUMBERED_SCALE,
             request.code,
             request.description,
@@ -260,8 +264,13 @@ class RiskOfBiasQuestionController(
     fun findAllBySystematicStudyId(
         @PathVariable systematicStudyId: UUID
     ): ResponseEntity<*> {
+
         val presenter = RestfulFindAllRoBQuestionPresenter(linksFactory)
-        val request = FindAllBySystematicStudyIdService.RequestModel(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId)
+        val request = FindAllBySystematicStudyIdService.RequestModel(
+            userId = authenticationInfoService.getAuthenticatedUserId(),
+            systematicStudyId = systematicStudyId,
+            context = "ROB"
+        )
         findAllService.findAllBySystematicStudyId(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
