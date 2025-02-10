@@ -7,9 +7,12 @@ interface CreateQuestionService {
 
     enum class QuestionType{TEXTUAL, PICK_LIST, NUMBERED_SCALE, LABELED_SCALE}
 
+    enum class QuestionContext { EXTRACTION, ROB }
+
     data class RequestModel(
         val userId: UUID,
         val systematicStudyId: UUID,
+        val questionContext: QuestionContext,
         val questionType: QuestionType,
         val code: String,
         val description: String,
