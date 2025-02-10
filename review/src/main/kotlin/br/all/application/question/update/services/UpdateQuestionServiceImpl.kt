@@ -58,7 +58,7 @@ class UpdateQuestionServiceImpl(
             QuestionType.LABELED_SCALE -> builder.buildLabeledScale(request.scales!!)
         }
 
-        questionRepository.createOrUpdate(question.toDto(type))
+        questionRepository.createOrUpdate(question.toDto(type, request.questionContext.toString()))
         presenter.prepareSuccessView(UpdateQuestionService.ResponseModel(userId, systematicStudyId, questionId.value))
     }
 
