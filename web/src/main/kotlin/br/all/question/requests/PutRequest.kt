@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.util.*
 
 @Schema(name = "UpdateQuestionPutRequest")
-data class PutRequest (
+data class PutRequest(
     val questionType: CreateQuestionService.QuestionType,
     val code: String,
     val description: String,
@@ -14,13 +14,15 @@ data class PutRequest (
     val higher: Int? = null,
     val lower: Int? = null,
     val options: List<String>? = null,
-){
+    val context: CreateQuestionService.QuestionContext // <-- Adicionando o campo context
+) {
     fun toUpdateRequestModel(userId: UUID, systematicStudyId: UUID, questionId: UUID) =
         UpdateQuestionService.RequestModel(
             userId,
             systematicStudyId,
             questionId,
             questionType,
+            context,
             code,
             description,
             scales,
