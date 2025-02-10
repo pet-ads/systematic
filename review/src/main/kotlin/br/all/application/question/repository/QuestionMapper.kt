@@ -3,7 +3,7 @@ import br.all.application.question.create.CreateQuestionService.QuestionType
 import br.all.domain.model.question.*
 import br.all.domain.model.review.SystematicStudyId
 
-fun Question<*>.toDto(type: QuestionType) = QuestionDto(
+fun Question<*>.toDto(type: QuestionType, context: String) = QuestionDto(
     this.id.value(),
     this.systematicStudyId.value(),
     this.code,
@@ -12,9 +12,9 @@ fun Question<*>.toDto(type: QuestionType) = QuestionDto(
     (this as? LabeledScale)?.scales?.mapValues { it.value.value },
     (this as? NumberScale)?.higher,
     (this as? NumberScale)?.lower,
-    (this as? PickList)?.options
+    (this as? PickList)?.options,
+    context
 )
-
 
 fun Question.Companion.fromDto(dto: QuestionDto): Question<*> {
     val builder = QuestionBuilder.with(
@@ -32,6 +32,8 @@ fun Question.Companion.fromDto(dto: QuestionDto): Question<*> {
         dto.questionType == "LABELED_SCALE" && dto.scales != null -> builder.buildLabeledScale(dto.scales)
         dto.questionType == "TEXTUAL" -> builder.buildTextual()
         else -> throw IllegalArgumentException("Required values for question type ${dto.questionType} are missing!")
+    }.also {
+        println("Loaded question with context: ${dto.context}")
     }
 }
 
