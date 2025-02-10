@@ -69,14 +69,16 @@ class ExtractionQuestionController(
     ]
     )
     fun createTextualQuestion(
-        @PathVariable systematicStudyId: UUID, @RequestBody request: TextualRequest,
+        @PathVariable systematicStudyId: UUID,
+        @RequestBody request: TextualRequest
     ): ResponseEntity<*> = createQuestion(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
+            CreateQuestionService.QuestionContext.EXTRACTION,
             TEXTUAL,
             request.code,
-            request.description
+            request.description,
         )
     )
 
@@ -108,6 +110,7 @@ class ExtractionQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
+            CreateQuestionService.QuestionContext.EXTRACTION,
             PICK_LIST,
             request.code,
             request.description,
@@ -147,6 +150,7 @@ class ExtractionQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
+            CreateQuestionService.QuestionContext.EXTRACTION,
             LABELED_SCALE,
             request.code,
             request.description,
@@ -184,6 +188,7 @@ class ExtractionQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
+            CreateQuestionService.QuestionContext.EXTRACTION,
             NUMBERED_SCALE,
             request.code,
             request.description,
@@ -226,8 +231,14 @@ class ExtractionQuestionController(
         @PathVariable questionId: UUID,
     ): ResponseEntity<*> {
         val presenter = RestfulFindExtractionQuestionPresenter(linksFactory)
-        val request = FindQuestionService.RequestModel(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId, questionId)
+        val request = FindQuestionService.RequestModel(
+            authenticationInfoService.getAuthenticatedUserId(),
+            systematicStudyId,
+            questionId,
+            context = "EXTRACTION"
+        )
         findOneService.findOne(presenter, request)
+
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -259,10 +270,15 @@ class ExtractionQuestionController(
         @PathVariable systematicStudyId: UUID
     ): ResponseEntity<*> {
         val presenter = RestfulFindAllExtractionQuestionPresenter(linksFactory)
-        val request = FindAllRequest(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId)
+        val request = FindAllRequest(
+            userId = authenticationInfoService.getAuthenticatedUserId(),
+            systematicStudyId = systematicStudyId,
+            context = "EXTRACTION"
+        )
         findAllService.findAllBySystematicStudyId(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
+
 
     @PutMapping("/{questionId}")
     @Operation(summary = "Update a extraction question")
