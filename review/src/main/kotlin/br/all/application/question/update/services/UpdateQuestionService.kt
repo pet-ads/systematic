@@ -1,6 +1,5 @@
 package br.all.application.question.update.services
 
-import br.all.application.question.create.CreateQuestionService.QuestionContext
 import br.all.application.question.create.CreateQuestionService.QuestionType
 import br.all.application.question.update.presenter.UpdateQuestionPresenter
 import io.swagger.v3.oas.annotations.media.Schema
@@ -14,7 +13,7 @@ interface UpdateQuestionService {
         val systematicStudyId: UUID,
         val questionId: UUID,
         val questionType: QuestionType,
-        val questionContext: QuestionContext,
+        val questionContext: String,
         val code: String,
         val description: String,
         val scales: Map<String, Int>? = null,
