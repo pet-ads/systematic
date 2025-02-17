@@ -3,6 +3,7 @@ package br.all.application.question.util
 import br.all.application.question.create.CreateQuestionService.*
 import br.all.application.question.repository.QuestionDto
 import br.all.application.question.update.services.UpdateQuestionService
+import br.all.domain.model.question.QuestionContextEnum
 import io.github.serpro69.kfaker.Faker
 import java.util.*
 import br.all.application.question.find.FindQuestionService as Find
@@ -20,7 +21,6 @@ class TestDataFactory {
         systematicStudyId: UUID = systematicStudy,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
-        context: QuestionContext = QuestionContext.EXTRACTION // <-- Tipo ajustado
     ) = QuestionDto(
         questionId,
         systematicStudyId,
@@ -31,13 +31,12 @@ class TestDataFactory {
         null,
         null,
         null,
-        context.toString()
+        context = QuestionContextEnum.EXTRACTION
     )
 
     fun generatePickListDto(
         questionId: UUID = question,
         systematicStudyId: UUID = systematicStudy,
-        context: QuestionContext = QuestionContext.EXTRACTION
     ) = QuestionDto(
         questionId,
         systematicStudyId,
@@ -48,13 +47,13 @@ class TestDataFactory {
         null,
         null,
         listOf(faker.lorem.words(), faker.lorem.words()),
-        context.toString()
+        context = QuestionContextEnum.EXTRACTION
     )
 
     fun generateLabeledScaleDto(
         questionId: UUID = question,
         systematicStudyId: UUID = systematicStudy,
-        context: QuestionContext = QuestionContext.EXTRACTION
+
     ) = QuestionDto(
         questionId,
         systematicStudyId,
@@ -65,13 +64,12 @@ class TestDataFactory {
         null,
         null,
         null,
-        context.toString()
+        context = QuestionContextEnum.EXTRACTION
     )
 
     fun generateNumberedScaleDto(
         questionId: UUID = question,
         systematicStudyId: UUID = systematicStudy,
-        context: QuestionContext = QuestionContext.EXTRACTION
     ) = QuestionDto(
         questionId,
         systematicStudyId,
@@ -82,14 +80,14 @@ class TestDataFactory {
         1,
         10,
         null,
-        context.toString()
+        context = QuestionContextEnum.EXTRACTION
     )
 
     fun updateQuestionRequestModel(
         updatedDto: QuestionDto,
         questionType: QuestionType,
         researcherId: UUID = researcher,
-        context: QuestionContext = QuestionContext.EXTRACTION
+        context: String = QuestionContextEnum.EXTRACTION.toString(),
     ) = UpdateQuestionService.RequestModel(
         researcherId,
         updatedDto.systematicStudyId,
@@ -108,7 +106,7 @@ class TestDataFactory {
         researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
         questionType: QuestionType = QuestionType.TEXTUAL,
-        context: QuestionContext = QuestionContext.EXTRACTION
+        context: String = QuestionContextEnum.EXTRACTION.toString(),
     ) = RequestModel(
         researcherId,
         systematicStudyId,
@@ -127,7 +125,7 @@ class TestDataFactory {
         systematicStudyId: UUID = systematicStudy,
         questionType: QuestionType = QuestionType.PICK_LIST,
         options: List<String>? = listOf(faker.lorem.words(), faker.lorem.words()),
-        context: QuestionContext = QuestionContext.EXTRACTION
+        context: String = QuestionContextEnum.EXTRACTION.toString(),
     ) = RequestModel(
         researcherId,
         systematicStudyId,
@@ -146,7 +144,7 @@ class TestDataFactory {
         systematicStudyId: UUID = systematicStudy,
         questionType: QuestionType = QuestionType.LABELED_SCALE,
         scales: Map<String, Int>? = mapOf(faker.lorem.words() to 1, faker.lorem.words() to 2),
-        context: QuestionContext = QuestionContext.EXTRACTION
+        context: String = QuestionContextEnum.EXTRACTION.toString(),
     ) = RequestModel(
         researcherId,
         systematicStudyId,
@@ -166,7 +164,7 @@ class TestDataFactory {
         questionType: QuestionType = QuestionType.NUMBERED_SCALE,
         higher: Int? = 10,
         lower: Int? = 1,
-        context: QuestionContext = QuestionContext.EXTRACTION
+        context: String = QuestionContextEnum.EXTRACTION.toString(),
     ) = RequestModel(
         researcherId,
         systematicStudyId,
@@ -229,7 +227,7 @@ class TestDataFactory {
         request.lower,
         request.higher,
         request.options,
-        request.questionContext.toString()
+        context = QuestionContextEnum.EXTRACTION
     )
 
     operator fun component1() = researcher
