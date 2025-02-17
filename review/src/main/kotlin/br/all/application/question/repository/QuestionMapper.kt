@@ -13,7 +13,7 @@ fun Question<*>.toDto(type: QuestionType, context: String) = QuestionDto(
     (this as? NumberScale)?.higher,
     (this as? NumberScale)?.lower,
     (this as? PickList)?.options,
-    context
+    context = QuestionContextEnum.valueOf(context)
 )
 
 fun Question.Companion.fromDto(dto: QuestionDto): Question<*> {
