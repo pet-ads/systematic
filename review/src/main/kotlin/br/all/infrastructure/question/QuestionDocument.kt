@@ -1,8 +1,7 @@
 package br.all.infrastructure.question
 
 
-import br.all.domain.model.question.QuestionId
-import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.question.QuestionContextEnum
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
@@ -18,5 +17,5 @@ data class QuestionDocument(
     val higher: Int? = null,
     val lower: Int? = null,
     val options: List<String>? = null,
-    val context: String
+    val context: QuestionContextEnum
 )
