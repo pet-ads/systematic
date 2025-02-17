@@ -2,6 +2,7 @@ package br.all.infrastructure.question
 
 import br.all.application.question.repository.QuestionDto
 import br.all.application.question.repository.QuestionRepository
+import br.all.domain.model.question.QuestionContextEnum
 import br.all.infrastructure.shared.toNullable
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -21,7 +22,7 @@ class QuestionRepositoryImpl(private val repository: MongoQuestionRepository) : 
         val allQuestions = repository.findAllBySystematicStudyId(systematicStudyId)
 
         val filteredQuestions = if (context != null) {
-            allQuestions.filter { it.context == context }
+            allQuestions.filter { it.context == QuestionContextEnum.valueOf(context) }
         } else {
             allQuestions
         }
