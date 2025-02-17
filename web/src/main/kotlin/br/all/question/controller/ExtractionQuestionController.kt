@@ -39,6 +39,7 @@ class ExtractionQuestionController(
     data class PickListRequest(val code: String, val description: String, val options: List<String>)
     data class LabeledScaleRequest(val code: String, val description: String, val scales: Map<String, Int>)
     data class NumberScaleRequest(val code: String, val description: String, val lower: Int, val higher: Int)
+    val questionContext = "EXTRACTION"
 
     fun createQuestion(request: CreateRequest): ResponseEntity<*> {
         val presenter = RestfulCreateExtractionQuestionPresenter(linksFactory)
@@ -75,7 +76,7 @@ class ExtractionQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
-            CreateQuestionService.QuestionContext.EXTRACTION,
+            questionContext,
             TEXTUAL,
             request.code,
             request.description,
@@ -110,7 +111,7 @@ class ExtractionQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
-            CreateQuestionService.QuestionContext.EXTRACTION,
+            questionContext,
             PICK_LIST,
             request.code,
             request.description,
@@ -150,7 +151,7 @@ class ExtractionQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
-            CreateQuestionService.QuestionContext.EXTRACTION,
+            questionContext,
             LABELED_SCALE,
             request.code,
             request.description,
@@ -188,7 +189,7 @@ class ExtractionQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
-            CreateQuestionService.QuestionContext.EXTRACTION,
+            questionContext,
             NUMBERED_SCALE,
             request.code,
             request.description,
@@ -235,7 +236,7 @@ class ExtractionQuestionController(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
             questionId,
-            context = "EXTRACTION"
+            questionContext
         )
         findOneService.findOne(presenter, request)
 
@@ -273,7 +274,7 @@ class ExtractionQuestionController(
         val request = FindAllRequest(
             userId = authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId = systematicStudyId,
-            context = "EXTRACTION"
+            questionContext
         )
         findAllService.findAllBySystematicStudyId(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
