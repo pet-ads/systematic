@@ -14,7 +14,7 @@ data class PutRequest(
     val higher: Int? = null,
     val lower: Int? = null,
     val options: List<String>? = null,
-    val context: CreateQuestionService.QuestionContext // <-- Adicionando o campo context
+    val context: String? = null
 ) {
     fun toUpdateRequestModel(userId: UUID, systematicStudyId: UUID, questionId: UUID) =
         UpdateQuestionService.RequestModel(
