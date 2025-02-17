@@ -38,6 +38,7 @@ class RiskOfBiasQuestionController(
     data class PickListRequest(val code: String, val description: String, val options: List<String>)
     data class LabeledScaleRequest(val code: String, val description: String, val scales: Map<String, Int>)
     data class NumberScaleRequest(val code: String, val description: String, val lower: Int, val higher: Int)
+    val questionContext = "ROB"
 
     fun createQuestion(request: CreateRequest): ResponseEntity<*> {
         val presenter = RestfulCreateRoBQuestionPresenter(linksFactory)
@@ -74,7 +75,7 @@ class RiskOfBiasQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
-            CreateQuestionService.QuestionContext.ROB,
+            questionContext,
             TEXTUAL,
             request.code,
             request.description
@@ -110,7 +111,7 @@ class RiskOfBiasQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
-            CreateQuestionService.QuestionContext.ROB,
+            questionContext,
             PICK_LIST,
             request.code,
             request.description,
@@ -151,7 +152,7 @@ class RiskOfBiasQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
-            CreateQuestionService.QuestionContext.ROB,
+            questionContext,
             LABELED_SCALE,
             request.code,
             request.description,
@@ -189,7 +190,7 @@ class RiskOfBiasQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
-            CreateQuestionService.QuestionContext.ROB,
+            questionContext,
             NUMBERED_SCALE,
             request.code,
             request.description,
@@ -269,7 +270,7 @@ class RiskOfBiasQuestionController(
         val request = FindAllBySystematicStudyIdService.RequestModel(
             userId = authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId = systematicStudyId,
-            context = "ROB"
+            questionContext
         )
         findAllService.findAllBySystematicStudyId(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
