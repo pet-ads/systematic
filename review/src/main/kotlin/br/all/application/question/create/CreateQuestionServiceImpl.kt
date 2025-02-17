@@ -61,9 +61,7 @@ class CreateQuestionServiceImpl(
             LABELED_SCALE -> builder.buildLabeledScale(request.scales!!)
         }
 
-        println("Persisting question with ID: $generatedId and context: ${request.questionContext}")
-        questionRepository.createOrUpdate(question.toDto(type, request.questionContext.toString()))
-        println("Question with ID $generatedId persisted successfully.")
+        questionRepository.createOrUpdate(question.toDto(type, request.questionContext))
 
         presenter.prepareSuccessView(ResponseModel(request.userId, systematicStudyId, generatedId))
     }
