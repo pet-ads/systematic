@@ -1,5 +1,6 @@
 package br.all.application.question.repository
 
+import br.all.domain.model.question.QuestionContextEnum
 import java.util.*
 
 data class QuestionDto(
@@ -12,5 +13,5 @@ data class QuestionDto(
     val higher: Int? = null,
     val lower: Int? = null,
     val options: List<String>? = null,
-    val context: String
+    val context: QuestionContextEnum,
 )
