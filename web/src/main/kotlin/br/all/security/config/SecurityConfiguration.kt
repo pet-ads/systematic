@@ -35,7 +35,7 @@ class SecurityConfiguration(
             .authorizeHttpRequests {
                 it
                     .requestMatchers(
-                        "/api/v1/auth", "/api/v1/auth/refresh", "/error", "/swagger-ui/**",
+                        "/api/v1/auth", "/api/v1/auth/logout", "/api/v1/auth/refresh", "/error", "/swagger-ui/**",
                         "/v3/api-docs/**",
                         "/configuration/ui",
                         "/swagger-resources/**",

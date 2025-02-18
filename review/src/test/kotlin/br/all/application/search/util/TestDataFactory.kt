@@ -61,7 +61,8 @@ class TestDataFactory {
         userId: UUID = this.userId,
         systematicStudyId: UUID = this.systematicStudyId,
         sessionId: UUID = this.searchSessionId,
-    ) = CreateResponseModel(userId, systematicStudyId, sessionId)
+        invalidEntries: List<String> = emptyList()
+    ) = CreateResponseModel(userId, systematicStudyId, sessionId, invalidEntries)
 
     fun findOneRequestModel(
         userId: UUID = this.userId,
@@ -91,7 +92,8 @@ class TestDataFactory {
         searchString: String = "SearchString",
         additionalInfo: String = "",
         timeStamp: LocalDateTime = LocalDateTime.now(),
-        source: String = "SearchSource"
+        source: String = "SearchSource",
+        numberOfRelatedStudies: Int = 0
     ) = SearchSessionDto(
         id,
         systematicStudyId,
@@ -99,7 +101,8 @@ class TestDataFactory {
         searchString,
         additionalInfo,
         timeStamp,
-        source
+        source,
+        numberOfRelatedStudies
     )
 
     fun generateProtocol(
@@ -259,4 +262,16 @@ class TestDataFactory {
     operator fun component2() = systematicStudyId
 
     operator fun component3() = searchSessionId
+
+    fun createResponseModelWithInvalidEntries(
+        userId: UUID = this.userId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        sessionId: UUID = this.searchSessionId,
+        invalidEntries: List<String> = listOf("Invalid entry 1", "Invalid entry 2")
+    ) = CreateResponseModel(
+        userId = userId,
+        systematicStudyId = systematicStudyId,
+        sessionId = sessionId,
+        invalidEntries = invalidEntries
+    )
 }

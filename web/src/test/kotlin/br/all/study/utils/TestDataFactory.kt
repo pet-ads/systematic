@@ -12,6 +12,7 @@ class TestDataFactory {
 
     val researcherId: UUID = UUID.randomUUID()
     val systematicStudyId: UUID = UUID.randomUUID()
+    val searchSessionId: UUID = UUID.randomUUID()
     private val faker = Faker()
 
     fun validPostRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId) =
@@ -19,6 +20,7 @@ class TestDataFactory {
         {
             "researcherId": "$researcher",
             "systematicStudyId": "$systematicStudyId",
+            "searchSessionId": "${UUID.randomUUID()}",
             "type": "${faker.random.nextEnum(StudyType::class.java)}",
             "title": "${faker.book.title()}",
             "year": ${faker.year()},
@@ -48,6 +50,7 @@ class TestDataFactory {
         {
             "studyReviewId": "$studyReviewId",
             "systematicStudyId": "$systematicStudyId",
+            "searchSessionId": "${UUID.randomUUID()}",
             "type": "${faker.random.nextEnum(StudyType::class.java)}",
             "title": "${faker.book.title()}",
             "year": ${faker.year()},
@@ -106,10 +109,11 @@ class TestDataFactory {
     fun reviewDocument(
         systematicStudyId: UUID,
         studyReviewId: Long,
+        searchSessionId: UUID = UUID.randomUUID(),
         type: String = faker.random.nextEnum(StudyType::class.java).toString(),
         title: String = faker.book.title(),
         year: Int = faker.year(),
-        authors: String = faker.science.scientist(),
+        authors: String = "Marie Curie",
         venue: String = faker.book.publisher(),
         abstract: String = faker.paragraph(20),
         keywords: Set<String> = faker.wordsList(5).toSet(),
@@ -126,7 +130,7 @@ class TestDataFactory {
     ): StudyReviewDocument {
         val studyId = StudyReviewId(systematicStudyId, studyReviewId)
         return StudyReviewDocument(
-            studyId, type, title, year,
+            studyId, searchSessionId, type, title, year,
             authors, venue, abstract, keywords, references, doi, sources,
             criteria, formAnswers, robAnswers, comments, readingPriority,
             extractionStatus, selectionStatus

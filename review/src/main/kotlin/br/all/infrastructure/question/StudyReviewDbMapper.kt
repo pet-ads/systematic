@@ -11,7 +11,8 @@ fun QuestionDocument.toDto() = QuestionDto(
     scales,
     higher,
     lower,
-    options
+    options,
+    context
 )
 
 fun QuestionDto.toDocument() = QuestionDocument(
@@ -23,5 +24,6 @@ fun QuestionDto.toDocument() = QuestionDocument(
     scales,
     higher,
     lower,
-    options
+    options,
+    context
 )

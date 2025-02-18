@@ -44,6 +44,7 @@ class SearchSessionControllerTest(
 
 
     fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/search-session"
+    fun patchUrl(sessionId: String = "") = "/api/v1/systematic-study/$systematicStudyId/patch-search-session${sessionId}"
     fun findUrl(sessionId: String = "") =
         "/api/v1/systematic-study/$systematicStudyId/search-session${sessionId}"
 
@@ -334,5 +335,86 @@ class SearchSessionControllerTest(
             )
         }
     }
+
+    @Nested
+    @DisplayName("When patching search session")
+    inner class WhenPatchingSearchSession {
+        @Test
+        fun `should patch the search session and return 200`() {
+            val request = factory.validPatchRequest()
+            val searchSession = factory.searchSessionDocument(factory.sessionId, systematicStudyId)
+            repository.insert(searchSession)
+
+            val sessionId = "/${searchSession.id}"
+            mockMvc.perform(multipart(patchUrl(sessionId))
+                .file(factory.bibfile())
+                .param("data", request)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .with { request ->
+                    request.method = "PATCH"
+                    request
+                }
+            )
+                .andExpect(status().isOk)
+        }
+    }
+
+    @Nested
+    @DisplayName("When deleting a search session")
+    inner class DeleteTests {
+
+        @Test
+        fun `should delete the search session and return 204`() {
+            val searchSession = factory.searchSessionDocument(factory.sessionId, systematicStudyId)
+            repository.insert(searchSession)
+
+            val sessionId = "/${searchSession.id}"
+            mockMvc.perform(
+                delete(findUrl(sessionId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isNoContent)
+        }
+
+        @Test
+        fun `should return 404 when search session does not exist`() {
+            val nonExistentSessionId = UUID.randomUUID()
+            val sessionId = "/$nonExistentSessionId"
+            mockMvc.perform(
+                delete(findUrl(sessionId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should return 403 when user is not authorized`() {
+            val searchSession = factory.searchSessionDocument(factory.sessionId, systematicStudyId)
+            repository.insert(searchSession)
+
+            val sessionId = "/${searchSession.id}"
+            testHelperService.testForUnauthorizedUser(
+                mockMvc,
+                delete(findUrl(sessionId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(unauthorizedUser))
+            )
+        }
+
+        @Test
+        fun `should return 403 when user is not authenticated`() {
+            val searchSession = factory.searchSessionDocument(factory.sessionId, systematicStudyId)
+            repository.insert(searchSession)
+
+            val sessionId = "/${searchSession.id}"
+            testHelperService.testForUnauthenticatedUser(
+                mockMvc,
+                delete(findUrl(sessionId))
+            )
+        }
+    }
+
+
 }
 

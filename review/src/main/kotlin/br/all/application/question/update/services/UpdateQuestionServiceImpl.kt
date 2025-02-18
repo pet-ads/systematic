@@ -1,5 +1,6 @@
 package br.all.application.question.update.services
 
+import br.all.application.question.create.CreateQuestionService
 import br.all.application.question.create.CreateQuestionService.QuestionType
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.repository.toDto
@@ -7,22 +8,28 @@ import br.all.application.question.update.presenter.UpdateQuestionPresenter
 import br.all.application.question.update.services.UpdateQuestionService.*
 import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.review.repository.fromDto
 import br.all.application.shared.presenter.PreconditionChecker
+import br.all.application.shared.presenter.prepareIfFailsPreconditions
+import br.all.application.user.CredentialsService
 import br.all.domain.model.question.QuestionBuilder
 import br.all.domain.model.question.QuestionId
+import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 
 class UpdateQuestionServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val questionRepository: QuestionRepository,
-    private val credentialsService: ResearcherCredentialsService,
+    private val credentialsService: CredentialsService,
 ) : UpdateQuestionService {
     override fun update(presenter: UpdateQuestionPresenter, request: RequestModel) {
-        val researcherId = ResearcherId(request.researcherId)
-        val systematicStudyId = SystematicStudyId(request.systematicStudyId)
-        val preconditionChecker = PreconditionChecker(systematicStudyRepository, credentialsService)
-        preconditionChecker.prepareIfViolatesPreconditions(presenter, researcherId, systematicStudyId)
+        val systematicStudyId = request.systematicStudyId
+        val userId = request.userId
+        val user = credentialsService.loadCredentials(userId)?.toUser()
+        val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
+        val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
         if (presenter.isDone()) return
 
@@ -43,7 +50,7 @@ class UpdateQuestionServiceImpl(
 
         val questionId = QuestionId(request.questionId)
 
-        val builder = QuestionBuilder.with(questionId, systematicStudyId, request.code, request.description)
+        val builder = QuestionBuilder.with(questionId, SystematicStudyId(systematicStudyId), request.code, request.description)
         val question = when (request.questionType) {
             QuestionType.TEXTUAL -> builder.buildTextual()
             QuestionType.PICK_LIST -> builder.buildPickList(request.options!!)
@@ -51,8 +58,8 @@ class UpdateQuestionServiceImpl(
             QuestionType.LABELED_SCALE -> builder.buildLabeledScale(request.scales!!)
         }
 
-        questionRepository.createOrUpdate(question.toDto(type))
-        presenter.prepareSuccessView(ResponseModel(researcherId.value, systematicStudyId.value(), questionId.value))
+        questionRepository.createOrUpdate(question.toDto(type, request.questionContext.toString()))
+        presenter.prepareSuccessView(UpdateQuestionService.ResponseModel(userId, systematicStudyId, questionId.value))
     }
 
 }

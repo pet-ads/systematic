@@ -22,7 +22,8 @@ class JwtAuthenticationFilter(
 
     private val matchersToSkip: List<RequestMatcher> = listOf(
         AntPathRequestMatcher("/api/v1/user"),
-        AntPathRequestMatcher("/api/v1/auth"),
+        AntPathRequestMatcher("/api/v1/auth/"),
+        AntPathRequestMatcher("/api/v1/auth/logout/"),
         AntPathRequestMatcher("/webjars/**"),
         AntPathRequestMatcher("/error"),
         AntPathRequestMatcher("/swagger-ui.html"),
@@ -39,14 +40,20 @@ class JwtAuthenticationFilter(
         filterChain: FilterChain
     ) {
 
-        if(request.cookies.isNullOrEmpty() || matchersToSkip.any { it.matches(request) }){
+        if(matchersToSkip.any { it.matches(request) }){
             filterChain.doFilter(request, response)
             return
         }
 
-        val jwtToken = request.cookies.lastOrNull {cookie -> cookie.name.equals("accessToken") }?.value
+        val authHeader = request.getHeader("Authorization")
+        if (authHeader.doesNotContainBearerToken()) {
+            filterChain.doFilter(request, response)
+            return
+        }
 
-        if(jwtToken == null){
+        val jwtToken = authHeader!!.extractBearerToken()
+
+        if(!isValidJwtFormat(jwtToken) || tokenService.isExpired(jwtToken)){
             filterChain.doFilter(request, response)
             return
         }
@@ -68,5 +75,13 @@ class JwtAuthenticationFilter(
         SecurityContextHolder.getContext().authentication = authToken
     }
 
+    private fun String?.doesNotContainBearerToken() = this == null || !this.startsWith("Bearer ")
+
+    private fun String.extractBearerToken(): String = this.substringAfter("Bearer ")
+
+    fun isValidJwtFormat(token: String): Boolean {
+        val jwtPattern = "^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.?[A-Za-z0-9-_.+/=]*$"
+        return token.matches(jwtPattern.toRegex())
+    }
 }
 

@@ -10,6 +10,7 @@ interface CreateQuestionService {
     data class RequestModel(
         val userId: UUID,
         val systematicStudyId: UUID,
+        val questionContext: String,
         val questionType: QuestionType,
         val code: String,
         val description: String,

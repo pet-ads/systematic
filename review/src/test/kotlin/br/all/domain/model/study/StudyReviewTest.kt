@@ -3,6 +3,7 @@ package br.all.domain.model.study
 import br.all.domain.model.protocol.Criterion
 import br.all.domain.model.protocol.Criterion.CriterionType
 import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.search.SearchSessionID
 import br.all.domain.shared.utils.paragraph
 import br.all.domain.shared.utils.year
 import io.github.serpro69.kfaker.Faker
@@ -159,6 +160,7 @@ class StudyReviewTest {
     private fun createStudy(
         studyReviewId: Long = 1L,
         systematicStudyId: UUID = UUID.randomUUID(),
+        searchSessionId: UUID = UUID.randomUUID(),
         studyType: StudyType = StudyType.INBOOK,
         title: String = faker.book.title(),
         abstract: String = faker.paragraph(20),
@@ -167,7 +169,15 @@ class StudyReviewTest {
         authors: String = faker.book.author(),
         searchSources: MutableSet<String> = mutableSetOf(faker.book.publisher())
     ) = StudyReview(
-        StudyReviewId(studyReviewId), SystematicStudyId(systematicStudyId),
-        studyType, title, year, venue, authors, abstract, searchSources = searchSources
+        StudyReviewId(studyReviewId),
+        SystematicStudyId(systematicStudyId),
+        SearchSessionID(searchSessionId),
+        studyType,
+        title,
+        year,
+        venue,
+        authors,
+        abstract,
+        searchSources = searchSources
     )
 }

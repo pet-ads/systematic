@@ -5,9 +5,12 @@ import br.all.application.question.create.CreateQuestionService.QuestionType.*
 import br.all.application.question.create.CreateQuestionService.RequestModel
 import br.all.application.question.find.FindQuestionService
 import br.all.application.question.findAll.FindAllBySystematicStudyIdService
-import br.all.question.presenter.extraction.RestfulFindAllExtractionQuestionPresenter
+import br.all.application.question.update.services.UpdateQuestionService
 import br.all.question.presenter.riskOfBias.RestfulCreateRoBQuestionPresenter
+import br.all.question.presenter.riskOfBias.RestfulFindAllRoBQuestionPresenter
 import br.all.question.presenter.riskOfBias.RestfulFindRoBQuestionPresenter
+import br.all.question.presenter.riskOfBias.RestfulUpdateRoBQuestionPresenter
+import br.all.question.requests.PutRequest
 import br.all.security.service.AuthenticationInfoService
 import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
@@ -28,12 +31,14 @@ class RiskOfBiasQuestionController(
     val createQuestionService: CreateQuestionService,
     val findOneService: FindQuestionService,
     val findAllService: FindAllBySystematicStudyIdService,
+    val updateQuestionService: UpdateQuestionService,
     val linksFactory: LinksFactory
 ) {
     data class TextualRequest(val code: String, val description: String)
     data class PickListRequest(val code: String, val description: String, val options: List<String>)
     data class LabeledScaleRequest(val code: String, val description: String, val scales: Map<String, Int>)
     data class NumberScaleRequest(val code: String, val description: String, val lower: Int, val higher: Int)
+    val questionContext = "ROB"
 
     fun createQuestion(request: CreateRequest): ResponseEntity<*> {
         val presenter = RestfulCreateRoBQuestionPresenter(linksFactory)
@@ -70,6 +75,7 @@ class RiskOfBiasQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
+            questionContext,
             TEXTUAL,
             request.code,
             request.description
@@ -105,6 +111,7 @@ class RiskOfBiasQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
+            questionContext,
             PICK_LIST,
             request.code,
             request.description,
@@ -145,6 +152,7 @@ class RiskOfBiasQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
+            questionContext,
             LABELED_SCALE,
             request.code,
             request.description,
@@ -182,6 +190,7 @@ class RiskOfBiasQuestionController(
         RequestModel(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
+            questionContext,
             NUMBERED_SCALE,
             request.code,
             request.description,
@@ -256,9 +265,61 @@ class RiskOfBiasQuestionController(
     fun findAllBySystematicStudyId(
         @PathVariable systematicStudyId: UUID
     ): ResponseEntity<*> {
-        val presenter = RestfulFindAllExtractionQuestionPresenter(linksFactory)
-        val request = FindAllBySystematicStudyIdService.RequestModel(authenticationInfoService.getAuthenticatedUserId(), systematicStudyId)
+
+        val presenter = RestfulFindAllRoBQuestionPresenter(linksFactory)
+        val request = FindAllBySystematicStudyIdService.RequestModel(
+            userId = authenticationInfoService.getAuthenticatedUserId(),
+            systematicStudyId = systematicStudyId,
+            questionContext
+        )
         findAllService.findAllBySystematicStudyId(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @PutMapping("/{questionId}")
+    @Operation(summary = "Update a risk of bias question")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success updating a rob question",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = UpdateQuestionService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail updating question - invalid request",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail updating question - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail updating question - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail updating question - question not found",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+        ]
+    )
+    fun updateQuestion(
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable questionId: UUID,
+        @RequestBody request: PutRequest
+    ): ResponseEntity<*> {
+        val presenter = RestfulUpdateRoBQuestionPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val requestModel = request.toUpdateRequestModel(userId, systematicStudyId, questionId)
+
+        updateQuestionService.update(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

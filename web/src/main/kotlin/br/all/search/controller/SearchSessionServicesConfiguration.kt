@@ -4,17 +4,19 @@ import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.CreateSearchSessionServiceImpl
+import br.all.application.search.delete.DeleteSearchSessionServiceImpl
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceServiceImpl
 import br.all.application.search.find.service.FindSearchSessionServiceImpl
 import br.all.application.search.find.service.FindAllSearchSessionsServiceImpl
 import br.all.application.search.repository.SearchSessionRepository
+import br.all.application.search.update.PatchSearchSessionPresenter
+import br.all.application.search.update.PatchSearchSessionService
+import br.all.application.search.update.PatchSearchSessionServiceImpl
 import br.all.application.search.update.UpdateSearchSessionServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
-import br.all.domain.services.BibtexConverterService
-import br.all.domain.services.IdGeneratorService
-import br.all.domain.services.UuidGeneratorService
+import br.all.domain.services.*
 import br.all.infrastructure.protocol.MongoProtocolRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -26,12 +28,36 @@ class SearchSessionServicesConfiguration {
     fun bibtexConverterService(idGenerator: IdGeneratorService) = BibtexConverterService(idGenerator)
 
     @Bean
+    fun risConverterService(idGenerator: IdGeneratorService) = RisConverterService(idGenerator)
+
+    @Bean
+    fun converterFactoryService(idGenerator: IdGeneratorService) = ConverterFactoryService(
+        bibtexConverterService(idGenerator),
+        risConverterService(idGenerator)
+    )
+
+    @Bean
+    fun patchSearchSessionService(
+        systematicStudyRepository: SystematicStudyRepository,
+        searchSessionRepository: SearchSessionRepository,
+        credentialsService: CredentialsService,
+        studyReviewRepository: StudyReviewRepository,
+        converterFactoryService: ConverterFactoryService
+    ) = PatchSearchSessionServiceImpl(
+        systematicStudyRepository,
+        searchSessionRepository,
+        credentialsService,
+        studyReviewRepository,
+        converterFactoryService
+    )
+
+    @Bean
     fun createSearchSession(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
         protocolRepository: ProtocolRepository,
         uuidGeneratorService: UuidGeneratorService,
-        bibtexConverterService: BibtexConverterService,
+        converterFactoryService: ConverterFactoryService,
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService
     ) = CreateSearchSessionServiceImpl(
@@ -39,7 +65,7 @@ class SearchSessionServicesConfiguration {
         systematicStudyRepository,
         protocolRepository,
         uuidGeneratorService,
-        bibtexConverterService,
+        converterFactoryService,
         studyReviewRepository,
         credentialsService
     )
@@ -81,4 +107,16 @@ class SearchSessionServicesConfiguration {
     ) = UpdateSearchSessionServiceImpl (
         systematicStudyRepository, searchSessionRepository, credentialsService
     )
+
+    @Bean
+    fun deleteSearchSessionService(
+        credentialsService: CredentialsService,
+        searchSessionRepository: SearchSessionRepository,
+        systematicStudyRepository: SystematicStudyRepository
+    ) = DeleteSearchSessionServiceImpl(
+        systematicStudyRepository,
+        searchSessionRepository,
+        credentialsService
+    )
+
 }

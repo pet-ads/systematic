@@ -3,16 +3,18 @@ package br.all.domain.model.study
 import br.all.domain.model.protocol.Criterion
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.search.SearchSessionID
 
 class StudyReview(
     studyId: StudyReviewId,
     val systematicStudyId: SystematicStudyId,
+    val searchSessionId: SearchSessionID,
     val studyType: StudyType,
     val title: String,
     val year: Int,
     val authors: String,
     val venue: String,
-    val abstract: String,
+    val abstract: String? = null,
     val doi: Doi? = null,
     keywords: Set<String> = mutableSetOf(),
     searchSources: MutableSet<String>,

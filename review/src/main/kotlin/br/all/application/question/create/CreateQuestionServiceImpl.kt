@@ -29,7 +29,7 @@ class CreateQuestionServiceImpl(
         val systematicStudyId = request.systematicStudyId
         val userId = request.userId
         val user = credentialsService.loadCredentials(userId)?.toUser()
-        val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
+        val systematicStudyDto = systematicStudyRepository.findById(systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
         presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
@@ -41,7 +41,7 @@ class CreateQuestionServiceImpl(
             presenter.prepareFailView(IllegalArgumentException("Options must not be null or empty."))
             return
         }
-        if (type == NUMBERED_SCALE && (request.lower == null || request.higher == null)) {
+        if (type == NUMBERED_SCALE && (request.higher == null || request.lower == null)) {
             presenter.prepareFailView(IllegalArgumentException("Scale boundaries must not be null."))
             return
         }
@@ -54,14 +54,15 @@ class CreateQuestionServiceImpl(
         val questionId = QuestionId(generatedId)
 
         val builder = QuestionBuilder.with(questionId, SystematicStudyId(systematicStudyId), request.code, request.description)
-        val question = when (request.questionType) {
+        val question = when (type) {
             TEXTUAL -> builder.buildTextual()
             PICK_LIST -> builder.buildPickList(request.options!!)
-            NUMBERED_SCALE -> builder.buildNumberScale(request.lower!!, request.higher!!)
+            NUMBERED_SCALE -> builder.buildNumberScale(request.higher!!, request.lower!!)
             LABELED_SCALE -> builder.buildLabeledScale(request.scales!!)
         }
 
-        questionRepository.createOrUpdate(question.toDto(type))
-        presenter.prepareSuccessView(ResponseModel(userId, systematicStudyId, questionId.value))
+        questionRepository.createOrUpdate(question.toDto(type, request.questionContext))
+
+        presenter.prepareSuccessView(ResponseModel(request.userId, systematicStudyId, generatedId))
     }
 }

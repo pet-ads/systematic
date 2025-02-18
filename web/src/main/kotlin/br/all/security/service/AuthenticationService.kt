@@ -1,5 +1,6 @@
 package br.all.security.service
 
+import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.user.find.LoadAccountCredentialsService
 import br.all.application.user.update.UpdateRefreshTokenService
 import br.all.application.user.update.UpdateRefreshTokenService.RequestModel
@@ -30,7 +31,6 @@ class AuthenticationService(
     private val linksFactory: LinksFactory
 ) {
 
-    private val accessCookieExpiration = jwtProperties.accessTokenExpiration / 1000
     private val refreshCookieExpiration = jwtProperties.refreshTokenExpiration / 1000
 
     fun authenticate(request: AuthenticationRequest, response: HttpServletResponse): AuthenticationResponseModel {
@@ -41,16 +41,14 @@ class AuthenticationService(
         val refreshToken = generateToken(user, jwtProperties.refreshTokenExpiration)
 
         val  updateTokenRequest = RequestModel(user.id, refreshToken)
-        updateRefreshTokenService.update(updateTokenRequest)
 
-        val cookie = generateCookieFromToken("accessToken", token, accessCookieExpiration)
+        updateRefreshTokenService.update(updateTokenRequest)
 
         val refreshCookie = generateCookieFromToken("refreshToken", refreshToken, refreshCookieExpiration)
 
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString())
 
-        val responseModel = AuthenticationResponseModel()
+        val responseModel = AuthenticationResponseModel(token)
 
         val ownerStudies = linksFactory.findMyReviews(user.id)
         val createSystematicStudy = linksFactory.createReview()
@@ -85,20 +83,19 @@ class AuthenticationService(
 
         val accessToken = generateToken(currentUserDetails, jwtProperties.accessTokenExpiration)
 
-        val cookie = generateCookieFromToken("accessToken", accessToken, accessCookieExpiration)
-
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
-
         return accessToken
     }
 
     fun logout(request: HttpServletRequest, response: HttpServletResponse) {
-        if(request.cookies.isNullOrEmpty()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "No login found")
+        val incomingRefreshCookie = request.cookies?.lastOrNull { cookie -> cookie.name.equals("refreshToken") }
+        val refreshToken = incomingRefreshCookie?.value ?: throw UnauthorizedUserException("No refresh token found.")
 
-        val accessCookie = generateCookieFromToken("accessToken", null.toString(), 0)
+        val userId = refreshToken.let { loadCredentialsService.loadSimpleCredentialsByToken(it) }.id
+
+        updateRefreshTokenService.update(RequestModel(userId, null))
+
         val refreshCookie = generateCookieFromToken("refreshToken", null.toString(), 0)
 
-        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString())
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString())
     }
 
@@ -114,5 +111,5 @@ class AuthenticationService(
             .maxAge(maxAge)
             .build()
 
-    inner class AuthenticationResponseModel: RepresentationModel<AuthenticationResponseModel>()
+    inner class AuthenticationResponseModel(val accessToken: String): RepresentationModel<AuthenticationResponseModel>()
 }

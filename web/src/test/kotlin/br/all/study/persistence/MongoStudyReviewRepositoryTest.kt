@@ -21,11 +21,13 @@ class MongoStudyReviewRepositoryTest (
 
     private lateinit var factory: TestDataFactory
     private lateinit var reviewId: UUID
+    private lateinit var sessionId: UUID
 
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
         reviewId = UUID.randomUUID()
+        sessionId = UUID.randomUUID()
         idService.reset()
         sut.deleteAll()
     }
@@ -43,7 +45,7 @@ class MongoStudyReviewRepositoryTest (
     @Test
     fun `Should update a study review`(){
         val studyId = idService.next()
-        val study = factory.reviewDocument(reviewId, studyId,"study")
+        val study = factory.reviewDocument(reviewId, studyId,sessionId, "study")
         sut.insert(study)
         val updatedTitle = "study review"
         val updatedStudy = factory.reviewDocument(reviewId, studyId, title = updatedTitle)
@@ -71,6 +73,15 @@ class MongoStudyReviewRepositoryTest (
         assertTrue(result.size == 1)
     }
 
+    @Test
+    fun `Should find all study reviews in a review by search session`(){
+        sut.insert(factory.reviewDocument(reviewId, idService.next(), sessionId))
+        sut.insert(factory.reviewDocument(reviewId, idService.next(), UUID.randomUUID()))
+        sut.insert(factory.reviewDocument(UUID.randomUUID(), idService.next()))
+        val result = sut.findAllById_SystematicStudyIdAndSearchSessionId(reviewId, sessionId)
+        assertTrue(result.size == 1)
+    }
+
     @Test fun `Should update study reviews selection status`(){
         val studyId = idService.next()
         val studyReview = factory.reviewDocument(reviewId, studyId)
@@ -83,7 +94,7 @@ class MongoStudyReviewRepositoryTest (
 
     @Test
     fun `Should find a study review in a review`(){
-        val studyReview = factory.reviewDocument(reviewId, idService.next(),"study")
+        val studyReview = factory.reviewDocument(reviewId, idService.next(), sessionId,"study")
         sut.insert(studyReview)
         val result = sut.findById(studyReview.id)
         assertEquals(studyReview.id.studyReviewId, result.toNullable()?.id?.studyReviewId)

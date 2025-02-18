@@ -7,6 +7,6 @@ interface UpdateRefreshTokenService {
 
     data class RequestModel(
         val userId: UUID,
-        val refreshToken: String
+        val refreshToken: String?
     )
 }

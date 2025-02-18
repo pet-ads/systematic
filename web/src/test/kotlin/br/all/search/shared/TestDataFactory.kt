@@ -103,7 +103,8 @@ class TestDataFactory {
         searchString: String = "SearchString",
         additionalInfo: String = "AdditionalInfo",
         timeStamp: LocalDateTime = LocalDateTime.of(2022, 1, 1, 0, 0),
-        source: String = "Source"
+        source: String = "Source",
+        numberOfRelatedStudies: Int = 0
     ): SearchSessionDocument {
         return SearchSessionDocument(
             id,
@@ -113,6 +114,7 @@ class TestDataFactory {
             additionalInfo,
             timeStamp,
             source,
+            numberOfRelatedStudies
         )
     }
 
@@ -145,4 +147,16 @@ class TestDataFactory {
         jsonFields.add("\"source\": \"$source\"")
         return "{ ${jsonFields.joinToString(", ")} }"
     }
+
+    fun validPatchRequest(
+        user: UUID = userId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        searchSessionId: UUID = this.sessionId
+    ) = """
+        {
+            "userId": "$user",
+            "systematicStudyId": "$systematicStudyId",
+            "searchSessionId": "$searchSessionId"
+        }
+        """.trimIndent()
 }

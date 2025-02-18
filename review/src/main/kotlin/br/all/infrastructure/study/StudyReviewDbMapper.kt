@@ -5,6 +5,7 @@ import br.all.application.study.repository.StudyReviewDto
 fun StudyReviewDocument.toDto() = StudyReviewDto(
     id.studyReviewId,
     id.systematicStudyId,
+    searchSessionId,
     type,
     title,
     year,
@@ -26,6 +27,7 @@ fun StudyReviewDocument.toDto() = StudyReviewDto(
 
 fun StudyReviewDto.toDocument() = StudyReviewDocument(
     StudyReviewId(systematicStudyId, studyReviewId),
+    searchSessionId,
     studyType,
     title,
     year,

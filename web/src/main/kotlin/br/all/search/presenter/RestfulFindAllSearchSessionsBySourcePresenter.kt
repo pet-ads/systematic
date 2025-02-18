@@ -27,8 +27,14 @@ class RestfulFindAllSearchSessionsBySourcePresenter(
         )
 
         val self = linksFactory.findSessionsBySource(response.systematicStudyId, response.source)
+        val allStudiesBySource = linksFactory.findAllStudiesBySource(response.systematicStudyId, response.source)
 
-        restfulResponse.add(self)
+        restfulResponse.add(self, allStudiesBySource)
+
+        response.searchSessions.forEach{searchSessionDto ->
+            restfulResponse.add(linksFactory.findAllStudiesBySession(response.systematicStudyId, searchSessionDto.id))
+        }
+
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
 
     }

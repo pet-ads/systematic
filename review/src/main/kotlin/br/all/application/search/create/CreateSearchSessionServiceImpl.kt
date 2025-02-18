@@ -18,7 +18,7 @@ import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
-import br.all.domain.services.BibtexConverterService
+import br.all.domain.services.ConverterFactoryService
 import br.all.domain.services.UuidGeneratorService
 
 class CreateSearchSessionServiceImpl(
@@ -26,16 +26,18 @@ class CreateSearchSessionServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val protocolRepository: ProtocolRepository,
     private val uuidGeneratorService: UuidGeneratorService,
-    private val bibtexConverterService: BibtexConverterService,
+    private val converterFactoryService: ConverterFactoryService,
     private val studyReviewRepository: StudyReviewRepository,
     private val credentialsService: CredentialsService,
 ) : CreateSearchSessionService {
 
 
-    override fun createSession(presenter: CreateSearchSessionPresenter, request: RequestModel, file: String) {
-
+    override fun createSession(
+        presenter: CreateSearchSessionPresenter,
+        request: RequestModel,
+        file: String
+    ) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
-
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
         presenter.prepareIfFailsPreconditions(user, systematicStudy)
@@ -50,15 +52,32 @@ class CreateSearchSessionServiceImpl(
         if (!hasSource) {
             val message = "Protocol ID ${protocolDto?.id} does not contain $source as a search source"
             presenter.prepareFailView(NoSuchElementException(message))
+            return
         }
 
         val sessionId = SearchSessionID(uuidGeneratorService.next())
         val searchSession = SearchSession.fromRequestModel(sessionId, request)
 
-        val studyReviews = bibtexConverterService.convertManyToStudyReview(request.systematicStudyId.toSystematicStudyId() , file)
+        val (studyReviews, invalidEntries) = converterFactoryService.extractReferences(
+            request.systematicStudyId.toSystematicStudyId(),
+            sessionId,
+            file
+        )
+
         studyReviewRepository.saveOrUpdateBatch(studyReviews.map { it.toDto() })
 
+        val numberOfRelatedStudies = studyReviews.size
+        searchSession.numberOfRelatedStudies = numberOfRelatedStudies
+
         searchSessionRepository.create(searchSession.toDto())
-        presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, sessionId.value))
+
+        presenter.prepareSuccessView(
+            ResponseModel(
+                userId = request.userId,
+                systematicStudyId = request.systematicStudyId,
+                sessionId = sessionId.value,
+                invalidEntries = invalidEntries
+            )
+        )
     }
 }

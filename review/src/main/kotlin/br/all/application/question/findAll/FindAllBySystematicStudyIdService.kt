@@ -9,8 +9,10 @@ interface FindAllBySystematicStudyIdService {
 
     data class RequestModel(
         val userId: UUID,
-        val systematicStudyId: UUID
+        val systematicStudyId: UUID,
+        val context: String? = null
     )
+
 
     @Schema(name = "FindAllBySystematicStudyIdServiceResponseModel")
     data class ResponseModel(

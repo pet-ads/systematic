@@ -91,45 +91,51 @@ fun Protocol.copyUpdates(request: UpdateProtocolService.RequestModel) = apply {
     goal = request.goal ?: goal
     justification = request.justification ?: justification
 
-    if(request.researchQuestions.isNotEmpty()) {
+    if (request.researchQuestions.isNotEmpty()) {
         request.researchQuestions
             .map { it.toResearchQuestion() }
             .toSet()
-            .let { replaceResearchQuestions(it) } }
+            .let { replaceResearchQuestions(it) }
+    }
 
-    if(request.keywords.isNotEmpty())
+    if (request.keywords.isNotEmpty()) {
         replaceKeywords(request.keywords)
+    }
 
     searchString = request.searchString ?: searchString
 
-    if(request.informationSources.isNotEmpty()) {
+    if (request.informationSources.isNotEmpty()) {
         request.informationSources
             .map { it.toSearchSource() }
             .toSet()
-            .let { replaceInformationSources(it) } }
+            .let { replaceInformationSources(it) }
+    }
 
     sourcesSelectionCriteria = request.sourcesSelectionCriteria ?: sourcesSelectionCriteria
     searchMethod = request.searchMethod ?: searchMethod
 
-    if(request.studiesLanguages.isNotEmpty()) {
+    if (request.studiesLanguages.isNotEmpty()) {
         request.studiesLanguages
             .map { Language(LangType.valueOf(it)) }
             .toSet()
-            .let { replaceLanguages(it) } }
+            .let { replaceLanguages(it) }
+    }
 
     studyTypeDefinition = request.studyTypeDefinition ?: studyTypeDefinition
 
     selectionProcess = request.selectionProcess ?: selectionProcess
 
-    if(request.eligibilityCriteria.isNotEmpty()) {
+    if (request.eligibilityCriteria.isNotEmpty()) {
         request.eligibilityCriteria
             .map { Criterion.fromDto(it) }
             .toSet()
-            .let { replaceEligibilityCriteria(it) } }
+            .let { replaceEligibilityCriteria(it) }
+    }
 
     dataCollectionProcess = request.dataCollectionProcess ?: dataCollectionProcess
     analysisAndSynthesisProcess = request.analysisAndSynthesisProcess ?: analysisAndSynthesisProcess
 
-    if(request.picoc != null)
+    if (request.picoc != null) {
         picoc = Picoc.fromDto(request.picoc)
+    }
 }

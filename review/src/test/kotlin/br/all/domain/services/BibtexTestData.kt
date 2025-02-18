@@ -311,6 +311,79 @@ object BibtexTestData {
               month   = {sep}
               abstract = {Lorem Ipsum}
             }
+        """,
+
+        "multiple bibtex entries with some invalid" to """
+            //invalid
+            @article{nash51,
+                title = {Non-cooperative Games},
+                abstract = {Lorem Ipsum},
+                keywords = {keyword1, keyword2},
+                references = {ref1, ref2},
+                doi = {10.1234/doi}
+            }
+            //removed {}
+            @INPROCEEDINGS{Rodrigues11MOSA,
+              author    = {Onofre {Trindade Júnior}},
+              title     = {{Using SOA in Critical-Embedded Systems}},
+              booktitle = {Proceedings of the 4${'$'}^{th}${'$'}  IEEE (CPSCom'11)},
+              year      = {2011},
+              pages     = {733-738},
+              address   = {Dalian, China},
+              abstract  = {Lorem ipsum},
+              references = {ref3, ref4},
+              doi        = {10.1021/ci025584y}
+            }
+            
+            @Techreport{Durelli2011LPSRM,
+                author    = {Rafael Serapilha Durelli},
+                title     = {Uma abordagem apoiada por linguagens específicas de domínio para a criação de linhas de produto de software embarcado},
+                institution  = {Universidade Federal de São Carlos (UFSCar)},
+                year      = {2011},
+                type      = {Dissertação de Mestrado},
+                address   = {São Carlos, SP},
+                abstract  = {Lorem Ipsum}
+            }
+            
+            @BOOK{Bass03SAPRr,
+              title      = {Software Architecture in Practice},
+              publisher  = {Addison-Wesley},
+              year       = {2012},
+              series     = {SEI Series in Software Engineering},
+              edition    = {3},
+              author     = {Len Bass and Paul Clements and Rick Kazman},
+              abstract    = {Lorem Ipsum}
+            }
+            //removed type
+            {CitekeyProceedings,
+              editor    = {Susan Stepney and Sergey Verlan},
+              title     = {Proceedings of the 17th International Conference on Computation and Natural Computation, Fontainebleau, France},
+              series    = {Lecture Notes in Computer Science},
+              volume    = {10867},
+              publisher = {Springer},
+              address   = {Cham, Switzerland},
+              year      = {2018},
+              abstract  = {Lorem Ipsum}
+            }
+            //removed school
+            @phdthesis{CitekeyPhdthesis,
+              author  = {Rempel, Robert Charles},
+              title   = {Relaxation Effects for Coupled Nuclear Spins},
+              address = {Stanford, CA},
+              year    = {1956},
+              month   = {jun}
+              abstract = {Lorem Ipsum}
+            }
+            //removed @
+            mastersthesis{CitekeyMastersthesis,
+              author  = {Jian Tang},
+              title   = {Spin structure of the nucleon in the asymptotic limit},
+              school  = {Massachusetts Institute of Technology},
+              year    = {1996},
+              address = {Cambridge, MA},
+              month   = {sep}
+              abstract = {Lorem Ipsum}
+            }
         """
     )
 }
