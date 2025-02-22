@@ -77,8 +77,8 @@ class TestDataFactory {
         description,
         "NUMBERED_SCALE",
         null,
-        1,
         10,
+        1,
         null,
         context = QuestionContextEnum.EXTRACTION
     )
