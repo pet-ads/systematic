@@ -224,8 +224,8 @@ class TestDataFactory {
         request.description,
         request.questionType.toString(),
         request.scales,
-        request.lower,
         request.higher,
+        request.lower,
         request.options,
         context = QuestionContextEnum.EXTRACTION
     )
