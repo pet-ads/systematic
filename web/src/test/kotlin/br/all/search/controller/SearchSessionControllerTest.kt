@@ -1,5 +1,10 @@
 package br.all.search.controller
 
+import br.all.application.protocol.repository.toDto
+import br.all.domain.model.protocol.Protocol
+import br.all.domain.model.review.toSystematicStudyId
+import br.all.infrastructure.protocol.MongoProtocolRepository
+import br.all.infrastructure.protocol.toDocument
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.search.MongoSearchSessionRepository
 import br.all.infrastructure.shared.toNullable
@@ -32,6 +37,7 @@ class SearchSessionControllerTest(
     @Autowired val repository: MongoSearchSessionRepository,
     @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
     @Autowired val studyReviewRepository: MongoStudyReviewRepository,
+    @Autowired val protocolRepository: MongoProtocolRepository,
     @Autowired val idService: StudyReviewIdGeneratorService,
     @Autowired private val testHelperService: TestHelperService,
     @Autowired val mockMvc: MockMvc,
@@ -78,6 +84,7 @@ class SearchSessionControllerTest(
     fun teardown() {
         repository.deleteAll()
         systematicStudyRepository.deleteAll()
+        protocolRepository.deleteAll()
         studyReviewRepository.deleteAll()
         testHelperService.deleteApplicationUser(user.id)
         idService.reset()
@@ -88,9 +95,11 @@ class SearchSessionControllerTest(
     inner class CreateTests {
         @Test
         fun `should create search session and return 201`() {
-            println(factory.validPostRequest())
+            val source = "testSource"
+            protocolRepository.save(factory.createProtocolDocument(source))
+
             mockMvc.perform(multipart(postUrl())
-                .file(factory.bibfile()).param("data", factory.validPostRequest())
+                .file(factory.bibfile()).param("data", factory.validPostRequest(source = source))
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
                 .andExpect(status().isCreated)
