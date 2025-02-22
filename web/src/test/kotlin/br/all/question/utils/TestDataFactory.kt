@@ -124,6 +124,7 @@ class TestDataFactory {
         systematicStudyId: UUID,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
+        questionType: QuestionContextEnum = QuestionContextEnum.ROB
 
     ) = QuestionDocument(
             questionId,
@@ -135,7 +136,7 @@ class TestDataFactory {
             null,
             null,
             null, 
-            QuestionContextEnum.EXTRACTION
+            questionType
         )
 
     fun validCreatePickListQuestionDocument(
@@ -143,7 +144,7 @@ class TestDataFactory {
         systematicStudyId: UUID,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
-
+        questionType: QuestionContextEnum = QuestionContextEnum.ROB
         ) = QuestionDocument(
         questionId,
         systematicStudyId,
@@ -154,7 +155,7 @@ class TestDataFactory {
         null,
         null,
         listOf(faker.lorem.words(), faker.lorem.words()),
-        QuestionContextEnum.EXTRACTION
+        questionType
     )
 
     fun validCreateLabeledScaleQuestionDocument(
@@ -162,7 +163,7 @@ class TestDataFactory {
         systematicStudyId: UUID,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
-
+        questionType: QuestionContextEnum = QuestionContextEnum.ROB
         ) = QuestionDocument(
         questionId,
         systematicStudyId,
@@ -173,7 +174,7 @@ class TestDataFactory {
         null,
         null,
         null,
-        QuestionContextEnum.EXTRACTION
+        questionType
     )
 
     fun validCreateNumberedScaleQuestionDocument(
@@ -181,7 +182,7 @@ class TestDataFactory {
         systematicStudyId: UUID,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
-
+        questionType: QuestionContextEnum = QuestionContextEnum.ROB
         ) = QuestionDocument(
         questionId,
         systematicStudyId,
@@ -192,6 +193,6 @@ class TestDataFactory {
         10,
         1,
         null,
-        QuestionContextEnum.EXTRACTION
+        questionType
     )
 }

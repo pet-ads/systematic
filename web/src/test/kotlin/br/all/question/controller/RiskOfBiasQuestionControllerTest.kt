@@ -1,5 +1,6 @@
 package br.all.question.controller
 
+import br.all.domain.model.question.QuestionContextEnum
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.question.utils.TestDataFactory
@@ -193,8 +194,16 @@ class RiskOfBiasQuestionControllerTest(
 
         @Test
         fun `should find all questions and return 200`() {
-            val textualQuestion = factory.validCreateTextualQuestionDocument(UUID.randomUUID(), systematicStudyId)
-            val pickListQuestion = factory.validCreatePickListQuestionDocument(UUID.randomUUID(), systematicStudyId)
+            val textualQuestion = factory.validCreateTextualQuestionDocument(
+                UUID.randomUUID(),
+                systematicStudyId,
+                questionType = QuestionContextEnum.ROB
+            )
+            val pickListQuestion = factory.validCreatePickListQuestionDocument(
+                UUID.randomUUID(),
+                systematicStudyId,
+                questionType = QuestionContextEnum.ROB
+            )
 
             repository.insert(textualQuestion)
             repository.insert(pickListQuestion)
