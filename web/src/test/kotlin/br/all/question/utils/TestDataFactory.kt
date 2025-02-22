@@ -1,5 +1,6 @@
 package br.all.question.utils
 
+import br.all.domain.model.question.QuestionContextEnum
 import br.all.domain.shared.utils.paragraph
 import br.all.infrastructure.question.QuestionDocument
 import io.github.serpro69.kfaker.Faker
@@ -133,7 +134,8 @@ class TestDataFactory {
             null,
             null,
             null,
-            null
+            null, 
+            QuestionContextEnum.EXTRACTION
         )
 
     fun validCreatePickListQuestionDocument(
@@ -151,7 +153,8 @@ class TestDataFactory {
         null,
         null,
         null,
-        listOf(faker.lorem.words(), faker.lorem.words())
+        listOf(faker.lorem.words(), faker.lorem.words()),
+        QuestionContextEnum.EXTRACTION
     )
 
     fun validCreateLabeledScaleQuestionDocument(
@@ -169,7 +172,8 @@ class TestDataFactory {
         mapOf(faker.lorem.words() to 1, faker.lorem.words() to 2),
         null,
         null,
-        null
+        null,
+        QuestionContextEnum.EXTRACTION
     )
 
     fun validCreateNumberedScaleQuestionDocument(
@@ -187,6 +191,7 @@ class TestDataFactory {
         null,
         10,
         1,
-        null
+        null,
+        QuestionContextEnum.EXTRACTION
     )
 }

@@ -1,6 +1,5 @@
 package br.all.domain.model.question
 
-import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.review.SystematicStudyId
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.*
@@ -44,7 +43,7 @@ class QuestionBuilderTest {
             val higher = 10
             val lower = 1
 
-            assertDoesNotThrow { validQuestionBuilder.buildNumberScale(lower, higher) }
+            assertDoesNotThrow { validQuestionBuilder.buildNumberScale(higher, lower) }
         }
 
         @Test
@@ -79,7 +78,7 @@ class QuestionBuilderTest {
             fun `should not create a NumberScale question with lower greater than higher`(lower: Int) {
                 val higher = 10
 
-                assertThrows<IllegalArgumentException> { validQuestionBuilder.buildNumberScale(lower, higher) }
+                assertThrows<IllegalArgumentException> { validQuestionBuilder.buildNumberScale(higher, lower) }
             }
 
             @Test
@@ -87,7 +86,7 @@ class QuestionBuilderTest {
                 val higher = 10
                 val lower = 10
 
-                assertThrows<IllegalArgumentException> { validQuestionBuilder.buildNumberScale(lower, higher) }
+                assertThrows<IllegalArgumentException> { validQuestionBuilder.buildNumberScale(higher, lower) }
             }
 
             @Test

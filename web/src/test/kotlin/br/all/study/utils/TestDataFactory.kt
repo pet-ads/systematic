@@ -1,5 +1,6 @@
 package br.all.study.utils
 
+import br.all.domain.model.question.QuestionContextEnum
 import br.all.domain.model.study.StudyType
 import br.all.domain.shared.utils.*
 import br.all.infrastructure.question.QuestionDocument
@@ -152,7 +153,8 @@ class TestDataFactory {
             null,
             null,
             null,
-            null
+            null,
+            QuestionContextEnum.EXTRACTION
         )
 
 }
