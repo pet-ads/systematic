@@ -18,11 +18,11 @@ class QuestionRepositoryImpl(private val repository: MongoQuestionRepository) : 
         return repository.findById(id).toNullable()?.toDto()
     }
 
-    override fun findAllBySystematicStudyId(systematicStudyId: UUID, context: String?): List<QuestionDto> {
+    override fun findAllBySystematicStudyId(systematicStudyId: UUID, context: QuestionContextEnum?): List<QuestionDto> {
         val allQuestions = repository.findAllBySystematicStudyId(systematicStudyId)
 
         val filteredQuestions = if (context != null) {
-            allQuestions.filter { it.context == QuestionContextEnum.valueOf(context) }
+            allQuestions.filter { it.context == context }
         } else {
             allQuestions
         }

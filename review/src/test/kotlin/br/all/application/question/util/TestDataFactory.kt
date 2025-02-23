@@ -77,8 +77,8 @@ class TestDataFactory {
         description,
         "NUMBERED_SCALE",
         null,
-        1,
         10,
+        1,
         null,
         context = QuestionContextEnum.EXTRACTION
     )
@@ -224,8 +224,8 @@ class TestDataFactory {
         request.description,
         request.questionType.toString(),
         request.scales,
-        request.lower,
         request.higher,
+        request.lower,
         request.options,
         context = QuestionContextEnum.EXTRACTION
     )

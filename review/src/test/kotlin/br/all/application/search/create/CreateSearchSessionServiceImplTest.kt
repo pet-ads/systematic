@@ -85,7 +85,7 @@ class CreateSearchSessionServiceImplTest {
         fun `createSession should create search session`() {
             val (_, systematicStudyUuid, searchSessionId) = testDataFactory
             val systematicStudyId = SystematicStudyId(systematicStudyUuid)
-            val request = testDataFactory.createRequestModel()
+            val request = testDataFactory.createRequestModel(source = testDataFactory.source)
             val response = testDataFactory.createResponseModel()
             val protocol = testDataFactory.generateProtocol()
 

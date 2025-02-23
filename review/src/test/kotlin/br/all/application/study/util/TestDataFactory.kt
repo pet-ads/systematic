@@ -10,6 +10,7 @@ import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionServic
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
+import br.all.domain.model.question.QuestionContextEnum
 import br.all.domain.model.study.StudyType
 import br.all.domain.shared.utils.paragraph
 import br.all.domain.shared.utils.paragraphList
@@ -150,7 +151,7 @@ class TestDataFactory {
             null,
             null,
             null,
-            null
+            null, QuestionContextEnum.EXTRACTION
         )
 
     fun generateQuestionLabeledScaleDto(
@@ -169,7 +170,7 @@ class TestDataFactory {
             mapOf(labelDto.name to labelDto.value),
             null,
             null,
-            null
+            null, QuestionContextEnum.EXTRACTION
         )
 
     operator fun component1() = researcherId

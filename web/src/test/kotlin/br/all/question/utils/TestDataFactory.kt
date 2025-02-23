@@ -1,5 +1,6 @@
 package br.all.question.utils
 
+import br.all.domain.model.question.QuestionContextEnum
 import br.all.domain.shared.utils.paragraph
 import br.all.infrastructure.question.QuestionDocument
 import io.github.serpro69.kfaker.Faker
@@ -123,6 +124,7 @@ class TestDataFactory {
         systematicStudyId: UUID,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
+        questionType: QuestionContextEnum = QuestionContextEnum.ROB
 
     ) = QuestionDocument(
             questionId,
@@ -133,7 +135,8 @@ class TestDataFactory {
             null,
             null,
             null,
-            null
+            null, 
+            questionType
         )
 
     fun validCreatePickListQuestionDocument(
@@ -141,7 +144,7 @@ class TestDataFactory {
         systematicStudyId: UUID,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
-
+        questionType: QuestionContextEnum = QuestionContextEnum.ROB
         ) = QuestionDocument(
         questionId,
         systematicStudyId,
@@ -151,7 +154,8 @@ class TestDataFactory {
         null,
         null,
         null,
-        listOf(faker.lorem.words(), faker.lorem.words())
+        listOf(faker.lorem.words(), faker.lorem.words()),
+        questionType
     )
 
     fun validCreateLabeledScaleQuestionDocument(
@@ -159,7 +163,7 @@ class TestDataFactory {
         systematicStudyId: UUID,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
-
+        questionType: QuestionContextEnum = QuestionContextEnum.ROB
         ) = QuestionDocument(
         questionId,
         systematicStudyId,
@@ -169,7 +173,8 @@ class TestDataFactory {
         mapOf(faker.lorem.words() to 1, faker.lorem.words() to 2),
         null,
         null,
-        null
+        null,
+        questionType
     )
 
     fun validCreateNumberedScaleQuestionDocument(
@@ -177,7 +182,7 @@ class TestDataFactory {
         systematicStudyId: UUID,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
-
+        questionType: QuestionContextEnum = QuestionContextEnum.ROB
         ) = QuestionDocument(
         questionId,
         systematicStudyId,
@@ -187,6 +192,7 @@ class TestDataFactory {
         null,
         10,
         1,
-        null
+        null,
+        questionType
     )
 }

@@ -4,11 +4,10 @@ import br.all.application.question.findAll.FindAllBySystematicStudyIdService.*
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
-import br.all.application.shared.presenter.PreconditionChecker
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.user.CredentialsService
+import br.all.domain.model.question.QuestionContextEnum
 import br.all.domain.model.review.SystematicStudy
-import br.all.domain.model.review.SystematicStudyId
 
 class FindAllBySystematicStudyIdServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
@@ -25,7 +24,10 @@ class FindAllBySystematicStudyIdServiceImpl(
         presenter.prepareIfFailsPreconditions(user, systematicStudy)
         if (presenter.isDone()) return
 
-        val questions = questionRepository.findAllBySystematicStudyId(request.systematicStudyId, request.context)
+        val questions = questionRepository.findAllBySystematicStudyId(
+            request.systematicStudyId,
+            request.context?.let { QuestionContextEnum.valueOf(it) }
+        )
 
         presenter.prepareSuccessView(
             ResponseModel(

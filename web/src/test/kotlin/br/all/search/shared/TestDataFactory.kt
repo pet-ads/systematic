@@ -1,6 +1,7 @@
 package br.all.search.shared
 
 import br.all.domain.shared.utils.paragraph
+import br.all.infrastructure.protocol.ProtocolDocument
 import br.all.infrastructure.search.SearchSessionDocument
 import io.github.serpro69.kfaker.Faker
 import org.springframework.http.MediaType
@@ -15,12 +16,33 @@ class TestDataFactory {
     val nonExistentSessionId: UUID = UUID.randomUUID()
     private val faker = Faker()
 
-    fun validPostRequest(user: UUID = userId, systematicStudyId: UUID = this.systematicStudyId) =
+    fun createProtocolDocument(source: String = faker.lorem.words()) = ProtocolDocument(
+        id = systematicStudyId,
+        goal = null,
+        justification = null,
+        researchQuestions = emptySet(),
+        keywords = emptySet(),
+        searchString = null,
+        informationSources = setOf(source),
+        sourcesSelectionCriteria = null,
+        searchMethod = null,
+        studiesLanguages = emptySet(),
+        studyTypeDefinition = null,
+        selectionProcess = null,
+        selectionCriteria = emptySet(),
+        dataCollectionProcess = null,
+        analysisAndSynthesisProcess = null,
+        extractionQuestions = emptySet(),
+        robQuestions = emptySet(),
+        picoc = null
+    )
+    
+    fun validPostRequest(user: UUID = userId, systematicStudyId: UUID = this.systematicStudyId, source: String = faker.lorem.words()) =
         """
         {
             "userId": "$user",
             "systematicStudyId": "$systematicStudyId",
-            "source": "${faker.lorem.words()}",
+            "source": "$source",
             "searchString": "${faker.paragraph(5)}",
             "additionalInfo": "${faker.paragraph(30)}"
         }
