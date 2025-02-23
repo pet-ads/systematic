@@ -1,6 +1,8 @@
 package br.all
 
+import br.all.domain.model.review.toSystematicStudyId
 import br.all.utils.CreateSystematicReviewUseCase
+import br.all.utils.NewSearchSessionUseCase
 import br.all.utils.RegisterUserUseCase
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -18,12 +20,14 @@ class WebApplication{
         encoder: PasswordEncoder,
         register: RegisterUserUseCase,
         create: CreateSystematicReviewUseCase,
+        search: NewSearchSessionUseCase
         ) = CommandLineRunner {
         val password = encoder.encode("admin")
 
         val lucasUserAccount = register.registerUserAccount("buenolro", password)
 
-        create.createReview(lucasUserAccount.id.value(), setOf(lucasUserAccount.id.value()))
+        val systematicId = create.createReview(lucasUserAccount.id.value(), setOf(lucasUserAccount.id.value()))
+        search.convert(systematicId.toSystematicStudyId())
     }
 }
 
