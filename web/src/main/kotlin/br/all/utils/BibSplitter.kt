@@ -10,7 +10,7 @@ class BibSplitter {
         val entries = bibText.split(Regex("(?m)^@")).filter { it.isNotBlank() }
         for (entry in entries) {
             val bibEntry = "@" + entry.trim()
-            val regex = Regex("source\\s*=\\s*\\{([^}]*)\\}", RegexOption.IGNORE_CASE)
+            val regex = Regex("source\\s*=\\s*\\{([^}]*)", RegexOption.IGNORE_CASE)
             val matchResult = regex.find(bibEntry)
             if (matchResult != null) {
                 val sourceField = matchResult.groupValues[1]
