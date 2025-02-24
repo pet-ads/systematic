@@ -27,7 +27,7 @@ class WebApplication{
         val lucasUserAccount = register.registerUserAccount("buenolro", password)
 
         val systematicId = create.createReview(lucasUserAccount.id.value(), setOf(lucasUserAccount.id.value()))
-        search.convert(systematicId.toSystematicStudyId())
+        search.convert(systematicId.toSystematicStudyId(), lucasUserAccount.id.value())
     }
 }
 
