@@ -2,7 +2,6 @@ package br.all.utils
 
 import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.repository.SearchSessionRepository
-import br.all.application.search.repository.toDto
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.toDto
 import br.all.domain.model.review.SystematicStudyId
@@ -27,7 +26,7 @@ class NewSearchSessionUseCase (
     ) {
         val search = uuidGeneratorService.next()
         val file = File("web/src/main/kotlin/br/all/utils/ALL.bib").readText()
-        val (studyReviews, invalidEntries) = converterFactoryService.extractReferences(systematicStudyId, search.toSearchSessionID(), file)
+        val (studyReviews) = converterFactoryService.extractReferences(systematicStudyId, search.toSearchSessionID(), file)
 
         val searchSession = SearchSessionDto(
             id = uuidGeneratorService.next(),
