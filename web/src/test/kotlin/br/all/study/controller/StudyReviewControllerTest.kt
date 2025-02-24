@@ -309,7 +309,7 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should find all studies by session and return 200`() {
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId,))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId))
             repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), UUID.randomUUID()))
             repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), UUID.randomUUID()))
 
@@ -324,7 +324,7 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should find all studies by author and return 200`() {
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId,))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId))
             repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), UUID.randomUUID(), authors = "Test"))
             repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), UUID.randomUUID()))
 
