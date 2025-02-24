@@ -26,7 +26,7 @@ class NewSearchSessionUseCase (
         userId: UUID,
     ) {
         val search = uuidGeneratorService.next()
-        val file = File("/Users/erickgomes/Documents/PET-ADS/test/systematic/web/src/main/kotlin/br/all/utils/ALL.bib").readText()
+        val file = File("web/src/main/kotlin/br/all/utils/ALL.bib").readText()
         val (studyReviews, invalidEntries) = converterFactoryService.extractReferences(systematicStudyId, search.toSearchSessionID(), file)
 
         val searchSession = SearchSessionDto(
