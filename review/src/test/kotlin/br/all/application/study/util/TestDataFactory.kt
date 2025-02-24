@@ -122,8 +122,8 @@ class TestDataFactory {
     ) = UpdateStudyReviewStatusService.RequestModel(researcherId, systematicStudyId, studyReviewId, status)
 
     fun markAsDuplicatedRequestModel(
-        destinationId: Long,
-    ) = MarkAsDuplicatedService.RequestModel(researcherId, systematicStudyId, destinationId, studyReviewId)
+        duplicatedStudies: Map<Long, Long>,
+    ) = MarkAsDuplicatedService.RequestModel(researcherId, systematicStudyId, duplicatedStudies)
 
     fun <T> answerRequestModel(
         questionId: UUID,

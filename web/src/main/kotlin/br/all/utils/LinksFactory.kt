@@ -227,13 +227,10 @@ class LinksFactory {
         )
     }.withRel("update-study-reading-priority").withType("PATCH")
 
-    fun markStudyAsDuplicated(systematicStudyId: UUID, studyId: Long): Link = linkTo<StudyReviewController> {
-        markAsDuplicated(
-            systematicStudyId,
-            studyId,
-            studyId
-        )
-    }.withRel("mark-study-as-duplicated").withType("PATCH")
+    fun markStudyAsDuplicated(systematicStudyId: UUID): Link =
+        linkTo<StudyReviewController> {
+            markAsDuplicated(systematicStudyId, emptyMap())
+        }.withRel("mark-studies-as-duplicated").withType("PATCH")
 
 }
 
