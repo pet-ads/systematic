@@ -2,10 +2,10 @@ package br.all
 
 import br.all.domain.model.question.QuestionContextEnum
 import br.all.domain.model.review.toSystematicStudyId
-import br.all.utils.CreateQuestionsUseCase
-import br.all.utils.CreateSystematicReviewUseCase
-import br.all.utils.NewSearchSessionUseCase
-import br.all.utils.RegisterUserUseCase
+import br.all.usecases.CreateQuestionsUseCase
+import br.all.usecases.CreateSystematicReviewUseCase
+import br.all.usecases.NewSearchSessionUseCase
+import br.all.usecases.RegisterUserUseCase
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
