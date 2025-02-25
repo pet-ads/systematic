@@ -24,8 +24,8 @@ class NewSearchSessionUseCase (
         userId: UUID,
     ) {
         val search = uuidGeneratorService.next()
-        val fileContent = object {}.javaClass.getResource("/ALL.bib")?.readText()
-            ?: throw IllegalStateException("Arquivo ALL.bib não encontrado no classpath")
+        val fileContent = BibtexData.allBib["allBib"]
+            ?: throw IllegalStateException("Bibtex data not found")
         val (studyReviews) = converterFactoryService.extractReferences(
             systematicStudyId, search.toSearchSessionID(), fileContent
         )
