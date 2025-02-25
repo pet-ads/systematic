@@ -15,7 +15,6 @@ class CreateSystematicReviewUseCase(
     private val uuidGeneratorService: UuidGeneratorService,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val protocolRepository: ProtocolRepository,
-    private val createQuestion: CreateQuestionsUseCase
 ) {
     fun createReview(ownerId: UUID, collaboratorIds: Set<UUID>): UUID {
 
@@ -68,7 +67,10 @@ class CreateSystematicReviewUseCase(
                 eligibilityCriteria = setOf(
                     CriterionDto("The study reports on the design and development of a service-oriented robotic system.", "INCLUSION"),
                     CriterionDto("The study reports on a new technology for service-oriented robotic systems.", "INCLUSION"),
-                    CriterionDto("The study reports on a process, method, technique, or guideline for service-oriented robotic systems.", "INCLUSION")
+                    CriterionDto("The study reports on a process, method, technique, or guideline for service-oriented robotic systems.", "INCLUSION"),
+                    CriterionDto("Exclusion Criterion 1", "EXCLUSION"),
+                    CriterionDto("Exclusion Criterion 2", "EXCLUSION"),
+                    CriterionDto("Exclusion Criterion 3", "EXCLUSION"),
                 ),
                 dataCollectionProcess = "Data extraction was performed using pre-defined extraction tables corresponding to each research question.",
                 analysisAndSynthesisProcess = "Data were synthesized using statistical methods and meta-analysis to draw conclusions about the research area.",
@@ -77,7 +79,7 @@ class CreateSystematicReviewUseCase(
                 picoc = PicocDto(
                     population = "Researchers and developers of robotic systems interested in employing SOA.",
                     intervention = "The development and use of service-oriented robotic systems.",
-                    control = null,
+                    control = "Control Sample Text",
                     outcome = "A comprehensive overview of technologies, methodologies, and guidelines for developing service-oriented robotic systems.",
                     context = "Robotics and Software Engineering"
                 )
