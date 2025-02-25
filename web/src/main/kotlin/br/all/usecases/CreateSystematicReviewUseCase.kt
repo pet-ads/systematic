@@ -1,4 +1,4 @@
-package br.all.utils
+package br.all.usecases
 
 import br.all.application.protocol.repository.CriterionDto
 import br.all.application.protocol.repository.PicocDto
@@ -6,7 +6,6 @@ import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.protocol.repository.ProtocolDto
 import br.all.application.protocol.repository.ProtocolRepository
-import br.all.domain.model.question.QuestionContextEnum
 import br.all.domain.services.UuidGeneratorService
 import org.springframework.stereotype.Service
 import java.util.UUID

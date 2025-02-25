@@ -1,11 +1,10 @@
-package br.all.utils
+package br.all.usecases
 
 import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.repository.toDto
 import br.all.domain.user.*
 import org.springframework.stereotype.Service
 import java.util.*
-import io.github.serpro69.kfaker.Faker
 
 @Service
 class RegisterUserUseCase (

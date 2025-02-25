@@ -1,4 +1,4 @@
-package br.all.utils
+package br.all.usecases
 
 import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.repository.SearchSessionRepository
@@ -9,7 +9,6 @@ import br.all.domain.model.search.toSearchSessionID
 import br.all.domain.services.ConverterFactoryService
 import br.all.domain.services.UuidGeneratorService
 import org.springframework.stereotype.Service
-import java.io.File
 import java.time.LocalDateTime
 import java.util.*
 
@@ -25,8 +24,11 @@ class NewSearchSessionUseCase (
         userId: UUID,
     ) {
         val search = uuidGeneratorService.next()
-        val file = File("web/src/main/kotlin/br/all/utils/ALL.bib").readText()
-        val (studyReviews) = converterFactoryService.extractReferences(systematicStudyId, search.toSearchSessionID(), file)
+        val fileContent = object {}.javaClass.getResource("/ALL.bib")?.readText()
+            ?: throw IllegalStateException("Arquivo ALL.bib não encontrado no classpath")
+        val (studyReviews) = converterFactoryService.extractReferences(
+            systematicStudyId, search.toSearchSessionID(), fileContent
+        )
 
         val searchSession = SearchSessionDto(
             id = uuidGeneratorService.next(),

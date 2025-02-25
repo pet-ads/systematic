@@ -1,4 +1,4 @@
-package br.all.utils
+package br.all.usecases
 
 import br.all.application.question.repository.QuestionDto
 import br.all.application.question.repository.QuestionRepository

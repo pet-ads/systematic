@@ -1,4 +1,4 @@
-package br.all.utils
+package br.all.usecases
 
 import java.io.File
 import java.io.IOException
