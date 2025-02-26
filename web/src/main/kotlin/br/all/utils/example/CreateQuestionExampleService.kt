@@ -1,4 +1,4 @@
-package br.all.usecases
+package br.all.utils.example
 
 import br.all.application.question.repository.QuestionDto
 import br.all.application.question.repository.QuestionRepository
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
-class CreateQuestionsUseCase(
+class CreateQuestionExampleService(
     private val uuidGeneratorService: UuidGeneratorService,
     private val questionRepository: QuestionRepository
 ) {

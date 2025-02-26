@@ -18,12 +18,8 @@ class ConverterFactoryService(
         val risPattern = Regex("""^TY\s+-\s+""", RegexOption.MULTILINE)
 
         return when {
-            bibtexPattern.containsMatchIn(file) -> {
-                bibtexConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, file)
-            }
-            risPattern.containsMatchIn(file) -> {
-                risConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, file)
-            }
+            bibtexPattern.containsMatchIn(file) -> bibtexConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, file)
+            risPattern.containsMatchIn(file) -> risConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, file)
             else -> {
                 Pair(emptyList(), listOf("File format not recognized or unsupported"))
             }
