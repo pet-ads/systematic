@@ -1,4 +1,4 @@
-package br.all.usecases
+package br.all.utils.example
 
 import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.repository.toDto
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class RegisterUserUseCase (
+class RegisterUserExampleService (
     private val repo: UserAccountRepository,
     ){
     fun registerUserAccount(

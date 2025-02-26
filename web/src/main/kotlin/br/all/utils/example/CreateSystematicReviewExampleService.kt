@@ -1,4 +1,4 @@
-package br.all.usecases
+package br.all.utils.example
 
 import br.all.application.protocol.repository.CriterionDto
 import br.all.application.protocol.repository.PicocDto
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
-class CreateSystematicReviewUseCase(
+class CreateSystematicReviewExampleService(
     private val uuidGeneratorService: UuidGeneratorService,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val protocolRepository: ProtocolRepository,
@@ -65,21 +65,23 @@ class CreateSystematicReviewUseCase(
                 studyTypeDefinition = null,
                 selectionProcess = "A two-step process was used: initial screening (title/abstract) followed by full-text evaluation with defined inclusion/exclusion criteria.",
                 eligibilityCriteria = setOf(
-                    CriterionDto("The study reports on the design and development of a service-oriented robotic system.", "INCLUSION"),
-                    CriterionDto("The study reports on a new technology for service-oriented robotic systems.", "INCLUSION"),
-                    CriterionDto("The study reports on a process, method, technique, or guideline for service-oriented robotic systems.", "INCLUSION"),
-                    CriterionDto("Exclusion Criterion 1", "EXCLUSION"),
-                    CriterionDto("Exclusion Criterion 2", "EXCLUSION"),
-                    CriterionDto("Exclusion Criterion 3", "EXCLUSION"),
+                    CriterionDto("The primary study proposes or reports on the design and development of a service-oriented robotic systems.", "INCLUSION"),
+                    CriterionDto("The primary study proposes or reports on a new technology for developing service-oriented robotic systems.", "INCLUSION"),
+                    CriterionDto("The primary study proposes or reports on a process, method, technique, reference architecture or any software engineering guideline that supports either the design or the development of service-oriented robotic systems.", "INCLUSION"),
+                    CriterionDto("The primary study reports on the development of a robotic systems without using SOA.", "EXCLUSION"),
+                    CriterionDto("The primary study presents contributions in areas other than Robotics.", "EXCLUSION"),
+                    CriterionDto("The primary study is a previous version of a more complete study about the same research", "EXCLUSION"),
+                    CriterionDto("The primary study does not report on the design or development of service-oriented robotic system.", "EXCLUSION"),
+                    CriterionDto("The primary study is a table of contents, short course description, tutorial, copyright form or summary of an event (e.g., a conference or a workshop).", "EXCLUSION"),
                 ),
-                dataCollectionProcess = "Data extraction was performed using pre-defined extraction tables corresponding to each research question.",
+                dataCollectionProcess = "Data extraction will be performed using pre-defined extraction tables corresponding to each research question.",
                 analysisAndSynthesisProcess = "Data were synthesized using statistical methods and meta-analysis to draw conclusions about the research area.",
                 extractionQuestions = setOf(),
                 robQuestions = setOf(),
                 picoc = PicocDto(
                     population = "Researchers and developers of robotic systems interested in employing SOA.",
                     intervention = "The development and use of service-oriented robotic systems.",
-                    control = "Control Sample Text",
+                    control = "Not applicable.",
                     outcome = "A comprehensive overview of technologies, methodologies, and guidelines for developing service-oriented robotic systems.",
                     context = "Robotics and Software Engineering"
                 )

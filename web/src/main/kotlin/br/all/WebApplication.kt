@@ -2,10 +2,10 @@ package br.all
 
 import br.all.domain.model.question.QuestionContextEnum
 import br.all.domain.model.review.toSystematicStudyId
-import br.all.usecases.CreateQuestionsUseCase
-import br.all.usecases.CreateSystematicReviewUseCase
-import br.all.usecases.NewSearchSessionUseCase
-import br.all.usecases.RegisterUserUseCase
+import br.all.utils.example.CreateQuestionExampleService
+import br.all.utils.example.CreateSystematicReviewExampleService
+import br.all.utils.example.CreateSearchSessionExampleService
+import br.all.utils.example.RegisterUserExampleService
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -20,60 +20,66 @@ class WebApplication {
     @Bean
     fun run(
         encoder: PasswordEncoder,
-        register: RegisterUserUseCase,
-        create: CreateSystematicReviewUseCase,
-        search: NewSearchSessionUseCase,
-        question: CreateQuestionsUseCase
+        register: RegisterUserExampleService,
+        create: CreateSystematicReviewExampleService,
+        search: CreateSearchSessionExampleService,
+        question: CreateQuestionExampleService
     ) = CommandLineRunner {
+
+        // TODO as classes agora estão no pacote utils/example
         val password = encoder.encode("admin")
-
         val lucasUserAccount = register.registerUserAccount("buenolro", password)
-
         val systematicId = create.createReview(lucasUserAccount.id.value(), setOf(lucasUserAccount.id.value()))
 
-        val robQuestion1 = question.createQuestion(
-            reviewId = systematicId,
-            code = "ROB1",
-            title = "Was there any evidence of missing important primary studies due to limitations in the search strategy or database selection?",
-            context = QuestionContextEnum.ROB
-        )
+        //TODO criar as questões não como textual apenas. Crie algumas como pickone, com os valores da seção 3.3 do documento.
+        //TODO Insira as questões antes do protocolo (talvez dentro da classe CreateSystematicReviewExampleService, assim você vai ter os UUIDs para usar.
+        //TODO Todas as questões aqui são extraction. Se precisar, invente uma para ROB, só para voltar na UI.
 
-        val robQuestion2 = question.createQuestion(
+        val rq1 = question.createQuestion(
             reviewId = systematicId,
-            code = "ROB2",
-            title = "Were the reviewers' reliability and potential biases adequately addressed during study selection and data extraction?",
-            context = QuestionContextEnum.ROB
-        )
-
-        val robQuestion3 = question.createQuestion(
-            reviewId = systematicId,
-            code = "ROB3",
-            title = "Was a formal quality assessment of the included primary studies performed and were potential biases reported transparently?",
-            context = QuestionContextEnum.ROB
-        )
-
-        val extractionQuestion1 = question.createQuestion(
-            reviewId = systematicId,
-            code = "EX1",
-            title = "What are the main research questions or objectives addressed by the primary study?",
+            code = "RQ1",
+            title = "How has service-orientation been applied to the development of robotic systems?",
             context = QuestionContextEnum.EXTRACTION
         )
 
-        val extractionQuestion2 = question.createQuestion(
+        val rq2 = question.createQuestion(
             reviewId = systematicId,
-            code = "EX2",
-            title = "What service development approach (e.g., Sensors and Actuators, Tasks and Activities, Knowledge and Algorithms, or Whole Robot) is reported?",
+            code = "RQ2",
+            title = "What is the most common way of interaction among service-oriented robotic systems?",
             context = QuestionContextEnum.EXTRACTION
         )
 
-        val extractionQuestion3 = question.createQuestion(
+        val rq3 = question.createQuestion(
             reviewId = systematicId,
-            code = "EX3",
-            title = "Which implementation technologies (e.g., REST, WS-*, CORBA) and development environments are used in the study?",
+            code = "RQ3",
+            title = "What implementation technology has been mostly used to develop service-oriented robotic systems?",
             context = QuestionContextEnum.EXTRACTION
         )
 
-        search.convert(systematicId.toSystematicStudyId(), lucasUserAccount.id.value())
+        val rq4 = question.createQuestion(
+            reviewId = systematicId,
+            code = "RQ4",
+            title = "What are the development environments and tools that support the development of service-oriented robotic systems?",
+            context = QuestionContextEnum.EXTRACTION
+        )
+
+        val rq5 = question.createQuestion(
+            reviewId = systematicId,
+            code = "RQ56",
+            title = "Is SOA applicable to all types of robots?",
+            context = QuestionContextEnum.EXTRACTION
+        )
+
+        val rq6 = question.createQuestion(
+            reviewId = systematicId,
+            code = "RQ6",
+            title = "How has Software Engineering been applied to the development of service-oriented robotic systems?",
+            context = QuestionContextEnum.EXTRACTION
+        )
+
+        //TODO o arquivo ALL.bib está na pasta resources. Ao invés de usar um só, insira um para cada base, criando
+        //TODO search sessions realistas (com a string adaptada, campo de observação, data da busca, etc.)
+        search.convert(systematicId.toSystematicStudyId(), lucasUserAccount.id.value(), "ALL.bib", "Scopus")
     }
 }
 
