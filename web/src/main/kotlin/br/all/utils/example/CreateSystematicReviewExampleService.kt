@@ -156,7 +156,7 @@ class CreateSystematicReviewExampleService(
                     "ScienceDirect",
                     "Scopus",
                     "Springer",
-                    "Web of Science"
+                    "Web Of Science",
                 ),
                 sourcesSelectionCriteria = "Sources were selected based on content update, availability, result quality, and export versatility.",
                 searchMethod = "A customized search string was applied to multiple publication databases. The search process included an initial screening by title, abstract, and keywords, followed by a full-text evaluation using predefined inclusion and exclusion criteria.",
