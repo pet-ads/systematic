@@ -17,7 +17,11 @@ class CreateQuestionExampleService(
         code: String,
         title: String,
         context: QuestionContextEnum,
-        type: String = "TEXTUAL"
+        type: String,
+        scales: Map<String, Int>? = null,
+        higher: Int? = null,
+        lower: Int? = null,
+        options: List<String>? = null
     ): QuestionDto {
         val newQuestion = QuestionDto(
             questionId = uuidGeneratorService.next(),
@@ -25,7 +29,11 @@ class CreateQuestionExampleService(
             code = code,
             description = title,
             questionType = type,
-            context = context
+            context = context,
+            scales = scales,
+            higher = higher,
+            lower = lower,
+            options = options
         )
         questionRepository.createOrUpdate(newQuestion)
         return newQuestion
