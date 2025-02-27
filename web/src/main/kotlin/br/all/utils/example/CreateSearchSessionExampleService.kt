@@ -8,7 +8,6 @@ import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.toSearchSessionID
 import br.all.domain.services.ConverterFactoryService
 import br.all.domain.services.UuidGeneratorService
-import br.all.shared.util.generateTimestamp
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
