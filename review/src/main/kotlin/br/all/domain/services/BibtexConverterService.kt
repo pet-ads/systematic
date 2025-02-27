@@ -93,7 +93,8 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     }
 
     private fun parseBibtexFields(bibtexEntry: String): Map<String, String> {
-        val fields = bibtexEntry.trim().split("\n").map { it.trim() }
+        val entry = bibtexEntry.replace("\n\t", " ")
+        val fields = entry.trim().split("\n").map { it.trim() }
         val fieldMap = mutableMapOf<String, String>()
 
         for (field in fields) {

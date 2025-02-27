@@ -36,7 +36,7 @@ class RestfulCreateStudyReviewPresenter(
         val updateReadingPriority = linksFactory.updateStudyReadingPriority(
             response.systematicStudyId, response.studyReviewId
         )
-        val markAsDuplicated = linksFactory.markStudyAsDuplicated(response.systematicStudyId, response.studyReviewId,)
+        val markAsDuplicated = linksFactory.markStudyAsDuplicated(response.systematicStudyId)
 
         restfulResponse.add(selfRef, allStudyReview, updateSelectionStatus, updateExtractionStatus, updateReadingPriority,
                             markAsDuplicated)
