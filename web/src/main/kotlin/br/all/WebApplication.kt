@@ -30,7 +30,7 @@ class WebApplication {
         val systematicId = create.createReview(lucasUserAccount.id.value(), setOf(lucasUserAccount.id.value()))
 
 
-        search.convert(
+       search.convert(
             systematicStudyId = systematicId.toSystematicStudyId(),
             userId = lucasUserAccount.id.value(),
             bibFileName = "Springer.bib",
@@ -42,20 +42,19 @@ class WebApplication {
             additionalInformation = "Springer search performed on 2022-09-20 using complementary substrings (example shown above). Returned 11 studies after duplicate filtering. Only English studies were considered."
         )
 
-        //TODO i dont know why specifically web of science and springer arent working properly
         search.convert(
             systematicStudyId = systematicId.toSystematicStudyId(),
             userId = lucasUserAccount.id.value(),
             bibFileName = "WebOfScience.bib",
-            sourceName = "Web of Science",
+            sourceName = "Web Of Science",
             timestamp = LocalDateTime.of(2022, 9, 20, 17, 0),
             searchString = """
-        Topic=(("Service Oriented" OR "Service-oriented" OR "Service Based" OR "Service-based" OR "Service Orientation" OR SOA)
-        AND (Robot OR Robotic OR humanoid))
-        OR
-        Title=(("Service Oriented" OR "Service-oriented" OR "Service Based" OR "Service-based" OR "Service Orientation" OR SOA)
-        AND (Robot OR Robotic OR humanoid))
-    """.trimIndent(),
+                Topic=(("Service Oriented" OR "Service-oriented" OR "Service Based" OR "Service-based" OR "Service Orientation" OR SOA)
+                AND (Robot OR Robotic OR humanoid))
+                OR
+                Title=(("Service Oriented" OR "Service-oriented" OR "Service Based" OR "Service-based" OR "Service Orientation" OR SOA)
+                AND (Robot OR Robotic OR humanoid))
+            """.trimIndent(),
             additionalInformation = "Web of Science search performed on 2022-09-20 using both Topic and Title fields. Returned 80 studies. Only English studies were considered."
         )
 
