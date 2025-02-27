@@ -14,7 +14,7 @@ class ConverterFactoryService(
         searchSessionId: SearchSessionID,
         file: String
     ): Pair<List<StudyReview>, List<String>> {
-        val bibtexPattern = Regex("""@\s*(article|book|conference|inproceedings|techreport|phdthesis|mastersthesis)\s*""", RegexOption.IGNORE_CASE)
+        val bibtexPattern = Regex("""@\s*(article|book|conference|inproceedings|techreport|phdthesis|mastersthesis|incollection)\s*""", RegexOption.IGNORE_CASE)
         val risPattern = Regex("""^TY\s+-\s+""", RegexOption.MULTILINE)
 
         return when {
