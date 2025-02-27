@@ -8,6 +8,7 @@ import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.toSearchSessionID
 import br.all.domain.services.ConverterFactoryService
 import br.all.domain.services.UuidGeneratorService
+import br.all.shared.util.generateTimestamp
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
@@ -25,7 +26,10 @@ class CreateSearchSessionExampleService (
         systematicStudyId: SystematicStudyId,
         userId: UUID,
         bibFileName: String,
-        sourceName: String
+        sourceName: String,
+        timestamp: LocalDateTime,
+        searchString: String,
+        additionalInformation: String
     ) {
         val search = uuidGeneratorService.next()
         val resource = ClassPathResource(bibFileName)
@@ -39,9 +43,9 @@ class CreateSearchSessionExampleService (
             id = uuidGeneratorService.next(),
             systematicStudyId = systematicStudyId.value(),
             userId = userId,
-            searchString = "",
-            additionalInfo = null,
-            timestamp = LocalDateTime.now(),
+            searchString = searchString,
+            additionalInfo = additionalInformation,
+            timestamp = timestamp,
             source = sourceName,
             numberOfRelatedStudies = studyReviews.size,
         )
