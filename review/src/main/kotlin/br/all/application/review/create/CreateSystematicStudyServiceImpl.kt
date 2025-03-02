@@ -13,14 +13,17 @@ import br.all.domain.model.protocol.Protocol
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.services.UuidGeneratorService
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 class CreateSystematicStudyServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val protocolRepository: ProtocolRepository,
     private val uuidGeneratorService: UuidGeneratorService,
     private val credentialsService: CredentialsService,
 ) : CreateSystematicStudyService {
-
+    
+    @Transactional
     override fun create(presenter: CreateSystematicStudyPresenter, request: RequestModel) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
         presenter.prepareIfUnauthorized(user)
