@@ -1,17 +1,26 @@
 package br.all.review.controller
 
+import br.all.application.protocol.repository.ProtocolDto
+import br.all.application.protocol.repository.ProtocolRepository
+import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.infrastructure.protocol.MongoProtocolRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
+import br.all.infrastructure.review.SystematicStudyDocument
 import br.all.infrastructure.shared.toNullable
 import br.all.review.shared.TestDataFactory
 import br.all.security.service.ApplicationUser
 import br.all.shared.TestHelperService
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
@@ -30,6 +39,8 @@ class SystematicStudyControllerTest(
 ) {
     private lateinit var factory: TestDataFactory
     private lateinit var user: ApplicationUser
+    
+    @MockBean private lateinit var protocolRepository: MongoProtocolRepository
 
     @BeforeEach
     fun setUp() {
@@ -83,6 +94,21 @@ class SystematicStudyControllerTest(
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
                 .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isBadRequest)
+        }
+        
+        @Test 
+        fun `should not save systematic study if protocol creation fails`(){
+            val json = factory.createValidPostRequest()
+
+            Mockito.`when`(protocolRepository.save(Mockito.any())).thenThrow(RuntimeException())
+                
+            mockMvc.perform(
+                post(postUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+            ).andExpect(status().isBadRequest)
+            
+            assertEquals(emptyList<SystematicStudyDocument>(), repository.findAll())
         }
 
         @Test
