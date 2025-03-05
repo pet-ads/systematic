@@ -30,24 +30,20 @@ class DeleteSearchSessionServiceImpl(
 
         if (presenter.isDone()) return
 
-        if (searchSessionRepository.existsById(request.sessionId)) {
-            val searchSessionDto = searchSessionRepository.findById(request.sessionId)
-            if (searchSessionDto != null) {
-                searchSessionRepository.deleteById(searchSessionDto.id)
-                presenter.prepareSuccessView(
-                    DeleteSearchSessionService.ResponseModel(
-                        userId = request.userId,
-                        systematicStudyId = request.systematicStudyId,
-                        sessionId = request.sessionId,
-                    ),
-                )
-            } else {
-                val message = "There is no search session with ID ${request.sessionId}"
-                presenter.prepareFailView(EntityNotFoundException(message))
-            }
-        } else {
-            val message = "There is no search session with ID ${request.sessionId}"
-            presenter.prepareFailView(EntityNotFoundException(message))
+        val searchSessionDto = searchSessionRepository.findById(request.sessionId)
+        
+        if(searchSessionDto == null){
+            presenter.prepareFailView(EntityNotFoundException("There is no search session with ID ${request.sessionId}"))
+            return
         }
+        
+        searchSessionRepository.deleteById(searchSessionDto.id)
+        presenter.prepareSuccessView(
+            DeleteSearchSessionService.ResponseModel(
+                userId = request.userId,
+                systematicStudyId = request.systematicStudyId,
+                sessionId = request.sessionId,
+            ),
+        )
     }
 }
