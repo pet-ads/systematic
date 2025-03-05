@@ -66,7 +66,6 @@ class DeleteSearchSessionServiceImplTest {
             val request = factory.deleteRequestModel()
             val response = factory.deleteResponseModel()
 
-            every { searchSessionRepository.existsById(factory.searchSessionId) } returns true
             every { searchSessionRepository.findById(factory.searchSessionId) } returns factory.generateDto()
             every { searchSessionRepository.deleteById(factory.searchSessionId) } just Runs
 
@@ -87,13 +86,11 @@ class DeleteSearchSessionServiceImplTest {
             val request = factory.deleteRequestModel()
 
             preconditionCheckerMocking.makeEverythingWork()
-            every { searchSessionRepository.existsById(factory.searchSessionId) } returns false
             every { searchSessionRepository.findById(factory.searchSessionId) } returns null
 
             sut.delete(presenter, request)
 
             verify {
-                searchSessionRepository.existsById(factory.searchSessionId)
                 presenter.prepareFailView(any<EntityNotFoundException>())
                 presenter.isDone()
             }
