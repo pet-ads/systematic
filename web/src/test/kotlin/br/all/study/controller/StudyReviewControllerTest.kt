@@ -9,6 +9,7 @@ import br.all.infrastructure.study.StudyReviewIdGeneratorService
 import br.all.security.service.ApplicationUser
 import br.all.shared.TestHelperService
 import br.all.study.utils.TestDataFactory
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -33,6 +34,7 @@ class StudyReviewControllerTest(
     @Autowired private val testHelperService: TestHelperService,
     @Autowired val idService: StudyReviewIdGeneratorService,
     @Autowired val mockMvc: MockMvc,
+    @Autowired val objectMapper: ObjectMapper,
 ) {
 
     private lateinit var factory: TestDataFactory
@@ -60,8 +62,8 @@ class StudyReviewControllerTest(
     fun updateStatusStatus(attributeName: String, studyId: String) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/${studyId}/${attributeName}"
 
-    fun markAsDuplicated(studyIdToKeep: Long, studyIdDuplicate: Long) =
-        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyIdToKeep}/duplicated/${studyIdDuplicate}"
+    fun markAsDuplicated(systematicStudyId: UUID) =
+        "/api/v1/systematic-study/$systematicStudyId/study-review/duplicated"
 
     fun answerRiskOfBiasQuestion(studyReviewId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}/riskOfBias-answer"
@@ -309,7 +311,7 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should find all studies by session and return 200`() {
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId,))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId))
             repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), UUID.randomUUID()))
             repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), UUID.randomUUID()))
 
@@ -324,7 +326,7 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should find all studies by author and return 200`() {
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId,))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId))
             repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), UUID.randomUUID(), authors = "Test"))
             repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), UUID.randomUUID()))
 
@@ -567,6 +569,7 @@ class StudyReviewControllerTest(
     @Nested
     @DisplayName("When marking a study review as duplicated")
     inner class MarkingAsDuplicatedTests {
+
         @Test
         fun `should mark as duplicated and return 200`() {
             val studyToUpdateId = idService.next()
@@ -577,69 +580,96 @@ class StudyReviewControllerTest(
             val studyReviewToDuplicate = factory.reviewDocument(systematicStudyId, studyToDuplicateId)
             repository.insert(studyReviewToDuplicate)
 
-            mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            val duplicatedStudies = mapOf(studyToUpdateId to studyToDuplicateId)
+
+            mockMvc.perform(
+                patch(markAsDuplicated(systematicStudyId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(duplicatedStudies))
             )
+                .andDo(print())
                 .andExpect(status().isOk)
 
             val updatedStudyId = StudyReviewId(systematicStudyId, studyToUpdateId)
             val updatedStudy = repository.findById(updatedStudyId).toNullable()
 
-            val repeatedStudyId = StudyReviewId(systematicStudyId, studyToDuplicateId)
-            val repeatedStudy = repository.findById(repeatedStudyId).toNullable()
+            val duplicateStudyId = StudyReviewId(systematicStudyId, studyToDuplicateId)
+            val duplicateStudy = repository.findById(duplicateStudyId).toNullable()
 
-            val sources = repeatedStudy?.searchSources?.toMutableSet() ?: mutableSetOf()
-            updatedStudy?.searchSources?.forEach { sources.add(it) }
+            val expectedSources = mutableSetOf<String>()
+            duplicateStudy?.searchSources?.let { expectedSources.addAll(it) }
+            updatedStudy?.searchSources?.let { expectedSources.addAll(it) }
 
             assertAll(
-                { assertEquals(repeatedStudy?.selectionStatus, "DUPLICATED") },
-                { assertEquals(updatedStudy?.searchSources?.toMutableSet(), sources) },
+                { assertEquals("DUPLICATED", duplicateStudy?.selectionStatus) },
+                { assertEquals(expectedSources, updatedStudy?.searchSources?.toMutableSet()) }
             )
         }
 
         @Test
-        fun `should return 404 if don't find the study to be marked as duplicated`() {
-            val studyToUpdateId = idService.next()
-            val studyToDuplicateId = idService.next()
-
-            val studyReviewToDuplicate = factory.reviewDocument(systematicStudyId, studyToDuplicateId)
-            repository.insert(studyReviewToDuplicate)
-
-            mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-            ).andExpect(status().isNotFound)
-        }
-
-        @Test
-        fun `should return 404 if don't find the study to be updated`() {
+        fun `should return 404 if study to be marked as duplicated is not found`() {
             val studyToUpdateId = idService.next()
             val studyToDuplicateId = idService.next()
 
             val studyReviewToUpdate = factory.reviewDocument(systematicStudyId, studyToUpdateId)
             repository.insert(studyReviewToUpdate)
 
-            mockMvc.perform(patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-            ).andExpect(status().isNotFound)
+            val duplicatedStudies = mapOf(studyToUpdateId to studyToDuplicateId)
+
+            mockMvc.perform(
+                patch(markAsDuplicated(systematicStudyId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(duplicatedStudies))
+            )
+                .andExpect(status().isNotFound)
         }
 
         @Test
-        fun `should not update if user is unauthorized`(){
+        fun `should return 404 if study to update is not found`() {
             val studyToUpdateId = idService.next()
             val studyToDuplicateId = idService.next()
 
-            testHelperService.testForUnauthorizedUser(mockMvc,
-                patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId))
+            val studyReviewToDuplicate = factory.reviewDocument(systematicStudyId, studyToDuplicateId)
+            repository.insert(studyReviewToDuplicate)
+
+            val duplicatedStudies = mapOf(studyToUpdateId to studyToDuplicateId)
+
+            mockMvc.perform(
+                patch(markAsDuplicated(systematicStudyId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(duplicatedStudies))
+            )
+                .andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should not update if user is unauthorized`() {
+            val studyToUpdateId = idService.next()
+            val studyToDuplicateId = idService.next()
+
+            val duplicatedStudies = mapOf(studyToUpdateId to studyToDuplicateId)
+
+            testHelperService.testForUnauthorizedUser(
+                mockMvc,
+                patch(markAsDuplicated(systematicStudyId))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(duplicatedStudies))
             )
         }
 
         @Test
-        fun `should not update if user is unauthenticated`(){
+        fun `should not update if user is unauthenticated`() {
             val studyToUpdateId = idService.next()
             val studyToDuplicateId = idService.next()
 
-            testHelperService.testForUnauthenticatedUser(mockMvc,
-                patch(markAsDuplicated(studyToUpdateId, studyToDuplicateId)),
+            testHelperService.testForUnauthenticatedUser(
+                mockMvc,
+                patch(markAsDuplicated(systematicStudyId))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(mapOf(studyToUpdateId to studyToDuplicateId)))
             )
         }
     }

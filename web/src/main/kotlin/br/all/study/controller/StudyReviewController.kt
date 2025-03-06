@@ -413,13 +413,13 @@ class StudyReviewController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PatchMapping("/study-review/{studyReviewIdToKeep}/duplicated/{studyReviewToMarkAsDuplicated}")
-    @Operation(summary = "Mark an existing study as duplicated in the systematic study")
+    @PatchMapping("/study-review/duplicated")
+    @Operation(summary = "Mark multiple existing studies as duplicated in the systematic study")
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Success marking an existing study as duplicated in the systematic study",
+                description = "Success marking the studies as duplicated in the systematic study",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(implementation = MarkAsDuplicatedService.ResponseModel::class)
@@ -427,28 +427,28 @@ class StudyReviewController(
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail marking an existing study as duplicated in the systematic study - unauthenticated user",
+                description = "Fail marking studies as duplicated in the systematic study - unauthenticated user",
                 content = [Content(schema = Schema(hidden = true))]
-            ),ApiResponse(
+            ),
+            ApiResponse(
                 responseCode = "403",
-                description = "Fail marking an existing study as duplicated in the systematic study - unauthorized user",
+                description = "Fail marking studies as duplicated in the systematic study - unauthorized user",
                 content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "Fail marking an existing study as duplicated in the systematic study - not found",
+                description = "Fail marking studies as duplicated in the systematic study - not found",
                 content = [Content(schema = Schema(hidden = true))]
             ),
         ]
     )
     fun markAsDuplicated(
         @PathVariable systematicStudy: UUID,
-        @PathVariable studyReviewIdToKeep: Long,
-        @PathVariable studyReviewToMarkAsDuplicated: Long,
+        @RequestBody duplicatedStudies: Map<Long, Long> // Chave: review destino, Valor: review a ser marcada como duplicada
     ): ResponseEntity<*> {
         val presenter = RestfulMarkAsDuplicatedPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = DuplicatedRequest(userId, systematicStudy, studyReviewIdToKeep, studyReviewToMarkAsDuplicated)
+        val request = DuplicatedRequest(userId, systematicStudy, duplicatedStudies)
         markAsDuplicatedService.markAsDuplicated(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
