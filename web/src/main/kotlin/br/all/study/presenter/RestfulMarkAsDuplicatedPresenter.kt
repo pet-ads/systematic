@@ -1,8 +1,7 @@
 package br.all.study.presenter
 
-
 import br.all.application.study.update.interfaces.MarkAsDuplicatedPresenter
-import br.all.application.study.update.interfaces.MarkAsDuplicatedService.*
+import br.all.application.study.update.interfaces.MarkAsDuplicatedService.ResponseModel
 import br.all.shared.error.createErrorResponseFrom
 import br.all.study.controller.StudyReviewController
 import br.all.utils.LinksFactory
@@ -23,30 +22,31 @@ class RestfulMarkAsDuplicatedPresenter(
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(
-            response.userId,
-            response.systematicStudyId,
-            response.updatedStudyReview,
-            response.duplicatedStudyReview,
+            researcherId = response.userId,
+            systematicStudyId = response.systematicStudyId,
+            duplicatedStudies = response.duplicatedStudies
         )
         prepareHateoas(response, restfulResponse)
     }
 
     private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
-
-        val self = linksFactory.findStudy(response.systematicStudyId, response.updatedStudyReview)
-
+        val destinationStudyId = response.duplicatedStudies.keys.firstOrNull()
+            ?: throw IllegalStateException("No duplicated study found in the response")
+        val self = linksFactory.findStudy(response.systematicStudyId, destinationStudyId)
         restfulResponse.add(self)
         responseEntity = status(HttpStatus.OK).body(restfulResponse)
     }
 
-    override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
+
+    override fun prepareFailView(throwable: Throwable) {
+        responseEntity = createErrorResponseFrom(throwable)
+    }
 
     override fun isDone() = responseEntity != null
 
     private data class ViewModel(
         val researcherId: UUID,
         val systematicStudyId: UUID,
-        val updatedStudyReviewId: Long,
-        val duplicatedStudyReviewId: Long,
+        val duplicatedStudies: Map<Long, Long>
     ) : RepresentationModel<ViewModel>()
 }

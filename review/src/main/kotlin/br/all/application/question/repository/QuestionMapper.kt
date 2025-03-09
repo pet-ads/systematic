@@ -26,7 +26,7 @@ fun Question.Companion.fromDto(dto: QuestionDto): Question<*> {
 
     return when {
         dto.questionType == "PICK_LIST" && dto.options != null -> builder.buildPickList(dto.options)
-        dto.questionType == "NUMBER_SCALE" && dto.higher != null && dto.lower != null ->
+        dto.questionType == "NUMBERED_SCALE" && dto.higher != null && dto.lower != null ->
             builder.buildNumberScale(dto.lower, dto.higher)
 
         dto.questionType == "LABELED_SCALE" && dto.scales != null -> builder.buildLabeledScale(dto.scales)
