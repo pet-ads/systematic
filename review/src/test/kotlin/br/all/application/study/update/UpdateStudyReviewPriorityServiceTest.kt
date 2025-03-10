@@ -52,7 +52,7 @@ class UpdateStudyReviewPriorityServiceTest {
         @Test
         fun `should successfully update a Study Review's reading priority`() {
             val dto = factory.generateDto()
-            val request = factory.updateStatusRequestModel("HIGH")
+            val request = factory.updateStatusRequestModel("HIGH", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.makeEverythingWork()
 
@@ -73,7 +73,7 @@ class UpdateStudyReviewPriorityServiceTest {
     inner class WhenFailingToUpdateAStudyReviewPriority {
         @Test
         fun `should not be able to update a non-existent study`() {
-            val request = factory.updateStatusRequestModel("HIGH")
+            val request = factory.updateStatusRequestModel("HIGH", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.makeEverythingWork()
 
@@ -87,7 +87,7 @@ class UpdateStudyReviewPriorityServiceTest {
 
         @Test
         fun `should not update when unauthenticated`() {
-            val request = factory.updateStatusRequestModel("status!")
+            val request = factory.updateStatusRequestModel("status!", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
                 sut.changeStatus(presenter, request)
@@ -97,7 +97,7 @@ class UpdateStudyReviewPriorityServiceTest {
 
         @Test
         fun `should not update when unauthorized`() {
-            val request = factory.updateStatusRequestModel("status!")
+            val request = factory.updateStatusRequestModel("status!", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
                 sut.changeStatus(presenter, request)
@@ -107,7 +107,7 @@ class UpdateStudyReviewPriorityServiceTest {
 
         @Test
         fun `should not update when systematic study doesnt exist`() {
-            val request = factory.updateStatusRequestModel("status!")
+            val request = factory.updateStatusRequestModel("status!", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
                 sut.changeStatus(presenter, request)
