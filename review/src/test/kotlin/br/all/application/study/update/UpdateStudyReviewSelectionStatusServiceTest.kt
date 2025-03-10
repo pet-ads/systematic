@@ -54,7 +54,7 @@ class UpdateStudyReviewSelectionStatusServiceTest {
         @Test
         fun `should successfully update a Study Review's selection status`() {
             val dto = factory.generateDto()
-            val request = factory.updateStatusRequestModel("INCLUDED")
+            val request = factory.updateStatusRequestModel("INCLUDED", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.makeEverythingWork()
 
@@ -75,7 +75,7 @@ class UpdateStudyReviewSelectionStatusServiceTest {
     inner class WhenFailingToUpdateAStudyReviewSelection {
         @Test
         fun `should not be able to update a non-existent study`() {
-            val request = factory.updateStatusRequestModel("INCLUDED")
+            val request = factory.updateStatusRequestModel("INCLUDED", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.makeEverythingWork()
 
@@ -90,7 +90,7 @@ class UpdateStudyReviewSelectionStatusServiceTest {
         @Test
         fun `should not accept duplicated as a new status`() {
             val dto = factory.generateDto()
-            val request = factory.updateStatusRequestModel("DUPLICATED")
+            val request = factory.updateStatusRequestModel("DUPLICATED", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.makeEverythingWork()
 
@@ -105,7 +105,7 @@ class UpdateStudyReviewSelectionStatusServiceTest {
         @Test
         fun `should not accept invalid statuses`() {
             val dto = factory.generateDto()
-            val request = factory.updateStatusRequestModel("NOTREAL")
+            val request = factory.updateStatusRequestModel("NOTREAL", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.makeEverythingWork()
 
@@ -118,7 +118,7 @@ class UpdateStudyReviewSelectionStatusServiceTest {
 
         @Test
         fun `should not update when unauthenticated`() {
-            val request = factory.updateStatusRequestModel("status!")
+            val request = factory.updateStatusRequestModel("status!", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
                 sut.changeStatus(presenter, request)
@@ -128,7 +128,7 @@ class UpdateStudyReviewSelectionStatusServiceTest {
 
         @Test
         fun `should not update when unauthorized`() {
-            val request = factory.updateStatusRequestModel("status!")
+            val request = factory.updateStatusRequestModel("status!", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
                 sut.changeStatus(presenter, request)
@@ -138,7 +138,7 @@ class UpdateStudyReviewSelectionStatusServiceTest {
 
         @Test
         fun `should not update when systematic study doesnt exist`() {
-            val request = factory.updateStatusRequestModel("status!")
+            val request = factory.updateStatusRequestModel("status!", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
                 sut.changeStatus(presenter, request)

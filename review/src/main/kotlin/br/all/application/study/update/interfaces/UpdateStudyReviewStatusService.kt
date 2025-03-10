@@ -5,11 +5,12 @@ import java.util.*
 interface UpdateStudyReviewStatusService {
     fun changeStatus(presenter: UpdateStudyReviewStatusPresenter, request: RequestModel)
 
-    data class RequestModel (
+    data class RequestModel(
         val userId: UUID,
         val systematicStudyId: UUID,
         val studyReviewId: Long,
-        val status: String
+        val status: String,
+        val criteria: Set<String>
     )
 
     class ResponseModel(
