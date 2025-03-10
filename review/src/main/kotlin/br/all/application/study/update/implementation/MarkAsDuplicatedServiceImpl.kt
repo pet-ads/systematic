@@ -54,11 +54,10 @@ class MarkAsDuplicatedServiceImpl(
             studyReviewRepository.saveOrUpdate(duplicatedStudyReview.toDto())
         }
 
-        val duplicatedStudiesMap = request.duplicatedStudyIds.associateWith { request.referenceStudyId }
         val response = ResponseModel(
             userId = request.userId,
             systematicStudyId = request.systematicStudyId,
-            duplicatedStudies = duplicatedStudiesMap
+            duplicatedStudies = request.duplicatedStudyIds
         )
         presenter.prepareSuccessView(response)
     }

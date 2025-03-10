@@ -30,7 +30,7 @@ class RestfulMarkAsDuplicatedPresenter(
     }
 
     private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
-        val destinationStudyId = response.duplicatedStudies.keys.firstOrNull()
+        val destinationStudyId = response.duplicatedStudies.firstOrNull()
             ?: throw IllegalStateException("No duplicated study found in the response")
         val self = linksFactory.findStudy(response.systematicStudyId, destinationStudyId)
         restfulResponse.add(self)
@@ -47,6 +47,6 @@ class RestfulMarkAsDuplicatedPresenter(
     private data class ViewModel(
         val researcherId: UUID,
         val systematicStudyId: UUID,
-        val duplicatedStudies: Map<Long, Long>
+        val duplicatedStudies: List<Long>
     ) : RepresentationModel<ViewModel>()
 }
