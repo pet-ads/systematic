@@ -13,50 +13,51 @@ import br.all.application.study.update.interfaces.MarkAsDuplicatedService.Respon
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.study.StudyReview
+import java.util.UUID
 
-class MarkAsDuplicatedServiceImpl (
+class MarkAsDuplicatedServiceImpl(
     val systematicStudyRepository: SystematicStudyRepository,
     val studyReviewRepository: StudyReviewRepository,
     val credentialsService: CredentialsService,
 ) : MarkAsDuplicatedService {
 
-    override fun markAsDuplicated(presenter: MarkAsDuplicatedPresenter, request: MarkAsDuplicatedService.RequestModel) {
+    override fun markAsDuplicated(
+        presenter: MarkAsDuplicatedPresenter,
+        request: MarkAsDuplicatedService.RequestModel
+    ) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
 
         presenter.prepareIfFailsPreconditions(user, systematicStudy)
-
         if (presenter.isDone()) return
 
-        request.duplicatedStudies.forEach { (destinationId, sourceId) ->
-            val sourceStudyDto = studyReviewRepository.findById(request.systematicStudyId, sourceId)
-            if (sourceStudyDto == null) {
-                val message = "Study review source with id $sourceId not found."
+        val referenceStudyDto = studyReviewRepository.findById(request.systematicStudyId, request.referenceStudyId)
+        if (referenceStudyDto == null) {
+            val message = "Reference study review with id ${request.referenceStudyId} not found."
+            presenter.prepareFailView(EntityNotFoundException(message))
+            return
+        }
+        val referenceStudyReview = StudyReview.fromDto(referenceStudyDto)
+
+        request.duplicatedStudyIds.forEach { duplicatedStudyId ->
+            val duplicatedStudyDto = studyReviewRepository.findById(request.systematicStudyId, duplicatedStudyId)
+            if (duplicatedStudyDto == null) {
+                val message = "Study review to be marked as duplicated with id $duplicatedStudyId not found."
                 presenter.prepareFailView(EntityNotFoundException(message))
                 return
             }
+            val duplicatedStudyReview = StudyReview.fromDto(duplicatedStudyDto)
+            duplicatedStudyReview.markAsDuplicated(referenceStudyReview)
 
-            val destinationStudyDto = studyReviewRepository.findById(request.systematicStudyId, destinationId)
-            if (destinationStudyDto == null) {
-                val message = "Study review destination with id $destinationId not found."
-                presenter.prepareFailView(EntityNotFoundException(message))
-                return
-            }
-
-            val sourceStudyReview = StudyReview.fromDto(sourceStudyDto)
-            val destinationStudyReview = StudyReview.fromDto(destinationStudyDto)
-            sourceStudyReview.markAsDuplicated(destinationStudyReview)
-
-            studyReviewRepository.saveOrUpdate(sourceStudyReview.toDto())
-            studyReviewRepository.saveOrUpdate(destinationStudyReview.toDto())
+            studyReviewRepository.saveOrUpdate(duplicatedStudyReview.toDto())
         }
 
         val response = ResponseModel(
             userId = request.userId,
             systematicStudyId = request.systematicStudyId,
-            duplicatedStudies = request.duplicatedStudies
+            duplicatedStudies = request.duplicatedStudyIds
         )
         presenter.prepareSuccessView(response)
     }
