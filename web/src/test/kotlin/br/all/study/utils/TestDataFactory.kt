@@ -82,9 +82,11 @@ class TestDataFactory {
           "researcherId": "$researcherId",
           "systematicStudyId": "$systematicStudyId",
           "studyReviewId": $id,
-          "status": "$newStatus"
+          "status": "$newStatus",
+          "criteria": ["Criteria A", "Criteria B"]
         }
         """.trimIndent()
+
 
 
     fun <T> validAnswerRiskOfBiasPatchRequest(studyReviewId: Long, questionId: UUID, type: String, answer: T) =
