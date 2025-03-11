@@ -203,7 +203,7 @@ class LinksFactory {
             studyId,
             patchRequest = PatchStatusStudyReviewRequest(
                 "status",
-                setOf("criteria1")
+                setOf("criteria")
             )
         )
     }.withRel("update-study-selection-status").withType("PATCH")
@@ -214,7 +214,7 @@ class LinksFactory {
             studyId,
             patchRequest = PatchStatusStudyReviewRequest(
                 "status",
-                setOf("criteria1")
+                setOf("criteria")
             )
         )
     }.withRel("update-study-extraction-status").withType("PATCH")
@@ -225,7 +225,7 @@ class LinksFactory {
             studyId,
             patchRequest = PatchStatusStudyReviewRequest(
                 "status",
-                setOf("criteria1")
+                setOf("criteria")
             )
         )
     }.withRel("update-study-reading-priority").withType("PATCH")
