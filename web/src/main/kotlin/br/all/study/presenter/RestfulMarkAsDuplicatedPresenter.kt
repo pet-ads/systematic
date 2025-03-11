@@ -3,10 +3,8 @@ package br.all.study.presenter
 import br.all.application.study.update.interfaces.MarkAsDuplicatedPresenter
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService.ResponseModel
 import br.all.shared.error.createErrorResponseFrom
-import br.all.study.controller.StudyReviewController
 import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
-import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.status
@@ -31,7 +29,7 @@ class RestfulMarkAsDuplicatedPresenter(
 
     private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
         val referenceStudy = response.referenceStudyId
-        val duplicatedStudies = response.duplicatedStudies.forEach {
+        response.duplicatedStudies.forEach {
             val duplicatedStudy = linksFactory.findStudy(response.systematicStudyId, it)
             restfulResponse.add(duplicatedStudy)
         }
