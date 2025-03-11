@@ -30,13 +30,15 @@ class RestfulMarkAsDuplicatedPresenter(
     }
 
     private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
-        val destinationStudyId = response.duplicatedStudies.firstOrNull()
-            ?: throw IllegalStateException("No duplicated study found in the response")
-        val self = linksFactory.findStudy(response.systematicStudyId, destinationStudyId)
+        val referenceStudy = response.referenceStudyId
+        val duplicatedStudies = response.duplicatedStudies.forEach {
+            val duplicatedStudy = linksFactory.findStudy(response.systematicStudyId, it)
+            restfulResponse.add(duplicatedStudy)
+        }
+        val self = linksFactory.findStudy(response.systematicStudyId, referenceStudy)
         restfulResponse.add(self)
         responseEntity = status(HttpStatus.OK).body(restfulResponse)
     }
-
 
     override fun prepareFailView(throwable: Throwable) {
         responseEntity = createErrorResponseFrom(throwable)
