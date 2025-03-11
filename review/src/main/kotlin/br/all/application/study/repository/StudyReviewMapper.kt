@@ -22,7 +22,7 @@ fun StudyReview.toDto() = StudyReviewDto(
     references,
     doi?.toString(),
     searchSources,
-    criteria.associate { it.description.toString() to it.type.name },
+    criteria.associate { it.description.replace(".", "_") to it.type.name },
     formAnswers.associate {  it.questionId to it.value.toString()},
     robAnswers.associate {  it.questionId to it.value.toString()},
     comments,
