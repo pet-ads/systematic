@@ -57,7 +57,8 @@ class MarkAsDuplicatedServiceImpl(
         val response = MarkAsDuplicatedService.ResponseModel(
             userId = request.userId,
             systematicStudyId = request.systematicStudyId,
-            duplicatedStudies = request.duplicatedStudyIds
+            duplicatedStudies = request.duplicatedStudyIds,
+            referenceStudyId = request.referenceStudyId,
         )
         presenter.prepareSuccessView(response)
     }
