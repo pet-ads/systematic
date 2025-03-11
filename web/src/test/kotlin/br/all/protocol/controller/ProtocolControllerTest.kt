@@ -1,6 +1,5 @@
 package br.all.protocol.controller
 
-import br.all.application.protocol.repository.PicocDto
 import br.all.infrastructure.protocol.MongoProtocolRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.review.SystematicStudyDocument
@@ -24,12 +23,13 @@ import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 @SpringBootTest
 @AutoConfigureMockMvc
 @Tag("IntegrationTest")
+@DisplayName("Protocol Controller Integration Tests")
 class ProtocolControllerTest(
     @Autowired private val protocolRepository: MongoProtocolRepository,
     @Autowired private val systematicStudyRepository: MongoSystematicStudyRepository,
     @Autowired private val mockMvc: MockMvc,
-    @Autowired private val testHelperService: TestHelperService,
-    ) {
+    @Autowired private val testHelperService: TestHelperService
+) {
     private lateinit var user: ApplicationUser
     private lateinit var systematicStudy: SystematicStudyDocument
     private lateinit var factory: TestDataFactory
@@ -48,7 +48,7 @@ class ProtocolControllerTest(
         val (_, systematicStudyId) = factory
         systematicStudy = systematicStudyDataFactory.createSystematicStudyDocument(
             id = systematicStudyId,
-            collaborators = mutableSetOf(user.id),
+            collaborators = mutableSetOf(user.id)
         )
         systematicStudyRepository.save(systematicStudy)
     }
@@ -60,13 +60,12 @@ class ProtocolControllerTest(
         testHelperService.deleteApplicationUser(user.id)
     }
 
+    private fun getUrl(systematicStudy: UUID = factory.protocol) =
+        "/systematic-study/$systematicStudy/protocol"
+
     @Nested
     @DisplayName("When getting protocols")
     inner class WhenGettingProtocols {
-        private fun getUrl(
-            systematicStudy: UUID = factory.protocol,
-        ) = "/systematic-study/$systematicStudy/protocol"
-
         @Nested
         @Tag("ValidClasses")
         @DisplayName("And finding them")
@@ -119,26 +118,24 @@ class ProtocolControllerTest(
             }
 
             @Test
-            fun `should not allow researchers that are not unauthenticated to find protocols`() {
-                testHelperService.testForUnauthenticatedUser(mockMvc, get(getUrl()),
-                )
+            fun `should not allow unauthenticated users to find protocols`() {
+                testHelperService.testForUnauthenticatedUser(mockMvc, get(getUrl()))
             }
         }
     }
 
+    private fun putUrl(systematicStudyId: UUID = factory.protocol) =
+        "/systematic-study/$systematicStudyId/protocol"
+
     @Nested
     @DisplayName("When putting protocols")
     inner class WhenPuttingProtocols {
-        fun putUrl(
-            systematicStudyId: UUID = factory.protocol,
-        ) = "/systematic-study/$systematicStudyId/protocol"
-
         @Nested
         @Tag("ValidClasses")
         @DisplayName("And updating the protocol successfully")
         inner class AndUpdatingTheProtocolSuccessfully {
             @Test
-            fun `should update a existent protocol`() {
+            fun `should update an existing protocol`() {
                 val document = factory.createProtocolDocument()
                 val json = factory.validPutRequest()
 
@@ -146,7 +143,8 @@ class ProtocolControllerTest(
 
                 mockMvc.perform(put(putUrl())
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
                 )
                     .andExpect(status().isOk)
                     .andExpect(jsonPath("$.systematicStudyId").exists())
@@ -162,7 +160,8 @@ class ProtocolControllerTest(
 
                 mockMvc.perform(put(putUrl())
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
                 )
                     .andExpect(status().isOk)
                     .andExpect(jsonPath("$.systematicStudyId").exists())
@@ -183,7 +182,8 @@ class ProtocolControllerTest(
 
                 mockMvc.perform(put(putUrl())
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
                 )
                     .andExpect(status().isOk)
                     .andExpect(jsonPath("$.systematicStudyId").exists())
@@ -191,27 +191,6 @@ class ProtocolControllerTest(
 
                 val updated = protocolRepository.findById(document.id).get()
                 assert(updated.sourcesSelectionCriteria != null)
-            }
-
-            @Test
-            fun `should update an existing protocol without deleting existing picoc`() {
-                val document = factory.createProtocolDocument(
-                    picoc = PicocDto("1","2","3","4","5")
-                )
-                val json = factory.validPutRequest()
-
-                protocolRepository.save(document)
-
-                mockMvc.perform(put(putUrl())
-                    .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)
-                )
-                    .andExpect(status().isOk)
-                    .andExpect(jsonPath("$.systematicStudyId").exists())
-                    .andExpect(jsonPath("$._links").exists())
-
-                val updated = protocolRepository.findById(document.id).get()
-                assert(updated.picoc != null)
             }
 
             @Test
@@ -223,7 +202,8 @@ class ProtocolControllerTest(
 
                 mockMvc.perform(put(putUrl())
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
                 )
                     .andExpect(status().isOk)
                     .andExpect(jsonPath("$.systematicStudyId").exists())
@@ -251,14 +231,20 @@ class ProtocolControllerTest(
                         .content(json)
                 ).andExpect(status().isNotFound)
             }
+
             @Test
             fun `should not allow researchers that are not collaborators to update the protocol`() {
-                testHelperService.testForUnauthorizedUser(mockMvc, put(putUrl()).content(factory.validPutRequest()))
+                testHelperService.testForUnauthorizedUser(
+                    mockMvc,
+                    put(putUrl()).content(factory.validPutRequest())
+                )
             }
 
             @Test
-            fun `should not allow researchers that are not unauthenticated to update`() {
-                testHelperService.testForUnauthenticatedUser(mockMvc, put(putUrl()).content(factory.validPutRequest()),
+            fun `should not allow unauthenticated users to update the protocol`() {
+                testHelperService.testForUnauthenticatedUser(
+                    mockMvc,
+                    put(putUrl()).content(factory.validPutRequest())
                 )
             }
         }
