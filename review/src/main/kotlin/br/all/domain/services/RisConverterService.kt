@@ -7,7 +7,7 @@ import br.all.domain.model.study.*
 class RisConverterService(private val studyReviewIdGeneratorService: IdGeneratorService) {
 
     private val titleTypes = listOf("TI", "T1")
-    fun convertToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, study: Study): StudyReview {
+    fun convertToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, study: Study, source: MutableSet<String>): StudyReview {
         val studyReviewId = StudyReviewId(studyReviewIdGeneratorService.next())
 
         return StudyReview(
@@ -22,7 +22,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
             study.abstract,
             study.doi,
             study.keywords,
-            mutableSetOf("insert SearchSources"),
+            source,
             study.references,
             mutableSetOf(),
             mutableSetOf(),
@@ -37,12 +37,13 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
     fun convertManyToStudyReview(
         systematicStudyId: SystematicStudyId,
         searchSessionId: SearchSessionID,
-        ris: String
+        ris: String,
+        source: MutableSet<String>,
     ): Pair<List<StudyReview>, List<String>> {
         require(ris.isNotBlank()) { "convertManyToStudyReview: RIS must not be blank." }
 
         val (validStudies, invalidEntries) = convertMany(ris)
-        val studyReviews = validStudies.map { study -> convertToStudyReview(systematicStudyId, searchSessionId, study) }
+        val studyReviews = validStudies.map { study -> convertToStudyReview(systematicStudyId, searchSessionId, study, source) }
 
         return Pair(studyReviews, invalidEntries)
     }
@@ -51,7 +52,6 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         val validStudies = mutableListOf<Study>()
         val invalidEntries = mutableListOf<String>()
 
-        // Regex ajustado para lidar com espaços e inconsistências
         val regex = Regex(
             "(?i)\\bTY\\b\\s*-.*?(?=(\\bTY\\b\\s*-|\\bER\\b\\s*-|\\z))",
             RegexOption.DOT_MATCHES_ALL
@@ -61,21 +61,20 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
 
         entries.forEach { entry ->
             try {
-                val study = convert(entry) // Tenta converter o registro
+                val study = convert(entry)
                 validStudies.add(study)
             } catch (e: Exception) {
-                val entryName = extractInvalidRis(entry) // Extrai o nome para entradas inválidas
+                val entryName = extractInvalidRis(entry)
                 invalidEntries.add(entryName)
             }
         }
         return Pair(validStudies, invalidEntries)
     }
 
-
     fun convert(ris: String): Study {
         require(ris.isNotBlank()) { "convert: RIS must not be blank." }
 
-        val fieldMap = parseRisFields(ris) // coloca o RIS em um FieldMap
+        val fieldMap = parseRisFields(ris)
         val venue = fieldMap["JO"] ?: ""
         val primaryTitle = getValueFromFieldMap(fieldMap, titleTypes)
         val secondaryTitle = fieldMap["T2"] ?: ""
