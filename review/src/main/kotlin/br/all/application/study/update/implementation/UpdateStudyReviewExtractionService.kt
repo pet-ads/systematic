@@ -55,13 +55,14 @@ class UpdateStudyReviewExtractionService(
         }
 
         request.criteria.forEach { criterionString ->
-            val criterion = when {
-                criterionString.startsWith("EXCLUSION:", ignoreCase = true) ->
-                    Criterion.toExclude(criterionString.removePrefix("EXCLUSION:").trim())
-                criterionString.startsWith("INCLUSION:", ignoreCase = true) ->
-                    Criterion.toInclude(criterionString.removePrefix("INCLUSION:").trim())
-                else ->
-                    Criterion.toInclude(criterionString.trim())
+            val trimmed = criterionString.trim()
+            if (trimmed.isBlank()) {
+                throw IllegalArgumentException("Criterion string cannot be blank")
+            }
+            val criterion = if (newStatus == "EXCLUDED") {
+                Criterion.toExclude(trimmed)
+            } else {
+                Criterion.toInclude(trimmed)
             }
             studyReview.addCriterion(criterion)
         }
