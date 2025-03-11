@@ -46,5 +46,3 @@ fun StudyReviewDto.toDocument() = StudyReviewDocument(
     extractionStatus,
     selectionStatus
 )
-
-
