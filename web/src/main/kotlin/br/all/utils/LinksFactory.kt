@@ -234,6 +234,4 @@ class LinksFactory {
         linkTo<StudyReviewController> {
             markAsDuplicated(systematicStudyId, referenceStudyId = 11111,duplicatedStudyIds = listOf(11111))
         }.withRel("mark-studies-as-duplicated").withType("PATCH")
-
 }
-
