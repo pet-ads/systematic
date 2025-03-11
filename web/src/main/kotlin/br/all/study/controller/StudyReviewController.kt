@@ -372,7 +372,6 @@ class StudyReviewController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-
     @PatchMapping("/study-review/{studyReview}/riskOfBias-answer")
     @Operation(summary = "Update the answer of a risk of bias question")
     @ApiResponses(
