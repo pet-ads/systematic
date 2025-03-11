@@ -18,6 +18,7 @@ interface MarkAsDuplicatedService {
     class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
+        val referenceStudyId: Long,
         val duplicatedStudies: List<Long>
     )
 }
