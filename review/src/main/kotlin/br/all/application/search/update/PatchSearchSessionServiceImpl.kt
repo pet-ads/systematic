@@ -3,7 +3,6 @@ package br.all.application.search.update
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.search.repository.SearchSessionRepository
-import br.all.application.search.repository.fromRequestModel
 import br.all.application.search.update.PatchSearchSessionService.ResponseModel
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
@@ -12,7 +11,6 @@ import br.all.application.study.repository.toDto
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.toSystematicStudyId
-import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.toSearchSessionID
 import br.all.domain.services.ConverterFactoryService
 
@@ -42,7 +40,8 @@ class PatchSearchSessionServiceImpl (
             val (studyReviews, invalidEntries) = converterFactoryService.extractReferences(
                 systematicStudyId = request.systematicStudyId.toSystematicStudyId(),
                 searchSessionId = request.sessionId.toSearchSessionID(),
-                file = file
+                file = file,
+                source = mutableSetOf()
             )
 
             val studies = studyReviews.size
