@@ -42,7 +42,7 @@ class TestDataFactory {
         references: List<String> = faker.paragraphList(4, 5),
         doi: String? = null,
         sources: Set<String> = faker.wordsList(minSize = 1, maxSize = 5).toSet(),
-        criteria: Map<String,String> = mapOf("Criteria A" to "INCLUSION", "Criteria B" to "EXCLUSION"),
+        criteria: Set<String> = setOf("Criteria A", "Criteria B"),
         formAnswers: Map<UUID, String> = mapOf(Pair(UUID.randomUUID(), "Form")),
         robAnswers: Map<UUID, String> = mapOf(Pair(UUID.randomUUID(), "Form")),
         comments: String = faker.paragraph(15),
@@ -119,11 +119,13 @@ class TestDataFactory {
 
     fun updateStatusRequestModel(
         status: String,
-    ) = UpdateStudyReviewStatusService.RequestModel(researcherId, systematicStudyId, studyReviewId, status)
+        criteria: Set<String>
+    ) = UpdateStudyReviewStatusService.RequestModel(researcherId, systematicStudyId, studyReviewId, status, criteria)
 
     fun markAsDuplicatedRequestModel(
-        duplicatedStudies: Map<Long, Long>,
-    ) = MarkAsDuplicatedService.RequestModel(researcherId, systematicStudyId, duplicatedStudies)
+        keptStudyReviewId: Long,
+        duplicateIds: List<Long>
+    ) = MarkAsDuplicatedService.RequestModel(researcherId, systematicStudyId, keptStudyReviewId, duplicateIds)
 
     fun <T> answerRequestModel(
         questionId: UUID,

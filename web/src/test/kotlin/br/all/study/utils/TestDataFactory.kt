@@ -82,9 +82,11 @@ class TestDataFactory {
           "researcherId": "$researcherId",
           "systematicStudyId": "$systematicStudyId",
           "studyReviewId": $id,
-          "status": "$newStatus"
+          "status": "$newStatus",
+          "criteria": ["Criteria A", "Criteria B"]
         }
         """.trimIndent()
+
 
 
     fun <T> validAnswerRiskOfBiasPatchRequest(studyReviewId: Long, questionId: UUID, type: String, answer: T) =
@@ -121,7 +123,7 @@ class TestDataFactory {
         references: List<String> = faker.paragraphList(4, 5),
         doi: String? = null,
         sources: Set<String> = faker.wordsList(minSize = 1, maxSize = 5).toSet(),
-        criteria: Map<String,String> = mapOf("Criteria A" to "INCLUSION", "Criteria B" to "EXCLUSION"),
+        criteria: Set<String> = setOf("Criteria A"),
         formAnswers: Map<UUID, String> = mapOf(Pair(UUID.randomUUID(), "Form")),
         robAnswers: Map<UUID, String> = mapOf(Pair(UUID.randomUUID(), "Form")),
         comments: String = faker.paragraph(15),

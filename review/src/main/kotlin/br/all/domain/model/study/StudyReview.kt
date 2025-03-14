@@ -100,12 +100,30 @@ class StudyReview(
 
     fun declassifyInExtraction() = apply { extractionStatus = ExtractionStatus.UNCLASSIFIED }
 
-    fun markAsDuplicated(duplicate: StudyReview){
-        duplicate._searchSources.addAll(searchSources)
-        _searchSources.addAll(duplicate.searchSources)
-        selectionStatus = SelectionStatus.DUPLICATED
-        extractionStatus = ExtractionStatus.DUPLICATED
+    private fun mergeSearchSources(duplicates: List<StudyReview>): MutableSet<String> {
+        val unionSources = _searchSources.toMutableSet()
+        duplicates.forEach { unionSources.addAll(it.searchSources) }
+        return unionSources
     }
+
+    private fun applyMergedSearchSources(unionSources: MutableSet<String>) {
+        _searchSources.clear()
+        _searchSources.addAll(unionSources)
+    }
+
+    private fun markDuplicatesAsDuplicated(duplicates: List<StudyReview>) {
+        duplicates.forEach { duplicate ->
+            duplicate.selectionStatus = SelectionStatus.DUPLICATED
+            duplicate.extractionStatus = ExtractionStatus.DUPLICATED
+        }
+    }
+
+    fun markAsDuplicated(duplicates: List<StudyReview>) {
+        val unionSources = mergeSearchSources(duplicates)
+        applyMergedSearchSources(unionSources)
+        markDuplicatesAsDuplicated(duplicates)
+    }
+
 
     override fun toString(): String {
         return "StudyReview(reviewId=$systematicStudyId, searchSources=$searchSources, criteria=$criteria, " +

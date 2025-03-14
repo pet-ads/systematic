@@ -10,13 +10,15 @@ interface MarkAsDuplicatedService {
     data class RequestModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val duplicatedStudies: Map<Long, Long>,
+        val referenceStudyId: Long,
+        val duplicatedStudyIds: List<Long>
     )
 
     @Schema(name = "MarkAsDuplicatedServiceResponseModel")
     class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val duplicatedStudies: Map<Long, Long>,
+        val referenceStudyId: Long,
+        val duplicatedStudies: List<Long>
     )
 }

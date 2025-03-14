@@ -35,7 +35,8 @@ class CreateSearchSessionExampleService (
 
         val fileContent = resource.inputStream.bufferedReader().use(BufferedReader::readText)
         val (studyReviews) = converterFactoryService.extractReferences(
-            systematicStudyId, search.toSearchSessionID(), fileContent
+            systematicStudyId, search.toSearchSessionID(), fileContent,
+            mutableSetOf(sourceName),
         )
 
         val searchSession = SearchSessionDto(

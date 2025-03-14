@@ -14,17 +14,18 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     fun convertManyToStudyReview(
         systematicStudyId: SystematicStudyId,
         searchSessionId: SearchSessionID,
-        bibtex: String
+        bibtex: String,
+        source: MutableSet<String>
     ): Pair<List<StudyReview>, List<String>> {
         require(bibtex.isNotBlank()) { "BibTeX must not be blank." }
 
         val (validStudies, invalidEntries) = convertMany(bibtex)
-        val studyReviews = validStudies.map { study -> convertToStudyReview(systematicStudyId, searchSessionId, study) }
+        val studyReviews = validStudies.map { study -> convertToStudyReview(systematicStudyId, searchSessionId, study, source) }
 
         return Pair(studyReviews, invalidEntries)
     }
 
-    fun convertToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, study: Study): StudyReview {
+    fun convertToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, study: Study, source: MutableSet<String>): StudyReview {
         val studyReviewId = StudyReviewId(studyReviewIdGeneratorService.next())
 
         return StudyReview(
@@ -39,7 +40,7 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
             study.abstract,
             study.doi,
             study.keywords,
-            mutableSetOf("insert SearchSources"),
+            source,
             study.references,
             mutableSetOf(),
             mutableSetOf(),

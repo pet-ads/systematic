@@ -359,9 +359,9 @@ class SearchSessionControllerTest(
                 .file(factory.bibfile())
                 .param("data", request)
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .with { request ->
-                    request.method = "PATCH"
-                    request
+                .with { req ->
+                    req.method = "PATCH"
+                    req
                 }
             )
                 .andExpect(status().isOk)

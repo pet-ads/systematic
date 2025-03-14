@@ -12,6 +12,7 @@ import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresent
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.ResponseModel
 import br.all.application.user.CredentialsService
+import br.all.domain.model.protocol.Criterion
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.study.StudyReview
 
@@ -28,12 +29,13 @@ class UpdateStudyReviewExtractionService(
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
 
         presenter.prepareIfFailsPreconditions(user, systematicStudy)
-
         if (presenter.isDone()) return
 
         val studyReviewDto = studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId)
         if (studyReviewDto == null) {
-            presenter.prepareFailView(EntityNotFoundException("Study review of id ${request.systematicStudyId} not found."))
+            presenter.prepareFailView(
+                EntityNotFoundException("Study review of id ${request.systematicStudyId} not found.")
+            )
             return
         }
 
@@ -51,7 +53,22 @@ class UpdateStudyReviewExtractionService(
             "EXCLUDED" -> studyReview.excludeInExtraction()
             else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
         }
+
+        request.criteria.forEach { criterionString ->
+            val trimmed = criterionString.trim()
+            if (trimmed.isBlank()) {
+                throw IllegalArgumentException("Criterion string cannot be blank")
+            }
+            val criterion = if (newStatus == "EXCLUDED") {
+                Criterion.toExclude(trimmed)
+            } else {
+                Criterion.toInclude(trimmed)
+            }
+            studyReview.addCriterion(criterion)
+        }
+
         studyReviewRepository.saveOrUpdate(studyReview.toDto())
+
         presenter.prepareSuccessView(
             ResponseModel(
                 request.userId,

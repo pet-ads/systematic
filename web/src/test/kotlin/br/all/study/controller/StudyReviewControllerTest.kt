@@ -62,8 +62,8 @@ class StudyReviewControllerTest(
     fun updateStatusStatus(attributeName: String, studyId: String) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/${studyId}/${attributeName}"
 
-    fun markAsDuplicated(systematicStudyId: UUID) =
-        "/api/v1/systematic-study/$systematicStudyId/study-review/duplicated"
+    fun markAsDuplicatedUrl(studyToUpdateId: UUID) =
+        "/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated"
 
     fun answerRiskOfBiasQuestion(studyReviewId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}/riskOfBias-answer"
@@ -580,67 +580,59 @@ class StudyReviewControllerTest(
             val studyReviewToDuplicate = factory.reviewDocument(systematicStudyId, studyToDuplicateId)
             repository.insert(studyReviewToDuplicate)
 
-            val duplicatedStudies = mapOf(studyToUpdateId to studyToDuplicateId)
+            val duplicateIds = listOf(studyToDuplicateId)
 
             mockMvc.perform(
-                patch(markAsDuplicated(systematicStudyId))
+                patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(duplicatedStudies))
+                    .content(objectMapper.writeValueAsString(duplicateIds))
             )
                 .andDo(print())
                 .andExpect(status().isOk)
 
-            val updatedStudyId = StudyReviewId(systematicStudyId, studyToUpdateId)
-            val updatedStudy = repository.findById(updatedStudyId).toNullable()
-
-            val duplicateStudyId = StudyReviewId(systematicStudyId, studyToDuplicateId)
-            val duplicateStudy = repository.findById(duplicateStudyId).toNullable()
-
-            val expectedSources = mutableSetOf<String>()
-            duplicateStudy?.searchSources?.let { expectedSources.addAll(it) }
-            updatedStudy?.searchSources?.let { expectedSources.addAll(it) }
+            val duplicateStudy = repository.findById(StudyReviewId(systematicStudyId, studyToDuplicateId)).toNullable()
 
             assertAll(
                 { assertEquals("DUPLICATED", duplicateStudy?.selectionStatus) },
-                { assertEquals(expectedSources, updatedStudy?.searchSources?.toMutableSet()) }
             )
         }
 
+
         @Test
-        fun `should return 404 if study to be marked as duplicated is not found`() {
+        fun `should return 404 if study to be marked as duplicated (source) is not found`() {
             val studyToUpdateId = idService.next()
             val studyToDuplicateId = idService.next()
 
             val studyReviewToUpdate = factory.reviewDocument(systematicStudyId, studyToUpdateId)
             repository.insert(studyReviewToUpdate)
 
-            val duplicatedStudies = mapOf(studyToUpdateId to studyToDuplicateId)
+            val duplicateIds = listOf(studyToDuplicateId)
 
             mockMvc.perform(
-                patch(markAsDuplicated(systematicStudyId))
+                patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(duplicatedStudies))
+                    .content(objectMapper.writeValueAsString(duplicateIds))
             )
                 .andExpect(status().isNotFound)
         }
 
         @Test
-        fun `should return 404 if study to update is not found`() {
+        fun `should return 404 if study to update (destination) is not found`() {
             val studyToUpdateId = idService.next()
             val studyToDuplicateId = idService.next()
 
             val studyReviewToDuplicate = factory.reviewDocument(systematicStudyId, studyToDuplicateId)
             repository.insert(studyReviewToDuplicate)
 
-            val duplicatedStudies = mapOf(studyToUpdateId to studyToDuplicateId)
+            val duplicateIds = listOf(studyToDuplicateId)
 
             mockMvc.perform(
-                patch(markAsDuplicated(systematicStudyId))
+                patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(duplicatedStudies))
+                    .content(objectMapper.writeValueAsString(duplicateIds))
             )
                 .andExpect(status().isNotFound)
         }
@@ -650,13 +642,13 @@ class StudyReviewControllerTest(
             val studyToUpdateId = idService.next()
             val studyToDuplicateId = idService.next()
 
-            val duplicatedStudies = mapOf(studyToUpdateId to studyToDuplicateId)
+            val duplicateIds = listOf(studyToDuplicateId)
 
             testHelperService.testForUnauthorizedUser(
                 mockMvc,
-                patch(markAsDuplicated(systematicStudyId))
+                patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(duplicatedStudies))
+                    .content(objectMapper.writeValueAsString(duplicateIds))
             )
         }
 
@@ -665,11 +657,13 @@ class StudyReviewControllerTest(
             val studyToUpdateId = idService.next()
             val studyToDuplicateId = idService.next()
 
+            val duplicateIds = listOf(studyToDuplicateId)
+
             testHelperService.testForUnauthenticatedUser(
                 mockMvc,
-                patch(markAsDuplicated(systematicStudyId))
+                patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(mapOf(studyToUpdateId to studyToDuplicateId)))
+                    .content(objectMapper.writeValueAsString(duplicateIds))
             )
         }
     }

@@ -12,6 +12,7 @@ import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresent
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService.ResponseModel
 import br.all.application.user.CredentialsService
+import br.all.domain.model.protocol.Criterion
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.study.StudyReview
 
@@ -51,6 +52,21 @@ class UpdateStudyReviewSelectionService(
             "EXCLUDED" -> studyReview.excludeInSelection()
             else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
         }
+
+        request.criteria.forEach { criterionString ->
+            val trimmed = criterionString.trim()
+            if (trimmed.isBlank()) {
+                throw IllegalArgumentException("Criterion string cannot be blank")
+            }
+            val criterion = if (newStatus == "EXCLUDED") {
+                Criterion.toExclude(trimmed)
+            } else {
+                Criterion.toInclude(trimmed)
+            }
+            studyReview.addCriterion(criterion)
+        }
+
+
         studyReviewRepository.saveOrUpdate(studyReview.toDto())
         presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, request.studyReviewId))
     }

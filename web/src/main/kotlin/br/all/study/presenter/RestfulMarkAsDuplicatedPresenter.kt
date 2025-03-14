@@ -3,10 +3,8 @@ package br.all.study.presenter
 import br.all.application.study.update.interfaces.MarkAsDuplicatedPresenter
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService.ResponseModel
 import br.all.shared.error.createErrorResponseFrom
-import br.all.study.controller.StudyReviewController
 import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
-import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.status
@@ -30,13 +28,15 @@ class RestfulMarkAsDuplicatedPresenter(
     }
 
     private fun prepareHateoas(response: ResponseModel, restfulResponse: ViewModel) {
-        val destinationStudyId = response.duplicatedStudies.keys.firstOrNull()
-            ?: throw IllegalStateException("No duplicated study found in the response")
-        val self = linksFactory.findStudy(response.systematicStudyId, destinationStudyId)
+        val referenceStudy = response.referenceStudyId
+        response.duplicatedStudies.forEach {
+            val duplicatedStudy = linksFactory.findStudy(response.systematicStudyId, it)
+            restfulResponse.add(duplicatedStudy)
+        }
+        val self = linksFactory.findStudy(response.systematicStudyId, referenceStudy)
         restfulResponse.add(self)
         responseEntity = status(HttpStatus.OK).body(restfulResponse)
     }
-
 
     override fun prepareFailView(throwable: Throwable) {
         responseEntity = createErrorResponseFrom(throwable)
@@ -47,6 +47,6 @@ class RestfulMarkAsDuplicatedPresenter(
     private data class ViewModel(
         val researcherId: UUID,
         val systematicStudyId: UUID,
-        val duplicatedStudies: Map<Long, Long>
+        val duplicatedStudies: List<Long>
     ) : RepresentationModel<ViewModel>()
 }

@@ -202,7 +202,8 @@ class LinksFactory {
             systematicStudyId,
             studyId,
             patchRequest = PatchStatusStudyReviewRequest(
-                "status"
+                "status",
+                setOf("criteria")
             )
         )
     }.withRel("update-study-selection-status").withType("PATCH")
@@ -212,7 +213,8 @@ class LinksFactory {
             systematicStudyId,
             studyId,
             patchRequest = PatchStatusStudyReviewRequest(
-                "status"
+                "status",
+                setOf("criteria")
             )
         )
     }.withRel("update-study-extraction-status").withType("PATCH")
@@ -222,15 +224,14 @@ class LinksFactory {
             systematicStudyId,
             studyId,
             patchRequest = PatchStatusStudyReviewRequest(
-                "status"
+                "status",
+                setOf("criteria")
             )
         )
     }.withRel("update-study-reading-priority").withType("PATCH")
 
-    fun markStudyAsDuplicated(systematicStudyId: UUID): Link =
+    fun markStudyAsDuplicated(systematicStudyId: UUID, ): Link =
         linkTo<StudyReviewController> {
-            markAsDuplicated(systematicStudyId, emptyMap())
+            markAsDuplicated(systematicStudyId, referenceStudyId = 11111,duplicatedStudyIds = listOf(11111))
         }.withRel("mark-studies-as-duplicated").withType("PATCH")
-
 }
-

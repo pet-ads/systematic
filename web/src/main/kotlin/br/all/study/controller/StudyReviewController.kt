@@ -1,6 +1,5 @@
 package br.all.study.controller
 
-import br.all.application.search.update.UpdateSearchSessionService
 import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.find.service.*
 import br.all.application.study.update.implementation.UpdateStudyReviewExtractionService
@@ -373,7 +372,6 @@ class StudyReviewController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-
     @PatchMapping("/study-review/{studyReview}/riskOfBias-answer")
     @Operation(summary = "Update the answer of a risk of bias question")
     @ApiResponses(
@@ -413,7 +411,7 @@ class StudyReviewController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PatchMapping("/study-review/duplicated")
+    @PatchMapping("/study-review/{referenceStudyId}/duplicated")
     @Operation(summary = "Mark multiple existing studies as duplicated in the systematic study")
     @ApiResponses(
         value = [
@@ -439,17 +437,19 @@ class StudyReviewController(
                 responseCode = "404",
                 description = "Fail marking studies as duplicated in the systematic study - not found",
                 content = [Content(schema = Schema(hidden = true))]
-            ),
+            )
         ]
     )
     fun markAsDuplicated(
         @PathVariable systematicStudy: UUID,
-        @RequestBody duplicatedStudies: Map<Long, Long> // Chave: review destino, Valor: review a ser marcada como duplicada
+        @PathVariable referenceStudyId: Long,
+        @RequestBody duplicatedStudyIds: List<Long>
     ): ResponseEntity<*> {
         val presenter = RestfulMarkAsDuplicatedPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = DuplicatedRequest(userId, systematicStudy, duplicatedStudies)
+        val request = DuplicatedRequest(userId, systematicStudy, referenceStudyId, duplicatedStudyIds)
         markAsDuplicatedService.markAsDuplicated(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
+
 }
