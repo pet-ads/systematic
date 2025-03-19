@@ -34,7 +34,6 @@ class StudyReviewControllerTest(
     @Autowired private val testHelperService: TestHelperService,
     @Autowired val idService: StudyReviewIdGeneratorService,
     @Autowired val mockMvc: MockMvc,
-    @Autowired val objectMapper: ObjectMapper,
 ) {
 
     private lateinit var factory: TestDataFactory
@@ -62,7 +61,7 @@ class StudyReviewControllerTest(
     fun updateStatusStatus(attributeName: String, studyId: String) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/${studyId}/${attributeName}"
 
-    fun markAsDuplicatedUrl(studyToUpdateId: UUID) =
+    fun markAsDuplicatedUrl(studyToUpdateId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated"
 
     fun answerRiskOfBiasQuestion(studyReviewId: Long) =
@@ -583,7 +582,7 @@ class StudyReviewControllerTest(
             val duplicateIds = listOf(studyToDuplicateId)
 
             mockMvc.perform(
-                patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
+                patch(markAsDuplicatedUrl(studyToUpdateId))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(factory.validMarkAsDuplicateRequest(duplicateIds))
@@ -610,7 +609,7 @@ class StudyReviewControllerTest(
             val duplicateIds = listOf(studyToDuplicateId)
 
             mockMvc.perform(
-                patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
+                patch(markAsDuplicatedUrl(studyToUpdateId))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(factory.validMarkAsDuplicateRequest(duplicateIds))
@@ -629,7 +628,7 @@ class StudyReviewControllerTest(
             val duplicateIds = listOf(studyToDuplicateId)
 
             mockMvc.perform(
-                patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
+                patch(markAsDuplicatedUrl(studyToUpdateId))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(factory.validMarkAsDuplicateRequest(duplicateIds))
@@ -646,7 +645,7 @@ class StudyReviewControllerTest(
 
             testHelperService.testForUnauthorizedUser(
                 mockMvc,
-                patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
+                patch(markAsDuplicatedUrl(studyToUpdateId))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(factory.validMarkAsDuplicateRequest(duplicateIds))
             )
@@ -661,7 +660,7 @@ class StudyReviewControllerTest(
 
             testHelperService.testForUnauthenticatedUser(
                 mockMvc,
-                patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
+                patch(markAsDuplicatedUrl(studyToUpdateId))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(factory.validMarkAsDuplicateRequest(duplicateIds))
             )
