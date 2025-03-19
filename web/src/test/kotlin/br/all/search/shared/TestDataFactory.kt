@@ -48,29 +48,6 @@ class TestDataFactory {
         }
         """.trimIndent()
 
-    fun uniquenessViolationPostRequest(researcher: UUID = this.userId, systematicStudyId: UUID = this.systematicStudyId) =
-        """
-        {
-            "researcherId": "$researcher",
-            "systematicStudyId": "$systematicStudyId",
-            "source": "Source",
-            "searchString": "${faker.paragraph(5)}",
-            "additionalInfo": "${faker.paragraph(30)}"
-        }
-        """.trimIndent()
-
-    fun invalidPostRequest(
-        userId: UUID = UUID.randomUUID(),
-        systematicStudyId: UUID = UUID.randomUUID()
-    ) = """
-        {
-            "userId": "$userId",
-            "systematicStudyId": "$systematicStudyId",
-            "source": "",
-            "searchString": "",
-            "additionalInfo": ""
-        }
-        """.trimIndent()
 
     fun bibfile() = MockMultipartFile(
         "file",
@@ -159,14 +136,6 @@ class TestDataFactory {
             jsonFields.add("\"source\": \"$source\"")
         }
 
-        return "{ ${jsonFields.joinToString(", ")} }"
-    }
-
-    fun createUniquenessViolationPutRequest(
-        source: String
-    ): String {
-        val jsonFields = mutableListOf<String>()
-        jsonFields.add("\"source\": \"$source\"")
         return "{ ${jsonFields.joinToString(", ")} }"
     }
 
