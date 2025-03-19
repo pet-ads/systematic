@@ -586,7 +586,7 @@ class StudyReviewControllerTest(
                 patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(duplicateIds))
+                    .content(factory.validMarkAsDuplicateRequest(duplicateIds))
             )
                 .andDo(print())
                 .andExpect(status().isOk)
@@ -613,7 +613,7 @@ class StudyReviewControllerTest(
                 patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(duplicateIds))
+                    .content(factory.validMarkAsDuplicateRequest(duplicateIds))
             )
                 .andExpect(status().isNotFound)
         }
@@ -632,7 +632,7 @@ class StudyReviewControllerTest(
                 patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(duplicateIds))
+                    .content(factory.validMarkAsDuplicateRequest(duplicateIds))
             )
                 .andExpect(status().isNotFound)
         }
@@ -648,7 +648,7 @@ class StudyReviewControllerTest(
                 mockMvc,
                 patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(duplicateIds))
+                    .content(factory.validMarkAsDuplicateRequest(duplicateIds))
             )
         }
 
@@ -663,7 +663,7 @@ class StudyReviewControllerTest(
                 mockMvc,
                 patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(duplicateIds))
+                    .content(factory.validMarkAsDuplicateRequest(duplicateIds))
             )
         }
     }
