@@ -170,15 +170,11 @@ class TestDataFactory {
         return "{ ${jsonFields.joinToString(", ")} }"
     }
 
-    fun validPatchRequest(
-        user: UUID = userId,
-        systematicStudyId: UUID = this.systematicStudyId,
-        searchSessionId: UUID = this.sessionId
-    ) = """
+    fun validPatchRequest() = """
         {
-            "userId": "$user",
+            "userId": "$userId",
             "systematicStudyId": "$systematicStudyId",
-            "searchSessionId": "$searchSessionId"
+            "searchSessionId": "$sessionId"
         }
-        """.trimIndent()
+        """
 }
