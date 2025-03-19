@@ -10,10 +10,7 @@ import br.all.application.study.update.interfaces.MarkAsDuplicatedService
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.security.service.AuthenticationInfoService
 import br.all.study.presenter.*
-import br.all.study.requests.PatchRiskOfBiasAnswerStudyReviewRequest
-import br.all.study.requests.PatchStatusStudyReviewRequest
-import br.all.study.requests.PostStudyReviewRequest
-import br.all.study.requests.PutStudyReviewRequest
+import br.all.study.requests.*
 import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -443,13 +440,12 @@ class StudyReviewController(
     fun markAsDuplicated(
         @PathVariable systematicStudy: UUID,
         @PathVariable referenceStudyId: Long,
-        @RequestBody duplicatedStudyIds: List<Long>
+        @RequestBody duplicatedRequest: PatchDuplicatedStudiesRequest
     ): ResponseEntity<*> {
         val presenter = RestfulMarkAsDuplicatedPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = DuplicatedRequest(userId, systematicStudy, referenceStudyId, duplicatedStudyIds)
+        val request = duplicatedRequest.toRequestModel(userId, systematicStudy, referenceStudyId)
         markAsDuplicatedService.markAsDuplicated(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
-
 }
