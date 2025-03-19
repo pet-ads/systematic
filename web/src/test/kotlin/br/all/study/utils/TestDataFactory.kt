@@ -108,6 +108,13 @@ class TestDataFactory {
         }
         """
 
+    fun validMarkAsDuplicateRequest(duplicateStudyIds: List<Long>) =
+        """
+            {
+                "duplicatedStudyIds": $duplicateStudyIds
+            }
+        """
+
 
     fun reviewDocument(
         systematicStudyId: UUID,
