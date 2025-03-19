@@ -9,7 +9,6 @@ import br.all.infrastructure.study.StudyReviewIdGeneratorService
 import br.all.security.service.ApplicationUser
 import br.all.shared.TestHelperService
 import br.all.study.utils.TestDataFactory
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
