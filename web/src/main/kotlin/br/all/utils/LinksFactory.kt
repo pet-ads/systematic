@@ -8,6 +8,7 @@ import br.all.review.controller.SystematicStudyController
 import br.all.review.requests.PostRequest
 import br.all.search.controller.SearchSessionController
 import br.all.study.controller.StudyReviewController
+import br.all.study.requests.PatchDuplicatedStudiesRequest
 import br.all.study.requests.PatchStatusStudyReviewRequest
 import br.all.study.requests.PostStudyReviewRequest
 import org.springframework.hateoas.Link
@@ -232,6 +233,12 @@ class LinksFactory {
 
     fun markStudyAsDuplicated(systematicStudyId: UUID, ): Link =
         linkTo<StudyReviewController> {
-            markAsDuplicated(systematicStudyId, referenceStudyId = 11111,duplicatedStudyIds = listOf(11111))
+            markAsDuplicated(
+                systematicStudyId,
+                referenceStudyId = 11111,
+                duplicatedRequest = PatchDuplicatedStudiesRequest(
+                    duplicatedStudyIds = listOf(222222)
+                )
+            )
         }.withRel("mark-studies-as-duplicated").withType("PATCH")
 }
