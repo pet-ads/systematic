@@ -21,7 +21,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import br.all.application.study.update.interfaces.MarkAsDuplicatedService.RequestModel as DuplicatedRequest
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService.RequestModel as FindAllBySourceRequest
 import br.all.application.study.find.service.FindStudyReviewService.RequestModel as FindOneRequest
 
@@ -264,7 +263,7 @@ class StudyReviewController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PatchMapping("/study-review/{studyReview}/selection-status")
+    @PatchMapping("/study-review/selection-status")
     @Operation(summary = "Update the selection status of study review")
     @ApiResponses(
         value = [
@@ -289,17 +288,16 @@ class StudyReviewController(
     )
     fun updateStudyReviewSelectionStatus(
         @PathVariable systematicStudy: UUID,
-        @PathVariable studyReview: Long,
         @RequestBody patchRequest: PatchStatusStudyReviewRequest
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
+        val request = patchRequest.toRequestModel(userId, systematicStudy)
         updateSelectionService.changeStatus(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PatchMapping("/study-review/{studyReview}/extraction-status")
+    @PatchMapping("/study-review/extraction-status")
     @Operation(summary = "Update a extraction status of study review")
     @ApiResponses(
         value = [
@@ -324,17 +322,16 @@ class StudyReviewController(
     )
     fun updateStudyReviewExtractionStatus(
         @PathVariable systematicStudy: UUID,
-        @PathVariable studyReview: Long,
         @RequestBody patchRequest: PatchStatusStudyReviewRequest
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter(linksFactory)
         val userID = authenticationInfoService.getAuthenticatedUserId()
-        val request = patchRequest.toRequestModel(userID, systematicStudy, studyReview)
+        val request = patchRequest.toRequestModel(userID, systematicStudy)
         updateExtractionService.changeStatus(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PatchMapping("/study-review/{studyReview}/reading-priority")
+    @PatchMapping("/study-review/reading-priority")
     @Operation(summary = "Update the reading priority of study review")
     @ApiResponses(
         value = [
@@ -359,12 +356,11 @@ class StudyReviewController(
     )
     fun updateStudyReviewReadingPriority(
         @PathVariable systematicStudy: UUID,
-        @PathVariable studyReview: Long,
         @RequestBody patchRequest: PatchStatusStudyReviewRequest
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter(linksFactory)
         val userID = authenticationInfoService.getAuthenticatedUserId()
-        val request = patchRequest.toRequestModel(userID, systematicStudy, studyReview)
+        val request = patchRequest.toRequestModel(userID, systematicStudy)
         updateReadingPriorityService.changeStatus(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
