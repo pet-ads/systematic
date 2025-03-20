@@ -57,8 +57,8 @@ class StudyReviewControllerTest(
     fun updateStudyUrl(studyReviewId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}"
 
-    fun updateStatusStatus(attributeName: String, studyId: String) =
-        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyId}/${attributeName}"
+    fun updateStatusStatus(attributeName: String) =
+        "/api/v1/systematic-study/$systematicStudyId/study-review/${attributeName}"
 
     fun markAsDuplicatedUrl(studyToUpdateId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated"
@@ -352,7 +352,7 @@ class StudyReviewControllerTest(
             repository.insert(studyReview)
 
             mockMvc.perform(
-                patch(updateStatusStatus("selection-status", studyId.toString()))
+                patch(updateStatusStatus("selection-status"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(json)
             ).andExpect(status().isOk)
@@ -374,7 +374,7 @@ class StudyReviewControllerTest(
             repository.insert(studyReview)
 
             mockMvc.perform(
-                patch(updateStatusStatus("selection-status", studyId.toString()))
+                patch(updateStatusStatus("selection-status"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(json)
             ).andExpect(status().isBadRequest)
@@ -394,7 +394,7 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            val patchStatusStatus = updateStatusStatus("extraction-status", studyId.toString())
+            val patchStatusStatus = updateStatusStatus("extraction-status")
             mockMvc.perform(patch(patchStatusStatus)
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
                 .contentType(MediaType.APPLICATION_JSON).content(json))
@@ -416,7 +416,7 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            val patchStatusStatus = updateStatusStatus("extraction-status", studyId.toString())
+            val patchStatusStatus = updateStatusStatus("extraction-status")
             mockMvc.perform(patch(patchStatusStatus)
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
                 .contentType(MediaType.APPLICATION_JSON).content(json))
@@ -438,7 +438,7 @@ class StudyReviewControllerTest(
             repository.insert(studyReview)
 
             mockMvc.perform(
-                patch(updateStatusStatus("reading-priority", studyId.toString()))
+                patch(updateStatusStatus("reading-priority"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(json)
             ).andExpect(status().isOk)
@@ -459,7 +459,7 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            val patchStatusStatus = updateStatusStatus("reading-priority", studyId.toString())
+            val patchStatusStatus = updateStatusStatus("reading-priority")
             mockMvc.perform(patch(patchStatusStatus)
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
                 .contentType(MediaType.APPLICATION_JSON).content(json))
@@ -475,7 +475,7 @@ class StudyReviewControllerTest(
             val studyId = idService.next()
 
             testHelperService.testForUnauthorizedUser(mockMvc,
-                patch(updateStatusStatus("reading-priority", studyId.toString()))
+                patch(updateStatusStatus("reading-priority"))
                     .content(factory.validStatusUpdatePatchRequest(studyId, "HIGH"))
             )
         }
@@ -485,7 +485,7 @@ class StudyReviewControllerTest(
             val studyId = idService.next()
 
             testHelperService.testForUnauthenticatedUser(mockMvc,
-                patch(updateStatusStatus("reading-priority", studyId.toString())),
+                patch(updateStatusStatus("reading-priority")),
             )
         }
     }
