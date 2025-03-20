@@ -8,7 +8,7 @@ interface UpdateStudyReviewStatusService {
     data class RequestModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val studyReviewId: Long,
+        val studyReviewId: List<Long>,
         val status: String,
         val criteria: Set<String>
     )
@@ -16,7 +16,7 @@ interface UpdateStudyReviewStatusService {
     class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val studyReviewId: Long
+        val studyReviewId: List<Long>
     )
 
 }
