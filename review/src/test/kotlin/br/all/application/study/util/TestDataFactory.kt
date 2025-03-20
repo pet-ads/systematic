@@ -120,7 +120,7 @@ class TestDataFactory {
     fun updateStatusRequestModel(
         status: String,
         criteria: Set<String>
-    ) = UpdateStudyReviewStatusService.RequestModel(researcherId, systematicStudyId, studyReviewId, status, criteria)
+    ) = UpdateStudyReviewStatusService.RequestModel(researcherId, systematicStudyId, listOf(studyReviewId), status, criteria)
 
     fun markAsDuplicatedRequestModel(
         keptStudyReviewId: Long,

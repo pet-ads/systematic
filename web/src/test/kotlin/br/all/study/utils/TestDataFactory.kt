@@ -81,7 +81,7 @@ class TestDataFactory {
         {
           "researcherId": "$researcherId",
           "systematicStudyId": "$systematicStudyId",
-          "studyReviewId": $id,
+          "studyReviewId": ${listOf(id)},
           "status": "$newStatus",
           "criteria": ["Criteria A", "Criteria B"]
         }
