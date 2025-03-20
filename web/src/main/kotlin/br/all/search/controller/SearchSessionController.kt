@@ -1,18 +1,14 @@
 package br.all.search.controller
 
-import br.all.application.review.find.services.FindSystematicStudyService
 import br.all.application.search.create.CreateSearchSessionService
 import br.all.application.search.delete.DeleteSearchSessionService
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindSearchSessionService
 import br.all.application.search.find.service.FindAllSearchSessionsService
-import br.all.application.search.update.PatchSearchSessionPresenter
 import br.all.application.search.update.PatchSearchSessionService
-import br.all.application.search.update.PatchSearchSessionServiceImpl
 import br.all.application.search.update.UpdateSearchSessionService
 import br.all.search.presenter.*
 import br.all.security.service.AuthenticationInfoService
-import br.all.study.requests.PatchStatusStudyReviewRequest
 import br.all.utils.LinksFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
