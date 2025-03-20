@@ -58,7 +58,7 @@ class UpdateStudyReviewSelectionStatusServiceTest {
 
             preconditionCheckerMocking.makeEverythingWork()
 
-            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
+            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId.first()) } returns dto
 
             sut.changeStatus(presenter, request)
 
@@ -79,7 +79,7 @@ class UpdateStudyReviewSelectionStatusServiceTest {
 
             preconditionCheckerMocking.makeEverythingWork()
 
-            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns null
+            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId.first()) } returns null
             sut.changeStatus(presenter, request)
 
             verify {
@@ -94,7 +94,7 @@ class UpdateStudyReviewSelectionStatusServiceTest {
 
             preconditionCheckerMocking.makeEverythingWork()
 
-            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
+            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId.first()) } returns dto
             sut.changeStatus(presenter, request)
 
             verify {
@@ -109,7 +109,7 @@ class UpdateStudyReviewSelectionStatusServiceTest {
 
             preconditionCheckerMocking.makeEverythingWork()
 
-            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
+            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId.first()) } returns dto
 
             assertFailsWith<IllegalArgumentException> {
                 sut.changeStatus(presenter, request)
