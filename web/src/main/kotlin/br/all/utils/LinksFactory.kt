@@ -198,33 +198,33 @@ class LinksFactory {
         findAllStudyReviewsBySession(systematicStudyId, searchSessionId)
     }.withRel("find-all-studies-by-session").withType("GET")
 
-    fun updateStudySelectionStatus(systematicStudyId: UUID, studyId: Long): Link = linkTo<StudyReviewController> {
+    fun updateStudySelectionStatus(systematicStudyId: UUID): Link = linkTo<StudyReviewController> {
         updateStudyReviewSelectionStatus(
             systematicStudyId,
-            studyId,
             patchRequest = PatchStatusStudyReviewRequest(
+                listOf(111, 112),
                 "status",
                 setOf("criteria")
             )
         )
     }.withRel("update-study-selection-status").withType("PATCH")
 
-    fun updateStudyExtractionStatus(systematicStudyId: UUID, studyId: Long): Link = linkTo<StudyReviewController> {
+    fun updateStudyExtractionStatus(systematicStudyId: UUID): Link = linkTo<StudyReviewController> {
         updateStudyReviewExtractionStatus(
             systematicStudyId,
-            studyId,
             patchRequest = PatchStatusStudyReviewRequest(
+                listOf(111, 112),
                 "status",
                 setOf("criteria")
             )
         )
     }.withRel("update-study-extraction-status").withType("PATCH")
 
-    fun updateStudyReadingPriority(systematicStudyId: UUID, studyId: Long): Link = linkTo<StudyReviewController> {
+    fun updateStudyReadingPriority(systematicStudyId: UUID): Link = linkTo<StudyReviewController> {
         updateStudyReviewReadingPriority(
             systematicStudyId,
-            studyId,
             patchRequest = PatchStatusStudyReviewRequest(
+                listOf(111, 112),
                 "status",
                 setOf("criteria")
             )
