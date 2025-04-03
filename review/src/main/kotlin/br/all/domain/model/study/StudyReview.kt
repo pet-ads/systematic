@@ -53,6 +53,9 @@ class StudyReview(
     var extractionStatus: ExtractionStatus = extractionStatus
         private set
 
+    var score: Int = 0
+        internal set
+
     init {
         require(searchSources.size > 0) { "The study must be related to at least one search source." }
         study = Study(studyType, title, year, authors, venue, abstract, keywords, references, doi)
