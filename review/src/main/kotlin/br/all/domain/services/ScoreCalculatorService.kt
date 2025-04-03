@@ -6,16 +6,16 @@ import br.all.domain.model.study.StudyReview
 class ScoreCalculatorService(
     val protocol: Protocol
 ) {
-    private fun calculateScore(studyReview: StudyReview): Int {
+    private fun calculateScore(title: String, abstract: String?, authorsKeywords: Set<String>): Int {
         val keywords = protocol.keywords
         var score = 0
 
         for (keyword in keywords) {
             val regex = Regex("\\b$keyword\\b", RegexOption.IGNORE_CASE)
 
-            if (regex.containsMatchIn(studyReview.title)) score += 5
-            if (studyReview.abstract?.let { regex.containsMatchIn(it) } == true) score += 3
-            if (studyReview.keywords.any { regex.containsMatchIn(it) }) score += 2
+            if (regex.containsMatchIn(title)) score += 5
+            if (abstract?.let { regex.containsMatchIn(it) } == true) score += 3
+            if (authorsKeywords.any { regex.containsMatchIn(it) }) score += 2
         }
 
         return score
