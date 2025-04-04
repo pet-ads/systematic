@@ -59,7 +59,7 @@ class AnswerRiskOfBiasQuestionImpl(
 
 
         val answer = answer(questionDto.questionType, request, question)
-        review.answerFormQuestionOf(answer)
+        review.answerQualityQuestionOf(answer)
 
         studyReviewRepository.saveOrUpdate(review.toDto())
 
@@ -84,9 +84,14 @@ class AnswerRiskOfBiasQuestionImpl(
         return when {
             type == "TEXTUAL" && request.answer is String -> (question as Textual).answer(request.answer)
             type == "PICK_LIST" && request.answer is String -> (question as PickList).answer(request.answer)
-            type == "NUMBER_SCALE" && request.answer is Int -> (question as NumberScale).answer(request.answer)
-            type == "LABELED_SCALE" && request.answer is AnswerRiskOfBiasQuestionService.LabelDto ->
-                (question as LabeledScale).answer(Label(request.answer.name, request.answer.value))
+            type == "NUMBERED_SCALE" && request.answer is Int -> (question as NumberScale).answer(request.answer)
+            type == "LABELED_SCALE" && request.answer is LinkedHashMap<*, *> -> {
+                (request.answer["name"] as? String)?.let { name ->
+                    (request.answer["value"] as? Int)?.let { value ->
+                        (question as LabeledScale).answer(Label(name, value))
+                    }
+                } ?: throw IllegalArgumentException("Invalid labeled scale answer: missing 'name' or 'value'")
+            }
 
             else -> {
                 val message = "Answer type of ${request.answer?.javaClass} is not compatible with question type $type"
