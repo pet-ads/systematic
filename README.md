@@ -14,9 +14,22 @@ Then, you must open a terminal on the folder the project is on (or click on the 
 
 The above command must be used every time you want to use the project.
 
-Now, all that's left is to open the `web` module > `src` > `main` > `kotlin` > `br.all` > right-click on `WebApplication.kt` and click on **Run 'WebApplication.main()'** 
+Now, all that's left is to open the `web` module > `src` > `main` > `kotlin` > `br.all` > right-click on `WebApplication.kt` and click on **Run 'WebApplication.main()'**
 
 There! Now the back-end is up and running and can process HTTP requests.
+
+### Troubleshooting
+If you're using Windows and encounter a password authentication failed error when attempting to run WebApplication, it’s likely due to Docker not connecting properly to the PostgreSQL container.
+
+By default, the database URL in `application.yaml` is set to:
+```yaml
+url: jdbc:postgresql://localhost:5432/start
+```
+On Windows, you may need to replace it with:
+```yaml
+url: jdbc:postgresql://host.docker.internal:5432/start
+```
+This change ensures the application connects correctly to the PostgreSQL service inside the Docker container using Docker's internal networking.
 
 ## Requests
 The project is currently set to run on the address `http://localhost:8080`. To view all possible requests, as documented on the application, open the following page on your browser:
