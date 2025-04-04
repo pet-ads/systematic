@@ -9,9 +9,9 @@ Then, you may download or clone the application and open the project there. It w
 
 Following that, you will need to run the [Docker Engine](https://www.docker.com/products/docker-desktop/). It has to be running on your computer for the program to function.
 Then, you must open a terminal on the folder the project is on (or click on the terminal button in your IDE), and run the following command to initialize the container:
-
-`docker compose up -d --build`
-
+```bash
+docker compose up -d --build
+```
 The above command must be used every time you want to use the project.
 
 Now, all that's left is to open the `web` module > `src` > `main` > `kotlin` > `br.all` > right-click on `WebApplication.kt` and click on **Run 'WebApplication.main()'**
