@@ -21,8 +21,12 @@ class ScoreCalculatorService(
         return score
     }
 
-    fun applyScoreToStudyReview(studyReview: StudyReview): StudyReview {
+    private fun applyScoreToStudyReview(studyReview: StudyReview): StudyReview {
         val score = calculateScore(studyReview.title, studyReview.abstract, studyReview.keywords)
         return studyReview.apply { this.score = score }
+    }
+
+    fun applyScoreToManyStudyReviews(studyReviews: List<StudyReview>): List<StudyReview> {
+        return studyReviews.map { applyScoreToStudyReview(it) }
     }
 }
