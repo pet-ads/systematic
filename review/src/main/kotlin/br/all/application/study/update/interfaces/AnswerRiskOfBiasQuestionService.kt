@@ -17,7 +17,7 @@ interface AnswerRiskOfBiasQuestionService {
 
     data class LabelDto(
         val name: String,
-        val value: Int,
+        val value: Int
     )
 
     @Schema(name = "AnswerRiskOfBiasQuestionServiceResponseModel")
