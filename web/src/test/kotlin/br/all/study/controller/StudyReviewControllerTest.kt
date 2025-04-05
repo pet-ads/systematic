@@ -517,7 +517,7 @@ class StudyReviewControllerTest(
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
             val updatedReview = repository.findById(studyReviewId)
-            assertEquals(updatedReview.get().formAnswers[questionId], "TEST")
+            assertEquals(updatedReview.get().qualityAnswers[questionId], "TEST")
         }
 
         @Test
