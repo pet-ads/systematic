@@ -85,14 +85,23 @@ class AnswerRiskOfBiasQuestionImpl(
             type == "TEXTUAL" && request.answer is String -> (question as Textual).answer(request.answer)
             type == "PICK_LIST" && request.answer is String -> (question as PickList).answer(request.answer)
             type == "NUMBERED_SCALE" && request.answer is Int -> (question as NumberScale).answer(request.answer)
-            type == "LABELED_SCALE" && request.answer is LinkedHashMap<*, *> -> {
-                (request.answer["name"] as? String)?.let { name ->
-                    (request.answer["value"] as? Int)?.let { value ->
-                        (question as LabeledScale).answer(Label(name, value))
+            type == "LABELED_SCALE" -> {
+                when (val answer = request.answer) {
+                    is LinkedHashMap<*, *> -> {
+                        (answer["name"] as? String)?.let { name ->
+                            (answer["value"] as? Int)?.let { value ->
+                                (question as LabeledScale).answer(Label(name, value))
+                            }
+                        } ?: throw IllegalArgumentException("Invalid labeled scale answer: missing 'name' or 'value'")
                     }
-                } ?: throw IllegalArgumentException("Invalid labeled scale answer: missing 'name' or 'value'")
+                    is AnswerRiskOfBiasQuestionService.LabelDto -> {
+                        (question as LabeledScale).answer(Label(answer.name, answer.value))
+                    }
+                    else -> {
+                        throw IllegalArgumentException("Unsupported answer type for LABELED_SCALE")
+                    }
+                }
             }
-
             else -> {
                 val message = "Answer type of ${request.answer?.javaClass} is not compatible with question type $type"
                 throw IllegalArgumentException(message)
