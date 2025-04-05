@@ -172,7 +172,8 @@ class TestDataFactory {
             mapOf(labelDto.name to labelDto.value),
             null,
             null,
-            null, QuestionContextEnum.EXTRACTION
+            null,
+            QuestionContextEnum.ROB
         )
 
     operator fun component1() = researcherId
