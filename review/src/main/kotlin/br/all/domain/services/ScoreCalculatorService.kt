@@ -1,13 +1,13 @@
 package br.all.domain.services
 
-import br.all.domain.model.protocol.Protocol
+import br.all.application.protocol.repository.ProtocolDto
 import br.all.domain.model.study.StudyReview
 
 class ScoreCalculatorService(
-    val protocol: Protocol
+    val protocol: ProtocolDto?
 ) {
     private fun calculateScore(title: String, abstract: String?, authorsKeywords: Set<String>): Int {
-        val keywords = protocol.keywords
+        val keywords = protocol?.keywords ?: emptySet()
         var score = 0
 
         for (keyword in keywords) {
