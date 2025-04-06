@@ -56,7 +56,7 @@ class CreateSearchSessionServiceImpl(
             return
         }
 
-        val scoreCalculatorService = ScoreCalculatorService(protocolDto)
+        val scoreCalculatorService = ScoreCalculatorService(protocolDto?.keywords)
         val sessionId = SearchSessionID(uuidGeneratorService.next())
         val searchSession = SearchSession.fromRequestModel(sessionId, request)
 
