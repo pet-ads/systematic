@@ -61,7 +61,8 @@ class CreateSearchSessionServiceImpl(
         val (studyReviews, invalidEntries) = converterFactoryService.extractReferences(
             request.systematicStudyId.toSystematicStudyId(),
             sessionId,
-            file
+            file,
+            mutableSetOf(source)
         )
 
         studyReviewRepository.saveOrUpdateBatch(studyReviews.map { it.toDto() })

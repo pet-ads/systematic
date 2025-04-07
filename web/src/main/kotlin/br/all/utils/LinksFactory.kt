@@ -8,6 +8,7 @@ import br.all.review.controller.SystematicStudyController
 import br.all.review.requests.PostRequest
 import br.all.search.controller.SearchSessionController
 import br.all.study.controller.StudyReviewController
+import br.all.study.requests.PatchDuplicatedStudiesRequest
 import br.all.study.requests.PatchStatusStudyReviewRequest
 import br.all.study.requests.PostStudyReviewRequest
 import org.springframework.hateoas.Link
@@ -197,43 +198,47 @@ class LinksFactory {
         findAllStudyReviewsBySession(systematicStudyId, searchSessionId)
     }.withRel("find-all-studies-by-session").withType("GET")
 
-    fun updateStudySelectionStatus(systematicStudyId: UUID, studyId: Long): Link = linkTo<StudyReviewController> {
+    fun updateStudySelectionStatus(systematicStudyId: UUID): Link = linkTo<StudyReviewController> {
         updateStudyReviewSelectionStatus(
             systematicStudyId,
-            studyId,
             patchRequest = PatchStatusStudyReviewRequest(
-                "status"
+                listOf(111, 112),
+                "status",
+                setOf("criteria")
             )
         )
     }.withRel("update-study-selection-status").withType("PATCH")
 
-    fun updateStudyExtractionStatus(systematicStudyId: UUID, studyId: Long): Link = linkTo<StudyReviewController> {
+    fun updateStudyExtractionStatus(systematicStudyId: UUID): Link = linkTo<StudyReviewController> {
         updateStudyReviewExtractionStatus(
             systematicStudyId,
-            studyId,
             patchRequest = PatchStatusStudyReviewRequest(
-                "status"
+                listOf(111, 112),
+                "status",
+                setOf("criteria")
             )
         )
     }.withRel("update-study-extraction-status").withType("PATCH")
 
-    fun updateStudyReadingPriority(systematicStudyId: UUID, studyId: Long): Link = linkTo<StudyReviewController> {
+    fun updateStudyReadingPriority(systematicStudyId: UUID): Link = linkTo<StudyReviewController> {
         updateStudyReviewReadingPriority(
             systematicStudyId,
-            studyId,
             patchRequest = PatchStatusStudyReviewRequest(
-                "status"
+                listOf(111, 112),
+                "status",
+                setOf("criteria")
             )
         )
     }.withRel("update-study-reading-priority").withType("PATCH")
 
-    fun markStudyAsDuplicated(systematicStudyId: UUID, studyId: Long): Link = linkTo<StudyReviewController> {
-        markAsDuplicated(
-            systematicStudyId,
-            studyId,
-            studyId
-        )
-    }.withRel("mark-study-as-duplicated").withType("PATCH")
-
+    fun markStudyAsDuplicated(systematicStudyId: UUID, ): Link =
+        linkTo<StudyReviewController> {
+            markAsDuplicated(
+                systematicStudyId,
+                referenceStudyId = 11111,
+                duplicatedRequest = PatchDuplicatedStudiesRequest(
+                    duplicatedStudyIds = listOf(222222)
+                )
+            )
+        }.withRel("mark-studies-as-duplicated").withType("PATCH")
 }
-

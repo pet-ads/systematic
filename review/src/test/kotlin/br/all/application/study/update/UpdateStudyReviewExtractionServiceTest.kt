@@ -54,11 +54,11 @@ class UpdateStudyReviewExtractionServiceTest {
         @Test
         fun `should successfully update a Study Review's selection status`() {
             val dto = factory.generateDto()
-            val request = factory.updateStatusRequestModel("INCLUDED")
+            val request = factory.updateStatusRequestModel("INCLUDED", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.makeEverythingWork()
 
-            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
+            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId.first()) } returns dto
 
             sut.changeStatus(presenter, request)
 
@@ -75,11 +75,11 @@ class UpdateStudyReviewExtractionServiceTest {
     inner class WhenFailingToUpdateAStudyReviewSelection {
         @Test
         fun `should not be able to update a non-existent study`() {
-            val request = factory.updateStatusRequestModel("INCLUDED")
+            val request = factory.updateStatusRequestModel("INCLUDED", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.makeEverythingWork()
 
-            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns null
+            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId.first()) } returns null
             sut.changeStatus(presenter, request)
 
             verify {
@@ -90,11 +90,11 @@ class UpdateStudyReviewExtractionServiceTest {
         @Test
         fun `should not accept duplicated as a new status`() {
             val dto = factory.generateDto()
-            val request = factory.updateStatusRequestModel("DUPLICATED")
+            val request = factory.updateStatusRequestModel("DUPLICATED", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.makeEverythingWork()
 
-            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
+            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId.first()) } returns dto
             sut.changeStatus(presenter, request)
 
             verify {
@@ -105,11 +105,11 @@ class UpdateStudyReviewExtractionServiceTest {
         @Test
         fun `should not accept invalid statuses`() {
             val dto = factory.generateDto()
-            val request = factory.updateStatusRequestModel("NOTREAL")
+            val request = factory.updateStatusRequestModel("NOTREAL", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.makeEverythingWork()
 
-            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
+            every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId.first()) } returns dto
 
             assertFailsWith<IllegalArgumentException> {
                 sut.changeStatus(presenter, request)
@@ -118,7 +118,7 @@ class UpdateStudyReviewExtractionServiceTest {
 
         @Test
         fun `should not update when unauthenticated`() {
-            val request = factory.updateStatusRequestModel("INCLUDED")
+            val request = factory.updateStatusRequestModel("INCLUDED", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
                 sut.changeStatus(presenter, request)
@@ -128,7 +128,7 @@ class UpdateStudyReviewExtractionServiceTest {
 
         @Test
         fun `should not update when unauthorized`() {
-            val request = factory.updateStatusRequestModel("INCLUDED")
+            val request = factory.updateStatusRequestModel("INCLUDED", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
                 sut.changeStatus(presenter, request)
@@ -138,7 +138,7 @@ class UpdateStudyReviewExtractionServiceTest {
 
         @Test
         fun `should not update when systematic study does not exist`() {
-            val request = factory.updateStatusRequestModel("INCLUDED")
+            val request = factory.updateStatusRequestModel("INCLUDED", setOf("criteria1", "criteria2"))
 
             preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
                 sut.changeStatus(presenter, request)

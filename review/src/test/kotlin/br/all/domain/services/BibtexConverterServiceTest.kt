@@ -35,7 +35,8 @@ class BibtexConverterServiceTest {
             val studyReviewList = sut.convertManyToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                bibtex
+                bibtex,
+                source = mutableSetOf("Compendex")
             )
             assertEquals(7, studyReviewList.first.size)
         }
@@ -47,7 +48,8 @@ class BibtexConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
 
             assertAll(
@@ -81,7 +83,8 @@ class BibtexConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertAll(
                 "bibtex",
@@ -112,7 +115,8 @@ class BibtexConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             val expected = "Uma abordagem apoiada por linguagens específicas de domínio para a criação de linhas de produto de software embarcado"
 
@@ -143,7 +147,8 @@ class BibtexConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertAll(
                 "bibtex",
@@ -172,7 +177,8 @@ class BibtexConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             val expected = "Proceedings of the 17th International Conference on Computation and Natural Computation, Fontainebleau, France"
 
@@ -203,7 +209,8 @@ class BibtexConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertAll(
                 "bibtex",
@@ -232,7 +239,8 @@ class BibtexConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertAll(
                 "bibtex",
@@ -261,7 +269,8 @@ class BibtexConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             val expected = "Lisa A. Urry and Michael L. Cain and Steven A. Wasserman and Peter V. Minorsky and Jane B. Reece"
 
@@ -292,7 +301,8 @@ class BibtexConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertAll(
                 "bibtex",
@@ -321,7 +331,8 @@ class BibtexConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertAll(
                 "bibtex",
@@ -350,7 +361,8 @@ class BibtexConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertAll(
                 "bibtex",
@@ -379,7 +391,8 @@ class BibtexConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertAll(
                 "bibtex",
@@ -411,7 +424,8 @@ class BibtexConverterServiceTest {
                 sut.convertManyToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
                     SearchSessionID(UUID.randomUUID()),
-                    ""
+                    "",
+                    source = mutableSetOf("Compendex")
                 )
             }
         }
@@ -485,7 +499,8 @@ class BibtexConverterServiceTest {
             val studyReviewList = sut.convertManyToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                bibtex
+                bibtex,
+                source = mutableSetOf("Compendex")
             )
             studyReviewList.second.forEach { invalidEntryName ->
                 println("Invalid BibTeX entry: $invalidEntryName")

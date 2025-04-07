@@ -33,7 +33,8 @@ class RisConverterServiceTest {
             val studyReviewList = sut.convertManyToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                ris
+                ris,
+                source = mutableSetOf("Compendex")
             )
             assertEquals(3, studyReviewList.first.size)
         }
@@ -46,7 +47,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertEquals(art, studyReview.studyType)
         }
@@ -58,7 +60,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertEquals(
                 studyReview.title,
@@ -73,7 +76,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertEquals(
                 studyReview.title,
@@ -88,7 +92,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertEquals(studyReview.year, 2017)
         }
@@ -100,7 +105,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertEquals(studyReview.year, 2017)
         }
@@ -112,7 +118,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertEquals("B. C. Kwon, P. J. Haas", studyReview.authors)
         }
@@ -124,7 +131,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertEquals("B. C. Kwon, P. J. Haas", studyReview.authors)
         }
@@ -136,7 +144,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertEquals("IEEE Computer Graphics and Applications", studyReview.venue)
         }
@@ -148,7 +157,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertEquals("Lorem Ipsum", studyReview.abstract)
         }
@@ -160,7 +170,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertAll(
                 { assertTrue("Temperature sensors" in studyReview.keywords) },
@@ -175,7 +186,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             val expectedDoi = "https://doi.org/10.1109/MCG.2017.6"
             assertEquals(expectedDoi, studyReview.doi?.value)
@@ -191,7 +203,8 @@ class RisConverterServiceTest {
             val studyReviewList = sut.convertManyToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                ris
+                ris,
+                source = mutableSetOf("Compendex")
             )
             assertEquals(3, studyReviewList.first.size)
         }
@@ -203,7 +216,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertAll(
                 { assertEquals("1", studyReview.id.toString()) },
@@ -240,7 +254,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             assertAll(
                 { assertEquals("1", studyReview.id.toString()) },
@@ -272,7 +287,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
             val expected = "Uma abordagem apoiada por linguagens específicas de domínio " +
                     "para a criação de linhas de produto de software embarcado"
@@ -303,7 +319,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
 
             assertAll(
@@ -332,7 +349,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
 
             val expected = "Proceedings of the 17th International Conference on Computation " +
@@ -364,7 +382,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
 
             assertAll(
@@ -393,7 +412,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
 
             assertAll(
@@ -422,7 +442,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
 
             assertAll(
@@ -451,7 +472,8 @@ class RisConverterServiceTest {
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                study
+                study,
+                source = mutableSetOf("Compendex")
             )
 
             assertAll(
@@ -482,7 +504,8 @@ class RisConverterServiceTest {
                 sut.convertManyToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
                     SearchSessionID(UUID.randomUUID()),
-                    ""
+                    "",
+                    source = mutableSetOf("Compendex")
                 )
             }
         }
@@ -494,7 +517,8 @@ class RisConverterServiceTest {
                 sut.convertToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
                     SearchSessionID(UUID.randomUUID()),
-                    study
+                    study,
+                    source = mutableSetOf("Compendex")
                 )
             }
         }
@@ -507,7 +531,8 @@ class RisConverterServiceTest {
                 sut.convertToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
                     SearchSessionID(UUID.randomUUID()),
-                    study
+                    study,
+                    source = mutableSetOf("Compendex")
                 )
             }
         }
@@ -520,7 +545,8 @@ class RisConverterServiceTest {
                 sut.convertToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
                     SearchSessionID(UUID.randomUUID()),
-                    study
+                    study,
+                    source = mutableSetOf("Compendex")
                 )
             }
         }
@@ -533,7 +559,8 @@ class RisConverterServiceTest {
                 sut.convertToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
                     SearchSessionID(UUID.randomUUID()),
-                    study
+                    study,
+                    source = mutableSetOf("Compendex")
                 )
             }
         }
@@ -546,7 +573,8 @@ class RisConverterServiceTest {
                 sut.convertToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
                     SearchSessionID(UUID.randomUUID()),
-                    study
+                    study,
+                    source = mutableSetOf("Compendex")
                 )
             }
         }
@@ -559,7 +587,8 @@ class RisConverterServiceTest {
                 sut.convertToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
                     SearchSessionID(UUID.randomUUID()),
-                    study
+                    study,
+                    source = mutableSetOf("Compendex")
                 )
             }
         }
@@ -572,7 +601,8 @@ class RisConverterServiceTest {
                 sut.convertToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
                     SearchSessionID(UUID.randomUUID()),
-                    study
+                    study,
+                    source = mutableSetOf("Compendex")
                 )
             }
         }
@@ -585,7 +615,8 @@ class RisConverterServiceTest {
                 sut.convertToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
                     SearchSessionID(UUID.randomUUID()),
-                    study
+                    study,
+                    source = mutableSetOf("Compendex")
                 )
             }
         }
@@ -596,7 +627,8 @@ class RisConverterServiceTest {
             val studyReviewList = sut.convertManyToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                ris
+                ris,
+                source = mutableSetOf("Compendex")
             )
 
             println("Valid Study Reviews: ${studyReviewList.first}")

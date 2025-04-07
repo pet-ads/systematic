@@ -9,54 +9,58 @@ import br.all.application.study.repository.fromDto
 import br.all.application.study.repository.toDto
 import br.all.application.study.update.interfaces.MarkAsDuplicatedPresenter
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService
-import br.all.application.study.update.interfaces.MarkAsDuplicatedService.ResponseModel
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.study.StudyReview
 
-class MarkAsDuplicatedServiceImpl (
-    val systematicStudyRepository: SystematicStudyRepository,
-    val studyReviewRepository: StudyReviewRepository,
-    val credentialsService: CredentialsService,
-) : MarkAsDuplicatedService{
+class MarkAsDuplicatedServiceImpl(
+    private val systematicStudyRepository: SystematicStudyRepository,
+    private val studyReviewRepository: StudyReviewRepository,
+    private val credentialsService: CredentialsService,
+) : MarkAsDuplicatedService {
 
-    override fun markAsDuplicated(presenter: MarkAsDuplicatedPresenter, request: MarkAsDuplicatedService.RequestModel) {
+    override fun markAsDuplicated(
+        presenter: MarkAsDuplicatedPresenter,
+        request: MarkAsDuplicatedService.RequestModel
+    ) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
 
         presenter.prepareIfFailsPreconditions(user, systematicStudy)
-
         if (presenter.isDone()) return
 
-        val sourceStudyDto = studyReviewRepository.findById(request.systematicStudyId, request.studyReviewSource)
-        if(sourceStudyDto == null) {
-            val message = "Study review source of id ${request.systematicStudyId} not found."
-            presenter.prepareFailView(EntityNotFoundException(message))
+        val referenceStudyDto = studyReviewRepository.findById(request.systematicStudyId, request.referenceStudyId)
+        if (referenceStudyDto == null) {
+            presenter.prepareFailView(EntityNotFoundException("Reference study review with id ${request.referenceStudyId} not found."))
             return
         }
+        val referenceStudyReview = StudyReview.fromDto(referenceStudyDto)
 
-        val destinationStudyDto = studyReviewRepository.findById(request.systematicStudyId, request.studyReviewDestination)
-        if(destinationStudyDto == null) {
-            val message = "Study review destination of id ${request.systematicStudyId} not found."
-            presenter.prepareFailView(EntityNotFoundException(message))
-            return
+        val duplicates = request.duplicatedStudyIds.map { duplicateId ->
+            val dupDto = studyReviewRepository.findById(request.systematicStudyId, duplicateId)
+            if (dupDto == null) {
+                presenter.prepareFailView(EntityNotFoundException("Study review to be marked as duplicated with id $duplicateId not found."))
+                return
+            }
+            StudyReview.fromDto(dupDto)
         }
 
-        val sourceStudyReview = StudyReview.fromDto(sourceStudyDto)
-        val destinationStudyReview = StudyReview.fromDto(destinationStudyDto)
-        sourceStudyReview.markAsDuplicated(destinationStudyReview)
+        referenceStudyReview.markAsDuplicated(duplicates)
 
-        studyReviewRepository.saveOrUpdate(sourceStudyReview.toDto())
-        studyReviewRepository.saveOrUpdate(destinationStudyReview.toDto())
+        duplicates.forEach { duplicate ->
+            studyReviewRepository.saveOrUpdate(duplicate.toDto())
+        }
+        studyReviewRepository.saveOrUpdate(referenceStudyReview.toDto())
 
-        val response = ResponseModel(
-            request.userId,
-            request.systematicStudyId,
-            request.studyReviewDestination,
-            request.studyReviewSource
+        val response = MarkAsDuplicatedService.ResponseModel(
+            userId = request.userId,
+            systematicStudyId = request.systematicStudyId,
+            duplicatedStudies = request.duplicatedStudyIds,
+            referenceStudyId = request.referenceStudyId,
         )
         presenter.prepareSuccessView(response)
     }
 }
+

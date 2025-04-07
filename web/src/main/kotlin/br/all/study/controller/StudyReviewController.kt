@@ -1,6 +1,5 @@
 package br.all.study.controller
 
-import br.all.application.search.update.UpdateSearchSessionService
 import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.find.service.*
 import br.all.application.study.update.implementation.UpdateStudyReviewExtractionService
@@ -11,10 +10,7 @@ import br.all.application.study.update.interfaces.MarkAsDuplicatedService
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.security.service.AuthenticationInfoService
 import br.all.study.presenter.*
-import br.all.study.requests.PatchRiskOfBiasAnswerStudyReviewRequest
-import br.all.study.requests.PatchStatusStudyReviewRequest
-import br.all.study.requests.PostStudyReviewRequest
-import br.all.study.requests.PutStudyReviewRequest
+import br.all.study.requests.*
 import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -25,7 +21,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import br.all.application.study.update.interfaces.MarkAsDuplicatedService.RequestModel as DuplicatedRequest
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService.RequestModel as FindAllBySourceRequest
 import br.all.application.study.find.service.FindStudyReviewService.RequestModel as FindOneRequest
 
@@ -268,7 +263,7 @@ class StudyReviewController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PatchMapping("/study-review/{studyReview}/selection-status")
+    @PatchMapping("/study-review/selection-status")
     @Operation(summary = "Update the selection status of study review")
     @ApiResponses(
         value = [
@@ -293,17 +288,16 @@ class StudyReviewController(
     )
     fun updateStudyReviewSelectionStatus(
         @PathVariable systematicStudy: UUID,
-        @PathVariable studyReview: Long,
         @RequestBody patchRequest: PatchStatusStudyReviewRequest
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
+        val request = patchRequest.toRequestModel(userId, systematicStudy)
         updateSelectionService.changeStatus(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PatchMapping("/study-review/{studyReview}/extraction-status")
+    @PatchMapping("/study-review/extraction-status")
     @Operation(summary = "Update a extraction status of study review")
     @ApiResponses(
         value = [
@@ -328,17 +322,16 @@ class StudyReviewController(
     )
     fun updateStudyReviewExtractionStatus(
         @PathVariable systematicStudy: UUID,
-        @PathVariable studyReview: Long,
         @RequestBody patchRequest: PatchStatusStudyReviewRequest
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter(linksFactory)
         val userID = authenticationInfoService.getAuthenticatedUserId()
-        val request = patchRequest.toRequestModel(userID, systematicStudy, studyReview)
+        val request = patchRequest.toRequestModel(userID, systematicStudy)
         updateExtractionService.changeStatus(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PatchMapping("/study-review/{studyReview}/reading-priority")
+    @PatchMapping("/study-review/reading-priority")
     @Operation(summary = "Update the reading priority of study review")
     @ApiResponses(
         value = [
@@ -363,16 +356,14 @@ class StudyReviewController(
     )
     fun updateStudyReviewReadingPriority(
         @PathVariable systematicStudy: UUID,
-        @PathVariable studyReview: Long,
         @RequestBody patchRequest: PatchStatusStudyReviewRequest
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter(linksFactory)
         val userID = authenticationInfoService.getAuthenticatedUserId()
-        val request = patchRequest.toRequestModel(userID, systematicStudy, studyReview)
+        val request = patchRequest.toRequestModel(userID, systematicStudy)
         updateReadingPriorityService.changeStatus(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
-
 
     @PatchMapping("/study-review/{studyReview}/riskOfBias-answer")
     @Operation(summary = "Update the answer of a risk of bias question")
@@ -413,13 +404,13 @@ class StudyReviewController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PatchMapping("/study-review/{studyReviewIdToKeep}/duplicated/{studyReviewToMarkAsDuplicated}")
-    @Operation(summary = "Mark an existing study as duplicated in the systematic study")
+    @PatchMapping("/study-review/{referenceStudyId}/duplicated")
+    @Operation(summary = "Mark multiple existing studies as duplicated in the systematic study")
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Success marking an existing study as duplicated in the systematic study",
+                description = "Success marking the studies as duplicated in the systematic study",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(implementation = MarkAsDuplicatedService.ResponseModel::class)
@@ -427,28 +418,29 @@ class StudyReviewController(
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail marking an existing study as duplicated in the systematic study - unauthenticated user",
+                description = "Fail marking studies as duplicated in the systematic study - unauthenticated user",
                 content = [Content(schema = Schema(hidden = true))]
-            ),ApiResponse(
+            ),
+            ApiResponse(
                 responseCode = "403",
-                description = "Fail marking an existing study as duplicated in the systematic study - unauthorized user",
+                description = "Fail marking studies as duplicated in the systematic study - unauthorized user",
                 content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "Fail marking an existing study as duplicated in the systematic study - not found",
+                description = "Fail marking studies as duplicated in the systematic study - not found",
                 content = [Content(schema = Schema(hidden = true))]
-            ),
+            )
         ]
     )
     fun markAsDuplicated(
         @PathVariable systematicStudy: UUID,
-        @PathVariable studyReviewIdToKeep: Long,
-        @PathVariable studyReviewToMarkAsDuplicated: Long,
+        @PathVariable referenceStudyId: Long,
+        @RequestBody duplicatedRequest: PatchDuplicatedStudiesRequest
     ): ResponseEntity<*> {
         val presenter = RestfulMarkAsDuplicatedPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = DuplicatedRequest(userId, systematicStudy, studyReviewIdToKeep, studyReviewToMarkAsDuplicated)
+        val request = duplicatedRequest.toRequestModel(userId, systematicStudy, referenceStudyId)
         markAsDuplicatedService.markAsDuplicated(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }

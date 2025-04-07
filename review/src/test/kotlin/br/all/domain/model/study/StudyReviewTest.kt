@@ -110,21 +110,6 @@ class StudyReviewTest {
     }
 
     @Test
-    fun `should both duplicated studies have the same search sources`() {
-        val sourceA = faker.book.publisher()
-        val sourceB = faker.book.publisher()
-        val duplicated = createStudy(searchSources = mutableSetOf(sourceA))
-        val duplicateReference = createStudy(searchSources = mutableSetOf(sourceB))
-        duplicated.markAsDuplicated(duplicateReference)
-        assertAll(
-            { assertTrue { duplicated.searchSources.containsAll(listOf(sourceA, sourceB)) } },
-            { assertEquals(duplicated.searchSources, duplicateReference.searchSources) },
-            { assertEquals(SelectionStatus.DUPLICATED, duplicated.selectionStatus) },
-            { assertEquals(ExtractionStatus.DUPLICATED, duplicated.extractionStatus) },
-        )
-    }
-
-    @Test
     fun `should add eligibility criterion`() {
         val study = createStudy()
         val criterion = Criterion(faker.quote.yoda(), faker.random.nextEnum(CriterionType::class.java))

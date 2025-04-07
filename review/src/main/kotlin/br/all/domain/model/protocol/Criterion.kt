@@ -2,6 +2,7 @@ package br.all.domain.model.protocol
 
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.ddd.ValueObject
+import jakarta.persistence.Embeddable
 
 data class Criterion internal constructor(
     val description: String,
