@@ -3,11 +3,8 @@ package br.all.study.presenter
 import br.all.application.study.create.CreateStudyReviewPresenter
 import br.all.application.study.create.CreateStudyReviewService.ResponseModel
 import br.all.shared.error.createErrorResponseFrom
-import br.all.study.controller.StudyReviewController
-import br.all.study.requests.PatchStatusStudyReviewRequest
 import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
-import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.status
@@ -28,13 +25,13 @@ class RestfulCreateStudyReviewPresenter(
         val selfRef = linksFactory.findStudy(response.systematicStudyId, response.studyReviewId)
         val allStudyReview = linksFactory.findAllStudies(response.systematicStudyId)
         val updateSelectionStatus = linksFactory.updateStudySelectionStatus(
-            response.systematicStudyId, response.studyReviewId
+            response.systematicStudyId
         )
         val updateExtractionStatus = linksFactory.updateStudyExtractionStatus(
-            response.systematicStudyId, response.studyReviewId
+            response.systematicStudyId
         )
         val updateReadingPriority = linksFactory.updateStudyReadingPriority(
-            response.systematicStudyId, response.studyReviewId
+            response.systematicStudyId
         )
         val markAsDuplicated = linksFactory.markStudyAsDuplicated(response.systematicStudyId)
 

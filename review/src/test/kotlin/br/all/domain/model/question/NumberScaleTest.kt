@@ -1,6 +1,5 @@
 package br.all.domain.model.question
 
-import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.Answer
 import io.github.serpro69.kfaker.Faker
@@ -24,8 +23,8 @@ class NumberScaleTest {
             SystematicStudyId(UUID.randomUUID()),
             faker.lorem.words(),
             faker.lorem.words(),
-            higher,
-            lower
+            lower,
+            higher
         )
     }
 
@@ -69,8 +68,8 @@ class NumberScaleTest {
                     SystematicStudyId(UUID.randomUUID()),
                     faker.lorem.words(),
                     faker.lorem.words(),
-                    1,
-                    10
+                    10,
+                    1
                 )
             }
         }

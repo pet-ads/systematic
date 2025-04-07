@@ -32,16 +32,19 @@ class UpdateStudyReviewPriorityService(
 
         if(presenter.isDone()) return
 
-        val studyReviewDto = studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId)
-        if(studyReviewDto == null) {
-            presenter.prepareFailView(EntityNotFoundException("Study review of id ${request.systematicStudyId} not found."))
-            return
+        for (studyId in request.studyReviewId) {
+            val studyReviewDto = studyReviewRepository.findById(request.systematicStudyId, studyId)
+            if(studyReviewDto == null) {
+                presenter.prepareFailView(EntityNotFoundException("Study review of id ${request.systematicStudyId} not found."))
+                return
+            }
+
+            val studyReview = StudyReview.fromDto(studyReviewDto).apply {
+                readingPriority = ReadingPriority.valueOf(request.status)
+            }
+            studyReviewRepository.saveOrUpdate(studyReview.toDto())
         }
 
-        val studyReview = StudyReview.fromDto(studyReviewDto).apply {
-            readingPriority = ReadingPriority.valueOf(request.status)
-        }
-        studyReviewRepository.saveOrUpdate(studyReview.toDto())
         presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, request.studyReviewId))
     }
 }

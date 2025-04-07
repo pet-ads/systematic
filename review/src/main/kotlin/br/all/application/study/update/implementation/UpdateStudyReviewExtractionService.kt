@@ -31,43 +31,46 @@ class UpdateStudyReviewExtractionService(
         presenter.prepareIfFailsPreconditions(user, systematicStudy)
         if (presenter.isDone()) return
 
-        val studyReviewDto = studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId)
-        if (studyReviewDto == null) {
-            presenter.prepareFailView(
-                EntityNotFoundException("Study review of id ${request.systematicStudyId} not found.")
-            )
-            return
-        }
+        for (studyId in request.studyReviewId) {
 
-        val newStatus = request.status.uppercase()
-        if (newStatus == "DUPLICATED") {
-            val message = "Duplication request must indicate the duplicate study. Please use the proper feature."
-            presenter.prepareFailView(IllegalArgumentException(message))
-            return
-        }
-
-        val studyReview = StudyReview.fromDto(studyReviewDto)
-        when (newStatus) {
-            "UNCLASSIFIED" -> studyReview.declassifyInExtraction()
-            "INCLUDED" -> studyReview.includeInExtraction()
-            "EXCLUDED" -> studyReview.excludeInExtraction()
-            else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
-        }
-
-        request.criteria.forEach { criterionString ->
-            val trimmed = criterionString.trim()
-            if (trimmed.isBlank()) {
-                throw IllegalArgumentException("Criterion string cannot be blank")
+            val studyReviewDto = studyReviewRepository.findById(request.systematicStudyId, studyId)
+            if (studyReviewDto == null) {
+                presenter.prepareFailView(
+                    EntityNotFoundException("Study review of id ${request.systematicStudyId} not found.")
+                )
+                return
             }
-            val criterion = if (newStatus == "EXCLUDED") {
-                Criterion.toExclude(trimmed)
-            } else {
-                Criterion.toInclude(trimmed)
-            }
-            studyReview.addCriterion(criterion)
-        }
 
-        studyReviewRepository.saveOrUpdate(studyReview.toDto())
+            val newStatus = request.status.uppercase()
+            if (newStatus == "DUPLICATED") {
+                val message = "Duplication request must indicate the duplicate study. Please use the proper feature."
+                presenter.prepareFailView(IllegalArgumentException(message))
+                return
+            }
+
+            val studyReview = StudyReview.fromDto(studyReviewDto)
+            when (newStatus) {
+                "UNCLASSIFIED" -> studyReview.declassifyInExtraction()
+                "INCLUDED" -> studyReview.includeInExtraction()
+                "EXCLUDED" -> studyReview.excludeInExtraction()
+                else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
+            }
+
+            request.criteria.forEach { criterionString ->
+                val trimmed = criterionString.trim()
+                if (trimmed.isBlank()) {
+                    throw IllegalArgumentException("Criterion string cannot be blank")
+                }
+                val criterion = if (newStatus == "EXCLUDED") {
+                    Criterion.toExclude(trimmed)
+                } else {
+                    Criterion.toInclude(trimmed)
+                }
+                studyReview.addCriterion(criterion)
+            }
+
+            studyReviewRepository.saveOrUpdate(studyReview.toDto())
+        }
 
         presenter.prepareSuccessView(
             ResponseModel(

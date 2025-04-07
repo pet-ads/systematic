@@ -9,7 +9,6 @@ import br.all.infrastructure.study.StudyReviewIdGeneratorService
 import br.all.security.service.ApplicationUser
 import br.all.shared.TestHelperService
 import br.all.study.utils.TestDataFactory
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -34,7 +33,6 @@ class StudyReviewControllerTest(
     @Autowired private val testHelperService: TestHelperService,
     @Autowired val idService: StudyReviewIdGeneratorService,
     @Autowired val mockMvc: MockMvc,
-    @Autowired val objectMapper: ObjectMapper,
 ) {
 
     private lateinit var factory: TestDataFactory
@@ -59,10 +57,10 @@ class StudyReviewControllerTest(
     fun updateStudyUrl(studyReviewId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}"
 
-    fun updateStatusStatus(attributeName: String, studyId: String) =
-        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyId}/${attributeName}"
+    fun updateStatusStatus(attributeName: String) =
+        "/api/v1/systematic-study/$systematicStudyId/study-review/${attributeName}"
 
-    fun markAsDuplicatedUrl(studyToUpdateId: UUID) =
+    fun markAsDuplicatedUrl(studyToUpdateId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated"
 
     fun answerRiskOfBiasQuestion(studyReviewId: Long) =
@@ -354,7 +352,7 @@ class StudyReviewControllerTest(
             repository.insert(studyReview)
 
             mockMvc.perform(
-                patch(updateStatusStatus("selection-status", studyId.toString()))
+                patch(updateStatusStatus("selection-status"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(json)
             ).andExpect(status().isOk)
@@ -376,7 +374,7 @@ class StudyReviewControllerTest(
             repository.insert(studyReview)
 
             mockMvc.perform(
-                patch(updateStatusStatus("selection-status", studyId.toString()))
+                patch(updateStatusStatus("selection-status"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(json)
             ).andExpect(status().isBadRequest)
@@ -396,7 +394,7 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            val patchStatusStatus = updateStatusStatus("extraction-status", studyId.toString())
+            val patchStatusStatus = updateStatusStatus("extraction-status")
             mockMvc.perform(patch(patchStatusStatus)
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
                 .contentType(MediaType.APPLICATION_JSON).content(json))
@@ -418,7 +416,7 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            val patchStatusStatus = updateStatusStatus("extraction-status", studyId.toString())
+            val patchStatusStatus = updateStatusStatus("extraction-status")
             mockMvc.perform(patch(patchStatusStatus)
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
                 .contentType(MediaType.APPLICATION_JSON).content(json))
@@ -440,7 +438,7 @@ class StudyReviewControllerTest(
             repository.insert(studyReview)
 
             mockMvc.perform(
-                patch(updateStatusStatus("reading-priority", studyId.toString()))
+                patch(updateStatusStatus("reading-priority"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(json)
             ).andExpect(status().isOk)
@@ -461,7 +459,7 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            val patchStatusStatus = updateStatusStatus("reading-priority", studyId.toString())
+            val patchStatusStatus = updateStatusStatus("reading-priority")
             mockMvc.perform(patch(patchStatusStatus)
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
                 .contentType(MediaType.APPLICATION_JSON).content(json))
@@ -477,7 +475,7 @@ class StudyReviewControllerTest(
             val studyId = idService.next()
 
             testHelperService.testForUnauthorizedUser(mockMvc,
-                patch(updateStatusStatus("reading-priority", studyId.toString()))
+                patch(updateStatusStatus("reading-priority"))
                     .content(factory.validStatusUpdatePatchRequest(studyId, "HIGH"))
             )
         }
@@ -487,7 +485,7 @@ class StudyReviewControllerTest(
             val studyId = idService.next()
 
             testHelperService.testForUnauthenticatedUser(mockMvc,
-                patch(updateStatusStatus("reading-priority", studyId.toString())),
+                patch(updateStatusStatus("reading-priority")),
             )
         }
     }
@@ -519,7 +517,7 @@ class StudyReviewControllerTest(
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
             val updatedReview = repository.findById(studyReviewId)
-            assertEquals(updatedReview.get().formAnswers[questionId], "TEST")
+            assertEquals(updatedReview.get().qualityAnswers[questionId], "TEST")
         }
 
         @Test
@@ -583,10 +581,10 @@ class StudyReviewControllerTest(
             val duplicateIds = listOf(studyToDuplicateId)
 
             mockMvc.perform(
-                patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
+                patch(markAsDuplicatedUrl(studyToUpdateId))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(duplicateIds))
+                    .content(factory.validMarkAsDuplicateRequest(duplicateIds))
             )
                 .andDo(print())
                 .andExpect(status().isOk)
@@ -610,10 +608,10 @@ class StudyReviewControllerTest(
             val duplicateIds = listOf(studyToDuplicateId)
 
             mockMvc.perform(
-                patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
+                patch(markAsDuplicatedUrl(studyToUpdateId))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(duplicateIds))
+                    .content(factory.validMarkAsDuplicateRequest(duplicateIds))
             )
                 .andExpect(status().isNotFound)
         }
@@ -629,10 +627,10 @@ class StudyReviewControllerTest(
             val duplicateIds = listOf(studyToDuplicateId)
 
             mockMvc.perform(
-                patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
+                patch(markAsDuplicatedUrl(studyToUpdateId))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(duplicateIds))
+                    .content(factory.validMarkAsDuplicateRequest(duplicateIds))
             )
                 .andExpect(status().isNotFound)
         }
@@ -646,9 +644,9 @@ class StudyReviewControllerTest(
 
             testHelperService.testForUnauthorizedUser(
                 mockMvc,
-                patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
+                patch(markAsDuplicatedUrl(studyToUpdateId))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(duplicateIds))
+                    .content(factory.validMarkAsDuplicateRequest(duplicateIds))
             )
         }
 
@@ -661,9 +659,9 @@ class StudyReviewControllerTest(
 
             testHelperService.testForUnauthenticatedUser(
                 mockMvc,
-                patch("/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated")
+                patch(markAsDuplicatedUrl(studyToUpdateId))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(duplicateIds))
+                    .content(factory.validMarkAsDuplicateRequest(duplicateIds))
             )
         }
     }
