@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.util.*
 
 interface AnswerExtractionQuestionService {
-    fun answerQuestion(presenter: AnswerExtractionQuestionPresenter, request: RequestModel<*>)
+    fun answerExtractionQuestion(presenter: AnswerExtractionQuestionPresenter, request: RequestModel<*>)
 
     data class RequestModel<T>(
         val userId: UUID,
