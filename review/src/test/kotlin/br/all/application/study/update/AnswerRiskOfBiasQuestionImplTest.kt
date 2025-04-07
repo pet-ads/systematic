@@ -62,7 +62,7 @@ class AnswerRiskOfBiasQuestionImplTest {
         fun `should successfully Answer a text question`() {
             val dto = factory.generateDto()
             val questionDto = factory.generateQuestionTextualDto(questionId, factory.systematicStudyId)
-            val request = factory.answerRequestModel(questionId, "TEXTUAL", "Answer Test")
+            val request = factory.answerRobRequestModel(questionId, "TEXTUAL", "Answer Test")
 
             preconditionCheckerMocking.makeEverythingWork()
 
@@ -80,9 +80,9 @@ class AnswerRiskOfBiasQuestionImplTest {
         @Test
         fun `should successfully Answer a labeled scale question`() {
             val dto = factory.generateDto()
-            val answer = factory.labelDto("Test Name", 1)
+            val answer = factory.labelRobDto("Test Name", 1)
             val questionDto = factory.generateQuestionLabeledScaleDto(questionId, labelDto = answer)
-            val request = factory.answerRequestModel(questionId, "LABELED_SCALE", answer)
+            val request = factory.answerRobRequestModel(questionId, "LABELED_SCALE", answer)
 
             preconditionCheckerMocking.makeEverythingWork()
 
@@ -106,7 +106,7 @@ class AnswerRiskOfBiasQuestionImplTest {
         fun `should not be able to answer question with mismatched type`() {
             val dto = factory.generateDto()
             val questionDto = factory.generateQuestionTextualDto(questionId, factory.systematicStudyId)
-            val request = factory.answerRequestModel(questionId, "LABELED_SCALE", "Test")
+            val request = factory.answerRobRequestModel(questionId, "LABELED_SCALE", "Test")
 
             preconditionCheckerMocking.makeEverythingWork()
 
@@ -120,7 +120,7 @@ class AnswerRiskOfBiasQuestionImplTest {
 
         @Test
         fun `should not work if study doesn't exist`() {
-            val request = factory.answerRequestModel(questionId, "TEXTUAL", "Answer")
+            val request = factory.answerRobRequestModel(questionId, "TEXTUAL", "Answer")
 
             preconditionCheckerMocking.makeEverythingWork()
 
@@ -135,7 +135,7 @@ class AnswerRiskOfBiasQuestionImplTest {
         @Test
         fun `should not work if question doesn't exist`() {
             val dto = factory.generateDto()
-            val request = factory.answerRequestModel(questionId, "TEXTUAL", "Testing")
+            val request = factory.answerRobRequestModel(questionId, "TEXTUAL", "Testing")
 
             preconditionCheckerMocking.makeEverythingWork()
 
@@ -151,7 +151,7 @@ class AnswerRiskOfBiasQuestionImplTest {
 
         @Test
         fun `should not answer when unauthorized`() {
-            val request = factory.answerRequestModel(questionId, "TEXTUAL", "failure test")
+            val request = factory.answerRobRequestModel(questionId, "TEXTUAL", "failure test")
 
             preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
                 sut.answerRobQuestion(presenter, request)
@@ -160,7 +160,7 @@ class AnswerRiskOfBiasQuestionImplTest {
 
         @Test
         fun `should not answer when unauthenticated`() {
-            val request = factory.answerRequestModel(questionId, "TEXTUAL", "nono")
+            val request = factory.answerRobRequestModel(questionId, "TEXTUAL", "nono")
 
             preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
                 sut.answerRobQuestion(presenter, request)
@@ -170,7 +170,7 @@ class AnswerRiskOfBiasQuestionImplTest {
 
         @Test
         fun `should not answer when systematic study does not exist`() {
-            val request = factory.answerRequestModel(questionId, "TEXTUAL", "not real")
+            val request = factory.answerRobRequestModel(questionId, "TEXTUAL", "not real")
 
             preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
                 sut.answerRobQuestion(presenter, request)
