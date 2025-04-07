@@ -11,8 +11,6 @@ import br.all.application.study.repository.fromDto
 import br.all.application.study.repository.toDto
 import br.all.application.study.update.interfaces.AnswerExtractionQuestionPresenter
 import br.all.application.study.update.interfaces.AnswerExtractionQuestionService
-import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionPresenter
-import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionService
 import br.all.application.user.CredentialsService
 import br.all.domain.model.question.*
 import br.all.domain.model.review.SystematicStudy
@@ -61,7 +59,7 @@ class AnswerExtractionQuestionImpl(
 
 
         val answer = answer(questionDto.questionType, request, question)
-        review.answerQualityQuestionOf(answer)
+        review.answerFormQuestionOf(answer)
 
         studyReviewRepository.saveOrUpdate(review.toDto())
 
@@ -96,7 +94,7 @@ class AnswerExtractionQuestionImpl(
                             }
                         } ?: throw IllegalArgumentException("Invalid labeled scale answer: missing 'name' or 'value'")
                     }
-                    is AnswerRiskOfBiasQuestionService.LabelDto -> {
+                    is AnswerExtractionQuestionService.LabelDto -> {
                         (question as LabeledScale).answer(Label(answer.name, answer.value))
                     }
                     else -> {
