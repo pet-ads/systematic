@@ -10,5 +10,5 @@ data class CollaborationDocument(
     val systematicStudyId: UUID,
     val userId: UUID,
     val status: String,
-    val permissions: List<String>
+    val permissions: Set<String> = emptySet()
 )
