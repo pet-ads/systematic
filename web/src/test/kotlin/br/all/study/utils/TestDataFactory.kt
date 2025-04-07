@@ -89,7 +89,7 @@ class TestDataFactory {
 
 
 
-    fun <T> validAnswerRiskOfBiasPatchRequest(studyReviewId: Long, questionId: UUID, type: String, answer: T) =
+    fun <T> validAnswerQuestionRequest(studyReviewId: Long, questionId: UUID, type: String, answer: T) =
         """
         {
           "studyReviewId": $studyReviewId,
