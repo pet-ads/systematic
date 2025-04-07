@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.util.*
 
 interface AnswerRiskOfBiasQuestionService {
-    fun answerQuestion(presenter: AnswerRiskOfBiasQuestionPresenter, request: RequestModel<*>)
+    fun answerRobQuestion(presenter: AnswerRiskOfBiasQuestionPresenter, request: RequestModel<*>)
 
     data class RequestModel<T>(
         val userId: UUID,

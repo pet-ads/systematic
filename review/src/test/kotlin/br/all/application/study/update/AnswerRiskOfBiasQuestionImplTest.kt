@@ -69,7 +69,7 @@ class AnswerRiskOfBiasQuestionImplTest {
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
             every { questionRepository.findById(request.systematicStudyId, questionId) } returns questionDto
 
-            sut.answerQuestion(presenter, request)
+            sut.answerRobQuestion(presenter, request)
 
             verify(exactly = 1) {
                 studyReviewRepository.saveOrUpdate(any())
@@ -89,7 +89,7 @@ class AnswerRiskOfBiasQuestionImplTest {
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
             every { questionRepository.findById(request.systematicStudyId, questionId) } returns questionDto
 
-            sut.answerQuestion(presenter, request)
+            sut.answerRobQuestion(presenter, request)
 
             verify(exactly = 1) {
                 studyReviewRepository.saveOrUpdate(any())
@@ -114,7 +114,7 @@ class AnswerRiskOfBiasQuestionImplTest {
             every { questionRepository.findById(request.systematicStudyId, questionId) } returns questionDto
 
             assertFailsWith<IllegalArgumentException> {
-                sut.answerQuestion(presenter, request)
+                sut.answerRobQuestion(presenter, request)
             }
         }
 
@@ -125,7 +125,7 @@ class AnswerRiskOfBiasQuestionImplTest {
             preconditionCheckerMocking.makeEverythingWork()
 
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns null
-            sut.answerQuestion(presenter, request)
+            sut.answerRobQuestion(presenter, request)
 
             verify {
                 presenter.prepareFailView(any<EntityNotFoundException>())
@@ -142,7 +142,7 @@ class AnswerRiskOfBiasQuestionImplTest {
             every { studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId) } returns dto
             every { questionRepository.findById(request.systematicStudyId, questionId) } returns null
 
-            sut.answerQuestion(presenter, request)
+            sut.answerRobQuestion(presenter, request)
 
             verify {
                 presenter.prepareFailView(any<EntityNotFoundException>())
@@ -154,7 +154,7 @@ class AnswerRiskOfBiasQuestionImplTest {
             val request = factory.answerRequestModel(questionId, "TEXTUAL", "failure test")
 
             preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
-                sut.answerQuestion(presenter, request)
+                sut.answerRobQuestion(presenter, request)
             }
         }
 
@@ -163,7 +163,7 @@ class AnswerRiskOfBiasQuestionImplTest {
             val request = factory.answerRequestModel(questionId, "TEXTUAL", "nono")
 
             preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
-                sut.answerQuestion(presenter, request)
+                sut.answerRobQuestion(presenter, request)
             }
 
         }
@@ -173,7 +173,7 @@ class AnswerRiskOfBiasQuestionImplTest {
             val request = factory.answerRequestModel(questionId, "TEXTUAL", "not real")
 
             preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
-                sut.answerQuestion(presenter, request)
+                sut.answerRobQuestion(presenter, request)
             }
 
         }

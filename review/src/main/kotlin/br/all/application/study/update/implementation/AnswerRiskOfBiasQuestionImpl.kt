@@ -1,4 +1,5 @@
 package br.all.application.study.update.implementation
+
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.repository.fromDto
 import br.all.application.review.repository.SystematicStudyRepository
@@ -23,7 +24,7 @@ class AnswerRiskOfBiasQuestionImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val credentialsService: CredentialsService,
 ): AnswerRiskOfBiasQuestionService {
-    override fun answerQuestion(
+    override fun answerRobQuestion(
         presenter: AnswerRiskOfBiasQuestionPresenter,
         request: AnswerRiskOfBiasQuestionService.RequestModel<*>
     ) {
