@@ -13,4 +13,8 @@ class Invite(
     inviteDate: LocalDateTime,
     expirationDate: LocalDateTime = inviteDate.plusDays(30)
 ) : Entity<UUID>(id) {
+    
+    init{
+        require(expirationDate.isAfter(inviteDate))
+    }
 }
