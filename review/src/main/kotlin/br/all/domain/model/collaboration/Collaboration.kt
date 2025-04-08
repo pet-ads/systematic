@@ -13,8 +13,10 @@ class Collaboration(
     status: CollaborationStatus = CollaborationStatus.ACTIVE,
     permissions: Set<CollaborationPermission> = emptySet()
     ): Entity<UUID>(id) {
+        
         init{
-            
+            val notification = validate()
+            require(notification.hasNoErrors()) { notification.message() }
         }
     
     private val _permissions = permissions.toMutableSet()
