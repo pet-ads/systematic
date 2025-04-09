@@ -22,9 +22,6 @@ class ScoreCalculatorServiceTest {
     fun `should assign maximum score when all keywords match in all fields`() {
         val result = sut.applyScoreToManyStudyReviews(listOf(baseStudyReview)).first()
 
-        // - "dengue" title (5), abstract (3), keywords (2) = 10
-        // - "mosquito" abstract (3), keywords (2) = 5
-        // - "países tropicais" title (5), abstract (3), keywords (2) = 10
         assertEquals(25, result.score)
     }
 
@@ -37,18 +34,12 @@ class ScoreCalculatorServiceTest {
     @Test
     fun `should assign partial score when only some keywords match`() {
         val result = sut.applyScoreToManyStudyReviews(listOf(partialMatchStudyReview)).first()
-
-        // "dengue" title (5), abstract (3), keywords (2) = 10
         assertEquals(10, result.score)
     }
 
     @Test
     fun `should handle study review with null abstract`() {
         val result = sut.applyScoreToManyStudyReviews(listOf(nullAbstractStudyReview)).first()
-
-        // "dengue" title (5) + keywords (2) = 7
-        // "mosquito" keywords (2) = 2
-        // "países tropicais" title (5), keywords (2) = 7
         assertEquals(16, result.score)
     }
 
@@ -56,7 +47,6 @@ class ScoreCalculatorServiceTest {
     fun `should return list with correct size and scores`() {
         val input = listOf(baseStudyReview, noMatchStudyReview, partialMatchStudyReview)
         val results = sut.applyScoreToManyStudyReviews(input)
-
         assertEquals(3, results.size)
         assertEquals(25, results[0].score)
         assertEquals(0, results[1].score)
