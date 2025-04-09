@@ -1,9 +1,9 @@
 package br.all.domain.services
 
-import br.all.domain.services.ScoreCalculatorServiceData.baseStudyReview
-import br.all.domain.services.ScoreCalculatorServiceData.noMatchStudyReview
-import br.all.domain.services.ScoreCalculatorServiceData.nullAbstractStudyReview
-import br.all.domain.services.ScoreCalculatorServiceData.partialMatchStudyReview
+import br.all.domain.services.ScoreCalculatorServiceTestData.baseStudyReview
+import br.all.domain.services.ScoreCalculatorServiceTestData.noMatchStudyReview
+import br.all.domain.services.ScoreCalculatorServiceTestData.nullAbstractStudyReview
+import br.all.domain.services.ScoreCalculatorServiceTestData.partialMatchStudyReview
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals

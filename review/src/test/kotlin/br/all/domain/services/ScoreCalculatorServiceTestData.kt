@@ -6,7 +6,7 @@ import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.study.*
 import java.util.*
 
-object ScoreCalculatorServiceData {
+object ScoreCalculatorServiceTestData {
     val baseStudyReview = StudyReview(
         studyId = StudyReviewId(1L),
         systematicStudyId = SystematicStudyId(UUID.randomUUID()),
