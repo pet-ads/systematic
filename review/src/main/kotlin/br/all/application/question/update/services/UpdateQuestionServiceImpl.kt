@@ -1,21 +1,17 @@
 package br.all.application.question.update.services
 
-import br.all.application.question.create.CreateQuestionService
 import br.all.application.question.create.CreateQuestionService.QuestionType
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.repository.toDto
 import br.all.application.question.update.presenter.UpdateQuestionPresenter
 import br.all.application.question.update.services.UpdateQuestionService.*
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
-import br.all.application.shared.presenter.PreconditionChecker
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.user.CredentialsService
 import br.all.domain.model.question.QuestionBuilder
 import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.SystematicStudy
-import br.all.domain.model.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 
 class UpdateQuestionServiceImpl(
@@ -54,12 +50,11 @@ class UpdateQuestionServiceImpl(
         val question = when (request.questionType) {
             QuestionType.TEXTUAL -> builder.buildTextual()
             QuestionType.PICK_LIST -> builder.buildPickList(request.options!!)
-            QuestionType.NUMBERED_SCALE -> builder.buildNumberScale(request.higher!!, request.lower!!)
+            QuestionType.NUMBERED_SCALE -> builder.buildNumberScale(request.lower!!, request.higher!!)
             QuestionType.LABELED_SCALE -> builder.buildLabeledScale(request.scales!!)
         }
 
-        questionRepository.createOrUpdate(question.toDto(type, request.questionContext.toString()))
-        presenter.prepareSuccessView(UpdateQuestionService.ResponseModel(userId, systematicStudyId, questionId.value))
+        questionRepository.createOrUpdate(question.toDto(type, request.questionContext))
+        presenter.prepareSuccessView(ResponseModel(userId, systematicStudyId, questionId.value))
     }
-
 }

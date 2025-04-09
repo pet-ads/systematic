@@ -96,7 +96,6 @@ class AnswerRiskOfBiasQuestionImplTest {
                 presenter.prepareSuccessView(any())
             }
         }
-
     }
 
     @Nested

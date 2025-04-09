@@ -1,6 +1,5 @@
 package br.all.domain.model.question
 
-import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.review.SystematicStudyId
 
 class QuestionBuilder private constructor(
@@ -22,7 +21,7 @@ class QuestionBuilder private constructor(
 
     fun buildLabeledScale(scales: Map<String, Int>) = LabeledScale(questionId, systematicStudyId, code, description, scales)
 
-    fun buildNumberScale(higher: Int, lower: Int) = NumberScale(questionId, systematicStudyId, code, description, higher, lower)
+    fun buildNumberScale(lower: Int, higher: Int) = NumberScale(questionId, systematicStudyId, code, description, lower, higher)
 
     fun buildPickList(options: List<String>) = PickList(questionId, systematicStudyId, code, description, options)
 }

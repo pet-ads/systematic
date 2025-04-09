@@ -43,7 +43,7 @@ class QuestionBuilderTest {
             val higher = 10
             val lower = 1
 
-            assertDoesNotThrow { validQuestionBuilder.buildNumberScale(higher, lower) }
+            assertDoesNotThrow { validQuestionBuilder.buildNumberScale(lower, higher) }
         }
 
         @Test
@@ -78,7 +78,7 @@ class QuestionBuilderTest {
             fun `should not create a NumberScale question with lower greater than higher`(lower: Int) {
                 val higher = 10
 
-                assertThrows<IllegalArgumentException> { validQuestionBuilder.buildNumberScale(higher, lower) }
+                assertThrows<IllegalArgumentException> { validQuestionBuilder.buildNumberScale(lower, higher) }
             }
 
             @Test
@@ -86,7 +86,7 @@ class QuestionBuilderTest {
                 val higher = 10
                 val lower = 10
 
-                assertThrows<IllegalArgumentException> { validQuestionBuilder.buildNumberScale(higher, lower) }
+                assertThrows<IllegalArgumentException> { validQuestionBuilder.buildNumberScale(lower, higher) }
             }
 
             @Test
