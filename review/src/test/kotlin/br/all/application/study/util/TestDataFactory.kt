@@ -6,10 +6,7 @@ import br.all.application.study.find.service.FindAllStudyReviewsBySourceService
 import br.all.application.study.find.service.FindAllStudyReviewsService
 import br.all.application.study.find.service.FindStudyReviewService
 import br.all.application.study.repository.StudyReviewDto
-import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionService
-import br.all.application.study.update.interfaces.MarkAsDuplicatedService
-import br.all.application.study.update.interfaces.UpdateStudyReviewService
-import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
+import br.all.application.study.update.interfaces.*
 import br.all.domain.model.question.QuestionContextEnum
 import br.all.domain.model.study.StudyType
 import br.all.domain.shared.utils.paragraph
@@ -127,16 +124,27 @@ class TestDataFactory {
         duplicateIds: List<Long>
     ) = MarkAsDuplicatedService.RequestModel(researcherId, systematicStudyId, keptStudyReviewId, duplicateIds)
 
-    fun <T> answerRequestModel(
+    fun <T> answerRobRequestModel(
         questionId: UUID,
         type: String,
         answer: T,
     ) = AnswerRiskOfBiasQuestionService.RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
 
-    fun labelDto(
+    fun <T> answerExtractionQuestionModel(
+        questionId: UUID,
+        type: String,
+        answer: T,
+    ) = AnswerExtractionQuestionService.RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
+
+    fun labelRobDto(
         name: String,
         value: Int,
     ) = AnswerRiskOfBiasQuestionService.LabelDto(name, value)
+
+    fun labelExtractionDto(
+        name: String,
+        value: Int,
+    ) = AnswerExtractionQuestionService.LabelDto(name, value)
 
     fun generateQuestionTextualDto(
         questionId: UUID,
@@ -153,7 +161,8 @@ class TestDataFactory {
             null,
             null,
             null,
-            null, QuestionContextEnum.EXTRACTION
+            null,
+            QuestionContextEnum.EXTRACTION
         )
 
     fun generateQuestionLabeledScaleDto(
@@ -161,7 +170,7 @@ class TestDataFactory {
         systematicStudyId: UUID = this.systematicStudyId,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
-        labelDto: AnswerRiskOfBiasQuestionService.LabelDto
+        labelDto: AnswerRiskOfBiasQuestionService.LabelDto //TODO(Make both services share the same DTO)
     ) =
         QuestionDto(
             questionId,
