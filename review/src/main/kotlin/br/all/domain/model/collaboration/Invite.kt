@@ -9,8 +9,8 @@ import java.util.*
 
 class Invite(
     id: InviteId,
-    systematicStudyId: SystematicStudyId,
-    userId: UserAccountId,
+    val systematicStudyId: SystematicStudyId,
+    val userId: UserAccountId,
     val inviteDate: LocalDateTime,
     val expirationDate: LocalDateTime = inviteDate.plusDays(30)
 ) : Entity<UUID>(id) {
