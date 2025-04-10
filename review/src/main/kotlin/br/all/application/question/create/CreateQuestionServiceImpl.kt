@@ -57,7 +57,7 @@ class CreateQuestionServiceImpl(
         val question = when (type) {
             TEXTUAL -> builder.buildTextual()
             PICK_LIST -> builder.buildPickList(request.options!!)
-            NUMBERED_SCALE -> builder.buildNumberScale(request.higher!!, request.lower!!)
+            NUMBERED_SCALE -> builder.buildNumberScale(request.lower!!, request.higher!!)
             LABELED_SCALE -> builder.buildLabeledScale(request.scales!!)
         }
 

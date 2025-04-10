@@ -5,6 +5,7 @@ import br.all.application.study.find.service.*
 import br.all.application.study.update.implementation.UpdateStudyReviewExtractionService
 import br.all.application.study.update.implementation.UpdateStudyReviewPriorityService
 import br.all.application.study.update.implementation.UpdateStudyReviewSelectionService
+import br.all.application.study.update.interfaces.AnswerExtractionQuestionService
 import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionService
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
@@ -39,6 +40,7 @@ class StudyReviewController(
     private val updateReadingPriorityService: UpdateStudyReviewPriorityService,
     private val markAsDuplicatedService: MarkAsDuplicatedService,
     private val answerRiskOfBiasQuestionService: AnswerRiskOfBiasQuestionService,
+    private val answerExtractionQuestionService: AnswerExtractionQuestionService,
     private val authenticationInfoService: AuthenticationInfoService,
     private val linksFactory: LinksFactory
 
@@ -400,7 +402,46 @@ class StudyReviewController(
         val presenter = RestfulAnswerRiskOfBiasQuestionPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
-        answerRiskOfBiasQuestionService.answerQuestion(presenter, request)
+        answerRiskOfBiasQuestionService.answerRobQuestion(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @PatchMapping("/study-review/{studyReview}/extraction-answer")
+    @Operation(summary = "Update the answer of a extraction question")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Success updating answer to extraction question",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = AnswerExtractionQuestionService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail updating answer to extraction question",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail updating answer to extraction question - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail updating answer to extraction question - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+        ]
+    )
+    fun extractionAnswer(
+        @PathVariable systematicStudy: UUID,
+        @PathVariable studyReview: Long,
+        @RequestBody patchRequest: PatchExtractionAnswerStudyReviewRequest<*>,
+    ) : ResponseEntity<*> {
+        val presenter = RestfulAnswerExtractionQuestionPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
+        answerExtractionQuestionService.answerExtractionQuestion(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 

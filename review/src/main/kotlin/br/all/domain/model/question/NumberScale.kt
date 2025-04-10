@@ -1,6 +1,5 @@
 package br.all.domain.model.question
 
-import br.all.domain.model.protocol.ProtocolId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.Answer
 import br.all.domain.shared.ddd.Notification
@@ -10,8 +9,8 @@ class NumberScale(
     systematicStudyId: SystematicStudyId,
     code: String,
     description: String,
-    val higher: Int,
     val lower: Int,
+    val higher: Int,
 ) : Question<Int>(id, systematicStudyId, code, description) {
     init {
         val notification = validate()
