@@ -26,6 +26,7 @@ class StudyReview(
     var readingPriority: ReadingPriority = ReadingPriority.LOW,
     selectionStatus: SelectionStatus = SelectionStatus.UNCLASSIFIED,
     extractionStatus: ExtractionStatus = ExtractionStatus.UNCLASSIFIED,
+    var score: Int = 0
 ) : Entity<Long>(studyId) {
 
     private val study: Study
@@ -52,9 +53,6 @@ class StudyReview(
         private set
     var extractionStatus: ExtractionStatus = extractionStatus
         private set
-
-    var score: Int = 0
-        internal set
 
     init {
         require(searchSources.size > 0) { "The study must be related to at least one search source." }
