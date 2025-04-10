@@ -3,7 +3,6 @@ package br.all.application.study.repository
 import br.all.application.study.create.CreateStudyReviewService.RequestModel
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.domain.model.protocol.Criterion
-import br.all.domain.model.protocol.Criterion.CriterionType
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.study.*

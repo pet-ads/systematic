@@ -4,11 +4,8 @@ import br.all.application.study.find.presenter.FindStudyReviewPresenter
 import br.all.application.study.find.service.FindStudyReviewService.ResponseModel
 import br.all.application.study.repository.StudyReviewDto
 import br.all.shared.error.createErrorResponseFrom
-import br.all.study.controller.StudyReviewController
-import br.all.study.requests.PostStudyReviewRequest
 import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
-import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
