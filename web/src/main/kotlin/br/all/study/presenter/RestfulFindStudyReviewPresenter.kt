@@ -54,5 +54,6 @@ class RestfulFindStudyReviewPresenter(
         val readingPriority = content.readingPriority
         val extractionStatus = content.extractionStatus
         val selectionStatus = content.selectionStatus
+        val score = content.score
     }
 }

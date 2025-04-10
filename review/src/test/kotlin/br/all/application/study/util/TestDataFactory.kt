@@ -48,13 +48,14 @@ class TestDataFactory {
         comments: String = faker.paragraph(15),
         selectionStatus: String = "UNCLASSIFIED",
         extractionStatus: String = "UNCLASSIFIED",
-        readingPriority: String = "LOW"
+        readingPriority: String = "LOW",
+        score: Int = 0
     ): StudyReviewDto {
         return StudyReviewDto(
             studyReviewId, systematicStudyId, searchSessionId, type, title, year,
             authors, venue, abstract, keywords, references, doi, sources,
             criteria, formAnswers, robAnswers, comments, readingPriority,
-            extractionStatus, selectionStatus
+            extractionStatus, selectionStatus, score
         )
     }
 

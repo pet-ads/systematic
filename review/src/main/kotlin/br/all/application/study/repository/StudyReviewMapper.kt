@@ -28,7 +28,8 @@ fun StudyReview.toDto() = StudyReviewDto(
     comments,
     readingPriority.toString(),
     extractionStatus.toString(),
-    selectionStatus.toString()
+    selectionStatus.toString(),
+    score
 )
 
 
@@ -52,7 +53,8 @@ fun StudyReview.Companion.fromDto(dto: StudyReviewDto) = StudyReview(
     dto.comments,
     ReadingPriority.valueOf(dto.readingPriority),
     SelectionStatus.valueOf(dto.selectionStatus),
-    ExtractionStatus.valueOf(dto.extractionStatus)
+    ExtractionStatus.valueOf(dto.extractionStatus),
+    dto.score
 )
 
 

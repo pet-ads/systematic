@@ -25,7 +25,8 @@ data class StudyReviewDocument (
     val comments: String,
     val readingPriority: String,
     val extractionStatus: String,
-    val selectionStatus: String
+    val selectionStatus: String,
+    val score: Int
 ){
     companion object{
         @Transient
