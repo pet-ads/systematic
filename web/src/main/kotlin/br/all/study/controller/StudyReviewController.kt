@@ -5,10 +5,7 @@ import br.all.application.study.find.service.*
 import br.all.application.study.update.implementation.UpdateStudyReviewExtractionService
 import br.all.application.study.update.implementation.UpdateStudyReviewPriorityService
 import br.all.application.study.update.implementation.UpdateStudyReviewSelectionService
-import br.all.application.study.update.interfaces.AnswerExtractionQuestionService
-import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionService
-import br.all.application.study.update.interfaces.MarkAsDuplicatedService
-import br.all.application.study.update.interfaces.UpdateStudyReviewService
+import br.all.application.study.update.interfaces.*
 import br.all.security.service.AuthenticationInfoService
 import br.all.study.presenter.*
 import br.all.study.requests.*
@@ -39,8 +36,7 @@ class StudyReviewController(
     private val updateExtractionService: UpdateStudyReviewExtractionService,
     private val updateReadingPriorityService: UpdateStudyReviewPriorityService,
     private val markAsDuplicatedService: MarkAsDuplicatedService,
-    private val answerRiskOfBiasQuestionService: AnswerRiskOfBiasQuestionService,
-    private val answerExtractionQuestionService: AnswerExtractionQuestionService,
+    private val answerQuestionService: AnswerQuestionService,
     private val authenticationInfoService: AuthenticationInfoService,
     private val linksFactory: LinksFactory
 
@@ -374,7 +370,7 @@ class StudyReviewController(
             ApiResponse(responseCode = "200", description = "Success updating answer to risk of bias question",
                 content = [Content(
                     mediaType = "application/json",
-                    schema = Schema(implementation = AnswerRiskOfBiasQuestionService.ResponseModel::class)
+                    schema = Schema(implementation = AnswerQuestionService.ResponseModel::class)
                 )]
             ),
             ApiResponse(
@@ -397,12 +393,12 @@ class StudyReviewController(
     fun riskOfBiasAnswer(
         @PathVariable systematicStudy: UUID,
         @PathVariable studyReview: Long,
-        @RequestBody patchRequest: PatchRiskOfBiasAnswerStudyReviewRequest<*>,
+        @RequestBody patchRequest: PatchAnswerQuestionStudyReviewRequest<*>,
     ) : ResponseEntity<*> {
-        val presenter = RestfulAnswerRiskOfBiasQuestionPresenter(linksFactory)
+        val presenter = RestfulAnswerQuestionPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
-        answerRiskOfBiasQuestionService.answerRobQuestion(presenter, request)
+        answerQuestionService.answerQuestion(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -413,7 +409,7 @@ class StudyReviewController(
             ApiResponse(responseCode = "200", description = "Success updating answer to extraction question",
                 content = [Content(
                     mediaType = "application/json",
-                    schema = Schema(implementation = AnswerExtractionQuestionService.ResponseModel::class)
+                    schema = Schema(implementation = AnswerQuestionService.ResponseModel::class)
                 )]
             ),
             ApiResponse(
@@ -436,12 +432,12 @@ class StudyReviewController(
     fun extractionAnswer(
         @PathVariable systematicStudy: UUID,
         @PathVariable studyReview: Long,
-        @RequestBody patchRequest: PatchExtractionAnswerStudyReviewRequest<*>,
+        @RequestBody patchRequest: PatchAnswerQuestionStudyReviewRequest<*>,
     ) : ResponseEntity<*> {
-        val presenter = RestfulAnswerExtractionQuestionPresenter(linksFactory)
+        val presenter = RestfulAnswerQuestionPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
-        answerExtractionQuestionService.answerExtractionQuestion(presenter, request)
+        answerQuestionService.answerQuestion(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 

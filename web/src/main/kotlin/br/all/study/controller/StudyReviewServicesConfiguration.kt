@@ -10,6 +10,7 @@ import br.all.application.study.find.presenter.FindStudyReviewPresenter
 import br.all.application.study.find.service.*
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.update.implementation.*
+import br.all.application.study.update.interfaces.AnswerQuestionService
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresenter
 import br.all.application.user.CredentialsService
 import br.all.domain.services.IdGeneratorService
@@ -128,25 +129,12 @@ class StudyReviewServicesConfiguration {
     )
 
     @Bean
-    fun riskOfBiasService(
+    fun answerQuestionService(
         studyReviewRepository: StudyReviewRepository,
         questionRepository: QuestionRepository,
         systematicStudyRepository: SystematicStudyRepository,
         credentialsService: CredentialsService,
-    ) = AnswerRiskOfBiasQuestionImpl(
-        studyReviewRepository,
-        questionRepository,
-        systematicStudyRepository,
-        credentialsService
-    )
-
-    @Bean
-    fun extractionService(
-        studyReviewRepository: StudyReviewRepository,
-        questionRepository: QuestionRepository,
-        systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: CredentialsService,
-    ) = AnswerExtractionQuestionImpl(
+    ) = AnswerQuestionImpl(
         studyReviewRepository,
         questionRepository,
         systematicStudyRepository,
