@@ -128,23 +128,23 @@ class TestDataFactory {
         questionId: UUID,
         type: String,
         answer: T,
-    ) = AnswerRiskOfBiasQuestionService.RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
+    ) = AnswerQuestionService.RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
 
     fun <T> answerExtractionQuestionModel(
         questionId: UUID,
         type: String,
         answer: T,
-    ) = AnswerExtractionQuestionService.RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
+    ) = AnswerQuestionService.RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
 
     fun labelRobDto(
         name: String,
         value: Int,
-    ) = AnswerRiskOfBiasQuestionService.LabelDto(name, value)
+    ) = AnswerQuestionService.LabelDto(name, value)
 
     fun labelExtractionDto(
         name: String,
         value: Int,
-    ) = AnswerExtractionQuestionService.LabelDto(name, value)
+    ) = AnswerQuestionService.LabelDto(name, value)
 
     fun generateQuestionTextualDto(
         questionId: UUID,
@@ -170,7 +170,7 @@ class TestDataFactory {
         systematicStudyId: UUID = this.systematicStudyId,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
-        labelDto: AnswerRiskOfBiasQuestionService.LabelDto //TODO(Make both services share the same DTO)
+        labelDto: AnswerQuestionService.LabelDto
     ) =
         QuestionDto(
             questionId,
