@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 @ControllerAdvice
 class ApiExceptionHandler {
 
-    @ExceptionHandler(value = [IllegalArgumentException::class])
-    fun handleIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<*> {
-        val status = HttpStatus.BAD_REQUEST
-        val apiException = ErrorMessage(status, e)
-        return ResponseEntity<Any>(apiException, status)
+    @ExceptionHandler(value = [RuntimeException::class])
+    fun handleRuntimeException(exception: RuntimeException): ResponseEntity<*> {
+        return createErrorResponseFrom(throwable = exception)
     }
 }
