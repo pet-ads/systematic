@@ -1,16 +1,16 @@
 package br.all.domain.model.collaboration
 
 import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.user.ResearcherId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
-import br.all.domain.user.UserAccountId
 import java.time.LocalDateTime
 import java.util.*
 
 class Invite(
     id: InviteId,
     val systematicStudyId: SystematicStudyId,
-    val userId: UserAccountId,
+    val userId: ResearcherId,
     val inviteDate: LocalDateTime,
     val expirationDate: LocalDateTime = inviteDate.plusDays(30)
 ) : Entity<UUID>(id) {
