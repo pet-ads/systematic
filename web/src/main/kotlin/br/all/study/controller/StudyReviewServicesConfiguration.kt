@@ -139,4 +139,17 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository,
         credentialsService
     )
+
+    @Bean
+    fun extractionService(
+        studyReviewRepository: StudyReviewRepository,
+        questionRepository: QuestionRepository,
+        systematicStudyRepository: SystematicStudyRepository,
+        credentialsService: CredentialsService,
+    ) = AnswerExtractionQuestionImpl(
+        studyReviewRepository,
+        questionRepository,
+        systematicStudyRepository,
+        credentialsService
+    )
 }
