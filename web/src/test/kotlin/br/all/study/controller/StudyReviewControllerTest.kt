@@ -110,7 +110,7 @@ class StudyReviewControllerTest(
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$.studyReviewId").exists())
-                .andExpect(jsonPath("$._links").exists()) // TODO uncomment after include links
+                .andExpect(jsonPath("$._links").exists())
         }
 
         @Test

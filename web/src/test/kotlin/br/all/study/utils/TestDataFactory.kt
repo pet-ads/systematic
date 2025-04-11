@@ -11,7 +11,7 @@ import java.util.*
 
 class TestDataFactory {
 
-    val researcherId: UUID = UUID.randomUUID()
+    private val researcherId: UUID = UUID.randomUUID()
     val systematicStudyId: UUID = UUID.randomUUID()
     val searchSessionId: UUID = UUID.randomUUID()
     private val faker = Faker()
@@ -87,8 +87,6 @@ class TestDataFactory {
         }
         """.trimIndent()
 
-
-
     fun <T> validAnswerQuestionRequest(studyReviewId: Long, questionId: UUID, type: String, answer: T) =
         """
         {
@@ -114,7 +112,6 @@ class TestDataFactory {
                 "duplicatedStudyIds": $duplicateStudyIds
             }
         """
-
 
     fun reviewDocument(
         systematicStudyId: UUID,
@@ -147,7 +144,26 @@ class TestDataFactory {
         )
     }
 
-    fun generateQuestionTextualDto(
+    fun generateRobQuestionTextualDto(
+        questionId: UUID,
+        systematicStudyId: UUID = this.systematicStudyId,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+    ) =
+        QuestionDocument(
+            questionId,
+            systematicStudyId,
+            code,
+            description,
+            "TEXTUAL",
+            null,
+            null,
+            null,
+            null,
+            QuestionContextEnum.ROB
+        )
+
+    fun generateExtractionQuestionTextualDto(
         questionId: UUID,
         systematicStudyId: UUID = this.systematicStudyId,
         code: String = faker.lorem.words(),
@@ -165,5 +181,4 @@ class TestDataFactory {
             null,
             QuestionContextEnum.EXTRACTION
         )
-
 }
