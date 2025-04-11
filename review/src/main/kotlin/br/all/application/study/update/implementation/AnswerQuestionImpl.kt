@@ -24,7 +24,8 @@ class AnswerQuestionImpl (
 ): AnswerQuestionService {
     override fun answerQuestion(
         presenter: AnswerQuestionPresenter,
-        request: AnswerQuestionService.RequestModel<*>
+        request: AnswerQuestionService.RequestModel<*>,
+        context: String?
     ) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
@@ -55,6 +56,17 @@ class AnswerQuestionImpl (
 
         val question = Question.fromDto(questionDto)
 
+        if (context == null) {
+            val message = "No context defined"
+            presenter.prepareFailView(IllegalArgumentException(message))
+            return
+        }
+
+        if (QuestionContextEnum.valueOf(context) != questionDto.context) {
+            val message = "Deve responder a questão com o contexto correto ${questionDto.context} found: $context"
+            presenter.prepareFailView(IllegalArgumentException(message))
+            return
+        }
 
         val answer = answer(questionDto.questionType, request, question)
         if (questionDto.context == QuestionContextEnum.ROB) {
