@@ -66,6 +66,9 @@ class StudyReviewControllerTest(
     fun answerRiskOfBiasQuestion(studyReviewId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}/riskOfBias-answer"
 
+    fun answerExtractionQuestion(studyReviewId: Long) =
+        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}/extraction-answer"
+
     @BeforeEach
     fun setUp() {
         repository.deleteAll()
@@ -107,7 +110,7 @@ class StudyReviewControllerTest(
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$.studyReviewId").exists())
-                //.andExpect(jsonPath("$._links").exists()) // TODO uncomment after include links
+                .andExpect(jsonPath("$._links").exists()) // TODO uncomment after include links
         }
 
         @Test
@@ -482,7 +485,6 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should not update if user is unauthenticated`() {
-            val studyId = idService.next()
 
             testHelperService.testForUnauthenticatedUser(mockMvc,
                 patch(updateStatusStatus("reading-priority")),
@@ -503,7 +505,7 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            val question = factory.generateQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
+            val question = factory.generateRobQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
             questionRepository.insert(question)
 
             val json = factory.validAnswerQuestionRequest(studyId, questionId, "TEXTUAL", "TEST")
@@ -527,7 +529,7 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            val question = factory.generateQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
+            val question = factory.generateRobQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
             questionRepository.insert(question)
 
             val json = factory.invalidAnswerRiskOfBiasPatchRequest(studyId, questionId, "TEXTUAL")
@@ -576,12 +578,12 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            val question = factory.generateQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
+            val question = factory.generateExtractionQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
             questionRepository.insert(question)
 
             val json = factory.validAnswerQuestionRequest(studyId, questionId, "TEXTUAL", "TEST")
             mockMvc.perform(
-                patch(answerRiskOfBiasQuestion(studyId))
+                patch(answerExtractionQuestion(studyId))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(json)
             )
@@ -589,7 +591,7 @@ class StudyReviewControllerTest(
 
             val studyReviewId = StudyReviewId(systematicStudyId, studyId)
             val updatedReview = repository.findById(studyReviewId)
-            assertEquals(updatedReview.get().qualityAnswers[questionId], "TEST")
+            assertEquals(updatedReview.get().formAnswers[questionId], "TEST")
         }
 
         @Test
@@ -600,12 +602,12 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            val question = factory.generateQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
+            val question = factory.generateExtractionQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
             questionRepository.insert(question)
 
             val json = factory.invalidAnswerRiskOfBiasPatchRequest(studyId, questionId, "TEXTUAL")
             mockMvc.perform(
-                patch(answerRiskOfBiasQuestion(studyId))
+                patch(answerExtractionQuestion(studyId))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(json)
             )
@@ -617,10 +619,9 @@ class StudyReviewControllerTest(
             val studyId = idService.next()
             val questionId = UUID.randomUUID()
 
-
             testHelperService.testForUnauthorizedUser(
                 mockMvc,
-                patch(answerRiskOfBiasQuestion(studyId))
+                patch(answerExtractionQuestion(studyId))
                     .content(factory.validAnswerQuestionRequest(
                         studyId, questionId, "TEXTUAL", "TEST"
                     ))
@@ -631,7 +632,7 @@ class StudyReviewControllerTest(
         fun `should not update if user is unauthenticated`(){
             val studyId = idService.next()
 
-            testHelperService.testForUnauthenticatedUser(mockMvc, patch(answerRiskOfBiasQuestion(studyId)),
+            testHelperService.testForUnauthenticatedUser(mockMvc, patch(answerExtractionQuestion(studyId)),
             )
         }
     }
