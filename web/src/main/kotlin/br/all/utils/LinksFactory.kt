@@ -1,7 +1,5 @@
 package br.all.utils
 
-import br.all.application.study.update.interfaces.AnswerQuestionService
-import br.all.domain.model.study.StudyReviewId
 import br.all.protocol.controller.ProtocolController
 import br.all.protocol.requests.PutRequest
 import br.all.question.controller.ExtractionQuestionController
@@ -10,7 +8,6 @@ import br.all.review.controller.SystematicStudyController
 import br.all.review.requests.PostRequest
 import br.all.search.controller.SearchSessionController
 import br.all.study.controller.StudyReviewController
-import br.all.study.requests.PatchAnswerQuestionStudyReviewRequest
 import br.all.study.requests.PatchDuplicatedStudiesRequest
 import br.all.study.requests.PatchStatusStudyReviewRequest
 import br.all.study.requests.PostStudyReviewRequest
