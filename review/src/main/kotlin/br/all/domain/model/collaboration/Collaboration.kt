@@ -1,15 +1,15 @@
 package br.all.domain.model.collaboration
 
 import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.user.ResearcherId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
-import br.all.domain.user.UserAccountId
-import java.util.UUID
+import java.util.*
 
 class Collaboration(
     id: CollaborationId,
     val systematicStudyId: SystematicStudyId,
-    val userId: UserAccountId,
+    val userId: ResearcherId,
     status: CollaborationStatus = CollaborationStatus.ACTIVE,
     permissions: Set<CollaborationPermission> = emptySet()
     ): Entity<UUID>(id) {
