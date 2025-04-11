@@ -398,7 +398,7 @@ class StudyReviewController(
         val presenter = RestfulAnswerQuestionPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
-        answerQuestionService.answerQuestion(presenter, request)
+        answerQuestionService.answerQuestion(presenter, request, context = "ROB")
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -437,7 +437,7 @@ class StudyReviewController(
         val presenter = RestfulAnswerQuestionPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
-        answerQuestionService.answerQuestion(presenter, request)
+        answerQuestionService.answerQuestion(presenter, request, context = "EXTRACTION")
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
