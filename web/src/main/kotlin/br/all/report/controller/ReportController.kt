@@ -1,8 +1,7 @@
 package br.all.report.controller
 
-import br.all.application.report.find.service.FindAnswersService
-import br.all.application.report.find.service.FindCriteriaService
-import br.all.application.report.find.service.FindSourceService
+import br.all.application.report.find.service.*
+import br.all.report.presenter.RestfulAuthorNetworkPresenter
 import br.all.report.presenter.RestfulFindAnswersPresenter
 import br.all.report.presenter.RestfulFindCriteriaPresenter
 import br.all.report.presenter.RestfulFindSourcePresenter
@@ -27,6 +26,7 @@ class ReportController(
     private val findAnswersService: FindAnswersService,
     private val findCriteriaService: FindCriteriaService,
     private val findSourceService: FindSourceService,
+    private val authorNetworkService: AuthorNetworkService,
     private val authenticationInfoService: AuthenticationInfoService,
     private val linksFactory: LinksFactory
 ) {
@@ -130,6 +130,41 @@ class ReportController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindSourceService.RequestModel(userId, systematicStudyId, studyReviewId, source)
         findSourceService.findSource(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("author-network")
+    @Operation(summary = "Get author-network graph")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success getting author-network graph",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = RestfulFindCriteriaPresenter::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Failed getting author-network graph - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true)
+                )]),
+            ApiResponse(
+                responseCode = "403",
+                description = "Failed getting author-network graph - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true)
+                )]),
+        ]
+    )
+    fun authorNetwork(
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable studyReviewId: Long,
+    ): ResponseEntity<*> {
+        val presenter = RestfulAuthorNetworkPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = AuthorNetworkService.RequestModel(userId, systematicStudyId, studyReviewId)
+        authorNetworkService.findAuthors(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
