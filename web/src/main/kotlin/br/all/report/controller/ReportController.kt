@@ -19,18 +19,21 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
 @RestController
-@RequestMapping("/api/v1/systematic-study/{systematicStudyId}/report/{studyReviewId}/")
+@RequestMapping("/api/v1/systematic-study/{systematicStudyId}/report/")
 class ReportController(
     private val findAnswersService: FindAnswersService,
     private val findCriteriaService: FindCriteriaService,
     private val findSourceService: FindSourceService,
     private val authorNetworkService: AuthorNetworkService,
     private val findKeywordsService: FindKeywordsService,
+    private val findStudiesByStageService: FindStudiesByStageService,
+    private val exportProtocolService: ExportProtocolService,
+    private val studiesFunnelService: StudiesFunnelService,
     private val authenticationInfoService: AuthenticationInfoService,
     private val linksFactory: LinksFactory
 ) {
 
-    @GetMapping("question/{questionId}")
+    @GetMapping("{studyReviewId}/question/{questionId}")
     @Operation(summary = "Retrieve all question answers")
     @ApiResponses(
         value = [
@@ -60,7 +63,7 @@ class ReportController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping("criteria/{type}")
+    @GetMapping("{studyReviewId}/criteria/{type}")
     @Operation(summary = "Get all studies included or excluded by criteria")
     @ApiResponses(
         value = [
@@ -96,7 +99,7 @@ class ReportController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping("source/{source}")
+    @GetMapping("{studyReviewId}/source/{source}")
     @Operation(summary = "Get all studies of source")
     @ApiResponses(
         value = [
@@ -105,7 +108,7 @@ class ReportController(
                 description = "Success getting all studies included, excluded or duplicated by source",
                 content = [Content(
                     mediaType = "application/json",
-                    schema = Schema(implementation = RestfulFindCriteriaPresenter::class)
+                    schema = Schema(implementation = RestfulFindSourcePresenter::class)
                 )]
             ),
             ApiResponse(
@@ -132,7 +135,7 @@ class ReportController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping("author-network")
+    @GetMapping("{studyReviewId}/author-network")
     @Operation(summary = "Get author-network graph")
     @ApiResponses(
         value = [
@@ -141,7 +144,7 @@ class ReportController(
                 description = "Success getting author-network graph",
                 content = [Content(
                     mediaType = "application/json",
-                    schema = Schema(implementation = RestfulFindCriteriaPresenter::class)
+                    schema = Schema(implementation = RestfulAuthorNetworkPresenter::class)
                 )]
             ),
             ApiResponse(
@@ -167,7 +170,7 @@ class ReportController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping("keywords")
+    @GetMapping("{studyReviewId}/keywords")
     @Operation(summary = "Count keywords")
     @ApiResponses(
         value = [
@@ -176,7 +179,7 @@ class ReportController(
                 description = "Success counting keywords",
                 content = [Content(
                     mediaType = "application/json",
-                    schema = Schema(implementation = RestfulFindCriteriaPresenter::class)
+                    schema = Schema(implementation = RestfulFindKeywordsPresenter::class)
                 )]
             ),
             ApiResponse(
@@ -200,6 +203,109 @@ class ReportController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindKeywordsService.RequestModel(userId, systematicStudyId, studyReviewId, filter)
         findKeywordsService.findKeywords(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("studies/{stage}")
+    @Operation(summary = "Get all studies given a stage")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success getting studies",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = RestfulFindStudiesByStagePresenter::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Failed getting studies - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true)
+                )]),
+            ApiResponse(
+                responseCode = "403",
+                description = "Failed getting studies - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true)
+                )]),
+        ]
+    )
+    fun findStudiesByStage(
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable stage: String,
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindStudiesByStagePresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindStudiesByStageService.RequestModel(userId, systematicStudyId, stage)
+        findStudiesByStageService.findStudiesByStage(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("studies-funnel")
+    @Operation(summary = "Get studies-funnel")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success getting studies-funnel",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = RestfulStudiesFunnelPresenter::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Failed getting studies-funnel - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true)
+                )]),
+            ApiResponse(
+                responseCode = "403",
+                description = "Failed getting studies-funnel - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true)
+                )]),
+        ]
+    )
+    fun studiesFunnel(
+        @PathVariable systematicStudyId: UUID,
+    ): ResponseEntity<*> {
+        val presenter = RestfulStudiesFunnelPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = StudiesFunnelService.RequestModel(userId, systematicStudyId)
+        studiesFunnelService.studiesFunnel(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("exportable-protocol")
+    @Operation(summary = "Export formatted protocol")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success exporting formatted protocol",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = RestfulExportProtocolPresenter::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Failed exporting formatted protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true)
+                )]),
+            ApiResponse(
+                responseCode = "403",
+                description = "Failed exporting formatted protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true)
+                )]),
+        ]
+    )
+    fun exportProtocol(
+        @PathVariable systematicStudyId: UUID,
+    ): ResponseEntity<*> {
+        val presenter = RestfulExportProtocolPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = ExportProtocolService.RequestModel(userId, systematicStudyId)
+        exportProtocolService.exportProtocol(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
