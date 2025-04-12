@@ -1,10 +1,7 @@
 package br.all.report.controller
 
 import br.all.application.report.find.service.*
-import br.all.report.presenter.RestfulAuthorNetworkPresenter
-import br.all.report.presenter.RestfulFindAnswersPresenter
-import br.all.report.presenter.RestfulFindCriteriaPresenter
-import br.all.report.presenter.RestfulFindSourcePresenter
+import br.all.report.presenter.*
 import br.all.security.service.AuthenticationInfoService
 import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
@@ -17,6 +14,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
@@ -27,6 +25,7 @@ class ReportController(
     private val findCriteriaService: FindCriteriaService,
     private val findSourceService: FindSourceService,
     private val authorNetworkService: AuthorNetworkService,
+    private val findKeywordsService: FindKeywordsService,
     private val authenticationInfoService: AuthenticationInfoService,
     private val linksFactory: LinksFactory
 ) {
@@ -165,6 +164,42 @@ class ReportController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = AuthorNetworkService.RequestModel(userId, systematicStudyId, studyReviewId)
         authorNetworkService.findAuthors(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("keywords")
+    @Operation(summary = "Count keywords")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success counting keywords",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = RestfulFindCriteriaPresenter::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Failed counting keywords - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true)
+                )]),
+            ApiResponse(
+                responseCode = "403",
+                description = "Failed counting keywords - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true)
+                )]),
+        ]
+    )
+    fun findKeywords(
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable studyReviewId: Long,
+        @RequestParam("filter") filter: String?,
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindKeywordsPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindKeywordsService.RequestModel(userId, systematicStudyId, studyReviewId, filter)
+        findKeywordsService.findKeywords(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
