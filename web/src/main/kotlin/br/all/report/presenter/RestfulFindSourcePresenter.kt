@@ -30,7 +30,7 @@ class RestfulFindSourcePresenter(
 
         restfulResponse.add(selfRef, findSessions)
 
-        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
+        responseEntity = ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).body(restfulResponse)
     }
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable)}

@@ -25,7 +25,7 @@ class RestfulFindAnswersPresenter(
         val findQuestion = linksFactory.findRobQuestion(response.systematicStudyId, response.questionId) // TODO(Figure out how to output the link to the correct type of question)
 
         restfulFindAnswersResponse.add(selfRef, findQuestion)
-        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulFindAnswersResponse)
+        responseEntity = ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).body(restfulFindAnswersResponse)
     }
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable)}
