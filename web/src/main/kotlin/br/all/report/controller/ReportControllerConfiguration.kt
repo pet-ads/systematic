@@ -4,9 +4,9 @@ import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.report.find.service.FindAnswersServiceImpl
 import br.all.application.report.find.service.FindCriteriaServiceImpl
+import br.all.application.report.find.service.FindSourceSerivceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
-import br.all.domain.services.IdGeneratorService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -33,5 +33,14 @@ class ReportControllerConfiguration {
         protocolRepository,
         credentialsService,
         studyReviewRepository,
+    )
+
+    @Bean
+    fun findSourceService(
+        studyReviewRepository: StudyReviewRepository,
+        credentialsService: CredentialsService,
+    ) = FindSourceSerivceImpl(
+        studyReviewRepository,
+        credentialsService,
     )
 }
