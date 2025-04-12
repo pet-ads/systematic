@@ -2,8 +2,10 @@ package br.all.report.controller
 
 import br.all.application.report.find.service.FindAnswersService
 import br.all.application.report.find.service.FindCriteriaService
+import br.all.application.report.find.service.FindSourceService
 import br.all.report.presenter.RestfulFindAnswersPresenter
 import br.all.report.presenter.RestfulFindCriteriaPresenter
+import br.all.report.presenter.RestfulFindSourcePresenter
 import br.all.security.service.AuthenticationInfoService
 import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
@@ -20,15 +22,16 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
 @RestController
-@RequestMapping("/api/v1/systematic-study/{systematicStudyId}/report/")
+@RequestMapping("/api/v1/systematic-study/{systematicStudyId}/report/{studyReviewId}/")
 class ReportController(
     private val findAnswersService: FindAnswersService,
     private val findCriteriaService: FindCriteriaService,
+    private val findSourceService: FindSourceService,
     private val authenticationInfoService: AuthenticationInfoService,
     private val linksFactory: LinksFactory
 ) {
 
-    @GetMapping("{studyReviewId}/question/{questionId}")
+    @GetMapping("question/{questionId}")
     @Operation(summary = "Retrieve all question answers")
     @ApiResponses(
         value = [
@@ -58,7 +61,7 @@ class ReportController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping("{studyReviewId}/criteria/{type}")
+    @GetMapping("criteria/{type}")
     @Operation(summary = "Get all studies included or excluded by criteria")
     @ApiResponses(
         value = [
@@ -94,4 +97,39 @@ class ReportController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
+    @GetMapping("source/{source}")
+    @Operation(summary = "Get all studies of source")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success getting all studies included, excluded or duplicated by source",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = RestfulFindCriteriaPresenter::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Failed getting all studies included, excluded or duplicated by source - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true)
+                )]),
+            ApiResponse(
+                responseCode = "403",
+                description = "Failed getting all studies included, excluded or duplicated by source - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true)
+                )]),
+        ]
+    )
+    fun findSource(
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable studyReviewId: Long,
+        @PathVariable source: String,
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindSourcePresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindSourceService.RequestModel(userId, systematicStudyId, studyReviewId, source)
+        findSourceService.findSource(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
 }
