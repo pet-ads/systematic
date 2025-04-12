@@ -62,4 +62,35 @@ class ReportControllerConfiguration {
         protocolRepository,
         credentialsService
     )
+
+    @Bean
+    fun exportProtocolService(
+        credentialsService: CredentialsService,
+        protocolRepository: ProtocolRepository,
+    ) = ExportProtocolServiceImpl(
+        credentialsService,
+        protocolRepository
+    )
+
+    @Bean
+    fun findStudiesByStage(
+        credentialsService: CredentialsService,
+        studyReviewRepository: StudyReviewRepository,
+        systematicStudyRepository: SystematicStudyRepository,
+    ) = FindStudiesByStageServiceImpl(
+        credentialsService,
+        studyReviewRepository,
+        systematicStudyRepository,
+    )
+
+    @Bean
+    fun studiesFunnelService(
+        credentialsService: CredentialsService,
+        studyReviewRepository: StudyReviewRepository,
+        systematicStudyRepository: SystematicStudyRepository,
+    ) = StudiesFunnelServiceImpl(
+        credentialsService,
+        studyReviewRepository,
+        systematicStudyRepository,
+    )
 }
