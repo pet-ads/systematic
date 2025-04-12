@@ -1,7 +1,9 @@
 package br.all.report.controller
 
+import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.report.find.service.FindAnswersServiceImpl
+import br.all.application.report.find.service.FindCriteriaServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.services.IdGeneratorService
@@ -16,11 +18,20 @@ class ReportControllerConfiguration {
         questionRepository: QuestionRepository,
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService,
-        idGenerator: IdGeneratorService
     ) = FindAnswersServiceImpl(
         questionRepository,
         studyReviewRepository,
         credentialsService,
-        idGenerator
+    )
+
+    @Bean
+    fun findCriteriaService(
+        protocolRepository: ProtocolRepository,
+        studyReviewRepository: StudyReviewRepository,
+        credentialsService: CredentialsService,
+    ) = FindCriteriaServiceImpl(
+        protocolRepository,
+        credentialsService,
+        studyReviewRepository,
     )
 }
