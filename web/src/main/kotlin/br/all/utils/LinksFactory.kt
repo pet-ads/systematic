@@ -276,5 +276,14 @@ class LinksFactory {
                 studyId
             )
         }.withRel("author-network").withType("GET")
+
+    fun keywords(systematicStudyId: UUID, studyId: Long, filter: String?): Link =
+        linkTo<ReportController> {
+            findKeywords(
+                systematicStudyId,
+                studyId,
+                filter
+            )
+        }.withRel("find-keywords").withType("GET")
 }
 
