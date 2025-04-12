@@ -285,5 +285,27 @@ class LinksFactory {
                 filter
             )
         }.withRel("find-keywords").withType("GET")
+
+    fun exportProtocol(systematicStudyId: UUID): Link =
+        linkTo<ReportController> {
+            exportProtocol(
+                systematicStudyId,
+            )
+        }.withRel("exportable-protocol").withType("GET")
+
+    fun findStudiesByStage(systematicStudyId: UUID, stage: String): Link =
+        linkTo<ReportController> {
+            findStudiesByStage(
+                systematicStudyId,
+                stage
+            )
+        }.withRel("find-studies-stage").withType("GET")
+
+    fun studiesFunnel(systematicStudyId: UUID): Link =
+        linkTo<ReportController> {
+            studiesFunnel(
+                systematicStudyId,
+            )
+        }.withRel("studies-funnel").withType("GET")
 }
 
