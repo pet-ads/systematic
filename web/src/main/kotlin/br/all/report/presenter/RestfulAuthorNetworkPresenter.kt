@@ -2,7 +2,6 @@ package br.all.report.presenter
 
 import br.all.application.report.find.presenter.AuthorNetworkPresenter
 import br.all.application.report.find.service.AuthorNetworkService
-import br.all.application.report.find.service.FindCriteriaService.ResponseModel
 import br.all.shared.error.createErrorResponseFrom
 import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
