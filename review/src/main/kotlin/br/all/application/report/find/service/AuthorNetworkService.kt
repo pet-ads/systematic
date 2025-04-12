@@ -4,7 +4,7 @@ import br.all.application.report.find.presenter.AuthorNetworkPresenter
 import java.util.*
 
 interface AuthorNetworkService {
-    fun findAuthors(presenter: AuthorNetworkPresenter,request: RequestModel)
+    fun findAuthors(presenter: AuthorNetworkPresenter, request: RequestModel)
 
     data class RequestModel(
         val userId: UUID,
