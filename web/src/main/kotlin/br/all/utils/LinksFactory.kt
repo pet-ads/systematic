@@ -4,6 +4,7 @@ import br.all.protocol.controller.ProtocolController
 import br.all.protocol.requests.PutRequest
 import br.all.question.controller.ExtractionQuestionController
 import br.all.question.controller.RiskOfBiasQuestionController
+import br.all.report.controller.ReportController
 import br.all.review.controller.SystematicStudyController
 import br.all.review.requests.PostRequest
 import br.all.search.controller.SearchSessionController
@@ -240,4 +241,13 @@ class LinksFactory {
                 )
             )
         }.withRel("mark-studies-as-duplicated").withType("PATCH")
+
+    fun findAnswers(systematicStudyId: UUID, questionId: UUID, studyId: Long): Link =
+        linkTo<ReportController> {
+            findAnswers(
+                systematicStudyId,
+                studyReviewId = studyId,
+                questionId = questionId
+            )
+        }.withRel("find-answers").withType("GET")
 }
