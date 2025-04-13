@@ -3,9 +3,11 @@ package br.all.infrastructure.collaboration
 import br.all.application.collaboration.repository.CollaborationDto
 import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.collaboration.repository.InviteDto
+import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 import java.util.*
 
+@Repository
 class CollaborationRepositoryImpl(
     private val innerCollaborationRepository: MongoCollaborationRepository,
     private val innerInviteRepository: MongoInviteRepository
