@@ -3,6 +3,7 @@ package br.all.infrastructure.collaboration
 import br.all.application.collaboration.repository.CollaborationDto
 import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.collaboration.repository.InviteDto
+import java.time.LocalDateTime
 import java.util.*
 
 class CollaborationRepositoryImpl(
@@ -38,8 +39,14 @@ class CollaborationRepositoryImpl(
     }
 
     override fun listAllInvitesBySystematicStudyId(id: UUID): List<InviteDto> {
-        return innerInviteRepository.findAll().filter { it.systematicStudyId == id }.map { 
-            InviteDto(it.id, it.systematicStudyId, it.userId, it.inviteDate, it.expirationDate)
+        return innerInviteRepository.findAll()
+        .filter { it.systematicStudyId == id && it.expirationDate.isBefore(LocalDateTime.now()) }
+        .map { 
+            InviteDto(it.id, it.systematicStudyId, it.userId, it.inviteDate, it.expirationDate, it.permissions)
         }
+    }
+
+    override fun deleteInvite(id: UUID) {
+        innerInviteRepository.deleteById(id)
     }
 }
