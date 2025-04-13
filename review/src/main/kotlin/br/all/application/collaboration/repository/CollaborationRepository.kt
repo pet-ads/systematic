@@ -8,4 +8,6 @@ interface CollaborationRepository {
     
     fun listAllCollaborationsBySystematicStudyId(id: UUID): List<CollaborationDto>
     fun listAllInvitesBySystematicStudyId(id: UUID): List<InviteDto>
+    
+    fun deleteInvite(id: UUID)
 }
