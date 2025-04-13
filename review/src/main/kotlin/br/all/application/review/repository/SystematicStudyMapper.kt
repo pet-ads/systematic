@@ -1,6 +1,7 @@
 package br.all.application.review.repository
 
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel
+import br.all.domain.model.collaboration.CollaborationId
 import br.all.domain.model.user.ResearcherId
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.SystematicStudyId
@@ -18,15 +19,15 @@ fun SystematicStudy.Companion.fromRequestModel(id: UUID, requestModel: RequestMo
     SystematicStudyId(id),
     requestModel.title,
     requestModel.description,
-    ResearcherId(requestModel.userId),
+    CollaborationId(requestModel.userId),
 )
 
 fun SystematicStudy.Companion.fromDto(dto: SystematicStudyDto) = SystematicStudy(
     SystematicStudyId(dto.id),
     dto.title,
     dto.description,
-    ResearcherId(dto.owner),
+    CollaborationId(dto.owner),
     dto.collaborators
-        .map { ResearcherId(it) }
+        .map { CollaborationId(it) }
         .toMutableSet(),
 )
