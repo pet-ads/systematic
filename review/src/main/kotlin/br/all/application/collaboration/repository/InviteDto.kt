@@ -8,5 +8,6 @@ class InviteDto (
     val systematicStudyId: UUID,
     val userId: UUID,
     val inviteDate: LocalDateTime,
-    val expirationDate: LocalDateTime
+    val expirationDate: LocalDateTime,
+    val permissions: Set<String>
 )

@@ -9,13 +9,15 @@ fun Invite.toDto(): InviteDto = InviteDto(
     systematicStudyId = this.systematicStudyId.value(),
     userId = this.userId.value,
     inviteDate = this.inviteDate,
-    expirationDate = this.expirationDate
+    expirationDate = this.expirationDate,
+    permissions = this.permissions.map { it.name }.toSet()
 )
 
 fun InviteDto.toDomain(): Invite = Invite(
     id = this.id.toInviteId(),
     systematicStudyId = this.systematicStudyId.toSystematicStudyId(),
     userId = this.userId.toResearcherId(),
+    permissions = this.permissions.map { CollaborationPermission.valueOf(it) }.toSet(),
     inviteDate = this.inviteDate,
     expirationDate = this.expirationDate
 )

@@ -6,6 +6,7 @@ import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.user.CredentialsService
+import br.all.domain.model.collaboration.CollaborationPermission
 import br.all.domain.model.collaboration.Invite
 import br.all.domain.model.collaboration.toInviteId
 import br.all.domain.model.review.SystematicStudy
@@ -41,7 +42,8 @@ class CreateInviteServiceImpl(
             inviteId.toInviteId(),
             request.systematicStudyId.toSystematicStudyId(),
             request.userId.toResearcherId(),
-            LocalDateTime.now()
+            request.permissions.map { CollaborationPermission.valueOf(it) }.toSet(),
+            inviteDate = LocalDateTime.now(),
         )
         
         collaborationRepository.saveOrUpdateInvite(invite.toDto())
