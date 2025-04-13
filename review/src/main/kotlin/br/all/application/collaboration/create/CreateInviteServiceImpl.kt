@@ -37,6 +37,13 @@ class CreateInviteServiceImpl(
             )
         }
         
+        val allInvites = collaborationRepository.listAllInvitesBySystematicStudyId(request.systematicStudyId)
+        if(allInvites.any { it.userId == request.inviteeId }) {
+            presenter.prepareFailView(
+                IllegalArgumentException("User who is already invited may not be invited again")
+            )
+        }
+        
         val inviteId = UUID.randomUUID()
         val invite = Invite(
             inviteId.toInviteId(),
