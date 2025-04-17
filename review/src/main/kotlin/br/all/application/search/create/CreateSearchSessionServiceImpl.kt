@@ -19,6 +19,7 @@ import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.services.ConverterFactoryService
+import br.all.domain.services.ScoreCalculatorService
 import br.all.domain.services.UuidGeneratorService
 
 class CreateSearchSessionServiceImpl(
@@ -55,6 +56,7 @@ class CreateSearchSessionServiceImpl(
             return
         }
 
+        val scoreCalculatorService = ScoreCalculatorService(protocolDto?.keywords)
         val sessionId = SearchSessionID(uuidGeneratorService.next())
         val searchSession = SearchSession.fromRequestModel(sessionId, request)
 
@@ -65,7 +67,8 @@ class CreateSearchSessionServiceImpl(
             mutableSetOf(source)
         )
 
-        studyReviewRepository.saveOrUpdateBatch(studyReviews.map { it.toDto() })
+        val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews)
+        studyReviewRepository.saveOrUpdateBatch(scoredStudyReviews.map { it.toDto() })
 
         val numberOfRelatedStudies = studyReviews.size
         searchSession.numberOfRelatedStudies = numberOfRelatedStudies

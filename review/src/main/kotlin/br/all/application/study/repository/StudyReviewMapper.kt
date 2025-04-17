@@ -3,7 +3,6 @@ package br.all.application.study.repository
 import br.all.application.study.create.CreateStudyReviewService.RequestModel
 import br.all.application.study.update.interfaces.UpdateStudyReviewService
 import br.all.domain.model.protocol.Criterion
-import br.all.domain.model.protocol.Criterion.CriterionType
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.study.*
@@ -28,7 +27,8 @@ fun StudyReview.toDto() = StudyReviewDto(
     comments,
     readingPriority.toString(),
     extractionStatus.toString(),
-    selectionStatus.toString()
+    selectionStatus.toString(),
+    score
 )
 
 
@@ -52,7 +52,8 @@ fun StudyReview.Companion.fromDto(dto: StudyReviewDto) = StudyReview(
     dto.comments,
     ReadingPriority.valueOf(dto.readingPriority),
     SelectionStatus.valueOf(dto.selectionStatus),
-    ExtractionStatus.valueOf(dto.extractionStatus)
+    ExtractionStatus.valueOf(dto.extractionStatus),
+    dto.score
 )
 
 

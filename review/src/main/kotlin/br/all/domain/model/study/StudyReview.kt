@@ -26,6 +26,7 @@ class StudyReview(
     var readingPriority: ReadingPriority = ReadingPriority.LOW,
     selectionStatus: SelectionStatus = SelectionStatus.UNCLASSIFIED,
     extractionStatus: ExtractionStatus = ExtractionStatus.UNCLASSIFIED,
+    var score: Int = 0
 ) : Entity<Long>(studyId) {
 
     private val study: Study
