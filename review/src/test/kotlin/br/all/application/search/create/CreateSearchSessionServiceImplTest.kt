@@ -1,7 +1,7 @@
 
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.search.CreateSearchSessionServiceImpl
+import br.all.application.search.create.CreateSearchSessionServiceImpl
 import br.all.application.search.create.CreateSearchSessionPresenter
 import br.all.application.search.util.TestDataFactory
 import br.all.application.search.repository.SearchSessionRepository
