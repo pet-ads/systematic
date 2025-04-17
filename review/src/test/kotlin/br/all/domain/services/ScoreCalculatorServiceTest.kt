@@ -4,9 +4,13 @@ import br.all.domain.services.ScoreCalculatorServiceTestData.baseStudyReview
 import br.all.domain.services.ScoreCalculatorServiceTestData.noMatchStudyReview
 import br.all.domain.services.ScoreCalculatorServiceTestData.nullAbstractStudyReview
 import br.all.domain.services.ScoreCalculatorServiceTestData.partialMatchStudyReview
+import junit.framework.TestCase.assertNull
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 class ScoreCalculatorServiceTest {
 
@@ -19,14 +23,22 @@ class ScoreCalculatorServiceTest {
     }
 
     @Test
-    fun `should assign maximum score when all keywords match in all fields`() {
+    fun `should return zero if protocol has no keywords`() {
+        val protocolWithNoKeywords = setOf("")
+        val scoreCalculatorService = ScoreCalculatorService(protocolWithNoKeywords)
+        val result = scoreCalculatorService.applyScoreToManyStudyReviews(listOf(baseStudyReview)).first()
+        assertEquals(0, result.score)
+    }
+
+    @Test
+    fun `should assign score to matches in all fields`() {
         val result = sut.applyScoreToManyStudyReviews(listOf(baseStudyReview)).first()
 
         assertEquals(25, result.score)
     }
 
     @Test
-    fun `should assign zero score when none of the keywords match`() {
+    fun `should assign zero when none of the keywords match`() {
         val result = sut.applyScoreToManyStudyReviews(listOf(noMatchStudyReview)).first()
         assertEquals(0, result.score)
     }
@@ -47,9 +59,11 @@ class ScoreCalculatorServiceTest {
     fun `should return list with correct size and scores`() {
         val input = listOf(baseStudyReview, noMatchStudyReview, partialMatchStudyReview)
         val results = sut.applyScoreToManyStudyReviews(input)
-        assertEquals(3, results.size)
-        assertEquals(25, results[0].score)
-        assertEquals(0, results[1].score)
-        assertEquals(10, results[2].score)
+        assertAll(
+            {assertEquals(3, results.size)},
+            {assertEquals(25, results[0].score)},
+            {assertEquals(0, results[1].score)},
+            {assertEquals(10, results[2].score)}
+        )
     }
 }
