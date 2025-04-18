@@ -40,7 +40,7 @@ class DomainModuleTest {
             .check(importedClasses)
 
     @ArchTest
-    fun `should application not depend on infraestructure`(importedClasses: JavaClasses) =
+    fun `should application not depend on infrastructure`(importedClasses: JavaClasses) =
         noClasses().that().resideInAPackage("..application..")
             .should().accessClassesThat().resideInAPackage("..infrastructure..")
             .check(importedClasses)
