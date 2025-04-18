@@ -9,7 +9,7 @@ class ReviewSimilarityService {
     private val authorsThreshold: Double = 0.9
     private val abstractThreshold: Double = 0.9
 
-    public fun detectDuplicates(studies: List<StudyReview>): Map<StudyReview, Set<StudyReview>> {
+    fun detectDuplicates(studies: List<StudyReview>): Map<StudyReview, Set<StudyReview>> {
         val duplicatedReviewsMap = mutableMapOf<StudyReview, MutableSet<StudyReview>>()
         val remainingStudies = studies.toMutableList()
 
