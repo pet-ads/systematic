@@ -36,15 +36,15 @@ class ReviewSimilarityService {
     }
 
     private fun calculateTitleSimilarity(study1: StudyReview, study2: StudyReview): Double {
-        TODO()
+        return similarity(study1.title, study2.title)
     }
 
     private fun calculateAuthorsSimilarity(study1: StudyReview, study2: StudyReview): Double {
-        TODO()
+        return similarity(study1.authors, study2.authors)
     }
 
     private fun calculateAbstractSimilarity(study1: StudyReview, study2: StudyReview): Double {
-        TODO()
+        return similarity(study1.abstract ?: "", study2.abstract ?: "")
     }
 
     private fun normalizeText(text: String): String {
