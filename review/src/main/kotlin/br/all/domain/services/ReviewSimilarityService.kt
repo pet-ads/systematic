@@ -48,7 +48,10 @@ class ReviewSimilarityService {
     }
 
     private fun normalizeText(text: String): String {
-        TODO()
+        return Normalizer.normalize(text.lowercase(), Normalizer.Form.NFD)
+            .replace(Regex("\\p{InCombiningDiacriticalMarks}+"), "")
+            .replace(Regex("[^\\p{Alnum}\\s]"), "")
+            .replace(Regex("\\s+"), " ")
     }
 
     private fun similarity(text1: String, text2: String): Double {
