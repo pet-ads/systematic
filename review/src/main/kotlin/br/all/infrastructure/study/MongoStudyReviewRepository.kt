@@ -25,14 +25,12 @@ interface MongoStudyReviewRepository : MongoRepository<StudyReviewDocument, Stud
                 { "${'$'}match": { "qualityAnswers.?0": { "${'$'}exists": true } } },
                 { "${'$'}project": {
                     "studyReviewId": "${'$'}_id.studyReviewId",
-                    "searchSessionId": 1,
                     "answersArr": { "${'$'}objectToArray": "${'$'}qualityAnswers" }
                 }},
                 { "${'$'}unwind": "${'$'}answersArr" },
                 { "${'$'}match": { "answersArr.k": "?0" } },
                 { "${'$'}project": {
                     "studyReviewId": 1,
-                    "searchSessionId": 1,
                     "answer": "${'$'}answersArr.v"
                 }}
             ],
@@ -40,14 +38,12 @@ interface MongoStudyReviewRepository : MongoRepository<StudyReviewDocument, Stud
                 { "${'$'}match": { "formAnswers.?0": { "${'$'}exists": true } } },
                 { "${'$'}project": {
                     "studyReviewId": "${'$'}_id.studyReviewId",
-                    "searchSessionId": 1,
                     "formAnswersArr": { "${'$'}objectToArray": "${'$'}formAnswers" }
                 }},
                 { "${'$'}unwind": "${'$'}formAnswersArr" },
                 { "${'$'}match": { "formAnswersArr.k": "?0" } },
                 { "${'$'}project": {
                     "studyReviewId": 1,
-                    "searchSessionId": 1,
                     "answer": "${'$'}formAnswersArr.v"
                 }}
             ]
