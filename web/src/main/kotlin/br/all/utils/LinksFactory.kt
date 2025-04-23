@@ -306,5 +306,13 @@ class LinksFactory {
                 systematicStudyId,
             )
         }.withRel("studies-funnel").withType("GET")
+
+    fun findAnswer(systematicStudyId: UUID, questionId: UUID): Link =
+        linkTo<ReportController> {
+            findAnswer(
+                systematicStudyId,
+                questionId
+            )
+        }.withRel("find-answer").withType("GET")
 }
 
