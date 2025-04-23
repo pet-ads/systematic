@@ -1,5 +1,6 @@
 package br.all.infrastructure.study
 
+import br.all.application.study.repository.AnswerDto
 import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.infrastructure.shared.toNullable
@@ -30,6 +31,20 @@ open class  StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRe
 
     override fun saveOrUpdateBatch(dtos: List<StudyReviewDto>) {
         repository.saveAll(dtos.map { it.toDocument() })
+    }
+
+    override fun findAllQuestionAnswers(
+        reviewId: UUID,
+        questionId: UUID
+    ): List<AnswerDto> {
+        return repository
+            .findAllAnswersForQuestion(questionId.toString())
+            .map { infraDto ->
+                AnswerDto(
+                    studyReviewId   = infraDto.studyReviewId,
+                    answer          = infraDto.answer
+                )
+            }
     }
 
 }
