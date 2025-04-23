@@ -242,14 +242,12 @@ class LinksFactory {
             )
         }.withRel("mark-studies-as-duplicated").withType("PATCH")
 
-    fun findAnswers(systematicStudyId: UUID, questionId: UUID, studyId: Long): Link =
+    fun findAnswers(systematicStudyId: UUID): Link =
         linkTo<ReportController> {
             findAnswers(
-                systematicStudyId,
-                studyReviewId = studyId,
-                questionId = questionId
+                systematicStudyId
             )
-        }.withRel("find-answers").withType("GET")
+        }.withRel("included-studies-answers").withType("GET")
 
     fun findCriteria(systematicStudyId: UUID, type: String, studyId: Long): Link =
         linkTo<ReportController> {

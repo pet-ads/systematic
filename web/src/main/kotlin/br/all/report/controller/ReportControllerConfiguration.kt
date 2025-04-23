@@ -13,14 +13,16 @@ import org.springframework.context.annotation.Configuration
 class ReportControllerConfiguration {
 
     @Bean
-    fun findAnswersService(
+    fun includedStudiesAnswersService(
         questionRepository: QuestionRepository,
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService,
-    ) = FindAnswersServiceImpl(
+        systematicStudyRepository: SystematicStudyRepository,
+    ) = IncludedStudiesAnswersServiceImpl(
         questionRepository,
         studyReviewRepository,
         credentialsService,
+        systematicStudyRepository,
     )
 
     @Bean

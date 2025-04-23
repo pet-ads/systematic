@@ -21,7 +21,7 @@ import java.util.*
 @RestController
 @RequestMapping("/api/v1/systematic-study/{systematicStudyId}/report/")
 class ReportController(
-    private val findAnswersService: FindAnswersService,
+    private val includedStudiesAnswersService: IncludedStudiesAnswersService,
     private val findCriteriaService: FindCriteriaService,
     private val findSourceService: FindSourceService,
     private val authorNetworkService: AuthorNetworkService,
@@ -33,7 +33,7 @@ class ReportController(
     private val linksFactory: LinksFactory
 ) {
 
-    @GetMapping("{studyReviewId}/question/{questionId}")
+    @GetMapping("{studyReviewId}/included-studies-answers")
     @Operation(summary = "Retrieve all question answers")
     @ApiResponses(
         value = [
@@ -42,7 +42,7 @@ class ReportController(
                 description = "Success getting all answers of a question",
                 content = [Content(
                     mediaType = "application/json",
-                    schema = Schema(implementation = RestfulFindAnswersPresenter::class)
+                    schema = Schema(implementation = RestfulIncludedStudiesAnswersPresenter::class)
                 )]
             ),
             ApiResponse(responseCode = "401", description = "Failed getting all question answers - unauthenticated user",
@@ -51,15 +51,14 @@ class ReportController(
                 content = [Content(schema = Schema(hidden = true))]),
         ]
     )
-    fun findAnswers(
+    fun includedStudiesAnswers(
         @PathVariable systematicStudyId: UUID,
         @PathVariable studyReviewId: Long,
-        @PathVariable questionId: UUID,
     ): ResponseEntity<*>{
-        val presenter = RestfulFindAnswersPresenter(linksFactory)
+        val presenter = RestfulIncludedStudiesAnswersPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = FindAnswersService.RequestModel(userId, systematicStudyId, studyReviewId, questionId)
-        findAnswersService.findAnswers(presenter, request)
+        val request = IncludedStudiesAnswersService.RequestModel(userId, systematicStudyId, studyReviewId)
+        includedStudiesAnswersService.findAnswers(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
