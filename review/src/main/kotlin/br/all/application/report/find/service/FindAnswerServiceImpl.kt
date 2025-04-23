@@ -52,8 +52,7 @@ class FindAnswerServiceImpl(
         val response = FindAnswerService.ResponseModel(
             userId = request.userId,
             systematicStudyId = request.systematicStudyId,
-            questionId = request.questionId,
-            questionContext = question.context.toString(),
+            question = question,
             answer = sortedQuestionAnswers
         )
         presenter.prepareSuccessView(response)

@@ -1,5 +1,6 @@
 package br.all.report.presenter
 
+import br.all.application.question.repository.QuestionDto
 import br.all.application.report.find.presenter.FindAnswerPresenter
 import br.all.application.report.find.service.FindAnswerService
 import br.all.shared.error.createErrorResponseFrom
@@ -18,12 +19,11 @@ class RestfulFindAnswerPresenter(
         val restfulResponse = ViewModel(
             userId = response.userId,
             systematicStudyId = response.systematicStudyId,
-            questionId = response.questionId,
-            questionContext = response.questionContext,
+            question = response.question,
             answer = response.answer
         )
 
-        val selfRef = linksFactory.findAnswer(response.systematicStudyId, response.questionId)
+        val selfRef = linksFactory.findAnswer(response.systematicStudyId, response.question.questionId)
 
         restfulResponse.add(selfRef)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
@@ -36,8 +36,7 @@ class RestfulFindAnswerPresenter(
     data class ViewModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val questionId: UUID,
-        val questionContext: String,
+        val question: QuestionDto,
         val answer: Map<String, List<Long>>
     ): RepresentationModel<ViewModel>()
 }
