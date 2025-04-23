@@ -28,6 +28,7 @@ class ReportController(
     private val findKeywordsService: FindKeywordsService,
     private val findStudiesByStageService: FindStudiesByStageService,
     private val exportProtocolService: ExportProtocolService,
+    private val findAnswerService: FindAnswerServiceImpl,
     private val studiesFunnelService: StudiesFunnelService,
     private val authenticationInfoService: AuthenticationInfoService,
     private val linksFactory: LinksFactory
@@ -305,6 +306,41 @@ class ReportController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = ExportProtocolService.RequestModel(userId, systematicStudyId)
         exportProtocolService.exportProtocol(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("find-answer/{questionId}")
+    @Operation(summary = "Find all answers given a question")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "All answers to thy question have been made manifest.",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = RestfulFindAnswerPresenter::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Failed finding all answers - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true)
+                )]),
+            ApiResponse(
+                responseCode = "403",
+                description = "Failed finding all answers - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true)
+                )]),
+        ]
+    )
+    fun findAnswer(
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable questionId: UUID,
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindAnswerPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindAnswerService.RequestModel(userId, systematicStudyId, questionId)
+        findAnswerService.find(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

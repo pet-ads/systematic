@@ -95,4 +95,17 @@ class ReportControllerConfiguration {
         studyReviewRepository,
         systematicStudyRepository,
     )
+
+    @Bean
+    fun findAnswerService(
+        credentialsService: CredentialsService,
+        studyReviewRepository: StudyReviewRepository,
+        systematicStudyRepository: SystematicStudyRepository,
+        questionRepository: QuestionRepository
+    ) = FindAnswerServiceImpl(
+        credentialsService,
+        studyReviewRepository,
+        systematicStudyRepository,
+        questionRepository
+    )
 }
