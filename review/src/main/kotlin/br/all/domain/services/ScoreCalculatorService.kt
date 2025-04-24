@@ -1,6 +1,7 @@
 package br.all.domain.services
 
 import br.all.domain.model.study.StudyReview
+import br.all.domain.shared.utils.normalizeText
 
 class ScoreCalculatorService(
     private val protocolKeywords: Set<String>?
@@ -8,13 +9,18 @@ class ScoreCalculatorService(
     private fun calculateScore(title: String, abstract: String?, authorsKeywords: Set<String>): Int {
         var score = 0
 
+        val normalizedTitle = normalizeText(title)
+        val normalizedAbstract = abstract?.let { normalizeText(it) } ?: ""
+        val normalizedAuthorsKeywords = authorsKeywords.map { normalizeText(it) }.toSet()
+
         if (protocolKeywords != null) {
             for (keyword in protocolKeywords) {
-                val regex = Regex("\\b$keyword\\b", RegexOption.IGNORE_CASE)
+                val normalizedKeyword = normalizeText(keyword)
+                val regex = Regex("\\b$normalizedKeyword\\b", RegexOption.IGNORE_CASE)
 
-                if (regex.containsMatchIn(title)) score += 5
-                if (abstract?.let { regex.containsMatchIn(it) } == true) score += 3
-                if (authorsKeywords.any { regex.containsMatchIn(it) }) score += 2
+                if (regex.containsMatchIn(normalizedTitle)) score += 5
+                if (regex.containsMatchIn(normalizedAbstract)) score += 3
+                if (normalizedAuthorsKeywords.any { regex.containsMatchIn(it) }) score += 2
             }
         }
 
