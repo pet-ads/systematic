@@ -37,13 +37,15 @@ class SearchSessionServicesConfiguration {
         searchSessionRepository: SearchSessionRepository,
         credentialsService: CredentialsService,
         studyReviewRepository: StudyReviewRepository,
-        converterFactoryService: ConverterFactoryService
+        converterFactoryService: ConverterFactoryService,
+        protocolRepository: ProtocolRepository,
     ) = PatchSearchSessionServiceImpl(
         systematicStudyRepository,
         searchSessionRepository,
         credentialsService,
         studyReviewRepository,
-        converterFactoryService
+        converterFactoryService,
+        protocolRepository
     )
 
     @Bean

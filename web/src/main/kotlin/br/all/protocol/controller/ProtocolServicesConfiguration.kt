@@ -4,6 +4,7 @@ import br.all.application.protocol.find.FindProtocolServiceImpl
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.update.UpdateProtocolServiceImpl
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -22,5 +23,6 @@ class ProtocolServicesConfiguration {
         protocolRepository: ProtocolRepository,
         systematicStudyRepository: SystematicStudyRepository,
         credentialsService: CredentialsService,
-    ) = UpdateProtocolServiceImpl(protocolRepository, systematicStudyRepository, credentialsService)
+        studyReviewRepository: StudyReviewRepository,
+    ) = UpdateProtocolServiceImpl(protocolRepository, systematicStudyRepository, credentialsService, studyReviewRepository)
 }
