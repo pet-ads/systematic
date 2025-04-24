@@ -46,14 +46,13 @@ class FindAnswerServiceImpl(
         val groupedQuestionAnswers: Map<String, List<Long>> = questionAnswers
             .groupBy { it.answer }
             .mapValues { (_, list) -> list.map { it.studyReviewId } }
-
-        val sortedQuestionAnswers: SortedMap<String, List<Long>> = groupedQuestionAnswers.toSortedMap(comparator)
+            .toSortedMap(comparator)
 
         val response = FindAnswerService.ResponseModel(
             userId = request.userId,
             systematicStudyId = request.systematicStudyId,
             question = question,
-            answer = sortedQuestionAnswers
+            answer = groupedQuestionAnswers,
         )
         presenter.prepareSuccessView(response)
     }
