@@ -24,8 +24,8 @@ interface MongoStudyReviewRepository : MongoRepository<StudyReviewDocument, Stud
     """
         private const val PROJECT_QUALITY = """
       { ${'$'}project: {
-          studyReviewId: ${'$'}_id.studyReviewId,
-          answer:        ${'$'}qualityAnswers.?0
+          "studyReviewId": "${'$'}_id.studyReviewId",
+          "answer":        "${'$'}qualityAnswers.?0"
       } }
     """
         private const val UNION_WITH = """
@@ -34,8 +34,8 @@ interface MongoStudyReviewRepository : MongoRepository<StudyReviewDocument, Stud
           pipeline: [
               { ${'$'}match: { "formAnswers.?0": { ${'$'}exists: true } } },
               { ${'$'}project: {
-                  studyReviewId: ${'$'}_id.studyReviewId,
-                  answer:        ${'$'}formAnswers.?0
+                  "studyReviewId": "${'$'}_id.studyReviewId",
+                  "answer":        "${'$'}formAnswers.?0"
               } }
           ]
       } }
