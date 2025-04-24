@@ -33,11 +33,8 @@ open class  StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRe
         repository.saveAll(dtos.map { it.toDocument() })
     }
 
-    override fun findAllQuestionAnswers(
-        reviewId: UUID,
-        questionId: UUID
-    ): List<AnswerDto> {
-        return repository
+    override fun findAllQuestionAnswers(reviewId: UUID, questionId: UUID): List<AnswerDto> =
+        repository
             .findAllAnswersForQuestion(questionId.toString())
             .map { infraDto ->
                 AnswerDto(
@@ -45,7 +42,5 @@ open class  StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRe
                     answer          = infraDto.answer
                 )
             }
-    }
-
 }
 
