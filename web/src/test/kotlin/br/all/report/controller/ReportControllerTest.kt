@@ -90,27 +90,11 @@ class ReportControllerTest(
 
                 studyReviewRepository.save(studyReview)
 
-                val expected = """
-                    {
-                      "userId": "${user.id}",
-                      "systematicStudyId": "${systematicStudy.id}",
-                      "question": {
-                        "questionId": "${robQuestions[0].questionId}",
-                        "systematicStudyId": "${systematicStudy.id}",
-                        "code": "${robQuestions[0].code}",
-                        "description": "${robQuestions[0].description}",
-                        "questionType": "${robQuestions[0].questionType}",
-                        "scales": null,
-                        "higher": null,
-                        "lower": null,
-                        "options": null,
-                        "context": "${robQuestions[0].context}"
-                      },
-                      "answer": {
-                        "resposta ${robQuestions[0].description}": [ ${studyReview.id.studyReviewId} ]
-                      }
-                    }
-                    """.trimIndent()
+                val expected = factory.expectedJson(
+                    userId = user.id,
+                    question = robQuestions[0],
+                    review = studyReview,
+                )
 
                 mockMvc.perform(
                     get(getUrl(questionId = robQuestions[0].questionId))
@@ -134,27 +118,11 @@ class ReportControllerTest(
 
                 studyReviewRepository.save(studyReview)
 
-                val expected = """
-                    {
-                      "userId": "${user.id}",
-                      "systematicStudyId": "${systematicStudy.id}",
-                      "question": {
-                        "questionId": "${robQuestions[1].questionId}",
-                        "systematicStudyId": "${systematicStudy.id}",
-                        "code": "${robQuestions[1].code}",
-                        "description": "${robQuestions[1].description}",
-                        "questionType": "${robQuestions[1].questionType}",
-                        "scales": null,
-                        "higher": 10,
-                        "lower": 1,
-                        "options": null,
-                        "context": "${robQuestions[1].context}"
-                      },
-                      "answer": {
-                        "$randomNumber": [ ${studyReview.id.studyReviewId} ]
-                      }
-                    }
-                    """.trimIndent()
+                val expected = factory.expectedJson(
+                    userId = user.id,
+                    question = robQuestions[1],
+                    review = studyReview,
+                )
 
                 mockMvc.perform(
                     get(getUrl(questionId = robQuestions[1].questionId))
@@ -184,15 +152,21 @@ class ReportControllerTest(
                 )
                 studyReviewRepository.save(studyReview)
 
+                val expected = factory.expectedJson(
+                    userId = user.id,
+                    question = robQuestions[2],
+                    review = studyReview,
+                )
+
                 mockMvc.perform(
                     get(getUrl(questionId = robQuestions[2].questionId))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                 )
                     .andExpect(status().isOk)
-                    .andExpect(jsonPath("$.question.scales.$key").value(value))
                     .andExpect(
-                        jsonPath("$.answer['$labelString'][0]")
-                            .value(studyReview.id.studyReviewId)
+                        content().json(
+                            expected
+                        )
                     )
             }
         }
