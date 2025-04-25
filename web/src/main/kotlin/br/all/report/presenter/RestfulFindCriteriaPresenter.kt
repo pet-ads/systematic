@@ -1,6 +1,7 @@
 package br.all.report.presenter
 
 import br.all.application.report.find.presenter.FindCriteriaPresenter
+import br.all.application.report.find.service.FindCriteriaService
 import br.all.application.report.find.service.FindCriteriaService.ResponseModel
 import br.all.shared.error.createErrorResponseFrom
 import br.all.utils.LinksFactory
@@ -18,16 +19,16 @@ class RestfulFindCriteriaPresenter(
         val restfulResponse = ViewModel(
             response.userId,
             response.systematicStudyId,
-            response.studyReviewId,
-            response.criteria.type,
-            response.criteria.description
+            response.criteria,
         )
 
-        val selfRef = linksFactory.findCriteria(response.systematicStudyId, response.criteria.type, response.studyReviewId )
+        val descriptions = response.criteria.included.map { it.key.description }
+
+        val selfRef = linksFactory.findCriteria(response.systematicStudyId, descriptions.first())
         val findProtocol = linksFactory.findProtocol(response.systematicStudyId)
 
         restfulResponse.add(selfRef, findProtocol)
-        responseEntity = ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).body(restfulResponse)
+        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable)}
@@ -37,8 +38,6 @@ class RestfulFindCriteriaPresenter(
     data class ViewModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val studyReviewId: Long,
-        val type: String,
-        val description: String,
+        val criteria: FindCriteriaService.CriteriaDto,
     ): RepresentationModel<ViewModel>()
 }
