@@ -110,8 +110,8 @@ class ReportControllerTest(
         "/api/v1/systematic-study/$systematicStudy/report/find-answer/$questionId"
 
     @Nested
-    @DisplayName("When searching answers of rob questions")
-    inner class WhenFindingAnswersOfRobQuestions {
+    @DisplayName("When searching answers of questions")
+    inner class WhenFindingAnswersOfQuestions {
         @Nested
         @Tag("ValidClasses")
         @DisplayName("And finding them")
