@@ -63,7 +63,7 @@ class ReportController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping("{studyReviewId}/criteria/{type}")
+    @GetMapping("criteria/{type}")
     @Operation(summary = "Get all studies included or excluded by criteria")
     @ApiResponses(
         value = [
@@ -89,12 +89,11 @@ class ReportController(
     )
     fun findCriteria(
         @PathVariable systematicStudyId: UUID,
-        @PathVariable studyReviewId: Long,
         @PathVariable type: String,
     ): ResponseEntity<*> {
         val presenter = RestfulFindCriteriaPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = FindCriteriaService.RequestModel(userId, systematicStudyId, studyReviewId, type)
+        val request = FindCriteriaService.RequestModel(userId, systematicStudyId, type)
         findCriteriaService.findCriteria(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
