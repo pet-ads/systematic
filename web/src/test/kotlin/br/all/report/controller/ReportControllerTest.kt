@@ -1,5 +1,6 @@
 package br.all.report.controller
 
+import br.all.domain.model.question.QuestionContextEnum
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.question.QuestionDocument
 import br.all.infrastructure.review.MongoSystematicStudyRepository
@@ -11,6 +12,8 @@ import br.all.security.service.ApplicationUser
 import br.all.shared.TestHelperService
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.*
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -39,6 +42,7 @@ class ReportControllerTest(
     private lateinit var systematicStudy: SystematicStudyDocument
     private lateinit var studyReview: StudyReviewDocument
     private lateinit var robQuestions: List<QuestionDocument>
+    private lateinit var extractionQuestions: List<QuestionDocument>
     private lateinit var factory: TestDataFactory
     private lateinit var studyReviewDataFactory: StudyReviewTestDataFactory
     private lateinit var systematicStudyDataFactory: SystematicStudyTestDataFactory
@@ -55,18 +59,50 @@ class ReportControllerTest(
             collaborators = mutableSetOf(user.id)
         )
 
-        robQuestions = factory.createRobQuestions(
+        robQuestions = factory.createQuestions(
             systematicStudy.id,
             questionRepository,
+            QuestionContextEnum.ROB
         )
+
+        extractionQuestions = factory.createQuestions(
+            systematicStudy.id,
+            questionRepository,
+            QuestionContextEnum.EXTRACTION
+        )
+
+        val (robKey, robValue) = robQuestions[2].scales!!.entries.first()
+        val (extractionKey, extractionValue) = extractionQuestions[2].scales!!.entries.first()
+        val extractionOptions = extractionQuestions[3].options!!
+        val robOptions = robQuestions[3].options!!
+
+        studyReview = studyReviewDataFactory.reviewDocument(
+            systematicStudy.id,
+            studyReviewId = 11111,
+            robAnswers = mapOf(
+                robQuestions[0].questionId to "Resposta: ${robQuestions[0].description}",
+                robQuestions[1].questionId to "2",
+                robQuestions[2].questionId to "Label(name: $robKey, value: $robValue)",
+                robQuestions[3].questionId to robOptions.first()
+            ),
+            formAnswers = mapOf(
+                extractionQuestions[0].questionId to "Resposta: ${extractionQuestions[0].description}",
+                extractionQuestions[1].questionId to "2",
+                extractionQuestions[2].questionId to "Label(name: $extractionKey, value: $extractionValue)",
+                extractionQuestions[3].questionId to extractionOptions.first(),
+            )
+        )
+
+        studyReviewRepository.save(studyReview)
 
         systematicStudyRepository.save(systematicStudy)
     }
 
     @AfterEach
     fun tearDown() {
+        studyReviewRepository.deleteAll()
         systematicStudyRepository.deleteAll()
-        factory.deleteRobQuestions(questionRepository)
+        factory.deleteQuestions(questionRepository)
         testHelperService.deleteApplicationUser(user.id)
     }
 
@@ -74,30 +110,26 @@ class ReportControllerTest(
         "/api/v1/systematic-study/$systematicStudy/report/find-answer/$questionId"
 
     @Nested
-    @DisplayName("When finding answers of rob questions")
+    @DisplayName("When searching answers of rob questions")
     inner class WhenFindingAnswersOfRobQuestions {
         @Nested
         @Tag("ValidClasses")
         @DisplayName("And finding them")
         inner class AndFindingThem {
-            @Test
-            fun `should find answer of textual question and return 200`() {
-                studyReview = studyReviewDataFactory.reviewDocument(
-                    systematicStudy.id,
-                    studyReviewId = 11111,
-                    robAnswers = robQuestions[0].let { mapOf(it.questionId to "resposta ${it.description}") }
-                )
 
-                studyReviewRepository.save(studyReview)
+            @ParameterizedTest(name = "Q#{0} [{1}] should return 200 and correct response for ROB questions")
+            @ValueSource(ints = [0, 1, 2, 3])
+            fun `should find answer for all rob questions`(index: Int) {
+                val question = robQuestions[index]
 
                 val expected = factory.expectedJson(
                     userId = user.id,
-                    question = robQuestions[0],
+                    question = question,
                     review = studyReview,
                 )
 
                 mockMvc.perform(
-                    get(getUrl(questionId = robQuestions[0].questionId))
+                    get(getUrl(questionId = question.questionId))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                 )
                     .andExpect(status().isOk)
@@ -107,25 +139,20 @@ class ReportControllerTest(
                         )
                     )
             }
-            @Test
-            fun `should find answer of numbered scale question and return 200`() {
-                val randomNumber = faker.random.nextInt(1, 10)
-                studyReview = studyReviewDataFactory.reviewDocument(
-                    systematicStudy.id,
-                    studyReviewId = 11111,
-                    robAnswers = mapOf(robQuestions[1].questionId to "$randomNumber")
-                )
 
-                studyReviewRepository.save(studyReview)
+            @ParameterizedTest(name = "Q#{0} should return 200 and correct response for EXTRACTION questions")
+            @ValueSource(ints = [0, 1, 2, 3])
+            fun `should find answer for all EXTRACTION questions`(index: Int) {
+                val question = extractionQuestions[index]
 
                 val expected = factory.expectedJson(
                     userId = user.id,
-                    question = robQuestions[1],
+                    question = question,
                     review = studyReview,
                 )
 
                 mockMvc.perform(
-                    get(getUrl(questionId = robQuestions[1].questionId))
+                    get(getUrl(questionId = question.questionId))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                 )
                     .andExpect(status().isOk)
@@ -137,37 +164,50 @@ class ReportControllerTest(
             }
 
             @Test
-            fun `should find answer of labeled scale question and return 200`() {
-                val scaleMap = robQuestions[2].scales!!
-
-                val (key, value) = scaleMap.entries.first()
-
-                val labelString = "Label(name: $key, value: $value)"
-                studyReview = studyReviewDataFactory.reviewDocument(
+            fun `should return 200 if the question does not have answers`() {
+                val notAnsweredQuestions = factory.createQuestions(
                     systematicStudy.id,
-                    studyReviewId = 11111,
-                    robAnswers = mapOf(
-                        robQuestions[2].questionId to labelString
-                    )
-                )
-                studyReviewRepository.save(studyReview)
-
-                val expected = factory.expectedJson(
-                    userId = user.id,
-                    question = robQuestions[2],
-                    review = studyReview,
+                    questionRepository,
+                    QuestionContextEnum.ROB
                 )
 
                 mockMvc.perform(
-                    get(getUrl(questionId = robQuestions[2].questionId))
+                    get(getUrl(questionId = notAnsweredQuestions[0].questionId))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                 )
                     .andExpect(status().isOk)
-                    .andExpect(
-                        content().json(
-                            expected
-                        )
-                    )
+                    .andExpect(jsonPath("$.answer").isMap)
+                    .andExpect(jsonPath("$.answer").isEmpty)
+            }
+
+            @Test
+            fun `should not allow unauthenticated user to find questions`() {
+                testHelperService.testForUnauthenticatedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(getUrl(questionId = robQuestions[1].questionId))
+                )
+            }
+
+            @Test
+            fun `should not allow unauthorized users to find questions`() {
+                testHelperService.testForUnauthorizedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(getUrl(questionId = robQuestions[1].questionId))
+                )
+            }
+        }
+        @Nested
+        @DisplayName("And not finding them")
+        inner class AndNotFindingThem {
+            @Test
+            fun `should return 404 if the question does not exist`() {
+                val question = UUID.randomUUID()
+
+                mockMvc.perform(
+                    get(getUrl(questionId = question))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isNotFound)
             }
         }
     }
