@@ -20,30 +20,33 @@ interface MongoStudyReviewRepository : MongoRepository<StudyReviewDocument, Stud
 
     companion object {
         private const val MATCH_QUALITY = """
-      { ${'$'}match: { "qualityAnswers.?0": { ${'$'}exists: true } } }
+      {
+          ${'$'}match: {
+            ${'$'}or: [
+              { "qualityAnswers.?0": { ${'$'}exists: true } },
+              { "formAnswers.?0": { ${'$'}exists: true } }
+            ]
+          }
+        }
     """
-        private const val PROJECT_QUALITY = """
-      { ${'$'}project: {
-          "studyReviewId": "${'$'}_id.studyReviewId",
-          "answer":        "${'$'}qualityAnswers.?0"
-      } }
-    """
-        private const val UNION_WITH = """
-      { ${'$'}unionWith: {
-          coll: "<yourCollectionName>",
-          pipeline: [
-              { ${'$'}match: { "formAnswers.?0": { ${'$'}exists: true } } },
-              { ${'$'}project: {
-                  "studyReviewId": "${'$'}_id.studyReviewId",
-                  "answer":        "${'$'}formAnswers.?0"
-              } }
-          ]
-      } }
+        private const val ANSWERS_QUERY = """
+      {
+          ${'$'}project: {
+            studyReviewId: "${'$'}_id.studyReviewId",
+            answer: {
+              ${'$'}cond: [
+                { ${'$'}ifNull: [ "${'$'}qualityAnswers.?0", null ] },
+                "${'$'}qualityAnswers.?0",
+                "${'$'}formAnswers.?0"
+              ]
+            }
+          }
+        }
     """
     }
 
     @Aggregation(
-        pipeline = [ MATCH_QUALITY, PROJECT_QUALITY, UNION_WITH ]
+        pipeline = [ MATCH_QUALITY, ANSWERS_QUERY]
     )
     fun findAllAnswersForQuestion(questionId: String): List<AnswerDto>
 }
