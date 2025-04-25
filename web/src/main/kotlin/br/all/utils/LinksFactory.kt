@@ -250,11 +250,10 @@ class LinksFactory {
             )
         }.withRel("included-studies-answers").withType("GET")
 
-    fun findCriteria(systematicStudyId: UUID, type: String, studyId: Long): Link =
+    fun findCriteria(systematicStudyId: UUID, type: String): Link =
         linkTo<ReportController> {
             findCriteria(
                 systematicStudyId,
-                studyId,
                 type
             )
         }.withRel("find-criteria").withType("GET")
