@@ -15,7 +15,6 @@ class TestDataFactory {
     private lateinit var factory: QuestionFactory
     private val mapper = jacksonObjectMapper().registerKotlinModule()
 
-
     fun expectedJson(
         userId: UUID,
         question: QuestionDocument,
@@ -24,10 +23,15 @@ class TestDataFactory {
 
         val answerMap: Map<String, List<Long>> = when (question.questionType) {
             "TEXTUAL" -> {
-                mapOf("A" to listOf(review.id.studyReviewId))
+                mapOf("Resposta: ${question.description}" to listOf(review.id.studyReviewId))
             }
-            "LABELED_SCALE "-> {
-                val raw = review.qualityAnswers[question.questionId]!!
+            "LABELED_SCALE"-> {
+                val raw: String = if (question.context == QuestionContextEnum.ROB) {
+                    review.qualityAnswers[question.questionId]!!
+                } else {
+                    review.formAnswers[question.questionId]!!
+                }
+
                 mapOf(raw to listOf(review.id.studyReviewId))
             }
             "NUMBERED_SCALE" -> {
@@ -49,41 +53,42 @@ class TestDataFactory {
         return mapper.writeValueAsString(dto)
     }
 
-    fun createRobQuestions(
+    fun createQuestions(
         systematicStudyId: UUID,
-        repository: MongoQuestionRepository
+        repository: MongoQuestionRepository,
+        context: QuestionContextEnum
     ): List<QuestionDocument> {
         factory = QuestionFactory()
 
         val rq1 = factory.validCreateTextualQuestionDocument(
             questionId = UUID.randomUUID(),
             systematicStudyId = systematicStudyId,
-            questionType = QuestionContextEnum.ROB
+            questionType = context
         )
 
         val rq2 = factory.validCreateNumberedScaleQuestionDocument(
             questionId = UUID.randomUUID(),
             systematicStudyId = systematicStudyId,
-            questionType = QuestionContextEnum.ROB
+            questionType = context
         )
 
         val rq3 = factory.validCreateLabeledScaleQuestionDocument(
             questionId = UUID.randomUUID(),
             systematicStudyId = systematicStudyId,
-            questionType = QuestionContextEnum.ROB
+            questionType = context
         )
 
         val rq4 = factory.validCreatePickListQuestionDocument(
             questionId = UUID.randomUUID(),
             systematicStudyId = systematicStudyId,
-            questionType = QuestionContextEnum.ROB
+            questionType = context
         )
 
         repository.saveAll(listOf(rq1, rq2, rq3, rq4))
         return listOf(rq1, rq2, rq3, rq4)
     }
 
-    fun deleteRobQuestions(
+    fun deleteQuestions(
         repository: MongoQuestionRepository
     ) {
         repository.deleteAll()
