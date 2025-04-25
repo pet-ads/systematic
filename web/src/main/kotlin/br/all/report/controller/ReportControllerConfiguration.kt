@@ -30,8 +30,10 @@ class ReportControllerConfiguration {
         protocolRepository: ProtocolRepository,
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService,
+        systematicStudyRepository: SystematicStudyRepository
     ) = FindCriteriaServiceImpl(
         protocolRepository,
+        systematicStudyRepository,
         credentialsService,
         studyReviewRepository,
     )
