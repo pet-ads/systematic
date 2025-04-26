@@ -283,10 +283,11 @@ class LinksFactory {
             )
         }.withRel("find-keywords").withType("GET")
 
-    fun exportProtocol(systematicStudyId: UUID): Link =
+    fun exportProtocol(systematicStudyId: UUID, format: String): Link =
         linkTo<ReportController> {
             exportProtocol(
                 systematicStudyId,
+                format
             )
         }.withRel("exportable-protocol").withType("GET")
 
