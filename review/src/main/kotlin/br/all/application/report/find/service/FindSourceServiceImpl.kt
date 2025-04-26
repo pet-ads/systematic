@@ -12,7 +12,7 @@ import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.study.SelectionStatus
 
-class FindSourceSerivceImpl(
+class FindSourceServiceImpl(
     private val protocolRepository: ProtocolRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,

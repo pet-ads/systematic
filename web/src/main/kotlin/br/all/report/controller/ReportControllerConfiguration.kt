@@ -44,7 +44,7 @@ class ReportControllerConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService,
-    ) = FindSourceSerivceImpl(
+    ) = FindSourceServiceImpl(
         protocolRepository,
         systematicStudyRepository,
         studyReviewRepository,
