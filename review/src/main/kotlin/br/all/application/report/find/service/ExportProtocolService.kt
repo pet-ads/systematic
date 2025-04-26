@@ -9,11 +9,13 @@ interface ExportProtocolService {
     data class RequestModel(
         val userId: UUID,
         val systematicStudyId: UUID,
+        val format: String,
     )
 
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
+        val format: String,
         val formattedProtocol: String,
     )
 }
