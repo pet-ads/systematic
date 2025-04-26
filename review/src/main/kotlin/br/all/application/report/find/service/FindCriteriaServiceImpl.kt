@@ -33,13 +33,15 @@ class FindCriteriaServiceImpl(
 
         val studyReviewList = studyReviewRepository.findAllFromReview(request.systematicStudyId)
 
-        val result: Map<CriterionDto, Long> = criteriaSet.mapNotNull {
-            criteria -> studyReviewList.find {
-                review -> criteria.description in review.criteria }
-                ?.let { review -> criteria to review.studyReviewId }
-        }.toMap()
+        val result: Map<CriterionDto, List<Long>> = criteriaSet.associateWith { criteria ->
+            studyReviewList.filter { review ->
+                criteria.description in review.criteria
+            }.map { review ->
+                review.studyReviewId
+            }
+        }
 
-        val filteredCriteria = FindCriteriaService.CriteriaDto(
+        val filteredCriteria = FindCriteriaService.FoundStudies(
             included = result
         )
 
