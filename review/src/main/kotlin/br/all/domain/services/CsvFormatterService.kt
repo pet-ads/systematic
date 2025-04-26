@@ -1,10 +1,8 @@
 package br.all.domain.services
 
-import br.all.application.protocol.repository.ProtocolDto
+class CsvFormatterService {
 
-class CsvFormatterService() {
-
-    fun formatProtocol(protocol: ProtocolDto): String {
+    fun formatProtocol(protocol: ProtocolFto): String {
         val headers = listOf(
             "id", "systematicStudy", "goal", "justification",
             "researchQuestions", "keywords", "searchString", "informationSources",
@@ -19,25 +17,25 @@ class CsvFormatterService() {
         csvRows.add(headers.joinToString(","))
 
         val values = listOf(
-            protocol.id.toString(),
-            protocol.systematicStudy.toString(),
-            protocol.goal.orEmpty(),
-            protocol.justification.orEmpty(),
+            protocol.id,
+            protocol.systematicStudy,
+            protocol.goal,
+            protocol.justification,
             protocol.researchQuestions.joinToString("; "),
             protocol.keywords.joinToString("; "),
-            protocol.searchString.orEmpty(),
+            protocol.searchString,
             protocol.informationSources.joinToString("; "),
-            protocol.sourcesSelectionCriteria.orEmpty(),
-            protocol.searchMethod.orEmpty(),
+            protocol.sourcesSelectionCriteria,
+            protocol.searchMethod,
             protocol.studiesLanguages.joinToString("; "),
-            protocol.studyTypeDefinition.orEmpty(),
-            protocol.selectionProcess.orEmpty(),
-            protocol.eligibilityCriteria.joinToString("; ") { it.description },
-            protocol.dataCollectionProcess.orEmpty(),
-            protocol.analysisAndSynthesisProcess.orEmpty(),
-            protocol.extractionQuestions.joinToString("; ") { it.toString() },
-            protocol.robQuestions.joinToString("; ") { it.toString() },
-            protocol.picoc?.toString() ?: ""
+            protocol.studyTypeDefinition,
+            protocol.selectionProcess,
+            protocol.eligibilityCriteria.joinToString("; "),
+            protocol.dataCollectionProcess,
+            protocol.analysisAndSynthesisProcess,
+            protocol.extractionQuestions.joinToString("; ") { it },
+            protocol.robQuestions.joinToString("; ") { it },
+            protocol.picoc
         )
 
         csvRows.add(values.joinToString(",") { value ->
