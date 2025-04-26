@@ -6,11 +6,22 @@ import br.all.application.report.find.service.*
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
+import br.all.domain.services.CsvFormatterService
+import br.all.domain.services.FormatterFactoryService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
 class ReportControllerConfiguration {
+    @Bean
+    fun csvFormatterService() = CsvFormatterService()
+
+    @Bean
+    fun formatterFactoryService(
+        csvFormatterService: CsvFormatterService
+    ) = FormatterFactoryService(
+        csvFormatterService
+    )
 
     @Bean
     fun includedStudiesAnswersService(
@@ -74,9 +85,13 @@ class ReportControllerConfiguration {
     @Bean
     fun exportProtocolService(
         credentialsService: CredentialsService,
+        systematicStudyRepository: SystematicStudyRepository,
+        formatterFactoryService: FormatterFactoryService,
         protocolRepository: ProtocolRepository,
     ) = ExportProtocolServiceImpl(
         credentialsService,
+        systematicStudyRepository,
+        formatterFactoryService,
         protocolRepository
     )
 
