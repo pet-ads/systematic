@@ -40,9 +40,13 @@ class ReportControllerConfiguration {
 
     @Bean
     fun findSourceService(
+        protocolRepository: ProtocolRepository,
+        systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService,
     ) = FindSourceSerivceImpl(
+        protocolRepository,
+        systematicStudyRepository,
         studyReviewRepository,
         credentialsService,
     )
