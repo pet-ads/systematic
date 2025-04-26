@@ -9,14 +9,12 @@ interface FindSourceService {
     data class RequestModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val studyReviewId: Long,
         val source: String,
     )
 
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val studyReviewId: Long,
         val source: String,
         val included: List<Long>,
         val excluded: List<Long>,
