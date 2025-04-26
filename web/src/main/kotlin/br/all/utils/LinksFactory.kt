@@ -258,11 +258,10 @@ class LinksFactory {
             )
         }.withRel("find-criteria").withType("GET")
 
-    fun findSource(systematicStudyId: UUID, studyId: Long, source: String): Link =
+    fun findSource(systematicStudyId: UUID, source: String): Link =
         linkTo<ReportController> {
             findSource(
                 systematicStudyId,
-                studyId,
                 source
             )
         }.withRel("find-source").withType("GET")
