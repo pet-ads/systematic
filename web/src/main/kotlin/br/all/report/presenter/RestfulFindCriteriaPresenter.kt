@@ -1,7 +1,6 @@
 package br.all.report.presenter
 
 import br.all.application.report.find.presenter.FindCriteriaPresenter
-import br.all.application.report.find.service.FindCriteriaService
 import br.all.application.report.find.service.FindCriteriaService.ResponseModel
 import br.all.shared.error.createErrorResponseFrom
 import br.all.utils.LinksFactory
@@ -17,14 +16,18 @@ class RestfulFindCriteriaPresenter(
 
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(
-            response.userId,
-            response.systematicStudyId,
-            response.criteria,
+            userId = response.userId,
+            systematicStudyId = response.systematicStudyId,
+            type = response.criteria.included.keys.first().type,
+            criteria = response.criteria.included.map { (criterionDto, studyReviewIds) ->
+                criterionDto.description to studyReviewIds
+            }.toMap()
         )
 
-        val descriptions = response.criteria.included.map { it.key.description }
 
-        val selfRef = linksFactory.findCriteria(response.systematicStudyId, descriptions.first())
+        val type = response.criteria.included.keys.first().type
+
+        val selfRef = linksFactory.findCriteria(response.systematicStudyId, type)
         val findProtocol = linksFactory.findProtocol(response.systematicStudyId)
 
         restfulResponse.add(selfRef, findProtocol)
@@ -38,6 +41,7 @@ class RestfulFindCriteriaPresenter(
     data class ViewModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val criteria: FindCriteriaService.CriteriaDto,
+        val type: String,
+        val criteria: Map<String, List<Long>>,
     ): RepresentationModel<ViewModel>()
 }
