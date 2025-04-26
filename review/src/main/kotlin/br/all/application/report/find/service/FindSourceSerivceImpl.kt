@@ -4,16 +4,13 @@ import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.report.find.presenter.FindSourcePresenter
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
+import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.study.SelectionStatus
-import br.all.infrastructure.study.StudyReviewDocument
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
-import java.util.*
-import kotlin.NoSuchElementException
 
 class FindSourceSerivceImpl(
     private val protocolRepository: ProtocolRepository,
@@ -35,13 +32,13 @@ class FindSourceSerivceImpl(
 
         if (protocolDto == null) {
             val message = "Unable to find protocol at '${request.systematicStudyId}'."
-            presenter.prepareFailView(NoSuchElementException(message))
+            presenter.prepareFailView(EntityNotFoundException(message))
             return
         }
 
         if (request.source !in protocolDto.informationSources) {
             val message = "Search source does not exist in protocol '${request.systematicStudyId}'."
-            presenter.prepareFailView(NoSuchElementException(message))
+            presenter.prepareFailView(EntityNotFoundException(message))
             return
         }
 
