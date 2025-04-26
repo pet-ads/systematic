@@ -5,6 +5,7 @@ import br.all.domain.model.question.QuestionContextEnum
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.question.QuestionDocument
 import br.all.infrastructure.question.toDto
+import br.all.study.utils.TestDataFactory as StudyReviewTestDataFactory
 import br.all.infrastructure.study.StudyReviewDocument
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
@@ -93,4 +94,38 @@ class TestDataFactory {
     ) {
         repository.deleteAll()
     }
+
+    fun createStudyReviewWithQuestions(
+        systematicStudyId: UUID,
+        robQuestions: List<QuestionDocument>,
+        extractionQuestions: List<QuestionDocument>,
+    ): StudyReviewDocument {
+        val studyReviewDataFactory = StudyReviewTestDataFactory()
+
+        val (robKey, robValue) = robQuestions[2].scales!!.entries.first()
+        val (extractionKey, extractionValue) = extractionQuestions[2].scales!!.entries.first()
+        val extractionOptions = extractionQuestions[3].options!!
+        val robOptions = robQuestions[3].options!!
+
+        val studyReview = studyReviewDataFactory.reviewDocument(
+            systematicStudyId,
+            studyReviewId = 11111,
+            robAnswers = mapOf(
+                robQuestions[0].questionId to "Resposta: ${robQuestions[0].description}",
+                robQuestions[1].questionId to "2",
+                robQuestions[2].questionId to "Label(name: $robKey, value: $robValue)",
+                robQuestions[3].questionId to robOptions.first()
+            ),
+            formAnswers = mapOf(
+                extractionQuestions[0].questionId to "Resposta: ${extractionQuestions[0].description}",
+                extractionQuestions[1].questionId to "2",
+                extractionQuestions[2].questionId to "Label(name: $extractionKey, value: $extractionValue)",
+                extractionQuestions[3].questionId to extractionOptions.first(),
+            )
+        )
+
+        return studyReview
+    }
+
+
 }
