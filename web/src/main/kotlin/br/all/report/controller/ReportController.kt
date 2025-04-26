@@ -98,7 +98,7 @@ class ReportController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping("{studyReviewId}/source/{source}")
+    @GetMapping("source/{source}")
     @Operation(summary = "Get all studies of source")
     @ApiResponses(
         value = [
@@ -124,12 +124,11 @@ class ReportController(
     )
     fun findSource(
         @PathVariable systematicStudyId: UUID,
-        @PathVariable studyReviewId: Long,
         @PathVariable source: String,
     ): ResponseEntity<*> {
         val presenter = RestfulFindSourcePresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = FindSourceService.RequestModel(userId, systematicStudyId, studyReviewId, source)
+        val request = FindSourceService.RequestModel(userId, systematicStudyId, source)
         findSourceService.findSource(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
