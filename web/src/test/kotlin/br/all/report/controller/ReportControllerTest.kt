@@ -1,6 +1,7 @@
 package br.all.report.controller
 
 import br.all.domain.model.question.QuestionContextEnum
+import br.all.infrastructure.protocol.MongoProtocolRepository
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.question.QuestionDocument
 import br.all.infrastructure.review.MongoSystematicStudyRepository
@@ -24,6 +25,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.util.*
 import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 import br.all.study.utils.TestDataFactory as StudyReviewTestDataFactory
+import br.all.protocol.shared.TestDataFactory as ProtocolTestDataFactory
 
 
 @SpringBootTest
@@ -34,6 +36,7 @@ class ReportControllerTest(
     @Autowired private val studyReviewRepository: MongoStudyReviewRepository,
     @Autowired private val systematicStudyRepository: MongoSystematicStudyRepository,
     @Autowired private val questionRepository: MongoQuestionRepository,
+    @Autowired private val protocolRepository: MongoProtocolRepository,
     @Autowired private val mockMvc: MockMvc,
     @Autowired private val testHelperService: TestHelperService
 ) {
@@ -46,6 +49,7 @@ class ReportControllerTest(
     private lateinit var factory: TestDataFactory
     private lateinit var studyReviewDataFactory: StudyReviewTestDataFactory
     private lateinit var systematicStudyDataFactory: SystematicStudyTestDataFactory
+    private lateinit var protocolDataFactory: ProtocolTestDataFactory
 
     @BeforeEach
     fun setUp() {
@@ -53,6 +57,7 @@ class ReportControllerTest(
         factory = TestDataFactory()
         systematicStudyDataFactory = SystematicStudyTestDataFactory()
         studyReviewDataFactory = StudyReviewTestDataFactory()
+        protocolDataFactory = ProtocolTestDataFactory()
         user = testHelperService.createApplicationUser()
 
         systematicStudy = systematicStudyDataFactory.createSystematicStudyDocument(
@@ -71,30 +76,13 @@ class ReportControllerTest(
             QuestionContextEnum.EXTRACTION
         )
 
-        val (robKey, robValue) = robQuestions[2].scales!!.entries.first()
-        val (extractionKey, extractionValue) = extractionQuestions[2].scales!!.entries.first()
-        val extractionOptions = extractionQuestions[3].options!!
-        val robOptions = robQuestions[3].options!!
-
-        studyReview = studyReviewDataFactory.reviewDocument(
+        studyReview = factory.createStudyReviewWithQuestions(
             systematicStudy.id,
-            studyReviewId = 11111,
-            robAnswers = mapOf(
-                robQuestions[0].questionId to "Resposta: ${robQuestions[0].description}",
-                robQuestions[1].questionId to "2",
-                robQuestions[2].questionId to "Label(name: $robKey, value: $robValue)",
-                robQuestions[3].questionId to robOptions.first()
-            ),
-            formAnswers = mapOf(
-                extractionQuestions[0].questionId to "Resposta: ${extractionQuestions[0].description}",
-                extractionQuestions[1].questionId to "2",
-                extractionQuestions[2].questionId to "Label(name: $extractionKey, value: $extractionValue)",
-                extractionQuestions[3].questionId to extractionOptions.first(),
-            )
+            robQuestions,
+            extractionQuestions
         )
 
         studyReviewRepository.save(studyReview)
-
         systematicStudyRepository.save(systematicStudy)
     }
 
@@ -106,12 +94,14 @@ class ReportControllerTest(
         testHelperService.deleteApplicationUser(user.id)
     }
 
-    private fun getUrl(systematicStudy: UUID = this.systematicStudy.id, questionId: UUID) =
+    private fun findAnswerUrl(systematicStudy: UUID = this.systematicStudy.id, questionId: UUID) =
         "/api/v1/systematic-study/$systematicStudy/report/find-answer/$questionId"
+    private fun findCriteriaUrl(systematicStudy: UUID = this.systematicStudy.id, type: String) =
+        "/api/v1/systematic-study/$systematicStudy/report/criteria/$type"
 
     @Nested
     @DisplayName("When searching answers of questions")
-    inner class WhenFindingAnswersOfQuestions {
+    inner class WhenSearchingAnswersOfQuestions {
         @Nested
         @Tag("ValidClasses")
         @DisplayName("And finding them")
@@ -129,7 +119,7 @@ class ReportControllerTest(
                 )
 
                 mockMvc.perform(
-                    get(getUrl(questionId = question.questionId))
+                    get(findAnswerUrl(questionId = question.questionId))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                 )
                     .andExpect(status().isOk)
@@ -152,7 +142,7 @@ class ReportControllerTest(
                 )
 
                 mockMvc.perform(
-                    get(getUrl(questionId = question.questionId))
+                    get(findAnswerUrl(questionId = question.questionId))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                 )
                     .andExpect(status().isOk)
@@ -172,7 +162,7 @@ class ReportControllerTest(
                 )
 
                 mockMvc.perform(
-                    get(getUrl(questionId = notAnsweredQuestions[0].questionId))
+                    get(findAnswerUrl(questionId = notAnsweredQuestions[0].questionId))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                 )
                     .andExpect(status().isOk)
@@ -184,7 +174,7 @@ class ReportControllerTest(
             fun `should not allow unauthenticated user to find questions`() {
                 testHelperService.testForUnauthenticatedUser(
                     mockMvc = mockMvc,
-                    requestBuilder = get(getUrl(questionId = robQuestions[1].questionId))
+                    requestBuilder = get(findAnswerUrl(questionId = robQuestions[1].questionId))
                 )
             }
 
@@ -192,7 +182,7 @@ class ReportControllerTest(
             fun `should not allow unauthorized users to find questions`() {
                 testHelperService.testForUnauthorizedUser(
                     mockMvc = mockMvc,
-                    requestBuilder = get(getUrl(questionId = robQuestions[1].questionId))
+                    requestBuilder = get(findAnswerUrl(questionId = robQuestions[1].questionId))
                 )
             }
         }
@@ -204,11 +194,49 @@ class ReportControllerTest(
                 val question = UUID.randomUUID()
 
                 mockMvc.perform(
-                    get(getUrl(questionId = question))
+                    get(findAnswerUrl(questionId = question))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                 )
                     .andExpect(status().isNotFound)
             }
         }
+    }
+
+    @Nested
+    @DisplayName("When searching for criteria")
+    inner class WhenSearchingCriteria {
+
+        @Nested
+        @DisplayName("And finding them")
+        inner class AndFindingThem {
+            @Test
+            fun `should return 200 and find the study included by the criteria`() {
+                val protocol = protocolDataFactory.createProtocolDocument(
+                    id = systematicStudy.id,
+                )
+                val criteria = protocol.selectionCriteria.first()
+                val criteria2 = protocol.selectionCriteria.last()
+                val studyReview = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 1111L,
+                    criteria = setOf(criteria.description, criteria2.description),
+                )
+
+                val studyReview2 = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 2222L,
+                    criteria = setOf(criteria.description, criteria2.description),
+                )
+
+                protocolRepository.save(protocol)
+                studyReviewRepository.saveAll(listOf(studyReview, studyReview2))
+                mockMvc.perform(
+                    get(findCriteriaUrl(type = criteria.type))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isOk)
+            }
+        }
+
     }
 }
