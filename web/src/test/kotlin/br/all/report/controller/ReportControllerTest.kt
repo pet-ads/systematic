@@ -100,6 +100,8 @@ class ReportControllerTest(
         "/api/v1/systematic-study/$systematicStudy/report/criteria/$type"
     private fun findSourcesUrl(systematicStudy: UUID = this.systematicStudy.id, source: String) =
         "/api/v1/systematic-study/$systematicStudy/report/source/$source"
+    private fun formatProtocolUrl(systematicStudy: UUID = this.systematicStudy.id, type: String) =
+        "/api/v1/systematic-study/$systematicStudy/report/exportable-protocol/$type"
 
     @Nested
     @DisplayName("When searching answers of questions")
@@ -278,5 +280,30 @@ class ReportControllerTest(
 
         }
 
+    }
+
+    @Nested
+    @DisplayName("When exporting formatted protocols")
+    inner class WhenExportingProtocols {
+        @Nested
+        @DisplayName("And having success")
+        inner class WhenHavingSuccess {
+            @Test
+            fun `should return 200 and return formatted protocol`() {
+                val protocolDocument = protocolDataFactory.createProtocolDocument(
+                    id = systematicStudy.id,
+                )
+                protocolRepository.save(protocolDocument)
+
+                val r = mockMvc.perform(
+                    get(formatProtocolUrl(type = "csv"))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isOk)
+                    .andReturn()
+
+                println(r.response.contentAsString)
+            }
+        }
     }
 }
