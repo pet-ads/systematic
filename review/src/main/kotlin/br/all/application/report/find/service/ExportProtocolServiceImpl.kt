@@ -4,13 +4,10 @@ import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.report.find.presenter.ExportProtocolPresenter
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
-import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.services.FormatterFactoryService
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import java.util.*
 
 class ExportProtocolServiceImpl(
     private val credentialsService: CredentialsService,
