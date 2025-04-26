@@ -25,12 +25,12 @@ class RestfulFindSourcePresenter(
             totalOfStudies = response.totalOfStudies,
         )
 
-        val selfRef = linksFactory.findSource(response.systematicStudyId, response.studyReviewId, response.source)
+        val selfRef = linksFactory.findSource(response.systematicStudyId, response.source)
         val findSessions = linksFactory.findSessionsBySource(response.systematicStudyId, response.source)
 
         restfulResponse.add(selfRef, findSessions)
 
-        responseEntity = ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).body(restfulResponse)
+        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable)}
