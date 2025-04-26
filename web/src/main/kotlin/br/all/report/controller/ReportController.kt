@@ -273,7 +273,7 @@ class ReportController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping("exportable-protocol")
+    @GetMapping("exportable-protocol/{format}")
     @Operation(summary = "Export formatted protocol")
     @ApiResponses(
         value = [
@@ -299,10 +299,11 @@ class ReportController(
     )
     fun exportProtocol(
         @PathVariable systematicStudyId: UUID,
+        @PathVariable format: String,
     ): ResponseEntity<*> {
         val presenter = RestfulExportProtocolPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = ExportProtocolService.RequestModel(userId, systematicStudyId)
+        val request = ExportProtocolService.RequestModel(userId, systematicStudyId, format.lowercase())
         exportProtocolService.exportProtocol(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
