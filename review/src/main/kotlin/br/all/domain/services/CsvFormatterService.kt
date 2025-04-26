@@ -2,9 +2,7 @@ package br.all.domain.services
 
 import br.all.application.protocol.repository.ProtocolDto
 
-class CsvFormatterService(
-    private val jsonParserService: JsonParserService
-) {
+class CsvFormatterService() {
 
     fun formatProtocol(protocol: ProtocolDto): String {
         val headers = listOf(
