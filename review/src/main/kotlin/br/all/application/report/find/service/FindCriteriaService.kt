@@ -16,10 +16,10 @@ interface FindCriteriaService {
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val criteria: CriteriaDto
+        val criteria: FoundStudies
     )
 
-    data class CriteriaDto(
-        val included: Map<CriterionDto, Long>
+    data class FoundStudies(
+        val included: Map<CriterionDto, List<Long>>
     )
 }
