@@ -98,6 +98,8 @@ class ReportControllerTest(
         "/api/v1/systematic-study/$systematicStudy/report/find-answer/$questionId"
     private fun findCriteriaUrl(systematicStudy: UUID = this.systematicStudy.id, type: String) =
         "/api/v1/systematic-study/$systematicStudy/report/criteria/$type"
+    private fun findSourcesUrl(systematicStudy: UUID = this.systematicStudy.id, source: String) =
+        "/api/v1/systematic-study/$systematicStudy/report/source/$source"
 
     @Nested
     @DisplayName("When searching answers of questions")
@@ -236,6 +238,44 @@ class ReportControllerTest(
                 )
                     .andExpect(status().isOk)
             }
+        }
+
+    }
+
+    @Nested
+    @DisplayName("When searching studies by source")
+    inner class WhenSearchingStudyBySource {
+        @Nested
+        @DisplayName("And finding them")
+        inner class AndFindingThem {
+            @Test
+            fun `should return 200 and find the studies by source`() {
+                val protocol = protocolDataFactory.createProtocolDocument(
+                    id = systematicStudy.id,
+                    informationSources = setOf("Scopus")
+                )
+                val studyReviews = (1111L..1115L).map {
+                        id -> studyReviewDataFactory.reviewDocument(
+                        systematicStudyId = systematicStudy.id,
+                        studyReviewId = id,
+                        selectionStatus = faker.random.randomValue(listOf("INCLUDED", "EXCLUDED", "DUPLICATED")),
+                        sources = setOf("Scopus"),
+                    )
+                }
+
+                protocolRepository.save(protocol)
+                studyReviewRepository.saveAll(studyReviews)
+
+                val result = mockMvc.perform(
+                    get(findSourcesUrl(source = "Scopus"))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isOk)
+                    .andReturn()
+
+                println(result.response.contentAsString)
+            }
+
         }
 
     }
