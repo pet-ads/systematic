@@ -1,6 +1,7 @@
 package br.all.report.controller
 
 import br.all.domain.model.question.QuestionContextEnum
+import br.all.domain.model.review.SystematicStudy
 import br.all.infrastructure.protocol.MongoProtocolRepository
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.question.QuestionDocument
@@ -93,7 +94,6 @@ class ReportControllerTest(
         factory.deleteQuestions(questionRepository)
         testHelperService.deleteApplicationUser(user.id)
     }
-
     private fun findAnswerUrl(systematicStudy: UUID = this.systematicStudy.id, questionId: UUID) =
         "/api/v1/systematic-study/$systematicStudy/report/find-answer/$questionId"
     private fun findCriteriaUrl(systematicStudy: UUID = this.systematicStudy.id, type: String) =
@@ -102,6 +102,8 @@ class ReportControllerTest(
         "/api/v1/systematic-study/$systematicStudy/report/source/$source"
     private fun formatProtocolUrl(systematicStudy: UUID = this.systematicStudy.id, type: String) =
         "/api/v1/systematic-study/$systematicStudy/report/exportable-protocol/$type"
+    private fun authorNetworkUrl(systematicStudy: UUID = this.systematicStudy.id) =
+        "/api/v1/systematic-study/$systematicStudy/report/author-network"
 
     @Nested
     @DisplayName("When searching answers of questions")
@@ -297,6 +299,47 @@ class ReportControllerTest(
 
                 val r = mockMvc.perform(
                     get(formatProtocolUrl(type = "csv"))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isOk)
+                    .andReturn()
+
+                println(r.response.contentAsString)
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("When generating author network")
+    inner class WhenGeneratingNetwork {
+        @Nested
+        @DisplayName("And having success")
+        inner class AndHavingSuccess {
+            @Test
+            fun `should return 200 and return author network`() {
+                val authors1: List<String> = List(4) { faker.name.firstName() }
+                val authors2: List<String> = List(4) { faker.name.firstName() }
+
+                val study1 = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 11111,
+                    authors = authors1.toString()
+                )
+                val study2 = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 22222,
+                    authors = authors2.toString()
+                )
+                val study3 = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 33333,
+                    authors = authors2.toString()
+                )
+
+                studyReviewRepository.saveAll(listOf(study1, study2, study3))
+
+                val r = mockMvc.perform(
+                    get(authorNetworkUrl())
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                 )
                     .andExpect(status().isOk)
