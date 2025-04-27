@@ -9,14 +9,12 @@ interface AuthorNetworkService {
     data class RequestModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val studyReviewId: Long,
     )
 
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val studyReviewId: Long,
-        val nodes: List<UUID>,
-        val edges: List<Long>
+        val nodes: Set<PaperNode>,
+        val edges: List<Edge>
     )
 }
