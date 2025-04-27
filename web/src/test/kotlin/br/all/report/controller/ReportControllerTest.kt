@@ -1,7 +1,6 @@
 package br.all.report.controller
 
 import br.all.domain.model.question.QuestionContextEnum
-import br.all.domain.model.review.SystematicStudy
 import br.all.infrastructure.protocol.MongoProtocolRepository
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.question.QuestionDocument
