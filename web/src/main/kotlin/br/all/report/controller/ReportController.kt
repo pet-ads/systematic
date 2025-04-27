@@ -133,7 +133,7 @@ class ReportController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping("{studyReviewId}/author-network")
+    @GetMapping("author-network")
     @Operation(summary = "Get author-network graph")
     @ApiResponses(
         value = [
@@ -159,11 +159,10 @@ class ReportController(
     )
     fun authorNetwork(
         @PathVariable systematicStudyId: UUID,
-        @PathVariable studyReviewId: Long,
     ): ResponseEntity<*> {
         val presenter = RestfulAuthorNetworkPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = AuthorNetworkService.RequestModel(userId, systematicStudyId, studyReviewId)
+        val request = AuthorNetworkService.RequestModel(userId, systematicStudyId)
         authorNetworkService.findAuthors(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }

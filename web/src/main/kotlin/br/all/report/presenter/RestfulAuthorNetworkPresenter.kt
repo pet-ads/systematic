@@ -2,6 +2,8 @@ package br.all.report.presenter
 
 import br.all.application.report.find.presenter.AuthorNetworkPresenter
 import br.all.application.report.find.service.AuthorNetworkService
+import br.all.application.report.find.service.Edge
+import br.all.application.report.find.service.PaperNode
 import br.all.shared.error.createErrorResponseFrom
 import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
@@ -18,15 +20,14 @@ class RestfulAuthorNetworkPresenter(
         val restfulResponse = ViewModel(
             response.userId,
             response.systematicStudyId,
-            response.studyReviewId,
             response.nodes,
             response.edges
         )
 
-        val selfRef = linksFactory.authorNetwork(response.systematicStudyId, response.studyReviewId)
+        val selfRef = linksFactory.authorNetwork(response.systematicStudyId)
 
         restfulResponse.add(selfRef)
-        responseEntity = ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).body(restfulResponse)
+        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
@@ -36,8 +37,7 @@ class RestfulAuthorNetworkPresenter(
     data class ViewModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val studyReviewId: Long,
-        val nodes: List<UUID>,
-        val edges: List<Long>,
+        val nodes: Set<PaperNode>,
+        val edges: List<Edge>,
     ): RepresentationModel<ViewModel>()
 }

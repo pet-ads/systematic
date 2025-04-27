@@ -266,11 +266,10 @@ class LinksFactory {
             )
         }.withRel("find-source").withType("GET")
 
-    fun authorNetwork(systematicStudyId: UUID, studyId: Long): Link =
+    fun authorNetwork(systematicStudyId: UUID): Link =
         linkTo<ReportController> {
             authorNetwork(
                 systematicStudyId,
-                studyId
             )
         }.withRel("author-network").withType("GET")
 
