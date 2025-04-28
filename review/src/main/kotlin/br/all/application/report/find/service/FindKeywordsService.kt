@@ -9,16 +9,14 @@ interface FindKeywordsService {
     data class RequestModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val studyReviewId: Long,
         val filter: String?,
     )
 
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val studyReviewId: Long,
+        val filter: String?,
         val keywords: List<String>,
         val keywordsQuantity: Int,
-        val filter: String?,
     )
 }
