@@ -148,4 +148,44 @@ class ScoreCalculatorServiceIntegrationTest {
             { assertEquals(10, results[2].score) }
         )
     }
+
+    @Test
+    fun `should properly calculate the score when title contains multiple occurrences of the same keyword`() {
+        val bibtex = """
+            @article{base,
+                title = {Dengue, crescimento da dengue dengue em países com dengue tropicais dengue},
+                year = {2025},
+                author = {Fulano de Tal},
+                journal = {Universidade X},
+                abstract = {Qualquer coisa.},
+                keywords = {dengue, mosquito},
+                doi = {10.1234/dengue.2025.001}
+            }
+        """
+
+        val studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source)
+        val result = sut.applyScoreToManyStudyReviews(studyReviews.first).first()
+
+        assertEquals(29, result.score)
+    }
+
+    @Test
+    fun `should properly calculate the score when abstract contains multiple occurrences of the same keyword` () {
+        val bibtex = """
+            @article{base,
+                title = {Crescimento da dengue em países tropicais},
+                year = {2025},
+                author = {Fulano de Tal},
+                journal = {Universidade X},
+                abstract = {Dengue, o clima atual favorece dengue, a reprodução do mosquito mosquito da dengue dengue Aedes aegypti, aumentando o crescimento da dengue em países tropicais dengue.},
+                keywords = {dengue, mosquito},
+                doi = {10.1234/dengue.2025.001}
+            }
+        """
+
+        val studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source)
+        val result = sut.applyScoreToManyStudyReviews(studyReviews.first).first()
+
+        assertEquals(41, result.score)
+    }
 }
