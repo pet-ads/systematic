@@ -38,20 +38,45 @@ class FindKeywordsServiceImpl(
         when (request.filter) {
             "selection" -> {
                 val selectionKeywords = allStudies
+                    .asSequence()
                     .filter { it.selectionStatus == SelectionStatus.INCLUDED.name }
-                    .map { it.keywords }.flatten()
+                    .map { it.keywords }
+                    .flatten()
+                    .flatMap { it.split(";") }
+                    .map { it.trim() }
+                    .filter { it.isNotEmpty() }
+                    .distinct()
+                    .sorted()
+                    .toList()
                 response.keywords = selectionKeywords
                 response.keywordsQuantity = selectionKeywords.size
             }
             "extraction" -> {
                 val extractionKeywords = allStudies
+                    .asSequence()
                     .filter { it.extractionStatus == ExtractionStatus.INCLUDED.toString() }
-                    .map { it.keywords }.flatten()
+                    .map { it.keywords }
+                    .flatten()
+                    .flatMap { it.split(";") }
+                    .map { it.trim() }
+                    .filter { it.isNotEmpty() }
+                    .distinct()
+                    .sorted()
+                    .toList()
                 response.keywords = extractionKeywords
                 response.keywordsQuantity = extractionKeywords.size
             }
             null -> {
-                val allKeywords = allStudies.map { it.keywords }.flatten()
+                val allKeywords = allStudies
+                    .asSequence()
+                    .map { it.keywords }
+                    .flatten()
+                    .flatMap { it.split(";") }
+                    .map { it.trim() }
+                    .filter { it.isNotEmpty() }
+                    .distinct()
+                    .sorted()
+                    .toList()
                 response.keywords = allKeywords
                 response.keywordsQuantity = allKeywords.size
             }
