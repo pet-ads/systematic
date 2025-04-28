@@ -76,9 +76,11 @@ class ReportControllerConfiguration {
     @Bean
     fun findKeywordsService(
         credentialsService: CredentialsService,
-        protocolRepository: ProtocolRepository,
+        systematicStudyRepository: SystematicStudyRepository,
+        studyReviewRepository: StudyReviewRepository,
     ) = FindKeywordsServiceImpl(
-        protocolRepository,
+        systematicStudyRepository,
+        studyReviewRepository,
         credentialsService
     )
 
