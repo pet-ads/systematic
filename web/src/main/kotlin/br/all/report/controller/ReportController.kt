@@ -298,12 +298,22 @@ class ReportController(
     fun exportProtocol(
         @PathVariable systematicStudyId: UUID,
         @PathVariable format: String,
+        @RequestParam downloadable: Boolean,
     ): ResponseEntity<*> {
-        val presenter = RestfulExportProtocolPresenter(linksFactory)
+        val presenter = if (downloadable) {
+            DownloadableProtocolPresenter()
+        } else {
+            RestfulExportProtocolPresenter(linksFactory)
+        }
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = ExportProtocolService.RequestModel(userId, systematicStudyId, format.lowercase())
         exportProtocolService.exportProtocol(presenter, request)
-        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+        val responseEntity = when (presenter) {
+            is DownloadableProtocolPresenter -> presenter.responseEntity
+            is RestfulExportProtocolPresenter -> presenter.responseEntity
+            else -> null
+        }
+        return responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @GetMapping("find-answer/{questionId}")
