@@ -1,7 +1,8 @@
 package br.all.domain.services
 
 class FormatterFactoryService (
-    private val csvFormatterService: CsvFormatterService
+    private val csvFormatterService: CsvFormatterService,
+    private val latexFormatterService: LatexFormatterService
 ) {
     fun format(
         type: String,
@@ -9,6 +10,7 @@ class FormatterFactoryService (
     ): String {
         return when (type) {
             "csv" -> csvFormatterService.formatProtocol(protocol)
+            "latex" -> latexFormatterService.formatProtocol(protocol)
             else -> {"Unsupported format $type"}
         }
     }
