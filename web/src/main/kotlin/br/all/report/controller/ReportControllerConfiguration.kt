@@ -8,6 +8,7 @@ import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.services.CsvFormatterService
 import br.all.domain.services.FormatterFactoryService
+import br.all.domain.services.LatexFormatterService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -17,10 +18,15 @@ class ReportControllerConfiguration {
     fun csvFormatterService() = CsvFormatterService()
 
     @Bean
+    fun latexFormatterService() = LatexFormatterService()
+
+    @Bean
     fun formatterFactoryService(
-        csvFormatterService: CsvFormatterService
+        csvFormatterService: CsvFormatterService,
+        latexFormatterService: LatexFormatterService
     ) = FormatterFactoryService(
-        csvFormatterService
+        csvFormatterService,
+        latexFormatterService
     )
 
     @Bean
