@@ -93,7 +93,7 @@ class ReportController(
     ): ResponseEntity<*> {
         val presenter = RestfulFindCriteriaPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = FindCriteriaService.RequestModel(userId, systematicStudyId, type)
+        val request = FindCriteriaService.RequestModel(userId, systematicStudyId, type.uppercase())
         findCriteriaService.findCriteria(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -197,7 +197,7 @@ class ReportController(
     ): ResponseEntity<*> {
         val presenter = RestfulFindKeywordsPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = FindKeywordsService.RequestModel(userId, systematicStudyId, filter)
+        val request = FindKeywordsService.RequestModel(userId, systematicStudyId, filter?.lowercase())
         findKeywordsService.findKeywords(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
