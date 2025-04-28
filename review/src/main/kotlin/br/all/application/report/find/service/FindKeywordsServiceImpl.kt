@@ -1,25 +1,66 @@
 package br.all.application.report.find.service
 
-import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.report.find.presenter.FindKeywordsPresenter
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.review.repository.fromDto
+import br.all.application.shared.presenter.prepareIfFailsPreconditions
+import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
-import java.util.*
+import br.all.domain.model.review.SystematicStudy
+import br.all.domain.model.study.ExtractionStatus
+import br.all.domain.model.study.SelectionStatus
 
 class FindKeywordsServiceImpl(
-    private val protocolRepository: ProtocolRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
+    private val studyReviewRepository: StudyReviewRepository,
     private val credentialsService: CredentialsService,
 ): FindKeywordsService {
     override fun findKeywords(presenter: FindKeywordsPresenter, request: FindKeywordsService.RequestModel) {
-        val keys = listOf("keyword1", "keyword2", "keyword3", "keyword4")
+        val user = credentialsService.loadCredentials(request.userId)?.toUser()
+
+        val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
+        val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
+
+        if(presenter.isDone()) return
+
+        val allStudies = studyReviewRepository.findAllFromReview(request.systematicStudyId)
+
         val response = FindKeywordsService.ResponseModel(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            filter = null,
-            keys,
-            keys.size,
+            request.userId,
+            request.systematicStudyId,
+            request.filter,
+            keywords = emptyList(),
+            keywordsQuantity = 0,
         )
+
+        when (request.filter) {
+            "selection" -> {
+                val selectionKeywords = allStudies
+                    .filter { it.selectionStatus == SelectionStatus.INCLUDED.name }
+                    .map { it.keywords }.flatten()
+                response.keywords = selectionKeywords
+                response.keywordsQuantity = selectionKeywords.size
+            }
+            "extraction" -> {
+                val extractionKeywords = allStudies
+                    .filter { it.extractionStatus == ExtractionStatus.INCLUDED.toString() }
+                    .map { it.keywords }.flatten()
+                response.keywords = extractionKeywords
+                response.keywordsQuantity = extractionKeywords.size
+            }
+            null -> {
+                val allKeywords = allStudies.map { it.keywords }.flatten()
+                response.keywords = allKeywords
+                response.keywordsQuantity = allKeywords.size
+            }
+            else -> {
+                presenter.prepareFailView(IllegalArgumentException(request.filter))
+                if (presenter.isDone()) return
+            }
+        }
+
         presenter.prepareSuccessView(response)
     }
 }
