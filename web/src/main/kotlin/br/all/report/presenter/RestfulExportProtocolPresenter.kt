@@ -21,7 +21,7 @@ class RestfulExportProtocolPresenter(
             response.formattedProtocol,
         )
 
-        val selfRef = linksFactory.exportProtocol(response.systematicStudyId, response.format)
+        val selfRef = linksFactory.exportProtocol(response.systematicStudyId, response.format, downloadable = true)
 
         restfulResponse.add(selfRef)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
