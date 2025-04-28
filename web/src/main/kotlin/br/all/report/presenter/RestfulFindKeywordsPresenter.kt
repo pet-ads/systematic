@@ -18,13 +18,12 @@ class RestfulFindKeywordsPresenter(
         val restfulResponse = ViewModel(
             response.userId,
             response.systematicStudyId,
-            response.studyReviewId,
             response.keywords,
             response.keywordsQuantity,
             response.filter
         )
 
-        val selfRef = linksFactory.keywords(response.systematicStudyId, response.studyReviewId, response.filter)
+        val selfRef = linksFactory.keywords(response.systematicStudyId, response.filter)
 
         restfulResponse.add(selfRef)
 
@@ -38,7 +37,6 @@ class RestfulFindKeywordsPresenter(
     data class ViewModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val studyReviewId: Long,
         val keywords: List<String>,
         val totalOfKeywords: Int,
         val filter: String?
