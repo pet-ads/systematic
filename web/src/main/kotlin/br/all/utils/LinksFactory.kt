@@ -281,13 +281,18 @@ class LinksFactory {
             )
         }.withRel("find-keywords").withType("GET")
 
-    fun exportProtocol(systematicStudyId: UUID, format: String): Link =
-        linkTo<ReportController> {
-            exportProtocol(
-                systematicStudyId,
-                format
-            )
-        }.withRel("exportable-protocol").withType("GET")
+    fun exportProtocol(systematicStudyId: UUID, format: String, downloadable: Boolean): Link {
+        val uri = linkTo<ReportController> {
+            exportProtocol(systematicStudyId, format, downloadable)
+        }.toUriComponentsBuilder()
+            .queryParam("downloadable", downloadable)
+            .build()
+            .toUri()
+
+        return Link.of(uri.toString())
+            .withRel("exportable-protocol")
+            .withType("GET")
+    }
 
     fun findStudiesByStage(systematicStudyId: UUID, stage: String): Link =
         linkTo<ReportController> {
