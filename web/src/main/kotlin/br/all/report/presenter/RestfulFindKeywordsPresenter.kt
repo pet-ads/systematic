@@ -18,16 +18,16 @@ class RestfulFindKeywordsPresenter(
         val restfulResponse = ViewModel(
             response.userId,
             response.systematicStudyId,
+            response.filter,
             response.keywords,
             response.keywordsQuantity,
-            response.filter
         )
 
         val selfRef = linksFactory.keywords(response.systematicStudyId, response.filter)
 
         restfulResponse.add(selfRef)
 
-        responseEntity = ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).body(restfulResponse)
+        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
@@ -37,8 +37,8 @@ class RestfulFindKeywordsPresenter(
     data class ViewModel(
         val userId: UUID,
         val systematicStudyId: UUID,
+        val filter: String?,
         val keywords: List<String>,
         val totalOfKeywords: Int,
-        val filter: String?
     ): RepresentationModel<ViewModel>()
 }
