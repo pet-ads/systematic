@@ -167,7 +167,7 @@ class ReportController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @GetMapping("{studyReviewId}/keywords")
+    @GetMapping("keywords")
     @Operation(summary = "Count keywords")
     @ApiResponses(
         value = [
@@ -193,12 +193,11 @@ class ReportController(
     )
     fun findKeywords(
         @PathVariable systematicStudyId: UUID,
-        @PathVariable studyReviewId: Long,
-        @RequestParam("filter") filter: String?,
+        @RequestParam(required = false) filter: String?,
     ): ResponseEntity<*> {
         val presenter = RestfulFindKeywordsPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = FindKeywordsService.RequestModel(userId, systematicStudyId, studyReviewId, filter)
+        val request = FindKeywordsService.RequestModel(userId, systematicStudyId, filter)
         findKeywordsService.findKeywords(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
