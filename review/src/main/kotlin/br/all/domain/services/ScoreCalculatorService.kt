@@ -18,8 +18,8 @@ class ScoreCalculatorService(
                 val normalizedKeyword = normalizeText(keyword)
                 val regex = Regex("\\b$normalizedKeyword\\b", RegexOption.IGNORE_CASE)
 
-                if (regex.containsMatchIn(normalizedTitle)) score += 5
-                if (regex.containsMatchIn(normalizedAbstract)) score += 3
+                score += regex.findAll(normalizedTitle).count() * 5
+                score += regex.findAll(normalizedAbstract).count() * 3
                 if (normalizedAuthorsKeywords.any { regex.containsMatchIn(it) }) score += 2
             }
         }
