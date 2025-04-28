@@ -100,7 +100,7 @@ class ReportControllerTest(
     private fun findSourcesUrl(systematicStudy: UUID = this.systematicStudy.id, source: String) =
         "/api/v1/systematic-study/$systematicStudy/report/source/$source"
     private fun formatProtocolUrl(systematicStudy: UUID = this.systematicStudy.id, type: String) =
-        "/api/v1/systematic-study/$systematicStudy/report/exportable-protocol/$type"
+        "/api/v1/systematic-study/$systematicStudy/report/exportable-protocol/$type?downloadable=false"
     private fun authorNetworkUrl(systematicStudy: UUID = this.systematicStudy.id) =
         "/api/v1/systematic-study/$systematicStudy/report/author-network"
 
