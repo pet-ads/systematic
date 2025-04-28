@@ -3,8 +3,8 @@ package br.all.application.study.update.interfaces
 import io.swagger.v3.oas.annotations.media.Schema
 import java.util.*
 
-interface AnswerRiskOfBiasQuestionService {
-    fun answerRobQuestion(presenter: AnswerRiskOfBiasQuestionPresenter, request: RequestModel<*>)
+interface AnswerQuestionService {
+    fun answerQuestion(presenter: AnswerQuestionPresenter, request: RequestModel<*>, context: String?)
 
     data class RequestModel<T>(
         val userId: UUID,
@@ -20,7 +20,7 @@ interface AnswerRiskOfBiasQuestionService {
         val value: Int
     )
 
-    @Schema(name = "AnswerRiskOfBiasQuestionServiceResponseModel")
+    @Schema(name = "AnswerQuestionServiceResponseModel")
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,

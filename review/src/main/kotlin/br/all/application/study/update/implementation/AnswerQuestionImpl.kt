@@ -9,26 +9,24 @@ import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromDto
 import br.all.application.study.repository.toDto
-import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionPresenter
-import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionService
+import br.all.application.study.update.interfaces.*
 import br.all.application.user.CredentialsService
 import br.all.domain.model.question.*
+import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.study.Answer
 import br.all.domain.model.study.StudyReview
-import br.all.domain.model.question.Question
-import br.all.domain.model.review.SystematicStudy
 
-class AnswerRiskOfBiasQuestionImpl(
+class AnswerQuestionImpl (
     private val studyReviewRepository: StudyReviewRepository,
     private val questionRepository: QuestionRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val credentialsService: CredentialsService,
-): AnswerRiskOfBiasQuestionService {
-    override fun answerRobQuestion(
-        presenter: AnswerRiskOfBiasQuestionPresenter,
-        request: AnswerRiskOfBiasQuestionService.RequestModel<*>
+): AnswerQuestionService {
+    override fun answerQuestion(
+        presenter: AnswerQuestionPresenter,
+        request: AnswerQuestionService.RequestModel<*>,
+        context: String?
     ) {
-
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
@@ -58,14 +56,29 @@ class AnswerRiskOfBiasQuestionImpl(
 
         val question = Question.fromDto(questionDto)
 
+        if (context == null) {
+            val message = "No context defined"
+            presenter.prepareFailView(IllegalArgumentException(message))
+            return
+        }
+
+        if (QuestionContextEnum.valueOf(context) != questionDto.context) {
+            val message = "Deve responder a questão com o contexto correto ${questionDto.context} found: $context"
+            presenter.prepareFailView(IllegalArgumentException(message))
+            return
+        }
 
         val answer = answer(questionDto.questionType, request, question)
-        review.answerQualityQuestionOf(answer)
+        if (questionDto.context == QuestionContextEnum.ROB) {
+            review.answerQualityQuestionOf(answer)
+        } else {
+            review.answerFormQuestionOf(answer)
+        }
 
         studyReviewRepository.saveOrUpdate(review.toDto())
 
         presenter.prepareSuccessView(
-            AnswerRiskOfBiasQuestionService.ResponseModel(
+            AnswerQuestionService.ResponseModel(
                 userId,
                 systematicStudyId,
                 studyReviewId
@@ -75,8 +88,8 @@ class AnswerRiskOfBiasQuestionImpl(
 
     private fun answer(
         type: String,
-        request: AnswerRiskOfBiasQuestionService.RequestModel<*>,
-        question: Question<*>
+        request: AnswerQuestionService.RequestModel<*>,
+        question: Question<*>,
     ): Answer<*> {
         if (type != request.type) {
             val message = "Answer for ${request.type} has been sent, but question ${question.id} is actually $type"
@@ -95,7 +108,7 @@ class AnswerRiskOfBiasQuestionImpl(
                             }
                         } ?: throw IllegalArgumentException("Invalid labeled scale answer: missing 'name' or 'value'")
                     }
-                    is AnswerRiskOfBiasQuestionService.LabelDto -> {
+                    is AnswerQuestionService.LabelDto -> {
                         (question as LabeledScale).answer(Label(answer.name, answer.value))
                     }
                     else -> {

@@ -125,33 +125,23 @@ class TestDataFactory {
         duplicateIds: List<Long>
     ) = MarkAsDuplicatedService.RequestModel(researcherId, systematicStudyId, keptStudyReviewId, duplicateIds)
 
-    fun <T> answerRobRequestModel(
+    fun <T> answerQuestionModel(
         questionId: UUID,
         type: String,
         answer: T,
-    ) = AnswerRiskOfBiasQuestionService.RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
+    ) = AnswerQuestionService.RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
 
-    fun <T> answerExtractionQuestionModel(
-        questionId: UUID,
-        type: String,
-        answer: T,
-    ) = AnswerExtractionQuestionService.RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
-
-    fun labelRobDto(
+    fun questionLabelDto(
         name: String,
         value: Int,
-    ) = AnswerRiskOfBiasQuestionService.LabelDto(name, value)
-
-    fun labelExtractionDto(
-        name: String,
-        value: Int,
-    ) = AnswerExtractionQuestionService.LabelDto(name, value)
+    ) = AnswerQuestionService.LabelDto(name, value)
 
     fun generateQuestionTextualDto(
         questionId: UUID,
         systematicStudyId: UUID = this.systematicStudyId,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
+        questionContext: String,
     ) =
         QuestionDto(
             questionId,
@@ -163,7 +153,7 @@ class TestDataFactory {
             null,
             null,
             null,
-            QuestionContextEnum.EXTRACTION
+            QuestionContextEnum.valueOf(questionContext),
         )
 
     fun generateQuestionLabeledScaleDto(
@@ -171,7 +161,8 @@ class TestDataFactory {
         systematicStudyId: UUID = this.systematicStudyId,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
-        labelDto: AnswerRiskOfBiasQuestionService.LabelDto //TODO(Make both services share the same DTO)
+        labelDto: AnswerQuestionService.LabelDto,
+        questionContext: String
     ) =
         QuestionDto(
             questionId,
@@ -183,11 +174,53 @@ class TestDataFactory {
             null,
             null,
             null,
-            QuestionContextEnum.ROB
+            QuestionContextEnum.valueOf(questionContext),
         )
+
+    fun generateQuestionNumberedScaleDto(
+        questionId: UUID,
+        systematicStudyId: UUID = this.systematicStudyId,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+        higher: Int,
+        lower: Int,
+        questionContext: String
+    ) =
+        QuestionDto(
+            questionId,
+            systematicStudyId,
+            code,
+            description,
+            "NUMBERED_SCALE",
+            null,
+            higher,
+            lower,
+            null,
+            QuestionContextEnum.valueOf(questionContext),
+        )
+
+    fun generateQuestionPickListDto(
+        questionId: UUID,
+        systematicStudyId: UUID = this.systematicStudyId,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+        options: List<String>,
+        questionContext: String
+    ) =
+        QuestionDto(
+            questionId,
+            systematicStudyId,
+            code,
+            description,
+            "PICK_LIST",
+            null,
+            null,
+            null,
+            options,
+            QuestionContextEnum.valueOf(questionContext),
+        )
+
 
     operator fun component1() = researcherId
     operator fun component2() = studyReviewId
-
-
 }

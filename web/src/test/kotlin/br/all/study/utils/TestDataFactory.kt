@@ -11,7 +11,7 @@ import java.util.*
 
 class TestDataFactory {
 
-    val researcherId: UUID = UUID.randomUUID()
+    private val researcherId: UUID = UUID.randomUUID()
     val systematicStudyId: UUID = UUID.randomUUID()
     val searchSessionId: UUID = UUID.randomUUID()
     private val faker = Faker()
@@ -87,8 +87,6 @@ class TestDataFactory {
         }
         """.trimIndent()
 
-
-
     fun <T> validAnswerQuestionRequest(studyReviewId: Long, questionId: UUID, type: String, answer: T) =
         """
         {
@@ -115,7 +113,6 @@ class TestDataFactory {
             }
         """
 
-
     fun reviewDocument(
         systematicStudyId: UUID,
         studyReviewId: Long,
@@ -136,18 +133,38 @@ class TestDataFactory {
         comments: String = faker.paragraph(15),
         selectionStatus: String = "UNCLASSIFIED",
         extractionStatus: String = "UNCLASSIFIED",
-        readingPriority: String = "LOW"
+        readingPriority: String = "LOW",
+        score: Int = 0
     ): StudyReviewDocument {
         val studyId = StudyReviewId(systematicStudyId, studyReviewId)
         return StudyReviewDocument(
             studyId, searchSessionId, type, title, year,
             authors, venue, abstract, keywords, references, doi, sources,
             criteria, formAnswers, robAnswers, comments, readingPriority,
-            extractionStatus, selectionStatus
+            extractionStatus, selectionStatus, score
         )
     }
 
-    fun generateQuestionTextualDto(
+    fun generateRobQuestionTextualDto(
+        questionId: UUID,
+        systematicStudyId: UUID = this.systematicStudyId,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+    ) =
+        QuestionDocument(
+            questionId,
+            systematicStudyId,
+            code,
+            description,
+            "TEXTUAL",
+            null,
+            null,
+            null,
+            null,
+            QuestionContextEnum.ROB
+        )
+
+    fun generateExtractionQuestionTextualDto(
         questionId: UUID,
         systematicStudyId: UUID = this.systematicStudyId,
         code: String = faker.lorem.words(),
@@ -165,5 +182,4 @@ class TestDataFactory {
             null,
             QuestionContextEnum.EXTRACTION
         )
-
 }

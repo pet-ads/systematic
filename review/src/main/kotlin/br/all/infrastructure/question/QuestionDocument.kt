@@ -1,6 +1,5 @@
 package br.all.infrastructure.question
 
-
 import br.all.domain.model.question.QuestionContextEnum
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document

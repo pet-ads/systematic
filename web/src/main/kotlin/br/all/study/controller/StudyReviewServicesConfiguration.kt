@@ -3,7 +3,6 @@ package br.all.study.controller
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.create.CreateStudyReviewServiceImpl
-import br.all.application.study.find.presenter.FindAllStudyReviewsByAuthorPresenter
 import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresenter
 import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
 import br.all.application.study.find.presenter.FindStudyReviewPresenter
@@ -128,25 +127,12 @@ class StudyReviewServicesConfiguration {
     )
 
     @Bean
-    fun riskOfBiasService(
+    fun answerQuestionService(
         studyReviewRepository: StudyReviewRepository,
         questionRepository: QuestionRepository,
         systematicStudyRepository: SystematicStudyRepository,
         credentialsService: CredentialsService,
-    ) = AnswerRiskOfBiasQuestionImpl(
-        studyReviewRepository,
-        questionRepository,
-        systematicStudyRepository,
-        credentialsService
-    )
-
-    @Bean
-    fun extractionService(
-        studyReviewRepository: StudyReviewRepository,
-        questionRepository: QuestionRepository,
-        systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: CredentialsService,
-    ) = AnswerExtractionQuestionImpl(
+    ) = AnswerQuestionImpl(
         studyReviewRepository,
         questionRepository,
         systematicStudyRepository,

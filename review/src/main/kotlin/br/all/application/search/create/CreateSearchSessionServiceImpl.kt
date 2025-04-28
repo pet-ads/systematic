@@ -1,10 +1,8 @@
-package br.all.application.search
+package br.all.application.search.create
 
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
-import br.all.application.search.create.CreateSearchSessionPresenter
-import br.all.application.search.create.CreateSearchSessionService
 import br.all.application.search.create.CreateSearchSessionService.RequestModel
 import br.all.application.search.create.CreateSearchSessionService.ResponseModel
 import br.all.application.search.repository.SearchSessionRepository
@@ -48,15 +46,21 @@ class CreateSearchSessionServiceImpl(
         val source = request.source
 
         val protocolDto = protocolRepository.findById(request.systematicStudyId)
-        val hasSource = protocolDto?.informationSources?.contains(source) ?: false
+
+        if (protocolDto == null) {
+            presenter.prepareFailView(NoSuchElementException("Protocol ${request.systematicStudyId} not found"))
+            return
+        }
+
+        val hasSource = protocolDto.informationSources.contains(source)
 
         if (!hasSource) {
-            val message = "Protocol ID ${protocolDto?.id} does not contain $source as a search source"
+            val message = "Protocol ID ${protocolDto.id} does not contain $source as a search source"
             presenter.prepareFailView(NoSuchElementException(message))
             return
         }
 
-        val scoreCalculatorService = ScoreCalculatorService(protocolDto?.keywords)
+        val scoreCalculatorService = ScoreCalculatorService(protocolDto.keywords)
         val sessionId = SearchSessionID(uuidGeneratorService.next())
         val searchSession = SearchSession.fromRequestModel(sessionId, request)
 
