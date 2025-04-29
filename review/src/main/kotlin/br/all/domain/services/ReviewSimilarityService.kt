@@ -21,6 +21,8 @@ class ReviewSimilarityService(
 
                 while (iterator.hasNext()) {
                     val b = iterator.next()
+                    if (!sameYear(a, b)) continue
+
                     if (calculateTitleSimilarity(a, b) >= titleThreshold && calculateAuthorsSimilarity(a, b) >= authorsThreshold) {
                         if (calculateAbstractSimilarity(a, b) >= abstractThreshold) {
                             duplicatesOfA.add(b)
@@ -35,6 +37,8 @@ class ReviewSimilarityService(
 
         return duplicatedReviewsMap
     }
+
+    private fun sameYear(study1: StudyReview, study2: StudyReview) = study1.year == study2.year
 
     private fun calculateTitleSimilarity(study1: StudyReview, study2: StudyReview): Double {
         val normalizedText1 = normalizeText(study1.title)
