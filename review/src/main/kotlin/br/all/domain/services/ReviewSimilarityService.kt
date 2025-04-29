@@ -9,7 +9,7 @@ class ReviewSimilarityService(
     private val abstractThreshold: Double = 0.8
     private val authorsThreshold: Double = 0.8
 
-    private fun findDuplicates(studies: List<StudyReview>): Map<StudyReview, Set<StudyReview>> {
+    fun findDuplicates(studies: List<StudyReview>): Map<StudyReview, Set<StudyReview>> {
         val duplicatedReviewsMap = mutableMapOf<StudyReview, MutableSet<StudyReview>>()
         val remainingStudies = studies.toMutableList()
 
@@ -40,10 +40,10 @@ class ReviewSimilarityService(
     }
 
     private fun calculateAbstractSimilarity(study1: StudyReview, study2: StudyReview): Double {
-        return levenshteinSimilarityCalculator.similarity(study1.authors, study2.authors)
+        return levenshteinSimilarityCalculator.similarity(study1.abstract ?: "", study2.abstract ?: "")
     }
 
     private fun calculateAuthorsSimilarity(study1: StudyReview, study2: StudyReview): Double {
-        return levenshteinSimilarityCalculator.similarity(study1.abstract ?: "", study2.abstract ?: "")
+        return levenshteinSimilarityCalculator.similarity(study1.authors, study2.authors)
     }
 }
