@@ -13,7 +13,13 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @Tag("IntegrationTest")
-class ReviewSimilarityServiceIntegrationTest {
+class ReviewSimilarityServiceThresholdAt08IntegrationTest {
+    /*
+        These tests were all made
+        with the all the thresholds set to 0.8,
+        keep in mind that if you change the threshold
+        theses tests might break
+     */
 
     private lateinit var sut: ReviewSimilarityService
     private lateinit var levenshteinCalculator: LevenshteinSimilarityCalculatorImpl
