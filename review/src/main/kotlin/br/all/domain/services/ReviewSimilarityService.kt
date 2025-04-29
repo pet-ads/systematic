@@ -1,6 +1,7 @@
 package br.all.domain.services
 
 import br.all.domain.model.study.StudyReview
+import br.all.domain.shared.utils.normalizeText
 
 class ReviewSimilarityService(
     private val levenshteinSimilarityCalculator: LevenshteinSimilarityCalculator
@@ -36,14 +37,32 @@ class ReviewSimilarityService(
     }
 
     private fun calculateTitleSimilarity(study1: StudyReview, study2: StudyReview): Double {
-        return levenshteinSimilarityCalculator.similarity(study1.title, study2.title)
+        val normalizedText1 = normalizeText(study1.title)
+        val normalizedText2 = normalizeText(study2.title)
+
+        if (normalizedText1.isEmpty() && normalizedText2.isEmpty()) return 1.0
+        if (normalizedText1.isEmpty() || normalizedText2.isEmpty()) return 0.0
+
+        return levenshteinSimilarityCalculator.similarity(normalizedText1, normalizedText2)
     }
 
     private fun calculateAbstractSimilarity(study1: StudyReview, study2: StudyReview): Double {
-        return levenshteinSimilarityCalculator.similarity(study1.abstract ?: "", study2.abstract ?: "")
+        val normalizedText1 = normalizeText(study1.abstract ?: "")
+        val normalizedText2 = normalizeText(study2.abstract ?: "")
+
+        if (normalizedText1.isEmpty() && normalizedText2.isEmpty()) return 1.0
+        if (normalizedText1.isEmpty() || normalizedText2.isEmpty()) return 0.0
+
+        return levenshteinSimilarityCalculator.similarity(normalizedText1, normalizedText2)
     }
 
     private fun calculateAuthorsSimilarity(study1: StudyReview, study2: StudyReview): Double {
-        return levenshteinSimilarityCalculator.similarity(study1.authors, study2.authors)
+        val normalizedText1 = normalizeText(study1.authors)
+        val normalizedText2 = normalizeText(study2.authors)
+
+        if (normalizedText1.isEmpty() && normalizedText2.isEmpty()) return 1.0
+        if (normalizedText1.isEmpty() || normalizedText2.isEmpty()) return 0.0
+
+        return levenshteinSimilarityCalculator.similarity(normalizedText1, normalizedText2)
     }
 }
