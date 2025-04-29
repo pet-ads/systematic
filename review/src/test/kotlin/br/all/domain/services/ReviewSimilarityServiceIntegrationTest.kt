@@ -251,4 +251,209 @@ class ReviewSimilarityServiceIntegrationTest {
         assertTrue(result[studyReviews[2]]!!.contains(studyReviews[3]))
         assertFalse(result.containsKey(studyReviews[4]))
     }
+
+    @Test
+    fun `should skip levenshtein calculation when years are not the same`() {
+        val bibtex = """
+                @article{original,
+                    title = {Machine Learning Applications in Healthcare},
+                    year = {2023},
+                    author = {John Smith and Maria Garcia},
+                    journal = {Journal of Medical Informatics},
+                    abstract = {This paper explores various applications of machine learning in healthcare, focusing on diagnosis and treatment optimization.},
+                    keywords = {machine learning, healthcare, diagnosis},
+                    doi = {10.1234/jmi.2023.001}
+                }
+
+                @article{duplicate,
+                    title = {Extension study of: Machine Learning Applications in Healthcare Systems},
+                    year = {2024},
+                    author = {John Smith and Maria Garcia},
+                    journal = {Journal of Medical Informatics},
+                    abstract = {This paper is an updated version of an old study that explores various applications of machine learning in healthcare, with emphasis on diagnosis and treatment optimization.},
+                    keywords = {machine learning, healthcare, diagnosis},
+                    doi = {10.1234/jmi.2023.001}
+                }
+            """
+
+        val studyReviews = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source).first
+        val result = sut.findDuplicates(studyReviews)
+
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun `testing a lot of combination of possibilities at the same time`() {
+        val bibtex = """
+                @article{group1_original,
+                    title = {Machine Learning Applications in Healthcare},
+                    year = {2023},
+                    author = {John Smith and Maria Garcia},
+                    journal = {Journal of Medical Informatics},
+                    abstract = {This paper explores various applications of machine learning in healthcare, focusing on diagnosis and treatment optimization.},
+                    keywords = {machine learning, healthcare, diagnosis},
+                    doi = {10.1234/jmi.2023.001}
+                }
+
+                @article{group1_similar_title,
+                    title = {Machine Learning Applications in Healthcare Systems},
+                    year = {2023},
+                    author = {John Smith and Maria Garcia},
+                    journal = {Journal of Medical Informatics},
+                    abstract = {This paper explores various applications of machine learning in healthcare, focusing on diagnosis and treatment optimization.},
+                    keywords = {machine learning, healthcare, diagnosis},
+                    doi = {10.1234/jmi.2023.002}
+                }
+
+                @article{group1_similar_abstract,
+                    title = {Machine Learning Applications in Healthcare},
+                    year = {2023},
+                    author = {John Smith and Maria Garcia},
+                    journal = {Journal of Medical Informatics},
+                    abstract = {This paper explores various applications of ML in healthcare, with focus on diagnosis and treatment optimization approaches.},
+                    keywords = {machine learning, healthcare, diagnosis},
+                    doi = {10.1234/jmi.2023.003}
+                }
+
+                @article{group1_different_year,
+                    title = {Machine Learning Applications in Healthcare},
+                    year = {2022},
+                    author = {John Smith and Maria Garcia},
+                    journal = {Journal of Medical Informatics},
+                    abstract = {This paper explores various applications of machine learning in healthcare, focusing on diagnosis and treatment optimization.},
+                    keywords = {machine learning, healthcare, diagnosis},
+                    doi = {10.1234/jmi.2022.001}
+                }
+
+                @article{group1_different_authors,
+                    title = {Machine Learning Applications in Healthcare},
+                    year = {2023},
+                    author = {Robert Johnson and Sarah Williams},
+                    journal = {Journal of Medical Informatics},
+                    abstract = {This paper explores various applications of machine learning in healthcare, focusing on diagnosis and treatment optimization.},
+                    keywords = {machine learning, healthcare, diagnosis},
+                    doi = {10.1234/jmi.2023.004}
+                }
+
+                @article{group1_different_abstract,
+                    title = {Machine Learning Applications in Healthcare},
+                    year = {2023},
+                    author = {John Smith and Maria Garcia},
+                    journal = {Journal of Medical Informatics},
+                    abstract = {This study presents a completely different approach to healthcare analytics using statistical methods and traditional algorithms.},
+                    keywords = {machine learning, healthcare, diagnosis},
+                    doi = {10.1234/jmi.2023.005}
+                }
+
+                @article{group2_original,
+                    title = {Deep Learning for Medical Image Analysis},
+                    year = {2023},
+                    author = {Robert Johnson and Sarah Williams},
+                    journal = {Journal of Medical Imaging},
+                    abstract = {This study presents a comprehensive review of deep learning techniques applied to medical image analysis, with a focus on MRI and CT scans.},
+                    keywords = {deep learning, medical imaging, MRI},
+                    doi = {10.1234/jmi.2023.006}
+                }
+
+                @article{group2_duplicate,
+                    title = {Deep Learning for Medical Image Analysis},
+                    year = {2023},
+                    author = {Robert Johnson and Sarah Williams},
+                    journal = {Journal of Medical Imaging},
+                    abstract = {This study presents a comprehensive review of deep learning techniques applied to medical image analysis, with a focus on MRI and CT scans.},
+                    keywords = {deep learning, medical imaging, MRI},
+                    doi = {10.1234/jmi.2023.007}
+                }
+
+                @article{group2_similar_title_authors,
+                    title = {Deep Learning Approaches for Medical Image Analysis},
+                    year = {2023},
+                    author = {Robert Johnson and Sarah Williams},
+                    journal = {Journal of Medical Imaging},
+                    abstract = {A completely different abstract about something else entirely to test threshold behavior.},
+                    keywords = {deep learning, medical imaging, MRI},
+                    doi = {10.1234/jmi.2023.008}
+                }
+
+                @article{group3_no_abstract1,
+                    title = {Natural Language Processing in Clinical Settings},
+                    year = {2023},
+                    author = {David Brown and Lisa Chen},
+                    journal = {Journal of Clinical Informatics},
+                    keywords = {NLP, clinical informatics, patient care},
+                    doi = {10.1234/jci.2023.001}
+                }
+
+                @article{group3_no_abstract2,
+                    title = {Natural Language Processing in Clinical Settings},
+                    year = {2023},
+                    author = {David Brown and Lisa Chen},
+                    journal = {Journal of Clinical Informatics},
+                    keywords = {NLP, clinical informatics, patient care},
+                    doi = {10.1234/jci.2023.002}
+                }
+
+                @article{unique1,
+                    title = {Blockchain Applications in Healthcare Data Management},
+                    year = {2023},
+                    author = {Michael Lee and Jennifer Wang},
+                    journal = {Journal of Health Informatics},
+                    abstract = {This paper discusses the potential of blockchain technology for secure and efficient healthcare data management.},
+                    keywords = {blockchain, healthcare, data management},
+                    doi = {10.1234/jhi.2023.001}
+                }
+
+                @article{unique2,
+                    title = {Internet of Things in Remote Patient Monitoring},
+                    year = {2023},
+                    author = {Thomas Wilson and Emily Davis},
+                    journal = {Journal of Telemedicine},
+                    abstract = {This research explores the applications of IoT devices in remote patient monitoring systems.},
+                    keywords = {IoT, remote monitoring, telemedicine},
+                    doi = {10.1234/jt.2023.001}
+                }
+            """
+        val studyReviews = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source).first
+        val result = sut.findDuplicates(studyReviews)
+
+        /*
+            GROUP 1: Original should match with similar title
+         */
+        assertTrue(result.containsKey(studyReviews[0]))
+        assertEquals(1, result[studyReviews[0]]!!.size)
+        assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1])) // similar title
+
+        // Kinda different abstract should not be detected as duplicate, though It can be changed by the threshold
+        assertFalse(result[studyReviews[0]]!!.contains(studyReviews[2])) // similar abstract
+
+        // Different year should not be detected as duplicate
+        assertFalse(result[studyReviews[0]]!!.contains(studyReviews[3]))
+
+        // Different authors should not be detected as duplicate
+        assertFalse(result[studyReviews[0]]!!.contains(studyReviews[4]))
+
+        // Different abstract should not be detected as duplicate
+        assertFalse(result[studyReviews[0]]!!.contains(studyReviews[5]))
+
+        /*
+            GROUP 2: Original should match with duplicate
+         */
+        assertTrue(result.containsKey(studyReviews[6]))
+        assertEquals(1, result[studyReviews[6]]!!.size)
+        assertTrue(result[studyReviews[6]]!!.contains(studyReviews[7])) // exact duplicate
+
+        // Similar title and authors but different abstract should not be detected as duplicate
+        assertFalse(result[studyReviews[6]]!!.contains(studyReviews[8]))
+
+        /*
+        Group 3: Studies with no abstracts but identical title and authors
+         */
+        assertTrue(result.containsKey(studyReviews[9]))
+        assertEquals(1, result[studyReviews[9]]!!.size)
+        assertTrue(result[studyReviews[9]]!!.contains(studyReviews[10])) // no abstract but same title/authors
+
+        // Unique studies should not have any duplicates
+        assertFalse(result.containsKey(studyReviews[11]))
+        assertFalse(result.containsKey(studyReviews[12]))
+    }
 }
