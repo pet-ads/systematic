@@ -4,12 +4,11 @@ import br.all.domain.model.study.StudyReview
 import br.all.domain.shared.utils.normalizeText
 
 class ReviewSimilarityService(
-    private val levenshteinSimilarityCalculator: LevenshteinSimilarityCalculator
-) {
-    private val titleThreshold: Double = 0.8
-    private val abstractThreshold: Double = 0.8
+    private val levenshteinSimilarityCalculator: LevenshteinSimilarityCalculator,
+    private val titleThreshold: Double = 0.8,
+    private val abstractThreshold: Double = 0.8,
     private val authorsThreshold: Double = 0.8
-
+) {
     fun findDuplicates(studies: List<StudyReview>): Map<StudyReview, Set<StudyReview>> {
         val duplicatedReviewsMap = mutableMapOf<StudyReview, MutableSet<StudyReview>>()
         val remainingStudies = studies.toMutableList()

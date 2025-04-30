@@ -13,7 +13,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @Tag("IntegrationTest")
-class ReviewSimilarityServiceThresholdAt08IntegrationTest {
+class ReviewSimilarityServiceIntegrationTest {
     /*
         These tests were all made
         with the all the thresholds set to 0.8,
@@ -28,11 +28,14 @@ class ReviewSimilarityServiceThresholdAt08IntegrationTest {
     private val systematicStudyId = SystematicStudyId(UUID.randomUUID())
     private val searchSessionId = SearchSessionID(UUID.randomUUID())
     private val source = mutableSetOf("Test")
+    private val titleThreshold = 0.8
+    private val abstractThreshold = 0.8
+    private val authorsThreshold = 0.8
 
     @BeforeEach
     fun setup() {
         levenshteinCalculator = LevenshteinSimilarityCalculatorImpl()
-        sut = ReviewSimilarityService(levenshteinCalculator)
+        sut = ReviewSimilarityService(levenshteinCalculator, titleThreshold, abstractThreshold, authorsThreshold)
         idGeneratorService = FakeIdGeneratorService
         converter = BibtexConverterService(idGeneratorService)
     }
