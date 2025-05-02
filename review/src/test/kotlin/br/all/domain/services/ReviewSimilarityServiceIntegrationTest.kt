@@ -76,6 +76,12 @@ class ReviewSimilarityServiceIntegrationTest {
         assertTrue(result.containsKey(studyReviews[0]))
         assertEquals(1, result[studyReviews[0]]!!.size)
         assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1]))
+
+        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
+        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
+
+        assertTrue(studyReviews[0].searchSources.contains("Test"))
+        assertEquals(1, studyReviews[0].searchSources.size)
     }
 
     @Test
@@ -108,6 +114,12 @@ class ReviewSimilarityServiceIntegrationTest {
         assertTrue(result.containsKey(studyReviews[0]))
         assertEquals(1, result[studyReviews[0]]!!.size)
         assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1]))
+
+        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
+        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
+
+        assertTrue(studyReviews[0].searchSources.contains("Test"))
+        assertEquals(1, studyReviews[0].searchSources.size)
     }
 
     @Test
@@ -167,6 +179,12 @@ class ReviewSimilarityServiceIntegrationTest {
         assertTrue(result.containsKey(studyReviews[0]))
         assertEquals(1, result[studyReviews[0]]!!.size)
         assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1]))
+
+        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
+        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
+
+        assertTrue(studyReviews[0].searchSources.contains("Test"))
+        assertEquals(1, studyReviews[0].searchSources.size)
     }
 
     @Test
@@ -259,6 +277,16 @@ class ReviewSimilarityServiceIntegrationTest {
         assertEquals(1, result[studyReviews[2]]!!.size)
         assertTrue(result[studyReviews[2]]!!.contains(studyReviews[3]))
         assertFalse(result.containsKey(studyReviews[4]))
+
+        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
+        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
+        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[3].selectionStatus)
+        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[3].extractionStatus)
+
+        assertTrue(studyReviews[0].searchSources.contains("Test"))
+        assertEquals(1, studyReviews[0].searchSources.size)
+        assertTrue(studyReviews[2].searchSources.contains("Test"))
+        assertEquals(1, studyReviews[2].searchSources.size)
     }
 
     @Test
@@ -432,6 +460,14 @@ class ReviewSimilarityServiceIntegrationTest {
         assertEquals(1, result[studyReviews[0]]!!.size)
         assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1])) // similar title
 
+        // Verify duplicate is marked as duplicated
+        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
+        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
+
+        // Verify search sources are merged
+        assertTrue(studyReviews[0].searchSources.contains("Test"))
+        assertEquals(1, studyReviews[0].searchSources.size)
+
         // Kinda different abstract should not be detected as duplicate, though It can be changed by the threshold
         assertFalse(result[studyReviews[0]]!!.contains(studyReviews[2])) // similar abstract
 
@@ -451,6 +487,14 @@ class ReviewSimilarityServiceIntegrationTest {
         assertEquals(1, result[studyReviews[6]]!!.size)
         assertTrue(result[studyReviews[6]]!!.contains(studyReviews[7])) // exact duplicate
 
+        // Verify duplicate is marked as duplicated
+        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[7].selectionStatus)
+        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[7].extractionStatus)
+
+        // Verify search sources are merged
+        assertTrue(studyReviews[6].searchSources.contains("Test"))
+        assertEquals(1, studyReviews[6].searchSources.size)
+
         // Similar title and authors but different abstract should not be detected as duplicate
         assertFalse(result[studyReviews[6]]!!.contains(studyReviews[8]))
 
@@ -461,8 +505,61 @@ class ReviewSimilarityServiceIntegrationTest {
         assertEquals(1, result[studyReviews[9]]!!.size)
         assertTrue(result[studyReviews[9]]!!.contains(studyReviews[10])) // no abstract but same title/authors
 
-        // Unique studies should not have any duplicates
+        // Verify duplicate is marked as duplicated
+        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[10].selectionStatus)
+        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[10].extractionStatus)
+
+        // Verify search sources are merged
+        assertTrue(studyReviews[9].searchSources.contains("Test"))
+        assertEquals(1, studyReviews[9].searchSources.size)
+
+
         assertFalse(result.containsKey(studyReviews[11]))
         assertFalse(result.containsKey(studyReviews[12]))
+    }
+
+    @Test
+    fun `should mark duplicates as duplicated and merge search sources`() {
+        val source1 = mutableSetOf("Source1")
+        val source2 = mutableSetOf("Source2")
+
+        val bibtex = """
+                @article{original,
+                    title = {Machine Learning Applications in Healthcare},
+                    year = {2023},
+                    author = {John Smith and Maria Garcia},
+                    journal = {Journal of Medical Informatics},
+                    abstract = {This paper explores various applications of machine learning in healthcare, focusing on diagnosis and treatment optimization.},
+                    keywords = {machine learning, healthcare, diagnosis},
+                    doi = {10.1234/jmi.2023.001}
+                }
+
+                @article{duplicate,
+                    title = {Machine Learning Applications in Healthcare},
+                    year = {2023},
+                    author = {John Smith and Maria Garcia},
+                    journal = {Journal of Medical Informatics},
+                    abstract = {This paper explores various applications of machine learning in healthcare, focusing on diagnosis and treatment optimization.},
+                    keywords = {machine learning, healthcare, diagnosis},
+                    doi = {10.1234/jmi.2023.001}
+                }
+            """
+
+        val study1 = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source1).first[0]
+        val study2 = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source2).first[1]
+
+        val result = sut.findDuplicates(listOf(study1, study2))
+
+        assertEquals(1, result.size)
+        assertTrue(result.containsKey(study1))
+        assertEquals(1, result[study1]!!.size)
+        assertTrue(result[study1]!!.contains(study2))
+
+        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, study2.selectionStatus)
+        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, study2.extractionStatus)
+
+        assertTrue(study1.searchSources.contains("Source1"))
+        assertTrue(study1.searchSources.contains("Source2"))
+        assertEquals(2, study1.searchSources.size)
     }
 }
