@@ -18,12 +18,12 @@ class RestfulFindStudiesByStagePresenter(
         val restfulResponse = ViewModel(
             response.userId,
             response.systematicStudyId,
+            response.stage,
             response.includedStudies,
             response.excludedStudies,
             response.unclassifiedStudies,
             response.duplicatedStudies,
-            response.totalAmount,
-            response.stage
+            response.totalAmount
         )
 
         val selfRef = linksFactory.findStudiesByStage(response.systematicStudyId, response.stage)
@@ -39,11 +39,11 @@ class RestfulFindStudiesByStagePresenter(
     data class ViewModel(
         val userId: UUID,
         val systematicStudyId: UUID,
+        val stage: String,
         val includedStudies: List<Long>,
         val excludedStudies: List<Long>,
         val unclassifiedStudies: List<Long>,
         val duplicatedStudies: List<Long>,
         val totalAmount: Int,
-        val stage: String
     ): RepresentationModel<ViewModel>()
 }
