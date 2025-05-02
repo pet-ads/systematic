@@ -34,6 +34,10 @@ class ReviewSimilarityService(
             }
         }
 
+        duplicatedReviewsMap.forEach { (review, duplicates) ->
+            review.markAsDuplicated(duplicates.toList())
+        }
+
         return duplicatedReviewsMap
     }
 
