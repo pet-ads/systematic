@@ -14,12 +14,12 @@ interface FindStudiesByStageService {
 
     data class ResponseModel(
         val userId: UUID,
+        val stage: String,
         val systematicStudyId: UUID,
         val includedStudies: List<Long>,
         val excludedStudies: List<Long>,
         val unclassifiedStudies: List<Long>,
         val duplicatedStudies: List<Long>,
         val totalAmount: Int,
-        val stage: String
     )
 }
