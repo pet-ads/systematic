@@ -103,6 +103,8 @@ class ReportControllerTest(
         "/api/v1/systematic-study/$systematicStudy/report/exportable-protocol/$type?downloadable=false"
     private fun authorNetworkUrl(systematicStudy: UUID = this.systematicStudy.id) =
         "/api/v1/systematic-study/$systematicStudy/report/author-network"
+    private fun findStudiesByStageUrl(systematicStudy: UUID = this.systematicStudy.id, stage: String) =
+        "/api/v1/systematic-study/$systematicStudy/report/studies/$stage"
 
     @Nested
     @DisplayName("When searching answers of questions")
@@ -345,6 +347,118 @@ class ReportControllerTest(
                     .andReturn()
 
                 println(r.response.contentAsString)
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("When finding studies by stage")
+    inner class WhenFindingStudiesByStage {
+        @Nested
+        @DisplayName("And having success")
+        inner class AndHavingSuccess {
+            @Test
+            fun `should return 200 and find studies by selection stage`() {
+                val includedStudy = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 11111,
+                    selectionStatus = "INCLUDED"
+                )
+                val includedStudy2 = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 21111,
+                    selectionStatus = "INCLUDED"
+                )
+                val excludedStudy = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 22222,
+                    selectionStatus = "EXCLUDED"
+                )
+                val unclassifiedStudy = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 33333,
+                    selectionStatus = "UNCLASSIFIED"
+                )
+                val duplicatedStudy = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 44444,
+                    selectionStatus = "DUPLICATED"
+                )
+
+                studyReviewRepository.saveAll(listOf(includedStudy, includedStudy2, excludedStudy, unclassifiedStudy, duplicatedStudy))
+
+                val result = mockMvc.perform(
+                    get(findStudiesByStageUrl(stage = "selection"))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isOk)
+                    .andReturn()
+
+                println(result.response.contentAsString)
+            }
+
+            @Test
+            fun `should return 200 and find studies by extraction stage`() {
+                val includedStudy = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 55555,
+                    extractionStatus = "INCLUDED"
+                )
+                val excludedStudy = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 66666,
+                    extractionStatus = "EXCLUDED"
+                )
+                val unclassifiedStudy = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 77777,
+                    extractionStatus = "UNCLASSIFIED"
+                )
+                val duplicatedStudy = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 88888,
+                    extractionStatus = "DUPLICATED"
+                )
+
+                studyReviewRepository.saveAll(listOf(includedStudy, excludedStudy, unclassifiedStudy, duplicatedStudy))
+
+                val result = mockMvc.perform(
+                    get(findStudiesByStageUrl(stage = "extraction"))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isOk)
+                    .andReturn()
+
+                println(result.response.contentAsString)
+            }
+        }
+
+        @Nested
+        @DisplayName("And having failure")
+        inner class AndHavingFailure {
+            @Test
+            fun `should return 400 when stage is invalid`() {
+                mockMvc.perform(
+                    get(findStudiesByStageUrl(stage = "invalid_stage"))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isBadRequest)
+            }
+
+            @Test
+            fun `should not allow unauthenticated user to find studies by stage`() {
+                testHelperService.testForUnauthenticatedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(findStudiesByStageUrl(stage = "selection"))
+                )
+            }
+
+            @Test
+            fun `should not allow unauthorized users to find studies by stage`() {
+                testHelperService.testForUnauthorizedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(findStudiesByStageUrl(stage = "selection"))
+                )
             }
         }
     }
