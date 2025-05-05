@@ -32,70 +32,45 @@ class FindStudiesByStageServiceImpl(
 
         val allStudies = studyReviewRepository.findAllFromReview(request.systematicStudyId)
 
-        val response = when (request.stage) {
-            "selection" -> selectionStageResponse(allStudies, request)
-            "extraction" -> extractionStageResponse(allStudies, request)
-            else -> throw IllegalArgumentException(request.stage)
-        }
+        val response = createResponse(allStudies, request)
 
         presenter.prepareSuccessView(response)
     }
 
-    private fun selectionStageResponse(allStudies: List<StudyReviewDto>, request: FindStudiesByStageService.RequestModel): FindStudiesByStageService.ResponseModel {
-        val includedStudies = mutableListOf<Long>()
-        val excludedStudies = mutableListOf<Long>()
-        val unclassifiedStudies = mutableListOf<Long>()
-        val duplicatedStudies = mutableListOf<Long>()
+    private fun createResponse(allStudies: List<StudyReviewDto>, request: FindStudiesByStageService.RequestModel): FindStudiesByStageService.ResponseModel {
+        val includedStudiesIds = mutableListOf<Long>()
+        val excludedStudiesIds = mutableListOf<Long>()
+        val unclassifiedStudiesIds = mutableListOf<Long>()
+        val duplicatedStudiesIds = mutableListOf<Long>()
 
         for (study in allStudies) {
-            when (study.selectionStatus) {
-                SelectionStatus.INCLUDED.name -> includedStudies.add(study.studyReviewId)
-                SelectionStatus.EXCLUDED.name -> excludedStudies.add(study.studyReviewId)
-                SelectionStatus.UNCLASSIFIED.name -> unclassifiedStudies.add(study.studyReviewId)
-                SelectionStatus.DUPLICATED.name -> duplicatedStudies.add(study.studyReviewId)
+            if (request.stage == "selection") {
+                when (study.selectionStatus) {
+                    SelectionStatus.INCLUDED.name -> includedStudiesIds.add(study.studyReviewId)
+                    SelectionStatus.EXCLUDED.name -> excludedStudiesIds.add(study.studyReviewId)
+                    SelectionStatus.UNCLASSIFIED.name -> unclassifiedStudiesIds.add(study.studyReviewId)
+                    SelectionStatus.DUPLICATED.name -> duplicatedStudiesIds.add(study.studyReviewId)
+                }
+            }
+
+            if (request.stage == "extraction") {
+                when (study.extractionStatus) {
+                    ExtractionStatus.INCLUDED.name -> includedStudiesIds.add(study.studyReviewId)
+                    ExtractionStatus.EXCLUDED.name -> excludedStudiesIds.add(study.studyReviewId)
+                    ExtractionStatus.UNCLASSIFIED.name -> unclassifiedStudiesIds.add(study.studyReviewId)
+                    ExtractionStatus.DUPLICATED.name -> duplicatedStudiesIds.add(study.studyReviewId)
+                }
             }
         }
-
-        val totalAmount = includedStudies.size + excludedStudies.size + unclassifiedStudies.size + duplicatedStudies.size
 
         return FindStudiesByStageService.ResponseModel(
             userId = request.userId,
             systematicStudyId = request.systematicStudyId,
             stage = request.stage,
-            includedStudies = includedStudies,
-            excludedStudies = excludedStudies,
-            unclassifiedStudies = unclassifiedStudies,
-            duplicatedStudies = duplicatedStudies,
-            totalAmount = totalAmount,
-        )
-    }
-
-    private fun extractionStageResponse(allStudies: List<StudyReviewDto>, request: FindStudiesByStageService.RequestModel): FindStudiesByStageService.ResponseModel {
-        val includedStudies = mutableListOf<Long>()
-        val excludedStudies = mutableListOf<Long>()
-        val unclassifiedStudies = mutableListOf<Long>()
-        val duplicatedStudies = mutableListOf<Long>()
-
-        for (study in allStudies) {
-            when (study.extractionStatus) {
-                ExtractionStatus.INCLUDED.name -> includedStudies.add(study.studyReviewId)
-                ExtractionStatus.EXCLUDED.name -> excludedStudies.add(study.studyReviewId)
-                ExtractionStatus.UNCLASSIFIED.name -> unclassifiedStudies.add(study.studyReviewId)
-                ExtractionStatus.DUPLICATED.name -> duplicatedStudies.add(study.studyReviewId)
-            }
-        }
-
-        val totalAmount = includedStudies.size + excludedStudies.size + unclassifiedStudies.size + duplicatedStudies.size
-
-        return FindStudiesByStageService.ResponseModel(
-            userId = request.userId,
-            systematicStudyId = request.systematicStudyId,
-            stage = request.stage,
-            includedStudies = includedStudies,
-            excludedStudies = excludedStudies,
-            unclassifiedStudies = unclassifiedStudies,
-            duplicatedStudies = duplicatedStudies,
-            totalAmount = totalAmount,
+            includedStudies = FindStudiesByStageService.StudiesIdAmount(includedStudiesIds, includedStudiesIds.size),
+            excludedStudies = FindStudiesByStageService.StudiesIdAmount(excludedStudiesIds, excludedStudiesIds.size),
+            unclassifiedStudies = FindStudiesByStageService.StudiesIdAmount(unclassifiedStudiesIds, unclassifiedStudiesIds.size),
+            duplicatedStudies = FindStudiesByStageService.StudiesIdAmount(duplicatedStudiesIds, duplicatedStudiesIds.size)
         )
     }
 }
