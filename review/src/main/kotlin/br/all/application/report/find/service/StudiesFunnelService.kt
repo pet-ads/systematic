@@ -14,10 +14,14 @@ interface StudiesFunnelService {
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val totalStudies: Int,
-        val totalAfterDuplicates: Int,
-        val totalOfExcludedStudies: Int,
-        val totalExcludedInExtraction: Int,
+        val totalIdentifiedBySource: Map<String, Int>,                             // Total de estudos encontrados fazer por source
+        val totalAfterDuplicatesRemovedBySource: Map<String, Int>,                 // Após remover duplicados fazer por source
+        val totalScreened: Int,                                                    // Total analisado na selection
+        val totalExcludedInScreening: Int,                                         // Excluídos na selection
+        val excludedByCriterion: Map<String, Int>,
+        val totalFullTextAssessed: Int,                                            // Avaliados por texto completo
+        val totalExcludedInFullText: Int,                                          // Excluídos após leitura completa (extraction)
+        val totalExcludedByCriterion: Map<String, Int>,                            // Excluídos por critério
         val totalIncluded: Int
     )
 }

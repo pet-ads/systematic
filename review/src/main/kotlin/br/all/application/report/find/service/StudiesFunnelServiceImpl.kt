@@ -15,12 +15,29 @@ class StudiesFunnelServiceImpl(
         val response = StudiesFunnelService.ResponseModel(
             userId = UUID.randomUUID(),
             systematicStudyId = UUID.randomUUID(),
-            totalStudies = 10,
-            totalAfterDuplicates = 8,
-            totalOfExcludedStudies = 6,
-            totalExcludedInExtraction = 1,
-            totalIncluded = 1
+            totalIdentifiedBySource = mapOf(
+                "PubMed" to 6,
+                "IEEE Xplore" to 4
+            ),
+            totalAfterDuplicatesRemovedBySource = mapOf(
+                "PubMed" to 5,
+                "IEEE Xplore" to 3
+            ),
+            totalScreened = 8,
+            totalExcludedInScreening = 4,
+            excludedByCriterion = mapOf(
+                "Título irrelevante" to 2,
+                "Resumo inadequado" to 2
+            ),
+            totalFullTextAssessed = 4,
+            totalExcludedInFullText = 2,
+            totalExcludedByCriterion = mapOf(
+                "Critério de qualidade" to 1,
+                "Escopo incorreto" to 1
+            ),
+            totalIncluded = 2
         )
+
 
         presenter.prepareSuccessView(response)
     }

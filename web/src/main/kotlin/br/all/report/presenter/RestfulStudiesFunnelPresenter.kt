@@ -16,13 +16,17 @@ class RestfulStudiesFunnelPresenter(
 
     override fun prepareSuccessView(response: StudiesFunnelService.ResponseModel) {
         val restfulResponse = ViewModel(
-            response.userId,
-            response.systematicStudyId,
-            response.totalStudies,
-            response.totalAfterDuplicates,
-            response.totalOfExcludedStudies,
-            response.totalExcludedInExtraction,
-            response.totalIncluded
+            userId = response.userId,
+            systematicStudyId = response.systematicStudyId,
+            totalIdentifiedBySource = response.totalIdentifiedBySource,
+            totalAfterDuplicatesRemovedBySource = response.totalAfterDuplicatesRemovedBySource,
+            totalScreened = response.totalScreened,
+            totalExcludedInScreening = response.totalExcludedInScreening,
+            excludedByCriterion = response.excludedByCriterion,
+            totalFullTextAssessed = response.totalFullTextAssessed,
+            totalExcludedInFullText = response.totalExcludedInFullText,
+            totalExcludedByCriterion = response.totalExcludedByCriterion,
+            totalIncluded = response.totalIncluded
         )
 
         val selfRef = linksFactory.studiesFunnel(response.systematicStudyId)
@@ -38,10 +42,14 @@ class RestfulStudiesFunnelPresenter(
     data class ViewModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val totalStudies: Int,
-        val totalAfterDuplicates: Int,
-        val totalOfExcludedStudies: Int,
-        val totalExcludedInExtraction: Int,
+        val totalIdentifiedBySource: Map<String, Int>,
+        val totalAfterDuplicatesRemovedBySource: Map<String, Int>,
+        val totalScreened: Int,
+        val totalExcludedInScreening: Int,
+        val excludedByCriterion: Map<String, Int>,
+        val totalFullTextAssessed: Int,
+        val totalExcludedInFullText: Int,
+        val totalExcludedByCriterion: Map<String, Int>,
         val totalIncluded: Int
-    ): RepresentationModel<ViewModel>()
+    ) : RepresentationModel<ViewModel>()
 }
