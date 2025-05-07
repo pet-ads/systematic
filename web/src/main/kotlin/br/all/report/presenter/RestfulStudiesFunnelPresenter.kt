@@ -32,7 +32,7 @@ class RestfulStudiesFunnelPresenter(
         val selfRef = linksFactory.studiesFunnel(response.systematicStudyId)
 
         restfulResponse.add(selfRef)
-        responseEntity = ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).body(restfulResponse)
+        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
