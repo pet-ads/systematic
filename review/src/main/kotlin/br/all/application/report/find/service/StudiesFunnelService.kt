@@ -14,14 +14,14 @@ interface StudiesFunnelService {
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val totalIdentifiedBySource: Map<String, Int>,                             // Total de estudos encontrados fazer por source
-        val totalAfterDuplicatesRemovedBySource: Map<String, Int>,                 // Após remover duplicados fazer por source
+        val totalIdentifiedBySource: Map<String, Int>,                             // Total de estudos encontrados, fazer por source
+        val totalAfterDuplicatesRemovedBySource: Map<String, Int>,                 // Remover os duplicados do total, e depois, fazer por source
         val totalScreened: Int,                                                    // Total analisado na selection
-        val totalExcludedInScreening: Int,                                         // Excluídos na selection
-        val excludedByCriterion: Map<String, Int>,
-        val totalFullTextAssessed: Int,                                            // Avaliados por texto completo
-        val totalExcludedInFullText: Int,                                          // Excluídos após leitura completa (extraction)
-        val totalExcludedByCriterion: Map<String, Int>,                            // Excluídos por critério
-        val totalIncluded: Int
+        val totalExcludedInScreening: Int,                                         // Total excluídos na selection
+        val excludedByCriterion: Map<String, Int>,                                 // Dos excluídos na selection, fazer por criteria
+        val totalFullTextAssessed: Int,                                            // Total analisados na extraction (passou da selection)
+        val totalExcludedInFullText: Int,                                          // Total excluídos na extraction
+        val totalExcludedByCriterion: Map<String, Int>,                            // Dos excluídos na extraction, fazer por criteria
+        val totalIncluded: Int                                                     // Total incluído (passou na selection e extraction)
     )
 }
