@@ -105,6 +105,8 @@ class ReportControllerTest(
         "/api/v1/systematic-study/$systematicStudy/report/author-network"
     private fun findStudiesByStageUrl(systematicStudy: UUID = this.systematicStudy.id, stage: String) =
         "/api/v1/systematic-study/$systematicStudy/report/studies/$stage"
+    private fun studiesFunnelUrl(systematicStudy: UUID = this.systematicStudy.id) =
+        "/api/v1/systematic-study/$systematicStudy/report/studies-funnel"
 
     @Nested
     @DisplayName("When searching answers of questions")
@@ -458,6 +460,77 @@ class ReportControllerTest(
                 testHelperService.testForUnauthorizedUser(
                     mockMvc = mockMvc,
                     requestBuilder = get(findStudiesByStageUrl(stage = "selection"))
+                )
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("When getting studies funnel")
+    inner class WhenGettingStudiesFunnel {
+        @Nested
+        @DisplayName("And having success")
+        inner class AndHavingSuccess {
+            @Test
+            fun `should return 200 and get studies funnel data`() {
+                val includedStudy = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 11111,
+                    selectionStatus = "INCLUDED",
+                    extractionStatus = "INCLUDED",
+                    sources = setOf("Scopus", "IEEE")
+                )
+                val excludedInSelectionStudy = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 22222,
+                    selectionStatus = "EXCLUDED",
+                    criteria = setOf("Criterion 1", "Criterion 2"),
+                    sources = setOf("ACM")
+                )
+                val excludedInExtractionStudy = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 33333,
+                    selectionStatus = "INCLUDED",
+                    extractionStatus = "EXCLUDED",
+                    criteria = setOf("Criterion 3"),
+                    sources = setOf("Scopus")
+                )
+                val duplicatedStudy = studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = 44444,
+                    selectionStatus = "DUPLICATED",
+                    sources = setOf("IEEE")
+                )
+
+                studyReviewRepository.saveAll(listOf(includedStudy, excludedInSelectionStudy, excludedInExtractionStudy, duplicatedStudy))
+
+                val result = mockMvc.perform(
+                    get(studiesFunnelUrl())
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isOk)
+                    .andReturn()
+
+                println(result.response.contentAsString)
+            }
+        }
+
+        @Nested
+        @DisplayName("And having failure")
+        inner class AndHavingFailure {
+            @Test
+            fun `should not allow unauthenticated user to get studies funnel`() {
+                testHelperService.testForUnauthenticatedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(studiesFunnelUrl())
+                )
+            }
+
+            @Test
+            fun `should not allow unauthorized users to get studies funnel`() {
+                testHelperService.testForUnauthorizedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(studiesFunnelUrl())
                 )
             }
         }
