@@ -10,7 +10,6 @@ import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.study.ExtractionStatus
 import br.all.domain.model.study.SelectionStatus
-import java.util.UUID
 
 class StudiesFunnelServiceImpl(
     private val credentialsService: CredentialsService,
