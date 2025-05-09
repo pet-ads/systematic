@@ -24,7 +24,8 @@ class PatchSearchSessionServiceImpl (
     private val credentialsService: CredentialsService,
     private val studyReviewRepository: StudyReviewRepository,
     private val converterFactoryService: ConverterFactoryService,
-    private val protocolRepository: ProtocolRepository
+    private val protocolRepository: ProtocolRepository,
+    private val scoreCalculatorService: ScoreCalculatorService
 ) : PatchSearchSessionService {
     override fun patchSession(
         presenter: PatchSearchSessionPresenter,
@@ -43,7 +44,11 @@ class PatchSearchSessionServiceImpl (
 
         if (searchSessionDto != null) {
             val protocolDto = protocolRepository.findById(request.systematicStudyId)
-            val scoreCalculatorService = ScoreCalculatorService(protocolDto?.keywords)
+
+            if (protocolDto == null) {
+                presenter.prepareFailView(NoSuchElementException("Protocol ${request.systematicStudyId} not found"))
+                return
+            }
 
             val (studyReviews, invalidEntries) = converterFactoryService.extractReferences(
                 systematicStudyId = request.systematicStudyId.toSystematicStudyId(),
@@ -52,12 +57,12 @@ class PatchSearchSessionServiceImpl (
                 source = mutableSetOf()
             )
 
-            val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews)
+            val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocolDto.keywords)
 
             val existingStudyReviewDtos = studyReviewRepository.findAllBySession(request.systematicStudyId, request.sessionId)
 
             val existingStudyReviews = existingStudyReviewDtos.map { StudyReview.fromDto(it) }
-            val scoredExistingStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(existingStudyReviews)
+            val scoredExistingStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(existingStudyReviews, protocolDto.keywords)
             val updatedExistingDtos = scoredExistingStudyReviews.map { it.toDto() }
 
             val studies = studyReviews.size
