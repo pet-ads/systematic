@@ -2,9 +2,7 @@ package br.all.domain.services
 
 import br.all.domain.model.study.StudyReview
 import br.all.domain.shared.utils.normalizeText
-import org.springframework.stereotype.Service
 
-@Service
 class ScoreCalculatorService {
     private fun calculateScore(title: String, abstract: String?, authorsKeywords: Set<String>, protocolKeywords: Set<String>): Int {
         var score = 0
