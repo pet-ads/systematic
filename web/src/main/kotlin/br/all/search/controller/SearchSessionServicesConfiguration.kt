@@ -32,6 +32,9 @@ class SearchSessionServicesConfiguration {
     )
 
     @Bean
+    fun scoreCalculatorService() = ScoreCalculatorService()
+
+    @Bean
     fun patchSearchSessionService(
         systematicStudyRepository: SystematicStudyRepository,
         searchSessionRepository: SearchSessionRepository,
