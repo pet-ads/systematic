@@ -23,10 +23,12 @@ class ScoreCalculatorServiceIntegrationTest {
     @BeforeEach
     fun setup() {
         val protocolKeywords = setOf("dengue", "mosquito", "países tropicais")
-        sut = ScoreCalculatorService(protocolKeywords)
+        sut = ScoreCalculatorService()
         idGeneratorService = FakeIdGeneratorService
         bibtexConverterService = BibtexConverterService(idGeneratorService)
     }
+
+    private val protocolKeywords = setOf("dengue", "mosquito", "países tropicais")
 
     @AfterEach
     fun teardown() {
@@ -48,7 +50,7 @@ class ScoreCalculatorServiceIntegrationTest {
             }
         """
         val studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source)
-        val result = sut.applyScoreToManyStudyReviews(studyReviews.first).first()
+        val result = sut.applyScoreToManyStudyReviews(studyReviews.first, protocolKeywords).first()
 
         assertEquals(25, result.score)
     }
@@ -67,7 +69,7 @@ class ScoreCalculatorServiceIntegrationTest {
             }
         """
         val studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source)
-        val result = sut.applyScoreToManyStudyReviews(studyReviews.first).first()
+        val result = sut.applyScoreToManyStudyReviews(studyReviews.first, protocolKeywords).first()
         assertEquals(0, result.score)
     }
 
@@ -85,7 +87,7 @@ class ScoreCalculatorServiceIntegrationTest {
             }
         """
         val studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source)
-        val result = sut.applyScoreToManyStudyReviews(studyReviews.first).first()
+        val result = sut.applyScoreToManyStudyReviews(studyReviews.first, protocolKeywords).first()
         assertEquals(10, result.score)
     }
 
@@ -102,7 +104,7 @@ class ScoreCalculatorServiceIntegrationTest {
             }
         """
         val studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source)
-        val result = sut.applyScoreToManyStudyReviews(studyReviews.first).first()
+        val result = sut.applyScoreToManyStudyReviews(studyReviews.first, protocolKeywords).first()
         assertEquals(16, result.score)
     }
 
@@ -140,7 +142,7 @@ class ScoreCalculatorServiceIntegrationTest {
             }
         """
         val studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source)
-        val results = sut.applyScoreToManyStudyReviews(studyReviews.first)
+        val results = sut.applyScoreToManyStudyReviews(studyReviews.first, protocolKeywords)
         assertAll(
             { assertEquals(3, results.size) },
             { assertEquals(25, results[0].score) },
@@ -164,7 +166,7 @@ class ScoreCalculatorServiceIntegrationTest {
         """
 
         val studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source)
-        val result = sut.applyScoreToManyStudyReviews(studyReviews.first).first()
+        val result = sut.applyScoreToManyStudyReviews(studyReviews.first, protocolKeywords).first()
 
         assertEquals(29, result.score)
     }
@@ -184,7 +186,7 @@ class ScoreCalculatorServiceIntegrationTest {
         """
 
         val studyReviews = bibtexConverterService.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source)
-        val result = sut.applyScoreToManyStudyReviews(studyReviews.first).first()
+        val result = sut.applyScoreToManyStudyReviews(studyReviews.first, protocolKeywords).first()
 
         assertEquals(41, result.score)
     }
