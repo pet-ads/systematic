@@ -39,13 +39,15 @@ class SearchSessionServicesConfiguration {
         studyReviewRepository: StudyReviewRepository,
         converterFactoryService: ConverterFactoryService,
         protocolRepository: ProtocolRepository,
+        scoreCalculatorService: ScoreCalculatorService
     ) = PatchSearchSessionServiceImpl(
         systematicStudyRepository,
         searchSessionRepository,
         credentialsService,
         studyReviewRepository,
         converterFactoryService,
-        protocolRepository
+        protocolRepository,
+        scoreCalculatorService
     )
 
     @Bean
@@ -56,7 +58,8 @@ class SearchSessionServicesConfiguration {
         uuidGeneratorService: UuidGeneratorService,
         converterFactoryService: ConverterFactoryService,
         studyReviewRepository: StudyReviewRepository,
-        credentialsService: CredentialsService
+        credentialsService: CredentialsService,
+        scoreCalculatorService: ScoreCalculatorService,
     ) = CreateSearchSessionServiceImpl(
         searchSessionRepository,
         systematicStudyRepository,
@@ -64,7 +67,8 @@ class SearchSessionServicesConfiguration {
         uuidGeneratorService,
         converterFactoryService,
         studyReviewRepository,
-        credentialsService
+        credentialsService,
+        scoreCalculatorService
     )
 
     @Bean
