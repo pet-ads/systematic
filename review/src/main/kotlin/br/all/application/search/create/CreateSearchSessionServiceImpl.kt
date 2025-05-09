@@ -28,6 +28,7 @@ class CreateSearchSessionServiceImpl(
     private val converterFactoryService: ConverterFactoryService,
     private val studyReviewRepository: StudyReviewRepository,
     private val credentialsService: CredentialsService,
+    private val scoreCalculatorService: ScoreCalculatorService
 ) : CreateSearchSessionService {
 
 
@@ -60,7 +61,6 @@ class CreateSearchSessionServiceImpl(
             return
         }
 
-        val scoreCalculatorService = ScoreCalculatorService(protocolDto.keywords)
         val sessionId = SearchSessionID(uuidGeneratorService.next())
         val searchSession = SearchSession.fromRequestModel(sessionId, request)
 
@@ -71,7 +71,7 @@ class CreateSearchSessionServiceImpl(
             mutableSetOf(source)
         )
 
-        val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews)
+        val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocolDto.keywords)
         studyReviewRepository.saveOrUpdateBatch(scoredStudyReviews.map { it.toDto() })
 
         val numberOfRelatedStudies = studyReviews.size
