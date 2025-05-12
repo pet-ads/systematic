@@ -16,6 +16,7 @@ import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.model.search.toSearchSessionID
 import br.all.domain.model.study.StudyReview
 import br.all.domain.services.ConverterFactoryService
+import br.all.domain.services.ReviewSimilarityService
 import br.all.domain.services.ScoreCalculatorService
 
 class PatchSearchSessionServiceImpl (
@@ -25,7 +26,8 @@ class PatchSearchSessionServiceImpl (
     private val studyReviewRepository: StudyReviewRepository,
     private val converterFactoryService: ConverterFactoryService,
     private val protocolRepository: ProtocolRepository,
-    private val scoreCalculatorService: ScoreCalculatorService
+    private val scoreCalculatorService: ScoreCalculatorService,
+    private val reviewSimilarityService: ReviewSimilarityService
 ) : PatchSearchSessionService {
     override fun patchSession(
         presenter: PatchSearchSessionPresenter,
@@ -63,6 +65,9 @@ class PatchSearchSessionServiceImpl (
 
             val existingStudyReviews = existingStudyReviewDtos.map { StudyReview.fromDto(it) }
             val scoredExistingStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(existingStudyReviews, protocolDto.keywords)
+
+            reviewSimilarityService.findDuplicates(scoredStudyReviews, scoredExistingStudyReviews)
+
             val updatedExistingDtos = scoredExistingStudyReviews.map { it.toDto() }
 
             val studies = studyReviews.size
