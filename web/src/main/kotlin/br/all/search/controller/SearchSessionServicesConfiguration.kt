@@ -13,6 +13,7 @@ import br.all.application.search.update.UpdateSearchSessionServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.services.*
+import br.all.infrastructure.similarity.LevenshteinSimilarityCalculatorImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -35,6 +36,9 @@ class SearchSessionServicesConfiguration {
     fun scoreCalculatorService() = ScoreCalculatorService()
 
     @Bean
+    fun reviewSimilarityService() = ReviewSimilarityService(LevenshteinSimilarityCalculatorImpl())
+
+    @Bean
     fun patchSearchSessionService(
         systematicStudyRepository: SystematicStudyRepository,
         searchSessionRepository: SearchSessionRepository,
@@ -42,7 +46,8 @@ class SearchSessionServicesConfiguration {
         studyReviewRepository: StudyReviewRepository,
         converterFactoryService: ConverterFactoryService,
         protocolRepository: ProtocolRepository,
-        scoreCalculatorService: ScoreCalculatorService
+        scoreCalculatorService: ScoreCalculatorService,
+        reviewSimilarityService: ReviewSimilarityService,
     ) = PatchSearchSessionServiceImpl(
         systematicStudyRepository,
         searchSessionRepository,
@@ -50,7 +55,8 @@ class SearchSessionServicesConfiguration {
         studyReviewRepository,
         converterFactoryService,
         protocolRepository,
-        scoreCalculatorService
+        scoreCalculatorService,
+        reviewSimilarityService
     )
 
     @Bean
@@ -63,6 +69,7 @@ class SearchSessionServicesConfiguration {
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService,
         scoreCalculatorService: ScoreCalculatorService,
+        reviewSimilarityService: ReviewSimilarityService
     ) = CreateSearchSessionServiceImpl(
         searchSessionRepository,
         systematicStudyRepository,
@@ -71,7 +78,8 @@ class SearchSessionServicesConfiguration {
         converterFactoryService,
         studyReviewRepository,
         credentialsService,
-        scoreCalculatorService
+        scoreCalculatorService,
+        reviewSimilarityService
     )
 
     @Bean
