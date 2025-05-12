@@ -9,9 +9,10 @@ class ReviewSimilarityService(
     private val abstractThreshold: Double = 0.8,
     private val authorsThreshold: Double = 0.8
 ) {
-    fun findDuplicates(studies: List<StudyReview>): Map<StudyReview, Set<StudyReview>> {
+    fun findDuplicates(newStudies: List<StudyReview>, oldStudies: List<StudyReview>): Map<StudyReview, Set<StudyReview>> {
         val duplicatedReviewsMap = mutableMapOf<StudyReview, MutableSet<StudyReview>>()
-        val remainingStudies = studies.toMutableList()
+        val remainingStudies = newStudies.toMutableList()
+        remainingStudies.addAll(oldStudies)
 
         while (remainingStudies.isNotEmpty()) {
             remainingStudies.removeFirst().let { a ->
