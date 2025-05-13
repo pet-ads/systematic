@@ -18,6 +18,8 @@ import br.all.domain.model.study.StudyReview
 import br.all.domain.services.ConverterFactoryService
 import br.all.domain.services.ReviewSimilarityService
 import br.all.domain.services.ScoreCalculatorService
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 class PatchSearchSessionServiceImpl (
     private val systematicStudyRepository: SystematicStudyRepository,
@@ -59,23 +61,23 @@ class PatchSearchSessionServiceImpl (
                 source = mutableSetOf()
             )
 
-            val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocolDto.keywords)
+            val existingStudyReviews = studyReviewRepository.findAllBySession(request.systematicStudyId, request.sessionId)
+                .map { StudyReview.fromDto(it) }
 
-            val existingStudyReviewDtos = studyReviewRepository.findAllBySession(request.systematicStudyId, request.sessionId)
-
-            val existingStudyReviews = existingStudyReviewDtos.map { StudyReview.fromDto(it) }
+            val scoredNewStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocolDto.keywords)
             val scoredExistingStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(existingStudyReviews, protocolDto.keywords)
 
-            reviewSimilarityService.findDuplicates(scoredStudyReviews, scoredExistingStudyReviews)
+            val duplicatedAnalysedReviews = reviewSimilarityService.findDuplicates(scoredNewStudyReviews, scoredExistingStudyReviews)
 
-            val updatedExistingDtos = scoredExistingStudyReviews.map { it.toDto() }
+            val toSaveReviews = duplicatedAnalysedReviews
+                .flatMap { (key, value) -> listOf(key) + value }
+                .toList()
 
             val studies = studyReviews.size
             searchSessionDto.numberOfRelatedStudies += studies
             searchSessionRepository.saveOrUpdate(searchSessionDto)
 
-            studyReviewRepository.saveOrUpdateBatch(scoredStudyReviews.map { it.toDto() })
-            studyReviewRepository.saveOrUpdateBatch(updatedExistingDtos)
+            studyReviewRepository.saveOrUpdateBatch(toSaveReviews.map { it.toDto() })
 
             presenter.prepareSuccessView(
                 ResponseModel(

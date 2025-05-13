@@ -74,9 +74,14 @@ class CreateSearchSessionServiceImpl(
         )
 
         val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocolDto.keywords)
-        reviewSimilarityService.findDuplicates(scoredStudyReviews, emptyList())
 
-        studyReviewRepository.saveOrUpdateBatch(scoredStudyReviews.map { it.toDto() })
+        val duplicatedAnalysedReviews = reviewSimilarityService.findDuplicates(scoredStudyReviews, emptyList())
+
+        val toSaveReviews = duplicatedAnalysedReviews
+            .flatMap { (key, value) -> listOf(key) + value }
+            .toList()
+
+        studyReviewRepository.saveOrUpdateBatch(toSaveReviews.map { it.toDto() })
 
         val numberOfRelatedStudies = studyReviews.size
         searchSession.numberOfRelatedStudies = numberOfRelatedStudies
