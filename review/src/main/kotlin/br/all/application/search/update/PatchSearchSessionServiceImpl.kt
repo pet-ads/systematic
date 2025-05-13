@@ -67,9 +67,11 @@ class PatchSearchSessionServiceImpl (
             val scoredNewStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocolDto.keywords)
             val scoredExistingStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(existingStudyReviews, protocolDto.keywords)
 
+            studyReviewRepository.saveOrUpdateBatch(scoredNewStudyReviews.map { it.toDto() })
+
             val duplicatedAnalysedReviews = reviewSimilarityService.findDuplicates(scoredNewStudyReviews, scoredExistingStudyReviews)
 
-            val toSaveReviews = duplicatedAnalysedReviews
+            val toSaveDuplicatedAnalysedReviews = duplicatedAnalysedReviews
                 .flatMap { (key, value) -> listOf(key) + value }
                 .toList()
 
@@ -77,7 +79,7 @@ class PatchSearchSessionServiceImpl (
             searchSessionDto.numberOfRelatedStudies += studies
             searchSessionRepository.saveOrUpdate(searchSessionDto)
 
-            studyReviewRepository.saveOrUpdateBatch(toSaveReviews.map { it.toDto() })
+            studyReviewRepository.saveOrUpdateBatch(toSaveDuplicatedAnalysedReviews.map { it.toDto() })
 
             presenter.prepareSuccessView(
                 ResponseModel(
