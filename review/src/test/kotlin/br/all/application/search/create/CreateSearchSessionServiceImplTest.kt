@@ -14,6 +14,7 @@ import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.services.ConverterFactoryService
+import br.all.domain.services.ReviewSimilarityService
 import br.all.domain.services.ScoreCalculatorService
 import br.all.domain.services.UuidGeneratorService
 import io.mockk.*
@@ -52,6 +53,9 @@ class CreateSearchSessionServiceImplTest {
     @MockK
     private lateinit var scoreCalculatorService: ScoreCalculatorService
 
+    @MockK
+    private lateinit var reviewSimilarityService: ReviewSimilarityService
+
     @MockK(relaxed = true)
     private lateinit var presenter: CreateSearchSessionPresenter
 
@@ -70,7 +74,8 @@ class CreateSearchSessionServiceImplTest {
             converterFactoryService,
             studyReviewRepository,
             credentialsService,
-            scoreCalculatorService
+            scoreCalculatorService,
+            reviewSimilarityService
         )
         testDataFactory = TestDataFactory()
         preconditionCheckerMocking = PreconditionCheckerMockingNew(
@@ -98,6 +103,7 @@ class CreateSearchSessionServiceImplTest {
             every { uuidGeneratorService.next() } returns searchSessionId
             every { converterFactoryService.extractReferences(systematicStudyId, SearchSessionID(searchSessionId), any(), any()) } returns Pair(emptyList(), emptyList())
             every { scoreCalculatorService.applyScoreToManyStudyReviews(any(), any()) } returns emptyList()
+            every { reviewSimilarityService.findDuplicates(any(), any()) } returns emptyMap()
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
@@ -123,6 +129,7 @@ class CreateSearchSessionServiceImplTest {
             every { uuidGeneratorService.next() } returns searchSessionId
             every { converterFactoryService.extractReferences(systematicStudyId, SearchSessionID(searchSessionId), any(), mutableSetOf("example source")) } returns Pair(emptyList(), emptyList())
             every { scoreCalculatorService.applyScoreToManyStudyReviews(any(), any()) } returns emptyList()
+            every { reviewSimilarityService.findDuplicates(any(), any()) } returns emptyMap()
 
             sut.createSession(presenter, request, testDataFactory.bibFileContent())
 
