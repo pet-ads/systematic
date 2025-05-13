@@ -51,14 +51,11 @@ class UpdateProtocolServiceImpl(
         if (updatedDto != dto) protocolRepository.saveOrUpdate(updatedDto)
 
         if (keywordsUpdated) {
-            val studyReviewDtos = studyReviewRepository.findAllFromReview(systematicStudyId)
+            val studyReviews = studyReviewRepository.findAllFromReview(systematicStudyId)
+                .map { StudyReview.fromDto(it) }
 
-            val studyReviews = studyReviewDtos.map { StudyReview.fromDto(it) }
-
-            val updatedStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocol.keywords)
-
-            val updatedStudyReviewDtos = updatedStudyReviews.map { it.toDto() }
-            studyReviewRepository.saveOrUpdateBatch(updatedStudyReviewDtos)
+            val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocol.keywords)
+            studyReviewRepository.saveOrUpdateBatch(scoredStudyReviews.map { it.toDto() })
         }
 
         presenter.prepareSuccessView(ResponseModel(userId, systematicStudyId))
