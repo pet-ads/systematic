@@ -67,10 +67,10 @@ class FindStudiesByStageServiceImpl(
             userId = request.userId,
             systematicStudyId = request.systematicStudyId,
             stage = request.stage,
-            includedStudies = FindStudiesByStageService.StudiesIdAmount(includedStudiesIds, includedStudiesIds.size),
-            excludedStudies = FindStudiesByStageService.StudiesIdAmount(excludedStudiesIds, excludedStudiesIds.size),
-            unclassifiedStudies = FindStudiesByStageService.StudiesIdAmount(unclassifiedStudiesIds, unclassifiedStudiesIds.size),
-            duplicatedStudies = FindStudiesByStageService.StudiesIdAmount(duplicatedStudiesIds, duplicatedStudiesIds.size)
+            included = FindStudiesByStageService.StudyCollection(includedStudiesIds, includedStudiesIds.size),
+            excluded = FindStudiesByStageService.StudyCollection(excludedStudiesIds, excludedStudiesIds.size),
+            unclassified = FindStudiesByStageService.StudyCollection(unclassifiedStudiesIds, unclassifiedStudiesIds.size),
+            duplicated = FindStudiesByStageService.StudyCollection(duplicatedStudiesIds, duplicatedStudiesIds.size)
         )
     }
 }
