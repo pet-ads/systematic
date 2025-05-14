@@ -74,17 +74,13 @@ class CreateSearchSessionServiceImpl(
         )
 
         val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocolDto.keywords)
-        println("After score: $scoredStudyReviews")
 
         studyReviewRepository.saveOrUpdateBatch(scoredStudyReviews.map { it.toDto() })
 
         val duplicatedAnalysedReviews = reviewSimilarityService.findDuplicates(scoredStudyReviews, emptyList())
-        println("After similarity: $duplicatedAnalysedReviews")
-
         val toSaveDuplicatedAnalysedReviews = duplicatedAnalysedReviews
             .flatMap { (key, value) -> listOf(key) + value }
             .toList()
-        println("After flatmap: $toSaveDuplicatedAnalysedReviews")
 
         studyReviewRepository.saveOrUpdateBatch(toSaveDuplicatedAnalysedReviews.map { it.toDto() })
 
