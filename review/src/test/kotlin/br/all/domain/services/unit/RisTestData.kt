@@ -1,4 +1,4 @@
-package br.all.domain.services
+package br.all.domain.services.unit
 
 object RisTestData {
     val testInput = mapOf(

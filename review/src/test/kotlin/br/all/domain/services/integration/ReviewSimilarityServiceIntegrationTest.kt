@@ -1,7 +1,13 @@
-package br.all.domain.services
+package br.all.domain.services.integration
 
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
+import br.all.domain.model.study.ExtractionStatus
+import br.all.domain.model.study.SelectionStatus
+import br.all.domain.services.BibtexConverterService
+import br.all.domain.services.unit.FakeIdGeneratorService
+import br.all.domain.services.IdGeneratorService
+import br.all.domain.services.ReviewSimilarityService
 import br.all.infrastructure.similarity.LevenshteinSimilarityCalculatorImpl
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -77,8 +83,8 @@ class ReviewSimilarityServiceIntegrationTest {
         assertEquals(1, result[studyReviews[0]]!!.size)
         assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1]))
 
-        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
-        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
+        assertEquals(SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
+        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
 
         assertTrue(studyReviews[0].searchSources.contains("Test"))
         assertEquals(1, studyReviews[0].searchSources.size)
@@ -115,8 +121,8 @@ class ReviewSimilarityServiceIntegrationTest {
         assertEquals(1, result[studyReviews[0]]!!.size)
         assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1]))
 
-        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
-        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
+        assertEquals(SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
+        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
 
         assertTrue(studyReviews[0].searchSources.contains("Test"))
         assertEquals(1, studyReviews[0].searchSources.size)
@@ -180,8 +186,8 @@ class ReviewSimilarityServiceIntegrationTest {
         assertEquals(1, result[studyReviews[0]]!!.size)
         assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1]))
 
-        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
-        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
+        assertEquals(SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
+        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
 
         assertTrue(studyReviews[0].searchSources.contains("Test"))
         assertEquals(1, studyReviews[0].searchSources.size)
@@ -278,10 +284,10 @@ class ReviewSimilarityServiceIntegrationTest {
         assertTrue(result[studyReviews[2]]!!.contains(studyReviews[3]))
         assertFalse(result.containsKey(studyReviews[4]))
 
-        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
-        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
-        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[3].selectionStatus)
-        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[3].extractionStatus)
+        assertEquals(SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
+        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
+        assertEquals(SelectionStatus.DUPLICATED, studyReviews[3].selectionStatus)
+        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[3].extractionStatus)
 
         assertTrue(studyReviews[0].searchSources.contains("Test"))
         assertEquals(1, studyReviews[0].searchSources.size)
@@ -461,8 +467,8 @@ class ReviewSimilarityServiceIntegrationTest {
         assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1])) // similar title
 
         // Verify duplicate is marked as duplicated
-        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
-        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
+        assertEquals(SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
+        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
 
         // Verify search sources are merged
         assertTrue(studyReviews[0].searchSources.contains("Test"))
@@ -488,8 +494,8 @@ class ReviewSimilarityServiceIntegrationTest {
         assertTrue(result[studyReviews[6]]!!.contains(studyReviews[7])) // exact duplicate
 
         // Verify duplicate is marked as duplicated
-        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[7].selectionStatus)
-        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[7].extractionStatus)
+        assertEquals(SelectionStatus.DUPLICATED, studyReviews[7].selectionStatus)
+        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[7].extractionStatus)
 
         // Verify search sources are merged
         assertTrue(studyReviews[6].searchSources.contains("Test"))
@@ -506,8 +512,8 @@ class ReviewSimilarityServiceIntegrationTest {
         assertTrue(result[studyReviews[9]]!!.contains(studyReviews[10])) // no abstract but same title/authors
 
         // Verify duplicate is marked as duplicated
-        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, studyReviews[10].selectionStatus)
-        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, studyReviews[10].extractionStatus)
+        assertEquals(SelectionStatus.DUPLICATED, studyReviews[10].selectionStatus)
+        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[10].extractionStatus)
 
         // Verify search sources are merged
         assertTrue(studyReviews[9].searchSources.contains("Test"))
@@ -555,8 +561,8 @@ class ReviewSimilarityServiceIntegrationTest {
         assertEquals(1, result[study1]!!.size)
         assertTrue(result[study1]!!.contains(study2))
 
-        assertEquals(br.all.domain.model.study.SelectionStatus.DUPLICATED, study2.selectionStatus)
-        assertEquals(br.all.domain.model.study.ExtractionStatus.DUPLICATED, study2.extractionStatus)
+        assertEquals(SelectionStatus.DUPLICATED, study2.selectionStatus)
+        assertEquals(ExtractionStatus.DUPLICATED, study2.extractionStatus)
 
         assertTrue(study1.searchSources.contains("Source1"))
         assertTrue(study1.searchSources.contains("Source2"))

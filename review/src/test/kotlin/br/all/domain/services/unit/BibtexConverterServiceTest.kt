@@ -1,22 +1,24 @@
-package br.all.domain.services
+package br.all.domain.services.unit
 
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.study.*
-import br.all.domain.services.RisTestData.testInput
+import br.all.domain.services.BibtexConverterService
+import br.all.domain.services.IdGeneratorService
 import org.junit.jupiter.api.*
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class RisConverterServiceTest {
-    private lateinit var sut: RisConverterService
+class BibtexConverterServiceTest {
+
+    private lateinit var sut: BibtexConverterService
     private lateinit var idGeneratorService: IdGeneratorService
 
     @BeforeEach
     fun setup() {
         idGeneratorService = FakeIdGeneratorService
-        sut = RisConverterService(idGeneratorService)
+        sut = BibtexConverterService(idGeneratorService)
     }
 
     @AfterEach
@@ -26,216 +28,44 @@ class RisConverterServiceTest {
     }
 
     @Nested
-    inner class IndividualTests {
-        @Test
-        fun `Should create a StudyReview list from multiple ris entries`() {
-            val ris = testInput["multiple RIS entries"]!!
-            val studyReviewList = sut.convertManyToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
-                ris,
-                source = mutableSetOf("Compendex")
-            )
-            assertEquals(3, studyReviewList.first.size)
-        }
-
-        @Test
-        fun `Should return correct study type`() {
-            val ris = testInput["valid RIS entrie"]!!
-            val art = StudyType.valueOf("ARTICLE")
-            val study = sut.convert(ris)
-            val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
-                study,
-                source = mutableSetOf("Compendex")
-            )
-            assertEquals(art, studyReview.studyType)
-        }
-
-        @Test
-        fun `should return correct title`() {
-            val ris = testInput["valid RIS entrie"]!!
-            val study = sut.convert(ris)
-            val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
-                study,
-                source = mutableSetOf("Compendex")
-            )
-            assertEquals(
-                studyReview.title,
-                "Sampling for Scalable Visual Analytics IEEE Computer Graphics and Applications"
-            )
-        }
-
-        @Test
-        fun `should return correct title from T1 key`() {
-            val ris = testInput["T1 test"]!!
-            val study = sut.convert(ris)
-            val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
-                study,
-                source = mutableSetOf("Compendex")
-            )
-            assertEquals(
-                studyReview.title,
-                "Sampling for Scalable Visual Analytics IEEE Computer Graphics and Applications"
-            )
-        }
-
-        @Test
-        fun `should return correct publication year`() {
-            val ris = testInput["valid RIS entrie"]!!
-            val study = sut.convert(ris)
-            val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
-                study,
-                source = mutableSetOf("Compendex")
-            )
-            assertEquals(studyReview.year, 2017)
-        }
-
-        @Test
-        fun `should return correct publication year from Y1 key`() {
-            val ris = testInput["Y1 test"]!!
-            val study = sut.convert(ris)
-            val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
-                study,
-                source = mutableSetOf("Compendex")
-            )
-            assertEquals(studyReview.year, 2017)
-        }
-
-        @Test
-        fun `should return correct list of authors`() {
-            val ris = testInput["valid RIS entrie"]!!
-            val study = sut.convert(ris)
-            val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
-                study,
-                source = mutableSetOf("Compendex")
-            )
-            assertEquals("B. C. Kwon, P. J. Haas", studyReview.authors)
-        }
-
-        @Test
-        fun `should return correct list of authors from A1 keys`() {
-            val ris = testInput["multiple A1"]!!
-            val study = sut.convert(ris)
-            val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
-                study,
-                source = mutableSetOf("Compendex")
-            )
-            assertEquals("B. C. Kwon, P. J. Haas", studyReview.authors)
-        }
-
-        @Test
-        fun `should return the correct venue`() {
-            val ris = testInput["valid RIS entrie"]!!
-            val study = sut.convert(ris)
-            val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
-                study,
-                source = mutableSetOf("Compendex")
-            )
-            assertEquals("IEEE Computer Graphics and Applications", studyReview.venue)
-        }
-
-        @Test
-        fun `should return the correct abstract`() {
-            val ris = testInput["valid RIS entrie"]!!
-            val study = sut.convert(ris)
-            val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
-                study,
-                source = mutableSetOf("Compendex")
-            )
-            assertEquals("Lorem Ipsum", studyReview.abstract)
-        }
-
-        @Test
-        fun `should return the correct keywords`() {
-            val ris = testInput["valid RIS entrie"]!!
-            val study = sut.convert(ris)
-            val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
-                study,
-                source = mutableSetOf("Compendex")
-            )
-            assertAll(
-                { assertTrue("Temperature sensors" in studyReview.keywords) },
-                { assertTrue("Data visualization" in studyReview.keywords) }
-            )
-        }
-
-        @Test
-        fun `should return correct doi`() {
-            val ris = testInput["valid RIS entrie"]!!
-            val study = sut.convert(ris)
-            val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
-                study,
-                source = mutableSetOf("Compendex")
-            )
-            val expectedDoi = "https://doi.org/10.1109/MCG.2017.6"
-            assertEquals(expectedDoi, studyReview.doi?.value)
-        }
-    }
-
-    @Nested
     inner class ValidClasses {
 
         @Test
-        fun `Should create a StudyReview list from multiple RIS entries as input`() {
-            val ris = testInput["multiple RIS entries"]!!
+        fun `Should create a StudyReview list from multiple bibtex entries as input`() {
+            val bibtex = BibtexTestData.testInputs["multiple bibtex entries"]!!
             val studyReviewList = sut.convertManyToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                ris,
+                bibtex,
                 source = mutableSetOf("Compendex")
             )
-            assertEquals(3, studyReviewList.first.size)
+            assertEquals(7, studyReviewList.first.size)
         }
 
         @Test
         fun `should create article from valid input`() {
-            val ris = testInput["valid RIS entrie"]!!
-            val study = sut.convert(ris)
+            val bibtex = BibtexTestData.testInputs["valid article"]!!
+            val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
+
             assertAll(
+                "bibtex",
                 { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.ARTICLE, studyReview.studyType) },
-                {
-                    assertEquals(
-                        "Sampling for Scalable Visual Analytics IEEE Computer Graphics and Applications",
-                        studyReview.title
-                    )
-                },
-                { assertEquals(2017, studyReview.year) },
-                { assertEquals("B. C. Kwon, P. J. Haas", studyReview.authors) },
-                { assertEquals("IEEE Computer Graphics and Applications", studyReview.venue) },
+                { assertEquals("Non-cooperative Games", studyReview.title) },
+                { assertEquals(1951, studyReview.year) },
+                { assertEquals("Nash, John", studyReview.authors) },
+                { assertEquals("Annals of Mathematics", studyReview.venue) },
                 { assertEquals("Lorem Ipsum", studyReview.abstract) },
-                { assertTrue("Temperature sensors" in studyReview.keywords) },
-                { assertTrue("Data visualization" in studyReview.keywords) },
-                { assertEquals(0, studyReview.references.size) },
-                { assertEquals("https://doi.org/10.1109/MCG.2017.6", studyReview.doi?.value) },
+                { assertTrue("keyword1" in studyReview.keywords) },
+                { assertTrue("keyword2" in studyReview.keywords) },
+                { assertEquals(2, studyReview.references.size) },
+                { assertEquals("https://doi.org/10.1234/doi", studyReview.doi?.value) },
                 { assertEquals(1, studyReview.searchSources.size) },
                 { assertTrue(studyReview.criteria.isEmpty()) },
                 { assertTrue(studyReview.formAnswers.isEmpty()) },
@@ -249,8 +79,8 @@ class RisConverterServiceTest {
 
         @Test
         fun `should create inproceedings from valid input`() {
-            val ris = testInput["valid inproceedings"]!!
-            val study = sut.convert(ris)
+            val bibtex = BibtexTestData.testInputs["valid inproceedings"]!!
+            val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
@@ -258,17 +88,16 @@ class RisConverterServiceTest {
                 source = mutableSetOf("Compendex")
             )
             assertAll(
+                "bibtex",
                 { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.INPROCEEDINGS, studyReview.studyType) },
-                { assertEquals("Muitos testes", studyReview.title) },
-                { assertEquals(2017, studyReview.year) },
-                { assertEquals("Gabriel, Erick", studyReview.authors) },
-                { assertEquals("Meu Computador", studyReview.venue) },
-                { assertEquals("Lorem Ipsum", studyReview.abstract) },
-                { assertTrue("Tes" in studyReview.keywords) },
-                { assertTrue("Tes" in studyReview.keywords) },
-                { assertEquals(0, studyReview.references.size) },
-                { assertEquals("https://doi.org/10.1109/MCG.2017.6", studyReview.doi?.value) },
+                { assertEquals("Onofre {Trindade Júnior}", studyReview.authors) },
+                { assertEquals("{Using SOA in Critical-Embedded Systems}", studyReview.title) },
+                { assertEquals("Proceedings of the 4${'$'}^{th}${'$'}  IEEE (CPSCom'11)", studyReview.venue) },
+                { assertEquals(2011, studyReview.year) },
+                { assertEquals("Lorem ipsum", studyReview.abstract) },
+                { assertEquals(listOf("ref3", "ref4"), studyReview.references) },
+                { assertEquals(Doi("https://doi.org/10.1021/ci025584y"), studyReview.doi) },
                 { assertEquals(1, studyReview.searchSources.size) },
                 { assertTrue(studyReview.criteria.isEmpty()) },
                 { assertTrue(studyReview.formAnswers.isEmpty()) },
@@ -282,18 +111,18 @@ class RisConverterServiceTest {
 
         @Test
         fun `should create techreport from valid input`() {
-            val ris = testInput["valid techreport"]!!
-            val study = sut.convert(ris)
+            val bibtex = BibtexTestData.testInputs["valid techreport"]!!
+            val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
-            val expected = "Uma abordagem apoiada por linguagens específicas de domínio " +
-                    "para a criação de linhas de produto de software embarcado"
+            val expected = "Uma abordagem apoiada por linguagens específicas de domínio para a criação de linhas de produto de software embarcado"
 
             assertAll(
+                "bibtex",
                 { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.TECHREPORT, studyReview.studyType) },
                 { assertEquals("Rafael Serapilha Durelli", studyReview.authors) },
@@ -314,19 +143,19 @@ class RisConverterServiceTest {
 
         @Test
         fun `should create book from valid input`() {
-            val ris = testInput["valid book"]!!
-            val study = sut.convert(ris)
+            val bibtex = BibtexTestData.testInputs["valid book"]!!
+            val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
-
             assertAll(
+                "bibtex",
                 { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.BOOK, studyReview.studyType) },
-                { assertEquals("Len Bass, Paul Clements, Rick Kazman", studyReview.authors) },
+                { assertEquals("Len Bass and Paul Clements and Rick Kazman", studyReview.authors) },
                 { assertEquals("Software Architecture in Practice", studyReview.title) },
                 { assertEquals("Addison-Wesley", studyReview.venue) },
                 { assertEquals(2012, studyReview.year) },
@@ -344,22 +173,21 @@ class RisConverterServiceTest {
 
         @Test
         fun `should create proceedings from valid input`() {
-            val ris = testInput["valid proceedings"]!!
-            val study = sut.convert(ris)
+            val bibtex = BibtexTestData.testInputs["valid proceedings"]!!
+            val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
-
-            val expected = "Proceedings of the 17th International Conference on Computation " +
-                    "and Natural Computation, Fontainebleau, France"
+            val expected = "Proceedings of the 17th International Conference on Computation and Natural Computation, Fontainebleau, France"
 
             assertAll(
+                "bibtex",
                 { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.PROCEEDINGS, studyReview.studyType) },
-                { assertEquals("Susan Stepney", studyReview.authors) },
+                { assertEquals("Susan Stepney and Sergey Verlan", studyReview.authors) },
                 { assertEquals(expected, studyReview.title) },
                 { assertEquals("Springer", studyReview.venue) },
                 { assertEquals(2018, studyReview.year) },
@@ -377,22 +205,52 @@ class RisConverterServiceTest {
 
         @Test
         fun `should create phdthesis from valid input`() {
-            val ris = testInput["valid masterthesis"]!!
-            val study = sut.convert(ris)
+            val bibtex = BibtexTestData.testInputs["valid phdthesis"]!!
+            val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
-
             assertAll(
+                "bibtex",
                 { assertEquals("1", studyReview.id.toString()) },
-                { assertEquals(StudyType.MASTERSTHESIS, studyReview.studyType) },
+                { assertEquals(StudyType.PHDTHESIS, studyReview.studyType) },
                 { assertEquals("Rempel, Robert Charles", studyReview.authors) },
                 { assertEquals("Relaxation Effects for Coupled Nuclear Spins", studyReview.title) },
                 { assertEquals("Stanford University", studyReview.venue) },
                 { assertEquals(1956, studyReview.year) },
+                { assertEquals("Lorem Ipsum", studyReview.abstract) },
+                { assertEquals(1, studyReview.searchSources.size) },
+                { assertTrue(studyReview.criteria.isEmpty()) },
+                { assertTrue(studyReview.formAnswers.isEmpty()) },
+                { assertTrue(studyReview.robAnswers.isEmpty()) },
+                { assertEquals("", studyReview.comments) },
+                { assertEquals(ReadingPriority.LOW, studyReview.readingPriority) },
+                { assertEquals(SelectionStatus.UNCLASSIFIED, studyReview.selectionStatus) },
+                { assertEquals(ExtractionStatus.UNCLASSIFIED, studyReview.extractionStatus) }
+            )
+        }
+
+        @Test
+        fun `should create mastersthesis from valid input`() {
+            val bibtex = BibtexTestData.testInputs["valid mastersthesis"]!!
+            val study = sut.convert(bibtex)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study,
+                source = mutableSetOf("Compendex")
+            )
+            assertAll(
+                "bibtex",
+                { assertEquals("1", studyReview.id.toString()) },
+                { assertEquals(StudyType.MASTERSTHESIS, studyReview.studyType) },
+                { assertEquals("Jian Tang", studyReview.authors) },
+                { assertEquals("Spin structure of the nucleon in the asymptotic limit", studyReview.title) },
+                { assertEquals("Massachusetts Institute of Technology", studyReview.venue) },
+                { assertEquals(1996, studyReview.year) },
                 { assertEquals("Lorem Ipsum", studyReview.abstract) },
                 { assertEquals(1, studyReview.searchSources.size) },
                 { assertTrue(studyReview.criteria.isEmpty()) },
@@ -407,22 +265,24 @@ class RisConverterServiceTest {
 
         @Test
         fun `should create inbook from valid input`() {
-            val ris = testInput["valid inbook"]!!
-            val study = sut.convert(ris)
+            val bibtex = BibtexTestData.testInputs["valid inbook"]!!
+            val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
+            val expected = "Lisa A. Urry and Michael L. Cain and Steven A. Wasserman and Peter V. Minorsky and Jane B. Reece"
 
             assertAll(
+                "bibtex",
                 { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.INBOOK, studyReview.studyType) },
-                { assertEquals("Rempel, Robert Charles", studyReview.authors) },
-                { assertEquals("Relaxation Effects for Coupled Nuclear Spins", studyReview.title) },
-                { assertEquals("Stanford University", studyReview.venue) },
-                { assertEquals(1956, studyReview.year) },
+                { assertEquals(expected, studyReview.authors) },
+                { assertEquals("Photosynthesis", studyReview.title) },
+                { assertEquals("Campbell Biology", studyReview.venue) },
+                { assertEquals(2016, studyReview.year) },
                 { assertEquals("Lorem Ipsum", studyReview.abstract) },
                 { assertEquals(1, studyReview.searchSources.size) },
                 { assertTrue(studyReview.criteria.isEmpty()) },
@@ -437,22 +297,52 @@ class RisConverterServiceTest {
 
         @Test
         fun `should create booklet from valid input`() {
-            val ris = testInput["valid booklet"]!!
-            val study = sut.convert(ris)
+            val bibtex = BibtexTestData.testInputs["valid booklet"]!!
+            val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
-
             assertAll(
+                "bibtex",
                 { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.BOOKLET, studyReview.studyType) },
-                { assertEquals("Rempel, Robert Charles", studyReview.authors) },
-                { assertEquals("Relaxation Effects for Coupled Nuclear Spins", studyReview.title) },
-                { assertEquals("Stanford University", studyReview.venue) },
-                { assertEquals(1956, studyReview.year) },
+                { assertEquals("Maria Swetla", studyReview.authors) },
+                { assertEquals("Canoe tours in {S}weden", studyReview.title) },
+                { assertEquals("Distributed at the Stockholm Tourist Office", studyReview.venue) },
+                { assertEquals(2015, studyReview.year) },
+                { assertEquals("Lorem Ipsum", studyReview.abstract) },
+                { assertEquals(1, studyReview.searchSources.size) },
+                { assertTrue(studyReview.criteria.isEmpty()) },
+                { assertTrue(studyReview.formAnswers.isEmpty()) },
+                { assertTrue(studyReview.robAnswers.isEmpty()) },
+                { assertEquals("", studyReview.comments) },
+                { assertEquals(ReadingPriority.LOW, studyReview.readingPriority) },
+                { assertEquals(SelectionStatus.UNCLASSIFIED, studyReview.selectionStatus) },
+                { assertEquals(ExtractionStatus.UNCLASSIFIED, studyReview.extractionStatus) }
+            )
+        }
+
+        @Test
+        fun `should create manual from valid input`() {
+            val bibtex = BibtexTestData.testInputs["valid manual"]!!
+            val study = sut.convert(bibtex)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study,
+                source = mutableSetOf("Compendex")
+            )
+            assertAll(
+                "bibtex",
+                { assertEquals("1", studyReview.id.toString()) },
+                { assertEquals(StudyType.MANUAL, studyReview.studyType) },
+                { assertEquals("{R Core Team}", studyReview.authors) },
+                { assertEquals("{R}: A Language and Environment for Statistical Computing", studyReview.title) },
+                { assertEquals("R Foundation for Statistical Computing", studyReview.venue) },
+                { assertEquals(2018, studyReview.year) },
                 { assertEquals("Lorem Ipsum", studyReview.abstract) },
                 { assertEquals(1, studyReview.searchSources.size) },
                 { assertTrue(studyReview.criteria.isEmpty()) },
@@ -467,22 +357,52 @@ class RisConverterServiceTest {
 
         @Test
         fun `should create misc from valid input`() {
-            val ris = testInput["valid misc"]!!
-            val study = sut.convert(ris)
+            val bibtex = BibtexTestData.testInputs["valid misc"]!!
+            val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
-
             assertAll(
+                "bibtex",
                 { assertEquals("1", studyReview.id.toString()) },
                 { assertEquals(StudyType.MISC, studyReview.studyType) },
-                { assertEquals("NASA", studyReview.authors) },
+                { assertEquals("{NASA}", studyReview.authors) },
                 { assertEquals("Pluto: The 'Other' Red Planet", studyReview.title) },
                 { assertEquals("\\url{https://www.nasa.gov/nh/pluto-the-other-red-planet}", studyReview.venue) },
                 { assertEquals(2015, studyReview.year) },
+                { assertEquals("Lorem Ipsum", studyReview.abstract) },
+                { assertEquals(1, studyReview.searchSources.size) },
+                { assertTrue(studyReview.criteria.isEmpty()) },
+                { assertTrue(studyReview.formAnswers.isEmpty()) },
+                { assertTrue(studyReview.robAnswers.isEmpty()) },
+                { assertEquals("", studyReview.comments) },
+                { assertEquals(ReadingPriority.LOW, studyReview.readingPriority) },
+                { assertEquals(SelectionStatus.UNCLASSIFIED, studyReview.selectionStatus) },
+                { assertEquals(ExtractionStatus.UNCLASSIFIED, studyReview.extractionStatus) }
+            )
+        }
+
+        @Test
+        fun `should create unpublished from valid input`() {
+            val bibtex = BibtexTestData.testInputs["valid unpublished"]!!
+            val study = sut.convert(bibtex)
+            val studyReview = sut.convertToStudyReview(
+                SystematicStudyId(UUID.randomUUID()),
+                SearchSessionID(UUID.randomUUID()),
+                study,
+                source = mutableSetOf("Compendex")
+            )
+            assertAll(
+                "bibtex",
+                { assertEquals("1", studyReview.id.toString()) },
+                { assertEquals(StudyType.UNPUBLISHED, studyReview.studyType) },
+                { assertEquals("Mohinder Suresh", studyReview.authors) },
+                { assertEquals("Evolution: a revised theory", studyReview.title) },
+                { assertEquals("Lorem Ipsum", studyReview.venue) },
+                { assertEquals(2006, studyReview.year) },
                 { assertEquals("Lorem Ipsum", studyReview.abstract) },
                 { assertEquals(1, studyReview.searchSources.size) },
                 { assertTrue(studyReview.criteria.isEmpty()) },
@@ -498,8 +418,9 @@ class RisConverterServiceTest {
 
     @Nested
     inner class InvalidClasses {
+
         @Test
-        fun `convertManyToStudyReview should not accept a blank ris entry as input`() {
+        fun `convertManyToStudyReview should not accept a blank bibtex entry as input`() {
             assertThrows<IllegalArgumentException> {
                 sut.convertManyToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
@@ -511,132 +432,88 @@ class RisConverterServiceTest {
         }
 
         @Test
-        fun `convertToStudyReview should not accept a blank ris entry as input`() {
+        fun `convertToStudyReview should not accept a blank bibtex entry as input`() {
             assertThrows<IllegalArgumentException> {
-                val study = sut.convert("")
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
+                sut.convert("")
             }
         }
 
         @Test
         fun `should throw IllegalArgumentException for unknown type entry`() {
-            val ris = testInput["unknown ris"]!!
+            val bibtex = BibtexTestData.testInputs["unknown type of bibtex"]!!
             assertThrows<IllegalArgumentException> {
-                val study = sut.convert(ris)
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
+                sut.convert(bibtex)
             }
         }
 
         @Test
         fun `should throw IllegalArgumentException for invalid title entry`() {
-            val ris = testInput["invalid title"].toString()
+            val bibtex = BibtexTestData.testInputs["invalid title"]!!
             assertThrows<IllegalArgumentException> {
-                val study = sut.convert(ris)
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
+                sut.convert(bibtex)
             }
         }
 
         @Test
         fun `should throw IllegalArgumentException for invalid author entry`() {
-            val ris = testInput["invalid authors"]!!
+            val bibtex = BibtexTestData.testInputs["invalid authors"]!!
             assertThrows<IllegalArgumentException> {
-                val study = sut.convert(ris)
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
+                sut.convert(bibtex)
             }
         }
 
         @Test
         fun `should throw IllegalArgumentException for invalid year entry`() {
-            val ris = testInput["invalid year"]!!
+            val bibtex = BibtexTestData.testInputs["invalid year"]!!
             assertThrows<IllegalArgumentException> {
-                val study = sut.convert(ris)
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
+                sut.convert(bibtex)
             }
         }
 
         @Test
         fun `should throw IllegalArgumentException for invalid venue entry`() {
-            val ris = testInput["invalid venue"]!!
+            val bibtex = BibtexTestData.testInputs["invalid venue"]!!
             assertThrows<IllegalArgumentException> {
-                val study = sut.convert(ris)
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
+                sut.convert(bibtex)
             }
         }
 
         @Test
         fun `should throw IllegalArgumentException for invalid abstract entry`() {
-            val ris = testInput["invalid abstract"]!!
+            val bibtex = BibtexTestData.testInputs["invalid abstract"]!!
             assertThrows<IllegalArgumentException> {
-                val study = sut.convert(ris)
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
+                sut.convert(bibtex)
             }
         }
 
         @Test
         fun `should throw IllegalArgumentException for invalid doi`() {
-            val ris = testInput["invalid doi"]!!
+            val bibtex = BibtexTestData.testInputs["invalid doi"]!!
             assertThrows<IllegalArgumentException> {
-                val study = sut.convert(ris)
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
+                sut.convert(bibtex)
             }
         }
 
         @Test
-        fun `should return the correct number of invalid ris files`() {
-            val ris = testInput["three error ris"]!!
+        fun `Should create a StudyReview list from multiple bibtex entries even when there are invalid entries`() {
+            val bibtex = BibtexTestData.testInputs["multiple bibtex entries with some invalid"]!!
             val studyReviewList = sut.convertManyToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
-                ris,
+                bibtex,
                 source = mutableSetOf("Compendex")
             )
+            studyReviewList.second.forEach { invalidEntryName ->
+                println("Invalid BibTeX entry: $invalidEntryName")
+            }
+            studyReviewList.first.forEach { studyReview ->
+                println("Valid StudyReview: ${studyReview.title}")
+            }
+            assertAll(
+                {assertEquals(4, studyReviewList.first.size)},
 
-            println("Valid Study Reviews: ${studyReviewList.first}")
-            println("Invalid RIS Entries: ${studyReviewList.second}")
+            )
 
-            assertEquals(2, studyReviewList.first.size)
-
-            assertEquals(3, studyReviewList.second.size)
         }
     }
 }

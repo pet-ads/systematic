@@ -1,9 +1,12 @@
-package br.all.domain.services
+package br.all.domain.services.unit
 
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
-import br.all.domain.services.BibtexTestData.testInputs as bibtexInput
-import br.all.domain.services.RisTestData.testInput as risInput
+import br.all.domain.services.BibtexConverterService
+import br.all.domain.services.ConverterFactoryService
+import br.all.domain.services.IdGeneratorService
+import br.all.domain.services.RisConverterService
+import br.all.domain.services.unit.RisTestData.testInput as risInput
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -34,7 +37,7 @@ class ConverterFactoryServiceTest {
     }
 
     @Test fun `Should return study review successfully`() {
-        val bibtex = bibtexInput["multiple bibtex entries"]!!
+        val bibtex = BibtexTestData.testInputs["multiple bibtex entries"]!!
         val studyReviewList = sut.extractReferences(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex, mutableSetOf("example source"))
         assertEquals(7, studyReviewList.first.size)
     }

@@ -1,7 +1,11 @@
-package br.all.domain.services
+package br.all.domain.services.integration
 
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
+import br.all.domain.services.BibtexConverterService
+import br.all.domain.services.unit.FakeIdGeneratorService
+import br.all.domain.services.IdGeneratorService
+import br.all.domain.services.ScoreCalculatorService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag

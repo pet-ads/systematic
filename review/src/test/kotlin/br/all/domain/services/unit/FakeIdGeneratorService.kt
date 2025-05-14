@@ -1,4 +1,6 @@
-package br.all.domain.services
+package br.all.domain.services.unit
+
+import br.all.domain.services.IdGeneratorService
 
 object FakeIdGeneratorService : IdGeneratorService {
     private var currentId = 1L
