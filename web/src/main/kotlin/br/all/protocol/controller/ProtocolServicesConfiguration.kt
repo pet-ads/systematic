@@ -6,6 +6,7 @@ import br.all.application.protocol.update.UpdateProtocolServiceImpl
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
+import br.all.domain.services.ScoreCalculatorService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -24,5 +25,6 @@ class ProtocolServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         credentialsService: CredentialsService,
         studyReviewRepository: StudyReviewRepository,
-    ) = UpdateProtocolServiceImpl(protocolRepository, systematicStudyRepository, credentialsService, studyReviewRepository)
+        scoreCalculatorService: ScoreCalculatorService
+    ) = UpdateProtocolServiceImpl(protocolRepository, systematicStudyRepository, credentialsService, studyReviewRepository, scoreCalculatorService)
 }

@@ -17,6 +17,7 @@ import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.services.ConverterFactoryService
+import br.all.domain.services.ReviewSimilarityService
 import br.all.domain.services.ScoreCalculatorService
 import br.all.domain.services.UuidGeneratorService
 
@@ -28,6 +29,8 @@ class CreateSearchSessionServiceImpl(
     private val converterFactoryService: ConverterFactoryService,
     private val studyReviewRepository: StudyReviewRepository,
     private val credentialsService: CredentialsService,
+    private val scoreCalculatorService: ScoreCalculatorService,
+    private val reviewSimilarityService: ReviewSimilarityService
 ) : CreateSearchSessionService {
 
 
@@ -60,7 +63,6 @@ class CreateSearchSessionServiceImpl(
             return
         }
 
-        val scoreCalculatorService = ScoreCalculatorService(protocolDto.keywords)
         val sessionId = SearchSessionID(uuidGeneratorService.next())
         val searchSession = SearchSession.fromRequestModel(sessionId, request)
 
@@ -71,8 +73,16 @@ class CreateSearchSessionServiceImpl(
             mutableSetOf(source)
         )
 
-        val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews)
+        val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocolDto.keywords)
+
         studyReviewRepository.saveOrUpdateBatch(scoredStudyReviews.map { it.toDto() })
+
+        val duplicatedAnalysedReviews = reviewSimilarityService.findDuplicates(scoredStudyReviews, emptyList())
+        val toSaveDuplicatedAnalysedReviews = duplicatedAnalysedReviews
+            .flatMap { (key, value) -> listOf(key) + value }
+            .toList()
+
+        studyReviewRepository.saveOrUpdateBatch(toSaveDuplicatedAnalysedReviews.map { it.toDto() })
 
         val numberOfRelatedStudies = studyReviews.size
         searchSession.numberOfRelatedStudies = numberOfRelatedStudies

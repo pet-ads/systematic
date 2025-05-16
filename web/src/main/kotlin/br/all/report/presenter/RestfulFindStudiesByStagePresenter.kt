@@ -19,17 +19,16 @@ class RestfulFindStudiesByStagePresenter(
             response.userId,
             response.systematicStudyId,
             response.stage,
-            response.includedStudies,
-            response.excludedStudies,
-            response.unclassifiedStudies,
-            response.duplicatedStudies,
-            response.totalAmount
+            response.included,
+            response.excluded,
+            response.unclassified,
+            response.duplicated
         )
 
         val selfRef = linksFactory.findStudiesByStage(response.systematicStudyId, response.stage)
 
         restfulResponse.add(selfRef)
-        responseEntity = ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).body(restfulResponse)
+        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
     override fun prepareFailView(throwable: Throwable) = run {responseEntity = createErrorResponseFrom(throwable) }
@@ -40,10 +39,9 @@ class RestfulFindStudiesByStagePresenter(
         val userId: UUID,
         val systematicStudyId: UUID,
         val stage: String,
-        val includedStudies: List<Long>,
-        val excludedStudies: List<Long>,
-        val unclassifiedStudies: List<Long>,
-        val duplicatedStudies: List<Long>,
-        val totalAmount: Int,
+        val includedStudies: FindStudiesByStageService.StudyCollection,
+        val excludedStudies: FindStudiesByStageService.StudyCollection,
+        val unclassifiedStudies: FindStudiesByStageService.StudyCollection,
+        val duplicatedStudies: FindStudiesByStageService.StudyCollection
     ): RepresentationModel<ViewModel>()
 }

@@ -16,7 +16,10 @@ import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.model.search.toSearchSessionID
 import br.all.domain.model.study.StudyReview
 import br.all.domain.services.ConverterFactoryService
+import br.all.domain.services.ReviewSimilarityService
 import br.all.domain.services.ScoreCalculatorService
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 class PatchSearchSessionServiceImpl (
     private val systematicStudyRepository: SystematicStudyRepository,
@@ -24,7 +27,9 @@ class PatchSearchSessionServiceImpl (
     private val credentialsService: CredentialsService,
     private val studyReviewRepository: StudyReviewRepository,
     private val converterFactoryService: ConverterFactoryService,
-    private val protocolRepository: ProtocolRepository
+    private val protocolRepository: ProtocolRepository,
+    private val scoreCalculatorService: ScoreCalculatorService,
+    private val reviewSimilarityService: ReviewSimilarityService
 ) : PatchSearchSessionService {
     override fun patchSession(
         presenter: PatchSearchSessionPresenter,
@@ -43,7 +48,11 @@ class PatchSearchSessionServiceImpl (
 
         if (searchSessionDto != null) {
             val protocolDto = protocolRepository.findById(request.systematicStudyId)
-            val scoreCalculatorService = ScoreCalculatorService(protocolDto?.keywords)
+
+            if (protocolDto == null) {
+                presenter.prepareFailView(NoSuchElementException("Protocol ${request.systematicStudyId} not found"))
+                return
+            }
 
             val (studyReviews, invalidEntries) = converterFactoryService.extractReferences(
                 systematicStudyId = request.systematicStudyId.toSystematicStudyId(),
@@ -52,20 +61,25 @@ class PatchSearchSessionServiceImpl (
                 source = mutableSetOf()
             )
 
-            val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews)
+            val existingStudyReviews = studyReviewRepository.findAllBySession(request.systematicStudyId, request.sessionId)
+                .map { StudyReview.fromDto(it) }
 
-            val existingStudyReviewDtos = studyReviewRepository.findAllBySession(request.systematicStudyId, request.sessionId)
+            val scoredNewStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocolDto.keywords)
+            val scoredExistingStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(existingStudyReviews, protocolDto.keywords)
 
-            val existingStudyReviews = existingStudyReviewDtos.map { StudyReview.fromDto(it) }
-            val scoredExistingStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(existingStudyReviews)
-            val updatedExistingDtos = scoredExistingStudyReviews.map { it.toDto() }
+            studyReviewRepository.saveOrUpdateBatch(scoredNewStudyReviews.map { it.toDto() })
+
+            val duplicatedAnalysedReviews = reviewSimilarityService.findDuplicates(scoredNewStudyReviews, scoredExistingStudyReviews)
+
+            val toSaveDuplicatedAnalysedReviews = duplicatedAnalysedReviews
+                .flatMap { (key, value) -> listOf(key) + value }
+                .toList()
 
             val studies = studyReviews.size
             searchSessionDto.numberOfRelatedStudies += studies
             searchSessionRepository.saveOrUpdate(searchSessionDto)
 
-            studyReviewRepository.saveOrUpdateBatch(scoredStudyReviews.map { it.toDto() })
-            studyReviewRepository.saveOrUpdateBatch(updatedExistingDtos)
+            studyReviewRepository.saveOrUpdateBatch(toSaveDuplicatedAnalysedReviews.map { it.toDto() })
 
             presenter.prepareSuccessView(
                 ResponseModel(

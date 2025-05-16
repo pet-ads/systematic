@@ -13,6 +13,7 @@ import br.all.application.search.update.UpdateSearchSessionServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.services.*
+import br.all.infrastructure.similarity.LevenshteinSimilarityCalculatorImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -32,6 +33,12 @@ class SearchSessionServicesConfiguration {
     )
 
     @Bean
+    fun scoreCalculatorService() = ScoreCalculatorService()
+
+    @Bean
+    fun reviewSimilarityService() = ReviewSimilarityService(LevenshteinSimilarityCalculatorImpl())
+
+    @Bean
     fun patchSearchSessionService(
         systematicStudyRepository: SystematicStudyRepository,
         searchSessionRepository: SearchSessionRepository,
@@ -39,13 +46,17 @@ class SearchSessionServicesConfiguration {
         studyReviewRepository: StudyReviewRepository,
         converterFactoryService: ConverterFactoryService,
         protocolRepository: ProtocolRepository,
+        scoreCalculatorService: ScoreCalculatorService,
+        reviewSimilarityService: ReviewSimilarityService,
     ) = PatchSearchSessionServiceImpl(
         systematicStudyRepository,
         searchSessionRepository,
         credentialsService,
         studyReviewRepository,
         converterFactoryService,
-        protocolRepository
+        protocolRepository,
+        scoreCalculatorService,
+        reviewSimilarityService
     )
 
     @Bean
@@ -56,7 +67,9 @@ class SearchSessionServicesConfiguration {
         uuidGeneratorService: UuidGeneratorService,
         converterFactoryService: ConverterFactoryService,
         studyReviewRepository: StudyReviewRepository,
-        credentialsService: CredentialsService
+        credentialsService: CredentialsService,
+        scoreCalculatorService: ScoreCalculatorService,
+        reviewSimilarityService: ReviewSimilarityService
     ) = CreateSearchSessionServiceImpl(
         searchSessionRepository,
         systematicStudyRepository,
@@ -64,7 +77,9 @@ class SearchSessionServicesConfiguration {
         uuidGeneratorService,
         converterFactoryService,
         studyReviewRepository,
-        credentialsService
+        credentialsService,
+        scoreCalculatorService,
+        reviewSimilarityService
     )
 
     @Bean

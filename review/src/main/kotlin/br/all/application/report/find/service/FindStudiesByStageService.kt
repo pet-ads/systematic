@@ -6,6 +6,11 @@ import java.util.*
 interface FindStudiesByStageService {
     fun findStudiesByStage(presenter: FindStudiesByStagePresenter, request: RequestModel)
 
+    data class StudyCollection(
+        val ids: List<Long>,
+        val amount: Int,
+    )
+
     data class RequestModel(
         val userId: UUID,
         val systematicStudyId: UUID,
@@ -16,10 +21,9 @@ interface FindStudiesByStageService {
         val userId: UUID,
         val stage: String,
         val systematicStudyId: UUID,
-        val includedStudies: List<Long>,
-        val excludedStudies: List<Long>,
-        val unclassifiedStudies: List<Long>,
-        val duplicatedStudies: List<Long>,
-        val totalAmount: Int,
+        val included: StudyCollection,
+        val excluded: StudyCollection,
+        val unclassified: StudyCollection,
+        val duplicated: StudyCollection
     )
 }

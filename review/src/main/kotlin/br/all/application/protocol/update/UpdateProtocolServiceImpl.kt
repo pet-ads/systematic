@@ -24,6 +24,7 @@ class UpdateProtocolServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val credentialsService: CredentialsService,
     private val studyReviewRepository: StudyReviewRepository,
+    private val scoreCalculatorService: ScoreCalculatorService
 ) : UpdateProtocolService {
     override fun update(presenter: UpdateProtocolPresenter, request: RequestModel) {
         val userId = request.userId
@@ -50,16 +51,11 @@ class UpdateProtocolServiceImpl(
         if (updatedDto != dto) protocolRepository.saveOrUpdate(updatedDto)
 
         if (keywordsUpdated) {
-            val scoreCalculatorService = ScoreCalculatorService(updatedDto.keywords)
+            val studyReviews = studyReviewRepository.findAllFromReview(systematicStudyId)
+                .map { StudyReview.fromDto(it) }
 
-            val studyReviewDtos = studyReviewRepository.findAllFromReview(systematicStudyId)
-
-            val studyReviews = studyReviewDtos.map { StudyReview.fromDto(it) }
-
-            val updatedStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews)
-
-            val updatedStudyReviewDtos = updatedStudyReviews.map { it.toDto() }
-            studyReviewRepository.saveOrUpdateBatch(updatedStudyReviewDtos)
+            val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocol.keywords)
+            studyReviewRepository.saveOrUpdateBatch(scoredStudyReviews.map { it.toDto() })
         }
 
         presenter.prepareSuccessView(ResponseModel(userId, systematicStudyId))

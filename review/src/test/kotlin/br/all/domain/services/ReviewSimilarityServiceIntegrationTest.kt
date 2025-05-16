@@ -70,7 +70,7 @@ class ReviewSimilarityServiceIntegrationTest {
                 }
             """
         val studyReviews = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source).first
-        val result = sut.findDuplicates(studyReviews)
+        val result = sut.findDuplicates(studyReviews, emptyList())
 
         assertEquals(1, result.size)
         assertTrue(result.containsKey(studyReviews[0]))
@@ -108,7 +108,7 @@ class ReviewSimilarityServiceIntegrationTest {
                 }
             """
         val studyReviews = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source).first
-        val result = sut.findDuplicates(studyReviews)
+        val result = sut.findDuplicates(studyReviews, emptyList())
 
         assertEquals(1, result.size)
         assertTrue(result.containsKey(studyReviews[0]))
@@ -146,7 +146,7 @@ class ReviewSimilarityServiceIntegrationTest {
                 }
             """
         val studyReviews = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source).first
-        val result = sut.findDuplicates(studyReviews)
+        val result = sut.findDuplicates(studyReviews, emptyList())
 
         assertTrue(result.isEmpty())
     }
@@ -173,7 +173,7 @@ class ReviewSimilarityServiceIntegrationTest {
                 }
             """
         val studyReviews = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source).first
-        val result = sut.findDuplicates(studyReviews)
+        val result = sut.findDuplicates(studyReviews, emptyList())
 
         assertEquals(1, result.size)
         assertTrue(result.containsKey(studyReviews[0]))
@@ -189,7 +189,7 @@ class ReviewSimilarityServiceIntegrationTest {
 
     @Test
     fun `should handle empty list of study reviews`() {
-        val result = sut.findDuplicates(emptyList())
+        val result = sut.findDuplicates(emptyList(), emptyList())
 
         assertTrue(result.isEmpty())
     }
@@ -208,7 +208,7 @@ class ReviewSimilarityServiceIntegrationTest {
                 }
             """
         val studyReviews = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source).first
-        val result = sut.findDuplicates(studyReviews)
+        val result = sut.findDuplicates(studyReviews, emptyList())
 
         assertTrue(result.isEmpty())
     }
@@ -267,7 +267,7 @@ class ReviewSimilarityServiceIntegrationTest {
                 }
             """
         val studyReviews = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source).first
-        val result = sut.findDuplicates(studyReviews)
+        val result = sut.findDuplicates(studyReviews, emptyList())
 
         assertEquals(2, result.size)
         assertTrue(result.containsKey(studyReviews[0]))
@@ -314,7 +314,7 @@ class ReviewSimilarityServiceIntegrationTest {
             """
 
         val studyReviews = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source).first
-        val result = sut.findDuplicates(studyReviews)
+        val result = sut.findDuplicates(studyReviews,emptyList())
 
         assertTrue(result.isEmpty())
     }
@@ -451,7 +451,7 @@ class ReviewSimilarityServiceIntegrationTest {
                 }
             """
         val studyReviews = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source).first
-        val result = sut.findDuplicates(studyReviews)
+        val result = sut.findDuplicates(studyReviews, emptyList())
 
         /*
             GROUP 1: Original should match with similar title
@@ -548,7 +548,7 @@ class ReviewSimilarityServiceIntegrationTest {
         val study1 = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source1).first[0]
         val study2 = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source2).first[1]
 
-        val result = sut.findDuplicates(listOf(study1, study2))
+        val result = sut.findDuplicates(listOf(study1, study2), emptyList())
 
         assertEquals(1, result.size)
         assertTrue(result.containsKey(study1))

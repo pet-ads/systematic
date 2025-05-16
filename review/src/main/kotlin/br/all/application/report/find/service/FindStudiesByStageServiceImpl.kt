@@ -2,9 +2,14 @@ package br.all.application.report.find.service
 
 import br.all.application.report.find.presenter.FindStudiesByStagePresenter
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.review.repository.fromDto
+import br.all.application.shared.presenter.prepareIfFailsPreconditions
+import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
-import java.util.*
+import br.all.domain.model.review.SystematicStudy
+import br.all.domain.model.study.ExtractionStatus
+import br.all.domain.model.study.SelectionStatus
 
 class FindStudiesByStageServiceImpl(
     private val credentialsService: CredentialsService,
@@ -12,17 +17,60 @@ class FindStudiesByStageServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
 ): FindStudiesByStageService {
     override fun findStudiesByStage(presenter: FindStudiesByStagePresenter, request: FindStudiesByStageService.RequestModel) {
-        val response = FindStudiesByStageService.ResponseModel(
-            userId = UUID.randomUUID(),
-            systematicStudyId = UUID.randomUUID(),
-            includedStudies = listOf(2222, 33333),
-            excludedStudies = listOf(77777),
-            unclassifiedStudies = listOf(44444),
-            duplicatedStudies = listOf(55555),
-            totalAmount = 5,
-            stage = request.stage,
-        )
+        val user = credentialsService.loadCredentials(request.userId)?.toUser()
+
+        val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
+        val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
+        if (presenter.isDone()) return
+
+        if (request.stage != "selection" && request.stage != "extraction") {
+            presenter.prepareFailView(IllegalArgumentException(request.stage))
+            if (presenter.isDone()) return
+        }
+
+        val allStudies = studyReviewRepository.findAllFromReview(request.systematicStudyId)
+
+        val response = createResponse(allStudies, request)
 
         presenter.prepareSuccessView(response)
+    }
+
+    private fun createResponse(allStudies: List<StudyReviewDto>, request: FindStudiesByStageService.RequestModel): FindStudiesByStageService.ResponseModel {
+        val includedStudiesIds = mutableListOf<Long>()
+        val excludedStudiesIds = mutableListOf<Long>()
+        val unclassifiedStudiesIds = mutableListOf<Long>()
+        val duplicatedStudiesIds = mutableListOf<Long>()
+
+        for (study in allStudies) {
+            if (request.stage == "selection") {
+                when (study.selectionStatus) {
+                    SelectionStatus.INCLUDED.name -> includedStudiesIds.add(study.studyReviewId)
+                    SelectionStatus.EXCLUDED.name -> excludedStudiesIds.add(study.studyReviewId)
+                    SelectionStatus.UNCLASSIFIED.name -> unclassifiedStudiesIds.add(study.studyReviewId)
+                    SelectionStatus.DUPLICATED.name -> duplicatedStudiesIds.add(study.studyReviewId)
+                }
+            }
+
+            if (request.stage == "extraction") {
+                when (study.extractionStatus) {
+                    ExtractionStatus.INCLUDED.name -> includedStudiesIds.add(study.studyReviewId)
+                    ExtractionStatus.EXCLUDED.name -> excludedStudiesIds.add(study.studyReviewId)
+                    ExtractionStatus.UNCLASSIFIED.name -> unclassifiedStudiesIds.add(study.studyReviewId)
+                    ExtractionStatus.DUPLICATED.name -> duplicatedStudiesIds.add(study.studyReviewId)
+                }
+            }
+        }
+
+        return FindStudiesByStageService.ResponseModel(
+            userId = request.userId,
+            systematicStudyId = request.systematicStudyId,
+            stage = request.stage,
+            included = FindStudiesByStageService.StudyCollection(includedStudiesIds, includedStudiesIds.size),
+            excluded = FindStudiesByStageService.StudyCollection(excludedStudiesIds, excludedStudiesIds.size),
+            unclassified = FindStudiesByStageService.StudyCollection(unclassifiedStudiesIds, unclassifiedStudiesIds.size),
+            duplicated = FindStudiesByStageService.StudyCollection(duplicatedStudiesIds, duplicatedStudiesIds.size)
+        )
     }
 }
