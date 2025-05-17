@@ -31,52 +31,58 @@ class FindKeywordsServiceImpl(
             request.userId,
             request.systematicStudyId,
             request.filter,
-            keywords = emptyList(),
+            keywords = emptyMap(),
             keywordsQuantity = 0,
         )
 
         when (request.filter) {
             "selection" -> {
-                val selectionKeywords = allStudies
-                    .asSequence()
-                    .filter { it.selectionStatus == SelectionStatus.INCLUDED.name }
-                    .map { it.keywords }
+                val selectionKeywords = allStudies.asSequence()
+                    .filter  { it.selectionStatus == SelectionStatus.INCLUDED.name }
+                    .map     { it.keywords }
                     .flatten()
                     .flatMap { it.split(";") }
-                    .map { it.trim() }
-                    .filter { it.isNotEmpty() }
-                    .distinct()
-                    .sorted()
-                    .toList()
+                    .map     { it.trim() }
+                    .filter  { it.isNotEmpty() }
+                    .groupingBy { it }
+                    .eachCount()
+                    .toSortedMap()
+                    .toMap()
+
                 response.keywords = selectionKeywords
-                response.keywordsQuantity = selectionKeywords.size
+                response.keywordsQuantity = selectionKeywords.values.sum()
             }
+
             "extraction" -> {
                 val extractionKeywords = allStudies
                     .asSequence()
-                    .filter { it.extractionStatus == ExtractionStatus.INCLUDED.toString() }
-                    .map { it.keywords }
+                    .filter  { it.extractionStatus == ExtractionStatus.INCLUDED.toString() }
+                    .map     { it.keywords }
                     .flatten()
                     .flatMap { it.split(";") }
-                    .map { it.trim() }
-                    .filter { it.isNotEmpty() }
-                    .distinct()
-                    .sorted()
-                    .toList()
+                    .map     { it.trim() }
+                    .filter  { it.isNotEmpty() }
+                    .groupingBy { it }
+                    .eachCount()
+                    .toSortedMap()
+                    .toMap()
+
                 response.keywords = extractionKeywords
                 response.keywordsQuantity = extractionKeywords.size
             }
             null -> {
                 val allKeywords = allStudies
                     .asSequence()
-                    .map { it.keywords }
+                    .map     { it.keywords }
                     .flatten()
                     .flatMap { it.split(";") }
-                    .map { it.trim() }
-                    .filter { it.isNotEmpty() }
-                    .distinct()
-                    .sorted()
-                    .toList()
+                    .map     { it.trim() }
+                    .filter  { it.isNotEmpty() }
+                    .groupingBy { it }
+                    .eachCount()
+                    .toSortedMap()
+                    .toMap()
+
                 response.keywords = allKeywords
                 response.keywordsQuantity = allKeywords.size
             }

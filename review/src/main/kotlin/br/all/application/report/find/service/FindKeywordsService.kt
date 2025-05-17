@@ -16,7 +16,7 @@ interface FindKeywordsService {
         val userId: UUID,
         val systematicStudyId: UUID,
         val filter: String?,
-        var keywords: List<String>,
+        var keywords: Map<String, Int>,
         var keywordsQuantity: Int,
     )
 }
