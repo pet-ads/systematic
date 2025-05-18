@@ -87,8 +87,22 @@ class FindKeywordsServiceTestImpl {
 
             sut.findKeywords(presenter, request)
 
+            val expectedKeywords = mapOf(
+                "key1" to 2,
+                "key2" to 1,
+                "key3" to 1
+            )
+
+            val expectedResponse = FindKeywordsService.ResponseModel(
+                userId = factory.researcherId,
+                systematicStudyId = factory.systematicStudyId,
+                filter = "selection",
+                keywords = expectedKeywords,
+                keywordsQuantity = expectedKeywords.values.sum()
+            )
+
             verify(exactly = 1) {
-                presenter.prepareSuccessView(any())
+                presenter.prepareSuccessView(expectedResponse)
             }
         }
     }
@@ -124,8 +138,22 @@ class FindKeywordsServiceTestImpl {
 
             sut.findKeywords(presenter, request)
 
+            val expectedKeywords = mapOf(
+                "a" to 1,
+                "b" to 2,
+                "c" to 1
+            )
+
+            val expectedResponse = FindKeywordsService.ResponseModel(
+                userId = factory.researcherId,
+                systematicStudyId = factory.systematicStudyId,
+                filter = "extraction",
+                keywords = expectedKeywords,
+                keywordsQuantity = expectedKeywords.values.sum()
+            )
+
             verify(exactly = 1) {
-                presenter.prepareSuccessView(any())
+                presenter.prepareSuccessView(expectedResponse)
             }
         }
     }
@@ -156,8 +184,22 @@ class FindKeywordsServiceTestImpl {
 
             sut.findKeywords(presenter, request)
 
+            val expectedKeywords = mapOf(
+                "x" to 1,
+                "y" to 2,
+                "z" to 1
+            )
+
+            val expectedResponse = FindKeywordsService.ResponseModel(
+                userId = factory.researcherId,
+                systematicStudyId = factory.systematicStudyId,
+                filter = null,
+                keywords = expectedKeywords,
+                keywordsQuantity = expectedKeywords.values.sum()
+            )
+
             verify(exactly = 1) {
-                presenter.prepareSuccessView(any())
+                presenter.prepareSuccessView(expectedResponse)
             }
         }
     }
