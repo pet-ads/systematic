@@ -7,8 +7,7 @@ import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
-import br.all.application.report.util.TestDataFactory
-import br.all.application.study.util.TestDataFactory as StudyDataFactory
+import br.all.application.study.util.TestDataFactory
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -43,18 +42,16 @@ class FindKeywordsServiceTestImpl {
 
     private lateinit var precondition: PreconditionCheckerMockingNew
     private lateinit var factory: TestDataFactory
-    private lateinit var studyFactory: StudyDataFactory
 
     @BeforeEach
     fun setup() {
         factory = TestDataFactory()
-        studyFactory = StudyDataFactory()
         precondition = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             systematicStudyRepository,
-            factory.researcher,
-            factory.systematicStudy
+            factory.researcherId,
+            factory.systematicStudyId
         )
         precondition.makeEverythingWork()
     }
@@ -64,27 +61,27 @@ class FindKeywordsServiceTestImpl {
     inner class FilterBySelection {
         @Test
         fun `should count only INCLUDED selection keywords`() {
-            val dto1 = studyFactory.generateDto(
+            val dto1 = factory.generateDto(
                 selectionStatus = "INCLUDED",
                 extractionStatus = "EXCLUDED",
                 keywords = setOf("key1;key2")
             )
-            val dto2 = studyFactory.generateDto(
+            val dto2 = factory.generateDto(
                 selectionStatus = "INCLUDED",
                 extractionStatus = "INCLUDED",
                 keywords = setOf("key1;key3")
             )
-            val dto3 = studyFactory.generateDto(
+            val dto3 = factory.generateDto(
                 selectionStatus = "EXCLUDED",
                 extractionStatus = "EXCLUDED",
                 keywords = setOf("key1;key4")
             )
-            every { studyReviewRepository.findAllFromReview(factory.systematicStudy) }
+            every { studyReviewRepository.findAllFromReview(factory.systematicStudyId) }
                 .returns(listOf(dto1, dto2, dto3))
 
             val request = FindKeywordsService.RequestModel(
-                userId = factory.researcher,
-                systematicStudyId = factory.systematicStudy,
+                userId = factory.researcherId,
+                systematicStudyId = factory.systematicStudyId,
                 filter = "selection"
             )
 
@@ -101,27 +98,27 @@ class FindKeywordsServiceTestImpl {
     inner class FilterByExtraction {
         @Test
         fun `should count only INCLUDED extraction keywords`() {
-            val dto1 = studyFactory.generateDto(
+            val dto1 = factory.generateDto(
                 selectionStatus = "INCLUDED",
                 extractionStatus = "INCLUDED",
                 keywords = setOf("a;b")
             )
-            val dto2 = studyFactory.generateDto(
+            val dto2 = factory.generateDto(
                 selectionStatus = "EXCLUDED",
                 extractionStatus = "INCLUDED",
                 keywords = setOf("b;c")
             )
-            val dto3 = studyFactory.generateDto(
+            val dto3 = factory.generateDto(
                 selectionStatus = "INCLUDED",
                 extractionStatus = "EXCLUDED",
                 keywords = setOf("a;d")
             )
-            every { studyReviewRepository.findAllFromReview(factory.systematicStudy) }
+            every { studyReviewRepository.findAllFromReview(factory.systematicStudyId) }
                 .returns(listOf(dto1, dto2, dto3))
 
             val request = FindKeywordsService.RequestModel(
-                userId = factory.researcher,
-                systematicStudyId = factory.systematicStudy,
+                userId = factory.researcherId,
+                systematicStudyId = factory.systematicStudyId,
                 filter = "extraction"
             )
 
@@ -138,22 +135,22 @@ class FindKeywordsServiceTestImpl {
     inner class NoFilter {
         @Test
         fun `should count all keywords across studies`() {
-            val dto1 = studyFactory.generateDto(
+            val dto1 = factory.generateDto(
                 selectionStatus = "INCLUDED",
                 extractionStatus = "INCLUDED",
                 keywords = setOf("x;y")
             )
-            val dto2 = studyFactory.generateDto(
+            val dto2 = factory.generateDto(
                 selectionStatus = "EXCLUDED",
                 extractionStatus = "EXCLUDED",
                 keywords = setOf("y;z")
             )
-            every { studyReviewRepository.findAllFromReview(factory.systematicStudy) }
+            every { studyReviewRepository.findAllFromReview(factory.systematicStudyId) }
                 .returns(listOf(dto1, dto2))
 
             val request = FindKeywordsService.RequestModel(
-                userId = factory.researcher,
-                systematicStudyId = factory.systematicStudy,
+                userId = factory.researcherId,
+                systematicStudyId = factory.systematicStudyId,
                 filter = null
             )
 
