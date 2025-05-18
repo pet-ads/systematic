@@ -37,7 +37,8 @@ class FindKeywordsServiceImpl(
 
         when (request.filter) {
             "selection" -> {
-                val selectionKeywords = allStudies.asSequence()
+                val selectionKeywords = allStudies
+                    .asSequence()
                     .filter  { it.selectionStatus == SelectionStatus.INCLUDED.name }
                     .map     { it.keywords }
                     .flatten()
@@ -68,7 +69,7 @@ class FindKeywordsServiceImpl(
                     .toMap()
 
                 response.keywords = extractionKeywords
-                response.keywordsQuantity = extractionKeywords.size
+                response.keywordsQuantity = extractionKeywords.values.sum()
             }
             null -> {
                 val allKeywords = allStudies
@@ -84,7 +85,7 @@ class FindKeywordsServiceImpl(
                     .toMap()
 
                 response.keywords = allKeywords
-                response.keywordsQuantity = allKeywords.size
+                response.keywordsQuantity = allKeywords.values.sum()
             }
             else -> {
                 presenter.prepareFailView(IllegalArgumentException(request.filter))
