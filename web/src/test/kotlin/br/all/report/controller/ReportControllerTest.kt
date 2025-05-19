@@ -298,7 +298,51 @@ class ReportControllerTest(
 
                 println(result.response.contentAsString)
             }
+        }
+        @Nested
+        @DisplayName("And failing")
+        inner class AndFailing {
+            @Test
+            fun `should return 404 if the source does not exist`() {
+                val protocol = protocolDataFactory.createProtocolDocument(
+                    id = systematicStudy.id,
+                    informationSources = setOf("Scopus")
+                )
+                val studyReviews = (1111L..1115L).map {
+                        id -> studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = id,
+                    selectionStatus = faker.random.randomValue(listOf("INCLUDED", "EXCLUDED", "DUPLICATED")),
+                    sources = setOf("Scopus"),
+                )
+                }
 
+                protocolRepository.save(protocol)
+                studyReviewRepository.saveAll(studyReviews)
+
+                mockMvc.perform(
+                    get(findSourcesUrl(source = "DOES_NOT_EXIST"))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isNotFound)
+                    .andReturn()
+            }
+
+            @Test
+            fun `should not find source for unauthorized user`() {
+                testHelperService.testForUnauthorizedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(findSourcesUrl("Scopus"))
+                )
+            }
+
+            @Test
+            fun `should not find source for unauthenticated user`() {
+                testHelperService.testForUnauthenticatedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(findSourcesUrl("Scopus"))
+                )
+            }
         }
 
     }
@@ -316,14 +360,32 @@ class ReportControllerTest(
                 )
                 protocolRepository.save(protocolDocument)
 
-                val r = mockMvc.perform(
+                mockMvc.perform(
                     get(formatProtocolUrl(type = "csv"))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                 )
                     .andExpect(status().isOk)
                     .andReturn()
+            }
+        }
 
-                println(r.response.contentAsString)
+        @Nested
+        @DisplayName("And failing")
+        inner class AndFailing {
+            @Test
+            fun `should not find protocol for unauthorized user`() {
+                testHelperService.testForUnauthorizedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(formatProtocolUrl("latex"))
+                )
+            }
+
+            @Test
+            fun `should not find protocol for unauthenticated user`() {
+                testHelperService.testForUnauthenticatedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(formatProtocolUrl("csv"))
+                )
             }
         }
     }
