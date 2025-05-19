@@ -7,7 +7,7 @@ import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
-import br.all.application.study.util.TestDataFactory
+import br.all.application.study.util.TestDataFactory as StudyReviewFactory
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -41,11 +41,11 @@ class FindKeywordsServiceImplTest {
     private lateinit var sut: FindKeywordsServiceImpl
 
     private lateinit var precondition: PreconditionCheckerMockingNew
-    private lateinit var factory: TestDataFactory
+    private lateinit var factory: StudyReviewFactory
 
     @BeforeEach
     fun setup() {
-        factory = TestDataFactory()
+        factory = StudyReviewFactory()
         precondition = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
