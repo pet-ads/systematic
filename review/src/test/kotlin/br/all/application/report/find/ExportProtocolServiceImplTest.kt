@@ -125,4 +125,37 @@ class ExportProtocolServiceImplTest {
             }
         }
     }
+
+    @Nested
+    @DisplayName("When exporting in an unsupported format")
+    inner class ExportInUnsupportedFormat {
+        @Test
+        fun `should return an error message when using an unsupported format`() {
+            val protocolDto = factory.protocolDto()
+            val type = "pdf"
+            val output = "Unsupported format $type"
+
+            every { protocolRepository.findById(factory.systematicStudy) } returns protocolDto
+            every { formatterFactoryService.format(type, any() ) } returns output
+
+            val request = ExportProtocolService.RequestModel(
+                factory.researcher,
+                factory.systematicStudy,
+                type
+            )
+
+            sut.exportProtocol(presenter, request)
+
+            val expectedResponse = ExportProtocolService.ResponseModel(
+                factory.researcher,
+                factory.systematicStudy,
+                type,
+                output
+            )
+
+            verify(exactly = 1) {
+                presenter.prepareSuccessView(expectedResponse)
+            }
+        }
+    }
 }
