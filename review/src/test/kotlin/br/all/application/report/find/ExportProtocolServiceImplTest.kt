@@ -67,10 +67,10 @@ class ExportProtocolServiceImplTest {
         fun `should properly return protocol formatted to CSV`() {
             val protocolDto = factory.protocolDto()
             val type = "csv"
-            val formattedProtocol = "id,goal,justification\n1,Test Goal,Test Justification"
+            val output = "id,goal,justification\n1,Test Goal,Test Justification"
 
             every { protocolRepository.findById(factory.systematicStudy) } returns protocolDto
-            every { formatterFactoryService.format(type, any() ) } returns formattedProtocol
+            every { formatterFactoryService.format(type, any() ) } returns output
 
             val request = ExportProtocolService.RequestModel(
                 factory.researcher,
@@ -84,7 +84,7 @@ class ExportProtocolServiceImplTest {
                 factory.researcher,
                 factory.systematicStudy,
                 type,
-                formattedProtocol
+                output
             )
 
             verify(exactly = 1) {
@@ -100,10 +100,10 @@ class ExportProtocolServiceImplTest {
         fun `should properly return protocol formatted to Latex`() {
             val protocolDto = factory.protocolDto()
             val type = "Latex"
-            val formattedProtocol = "\\documentclass{article}\n\\begin{document}\nProtocol Content\n\\end{document}"
+            val output = "\\documentclass{article}\n\\begin{document}\nProtocol Content\n\\end{document}"
 
             every { protocolRepository.findById(factory.systematicStudy) } returns protocolDto
-            every { formatterFactoryService.format(type, any() ) } returns formattedProtocol
+            every { formatterFactoryService.format(type, any() ) } returns output
 
             val request = ExportProtocolService.RequestModel(
                 factory.researcher,
@@ -117,7 +117,7 @@ class ExportProtocolServiceImplTest {
                 factory.researcher,
                 factory.systematicStudy,
                 type,
-                formattedProtocol
+                output
             )
 
             verify(exactly = 1) {
