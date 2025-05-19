@@ -211,6 +211,7 @@ class ReportControllerTest(
                 )
             }
         }
+
         @Nested
         @DisplayName("And not finding them")
         inner class AndNotFindingThem {
@@ -609,6 +610,86 @@ class ReportControllerTest(
                 testHelperService.testForUnauthorizedUser(
                     mockMvc = mockMvc,
                     requestBuilder = get(studiesFunnelUrl())
+                )
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("When finding keywords")
+    inner class WhenFindingKeywords {
+        @Nested
+        @DisplayName("And having success")
+        inner class AndHavingSuccess {
+            @Test
+            fun `should return 200 and get keywords data`() {
+                val documents = mutableListOf<StudyReviewDocument>()
+
+                var nextStudyReviewId = 1_000L
+
+                repeat(10) {
+                    documents += studyReviewDataFactory.reviewDocument(
+                        systematicStudyId = systematicStudy.id,
+                        studyReviewId     = nextStudyReviewId++,
+                        selectionStatus   = "INCLUDED",
+                        extractionStatus  = "INCLUDED",
+                        sources           = setOf("Scopus", "IEEE"),
+                        keywords          = setOf("key1;key2")
+                    )
+                }
+
+                studyReviewRepository.saveAll(documents)
+
+                mockMvc.perform(
+                    get(findKeywordsUrl(filter = null))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isOk)
+            }
+
+            @Test
+            fun `should return 200 and get keywords data using filter`() {
+                val documents = mutableListOf<StudyReviewDocument>()
+
+                var nextStudyReviewId = 1_000L
+
+                repeat(10) {
+                    documents += studyReviewDataFactory.reviewDocument(
+                        systematicStudyId = systematicStudy.id,
+                        studyReviewId     = nextStudyReviewId++,
+                        selectionStatus   = "INCLUDED",
+                        extractionStatus  = "INCLUDED",
+                        sources           = setOf("Scopus", "IEEE"),
+                        keywords          = setOf("key1;key2")
+                    )
+                }
+
+                studyReviewRepository.saveAll(documents)
+
+                mockMvc.perform(
+                    get(findKeywordsUrl(filter = "selection"))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isOk)
+            }
+        }
+
+        @Nested
+        @DisplayName("And failing")
+        inner class AndFailing {
+            @Test
+            fun `should not allow unauthorized user to get studies funnel`() {
+                testHelperService.testForUnauthorizedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(findKeywordsUrl(filter = null))
+                )
+            }
+
+            @Test
+            fun `should not allow unauthenticated user to get studies funnel`() {
+                testHelperService.testForUnauthenticatedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(findKeywordsUrl(filter = null))
                 )
             }
         }
