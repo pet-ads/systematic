@@ -23,7 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @Tag("UnitTest")
 @Tag("ServiceTest")
 @ExtendWith(MockKExtension::class)
-class FindKeywordsServiceTestImpl {
+class FindKeywordsServiceImplTest {
 
     @MockK(relaxUnitFun = true)
     private lateinit var systematicStudyRepository: SystematicStudyRepository
