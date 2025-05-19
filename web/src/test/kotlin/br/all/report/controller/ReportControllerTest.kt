@@ -93,20 +93,36 @@ class ReportControllerTest(
         factory.deleteQuestions(questionRepository)
         testHelperService.deleteApplicationUser(user.id)
     }
-    private fun findAnswerUrl(systematicStudy: UUID = this.systematicStudy.id, questionId: UUID) =
-        "/api/v1/systematic-study/$systematicStudy/report/find-answer/$questionId"
-    private fun findCriteriaUrl(systematicStudy: UUID = this.systematicStudy.id, type: String) =
-        "/api/v1/systematic-study/$systematicStudy/report/criteria/$type"
-    private fun findSourcesUrl(systematicStudy: UUID = this.systematicStudy.id, source: String) =
-        "/api/v1/systematic-study/$systematicStudy/report/source/$source"
-    private fun formatProtocolUrl(systematicStudy: UUID = this.systematicStudy.id, type: String) =
-        "/api/v1/systematic-study/$systematicStudy/report/exportable-protocol/$type?downloadable=false"
-    private fun authorNetworkUrl(systematicStudy: UUID = this.systematicStudy.id) =
-        "/api/v1/systematic-study/$systematicStudy/report/author-network"
-    private fun findStudiesByStageUrl(systematicStudy: UUID = this.systematicStudy.id, stage: String) =
-        "/api/v1/systematic-study/$systematicStudy/report/studies/$stage"
-    private fun studiesFunnelUrl(systematicStudy: UUID = this.systematicStudy.id) =
-        "/api/v1/systematic-study/$systematicStudy/report/studies-funnel"
+
+    private val baseReportUrl: String
+        get() = "/api/v1/systematic-study/${systematicStudy.id}/report"
+
+    private fun findAnswerUrl(questionId: UUID) =
+        "$baseReportUrl/find-answer/$questionId"
+
+    private fun findCriteriaUrl(type: String) =
+        "$baseReportUrl/criteria/$type"
+
+    private fun findSourcesUrl(source: String) =
+        "$baseReportUrl/source/$source"
+
+    private fun formatProtocolUrl(type: String) =
+        "$baseReportUrl/exportable-protocol/$type?downloadable=false"
+
+    private fun authorNetworkUrl() =
+        "$baseReportUrl/author-network"
+
+    private fun findStudiesByStageUrl(stage: String) =
+        "$baseReportUrl/studies/$stage"
+
+    private fun studiesFunnelUrl() =
+        "$baseReportUrl/studies-funnel"
+
+    private fun findKeywordsUrl(filter: String?) =
+        if (filter.isNullOrBlank())
+            "$baseReportUrl/keywords"
+        else
+            "$baseReportUrl/keywords?filter=$filter"
 
     @Nested
     @DisplayName("When searching answers of questions")
