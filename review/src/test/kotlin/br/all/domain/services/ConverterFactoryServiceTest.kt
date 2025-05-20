@@ -1,12 +1,8 @@
-package br.all.domain.services.unit
+package br.all.domain.services
 
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
-import br.all.domain.services.BibtexConverterService
-import br.all.domain.services.ConverterFactoryService
-import br.all.domain.services.IdGeneratorService
-import br.all.domain.services.RisConverterService
-import br.all.domain.services.unit.RisTestData.testInput as risInput
+import br.all.domain.services.RisTestData.testInput as risInput
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

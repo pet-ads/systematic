@@ -1,11 +1,7 @@
-package br.all.domain.services.integration
+package br.all.domain.services
 
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
-import br.all.domain.services.BibtexConverterService
-import br.all.domain.services.unit.FakeIdGeneratorService
-import br.all.domain.services.IdGeneratorService
-import br.all.domain.services.ScoreCalculatorService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
@@ -15,7 +11,7 @@ import java.util.*
 import kotlin.test.assertEquals
 
 @Tag("IntegrationTest")
-class ScoreCalculatorServiceIntegrationTest {
+class ScoreCalculatorServiceTest {
 
     private lateinit var sut: ScoreCalculatorService
     private lateinit var bibtexConverterService: BibtexConverterService

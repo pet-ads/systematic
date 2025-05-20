@@ -1,4 +1,4 @@
-package br.all.domain.services.unit
+package br.all.domain.services
 
 import br.all.domain.services.IdGeneratorService
 

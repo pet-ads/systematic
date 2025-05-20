@@ -1,13 +1,9 @@
-package br.all.domain.services.integration
+package br.all.domain.services
 
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.study.ExtractionStatus
 import br.all.domain.model.study.SelectionStatus
-import br.all.domain.services.BibtexConverterService
-import br.all.domain.services.unit.FakeIdGeneratorService
-import br.all.domain.services.IdGeneratorService
-import br.all.domain.services.ReviewSimilarityService
 import br.all.infrastructure.similarity.LevenshteinSimilarityCalculatorImpl
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -19,7 +15,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @Tag("IntegrationTest")
-class ReviewSimilarityServiceIntegrationTest {
+class ReviewSimilarityServiceTest {
     /*
         These tests were all made
         with the all the thresholds set to 0.8,
