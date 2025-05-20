@@ -13,11 +13,10 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.slot
 import io.mockk.verify
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.Test
 
@@ -78,18 +77,15 @@ class ExportProtocolServiceImplTest {
                 type
             )
 
+            val slot = slot<ExportProtocolService.ResponseModel>()
             sut.exportProtocol(presenter, request)
 
-            val expectedResponse = ExportProtocolService.ResponseModel(
-                factory.researcher,
-                factory.systematicStudy,
-                type,
-                output
-            )
+            verify(exactly = 1) { presenter.prepareSuccessView(capture(slot)) }
 
-            verify(exactly = 1) {
-                presenter.prepareSuccessView(expectedResponse)
-            }
+            assertEquals(factory.researcher, slot.captured.userId)
+            assertEquals(factory.systematicStudy, slot.captured.systematicStudyId)
+            assertEquals(type, slot.captured.format)
+            assertEquals(output, slot.captured.formattedProtocol)
         }
     }
 
@@ -111,18 +107,17 @@ class ExportProtocolServiceImplTest {
                 type
             )
 
+            val slot = slot<ExportProtocolService.ResponseModel>()
             sut.exportProtocol(presenter, request)
 
-            val expectedResponse = ExportProtocolService.ResponseModel(
-                factory.researcher,
-                factory.systematicStudy,
-                type,
-                output
-            )
-
             verify(exactly = 1) {
-                presenter.prepareSuccessView(expectedResponse)
+                presenter.prepareSuccessView(capture(slot))
             }
+
+            assertEquals(factory.researcher, slot.captured.userId)
+            assertEquals(factory.systematicStudy, slot.captured.systematicStudyId)
+            assertEquals(type, slot.captured.format)
+            assertEquals(output, slot.captured.formattedProtocol)
         }
     }
 
@@ -133,7 +128,7 @@ class ExportProtocolServiceImplTest {
         fun `should return an error message when using an unsupported format`() {
             val protocolDto = factory.protocolDto()
             val type = "pdf"
-            val output = "Unsupported format $type"
+            val output = null
 
             every { protocolRepository.findById(factory.systematicStudy) } returns protocolDto
             every { formatterFactoryService.format(type, any() ) } returns output
@@ -146,15 +141,16 @@ class ExportProtocolServiceImplTest {
 
             sut.exportProtocol(presenter, request)
 
-            val expectedResponse = ExportProtocolService.ResponseModel(
+            val someResponse = ExportProtocolService.ResponseModel(
                 factory.researcher,
                 factory.systematicStudy,
                 type,
-                output
+                ""
             )
 
-            verify(exactly = 1) {
-                presenter.prepareSuccessView(expectedResponse)
+
+            verify(exactly = 0) {
+                presenter.prepareSuccessView(someResponse)
             }
         }
     }
