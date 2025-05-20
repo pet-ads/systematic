@@ -7,11 +7,11 @@ class FormatterFactoryService (
     fun format(
         type: String,
         protocol: ProtocolFto,
-    ): String {
+    ): String? {
         return when (type) {
             "csv" -> csvFormatterService.formatProtocol(protocol)
             "latex" -> latexFormatterService.formatProtocol(protocol)
-            else -> {"Unsupported format $type"}
+            else -> {null}
         }
     }
 }
