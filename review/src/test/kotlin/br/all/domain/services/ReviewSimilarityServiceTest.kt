@@ -8,6 +8,7 @@ import br.all.infrastructure.similarity.LevenshteinSimilarityCalculatorImpl
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.assertAll
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -48,16 +49,16 @@ class ReviewSimilarityServiceTest {
         val studyReviews = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source).first
         val result = sut.findDuplicates(studyReviews, emptyList())
 
-        assertEquals(1, result.size)
-        assertTrue(result.containsKey(studyReviews[0]))
-        assertEquals(1, result[studyReviews[0]]!!.size)
-        assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1]))
-
-        assertEquals(SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
-        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
-
-        assertTrue(studyReviews[0].searchSources.contains("Test"))
-        assertEquals(1, studyReviews[0].searchSources.size)
+        assertAll(
+            { assertEquals(1, result.size) },
+            { assertTrue(result.containsKey(studyReviews[0])) },
+            { assertEquals(1, result[studyReviews[0]]!!.size) },
+            { assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1])) },
+            { assertEquals(SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus) },
+            { assertEquals(ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus) },
+            { assertTrue(studyReviews[0].searchSources.contains("Test")) },
+            { assertEquals(1, studyReviews[0].searchSources.size) }
+        )
     }
 
     @Test
@@ -66,16 +67,16 @@ class ReviewSimilarityServiceTest {
         val studyReviews = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source).first
         val result = sut.findDuplicates(studyReviews, emptyList())
 
-        assertEquals(1, result.size)
-        assertTrue(result.containsKey(studyReviews[0]))
-        assertEquals(1, result[studyReviews[0]]!!.size)
-        assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1]))
-
-        assertEquals(SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
-        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
-
-        assertTrue(studyReviews[0].searchSources.contains("Test"))
-        assertEquals(1, studyReviews[0].searchSources.size)
+        assertAll(
+            { assertEquals(1, result.size) },
+            { assertTrue(result.containsKey(studyReviews[0])) },
+            { assertEquals(1, result[studyReviews[0]]!!.size) },
+            { assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1])) },
+            { assertEquals(SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus) },
+            { assertEquals(ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus) },
+            { assertTrue(studyReviews[0].searchSources.contains("Test")) },
+            { assertEquals(1, studyReviews[0].searchSources.size) }
+        )
     }
 
     @Test
@@ -93,16 +94,16 @@ class ReviewSimilarityServiceTest {
         val studyReviews = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source).first
         val result = sut.findDuplicates(studyReviews, emptyList())
 
-        assertEquals(1, result.size)
-        assertTrue(result.containsKey(studyReviews[0]))
-        assertEquals(1, result[studyReviews[0]]!!.size)
-        assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1]))
-
-        assertEquals(SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
-        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
-
-        assertTrue(studyReviews[0].searchSources.contains("Test"))
-        assertEquals(1, studyReviews[0].searchSources.size)
+        assertAll(
+            { assertEquals(1, result.size) },
+            { assertTrue(result.containsKey(studyReviews[0])) },
+            { assertEquals(1, result[studyReviews[0]]!!.size) },
+            { assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1])) },
+            { assertEquals(SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus) },
+            { assertEquals(ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus) },
+            { assertTrue(studyReviews[0].searchSources.contains("Test")) },
+            { assertEquals(1, studyReviews[0].searchSources.size) }
+        )
     }
 
     @Test
@@ -127,24 +128,29 @@ class ReviewSimilarityServiceTest {
         val studyReviews = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source).first
         val result = sut.findDuplicates(studyReviews, emptyList())
 
-        assertEquals(2, result.size)
-        assertTrue(result.containsKey(studyReviews[0]))
-        assertEquals(1, result[studyReviews[0]]!!.size)
-        assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1]))
-        assertTrue(result.containsKey(studyReviews[2]))
-        assertEquals(1, result[studyReviews[2]]!!.size)
-        assertTrue(result[studyReviews[2]]!!.contains(studyReviews[3]))
-        assertFalse(result.containsKey(studyReviews[4]))
+        assertAll(
+            // GROUP 1
+            { assertTrue(result.containsKey(studyReviews[0])) },
+            { assertEquals(1, result[studyReviews[0]]!!.size) },
+            { assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1])) },
+            { assertEquals(SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus) },
+            { assertEquals(ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus) },
+            { assertTrue(studyReviews[0].searchSources.contains("Test")) },
+            { assertEquals(1, studyReviews[0].searchSources.size) },
 
-        assertEquals(SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
-        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
-        assertEquals(SelectionStatus.DUPLICATED, studyReviews[3].selectionStatus)
-        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[3].extractionStatus)
+            // GROUP 2
+            { assertTrue(result.containsKey(studyReviews[2])) },
+            { assertEquals(1, result[studyReviews[2]]!!.size) },
+            { assertTrue(result[studyReviews[2]]!!.contains(studyReviews[3])) },
+            { assertEquals(SelectionStatus.DUPLICATED, studyReviews[3].selectionStatus) },
+            { assertEquals(ExtractionStatus.DUPLICATED, studyReviews[3].extractionStatus) },
+            { assertTrue(studyReviews[2].searchSources.contains("Test")) },
+            { assertEquals(1, studyReviews[2].searchSources.size) },
 
-        assertTrue(studyReviews[0].searchSources.contains("Test"))
-        assertEquals(1, studyReviews[0].searchSources.size)
-        assertTrue(studyReviews[2].searchSources.contains("Test"))
-        assertEquals(1, studyReviews[2].searchSources.size)
+            // Other assertions
+            { assertFalse(result.containsKey(studyReviews[4])) },
+            { assertEquals(2, result.size) }
+        )
     }
 
     @Test
@@ -162,69 +168,43 @@ class ReviewSimilarityServiceTest {
         val studyReviews = converter.convertManyToStudyReview(systematicStudyId, searchSessionId, bibtex, source).first
         val result = sut.findDuplicates(studyReviews, emptyList())
 
-        /*
-        GROUP 1: Original should match with similar title
-        */
-        assertTrue(result.containsKey(studyReviews[0]))
-        assertEquals(1, result[studyReviews[0]]!!.size)
-        assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1])) // similar title
+        assertAll(
+            // GROUP 1
+            { assertTrue(result.containsKey(studyReviews[0])) },
+            { assertEquals(1, result[studyReviews[0]]!!.size) },
+            { assertTrue(result[studyReviews[0]]!!.contains(studyReviews[1])) },
+            { assertEquals(SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus) },
+            { assertEquals(ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus) },
+            { assertTrue(studyReviews[0].searchSources.contains("Test")) },
+            { assertEquals(1, studyReviews[0].searchSources.size) },
+            { assertFalse(result[studyReviews[0]]!!.contains(studyReviews[2])) },
+            { assertFalse(result[studyReviews[0]]!!.contains(studyReviews[3])) },
+            { assertFalse(result[studyReviews[0]]!!.contains(studyReviews[4])) },
+            { assertFalse(result[studyReviews[0]]!!.contains(studyReviews[5])) },
 
-        // Verify duplicate is marked as duplicated
-        assertEquals(SelectionStatus.DUPLICATED, studyReviews[1].selectionStatus)
-        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[1].extractionStatus)
+            // GROUP 2
+            { assertTrue(result.containsKey(studyReviews[6])) },
+            { assertEquals(1, result[studyReviews[6]]!!.size) },
+            { assertTrue(result[studyReviews[6]]!!.contains(studyReviews[7])) },
+            { assertEquals(SelectionStatus.DUPLICATED, studyReviews[7].selectionStatus) },
+            { assertEquals(ExtractionStatus.DUPLICATED, studyReviews[7].extractionStatus) },
+            { assertTrue(studyReviews[6].searchSources.contains("Test")) },
+            { assertEquals(1, studyReviews[6].searchSources.size) },
+            { assertFalse(result[studyReviews[6]]!!.contains(studyReviews[8])) },
 
-        // Verify search sources are merged
-        assertTrue(studyReviews[0].searchSources.contains("Test"))
-        assertEquals(1, studyReviews[0].searchSources.size)
+            // GROUP 3
+            { assertTrue(result.containsKey(studyReviews[9])) },
+            { assertEquals(1, result[studyReviews[9]]!!.size) },
+            { assertTrue(result[studyReviews[9]]!!.contains(studyReviews[10])) },
+            { assertEquals(SelectionStatus.DUPLICATED, studyReviews[10].selectionStatus) },
+            { assertEquals(ExtractionStatus.DUPLICATED, studyReviews[10].extractionStatus) },
+            { assertTrue(studyReviews[9].searchSources.contains("Test")) },
+            { assertEquals(1, studyReviews[9].searchSources.size) },
 
-        // Kinda different abstract should not be detected as duplicate, though It can be changed by the threshold
-        assertFalse(result[studyReviews[0]]!!.contains(studyReviews[2])) // similar abstract
-
-        // Different year should not be detected as duplicate
-        assertFalse(result[studyReviews[0]]!!.contains(studyReviews[3]))
-
-        // Different authors should not be detected as duplicate
-        assertFalse(result[studyReviews[0]]!!.contains(studyReviews[4]))
-
-        // Different abstract should not be detected as duplicate
-        assertFalse(result[studyReviews[0]]!!.contains(studyReviews[5]))
-
-        /*
-        GROUP 2: Original should match with duplicate
-        */
-        assertTrue(result.containsKey(studyReviews[6]))
-        assertEquals(1, result[studyReviews[6]]!!.size)
-        assertTrue(result[studyReviews[6]]!!.contains(studyReviews[7])) // exact duplicate
-
-        // Verify duplicate is marked as duplicated
-        assertEquals(SelectionStatus.DUPLICATED, studyReviews[7].selectionStatus)
-        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[7].extractionStatus)
-
-        // Verify search sources are merged
-        assertTrue(studyReviews[6].searchSources.contains("Test"))
-        assertEquals(1, studyReviews[6].searchSources.size)
-
-        // Similar title and authors but different abstract should not be detected as duplicate
-        assertFalse(result[studyReviews[6]]!!.contains(studyReviews[8]))
-
-        /*
-        Group 3: Studies with no abstracts but identical title and authors
-        */
-        assertTrue(result.containsKey(studyReviews[9]))
-        assertEquals(1, result[studyReviews[9]]!!.size)
-        assertTrue(result[studyReviews[9]]!!.contains(studyReviews[10])) // no abstract but same title/authors
-
-        // Verify duplicate is marked as duplicated
-        assertEquals(SelectionStatus.DUPLICATED, studyReviews[10].selectionStatus)
-        assertEquals(ExtractionStatus.DUPLICATED, studyReviews[10].extractionStatus)
-
-        // Verify search sources are merged
-        assertTrue(studyReviews[9].searchSources.contains("Test"))
-        assertEquals(1, studyReviews[9].searchSources.size)
-
-
-        assertFalse(result.containsKey(studyReviews[11]))
-        assertFalse(result.containsKey(studyReviews[12]))
+            // Other assertions
+            { assertFalse(result.containsKey(studyReviews[11])) },
+            { assertFalse(result.containsKey(studyReviews[12])) }
+        )
     }
 
     @Test
@@ -239,16 +219,16 @@ class ReviewSimilarityServiceTest {
 
         val result = sut.findDuplicates(listOf(study1, study2), emptyList())
 
-        assertEquals(1, result.size)
-        assertTrue(result.containsKey(study1))
-        assertEquals(1, result[study1]!!.size)
-        assertTrue(result[study1]!!.contains(study2))
-
-        assertEquals(SelectionStatus.DUPLICATED, study2.selectionStatus)
-        assertEquals(ExtractionStatus.DUPLICATED, study2.extractionStatus)
-
-        assertTrue(study1.searchSources.contains("Source1"))
-        assertTrue(study1.searchSources.contains("Source2"))
-        assertEquals(2, study1.searchSources.size)
+        assertAll(
+            { assertEquals(1, result.size) },
+            { assertTrue(result.containsKey(study1)) },
+            { assertEquals(1, result[study1]!!.size) },
+            { assertTrue(result[study1]!!.contains(study2)) },
+            { assertEquals(SelectionStatus.DUPLICATED, study2.selectionStatus) },
+            { assertEquals(ExtractionStatus.DUPLICATED, study2.extractionStatus) },
+            { assertTrue(study1.searchSources.contains("Source1")) },
+            { assertTrue(study1.searchSources.contains("Source2")) },
+            { assertEquals(2, study1.searchSources.size) }
+        )
     }
 }
