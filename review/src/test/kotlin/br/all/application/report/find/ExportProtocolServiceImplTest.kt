@@ -13,10 +13,8 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.Test
 
@@ -77,15 +75,18 @@ class ExportProtocolServiceImplTest {
                 type
             )
 
-            val slot = slot<ExportProtocolService.ResponseModel>()
             sut.exportProtocol(presenter, request)
 
-            verify(exactly = 1) { presenter.prepareSuccessView(capture(slot)) }
+            val expectedResponse = ExportProtocolService.ResponseModel(
+                factory.researcher,
+                factory.systematicStudy,
+                type,
+                output
+            )
 
-            assertEquals(factory.researcher, slot.captured.userId)
-            assertEquals(factory.systematicStudy, slot.captured.systematicStudyId)
-            assertEquals(type, slot.captured.format)
-            assertEquals(output, slot.captured.formattedProtocol)
+            verify(exactly = 1) {
+                presenter.prepareSuccessView(expectedResponse)
+            }
         }
     }
 
@@ -107,17 +108,18 @@ class ExportProtocolServiceImplTest {
                 type
             )
 
-            val slot = slot<ExportProtocolService.ResponseModel>()
             sut.exportProtocol(presenter, request)
 
-            verify(exactly = 1) {
-                presenter.prepareSuccessView(capture(slot))
-            }
+            val expectedResponse = ExportProtocolService.ResponseModel(
+                factory.researcher,
+                factory.systematicStudy,
+                type,
+                output
+            )
 
-            assertEquals(factory.researcher, slot.captured.userId)
-            assertEquals(factory.systematicStudy, slot.captured.systematicStudyId)
-            assertEquals(type, slot.captured.format)
-            assertEquals(output, slot.captured.formattedProtocol)
+            verify(exactly = 1) {
+                presenter.prepareSuccessView(expectedResponse)
+            }
         }
     }
 
@@ -147,7 +149,6 @@ class ExportProtocolServiceImplTest {
                 type,
                 ""
             )
-
 
             verify(exactly = 0) {
                 presenter.prepareSuccessView(someResponse)
