@@ -5,6 +5,7 @@ import br.all.application.report.find.presenter.ExportProtocolPresenter
 import br.all.application.report.find.service.ExportProtocolService
 import br.all.application.report.find.service.ExportProtocolServiceImpl
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.protocol.util.TestDataFactory as ProtocolDtoFactory
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
@@ -143,15 +144,9 @@ class ExportProtocolServiceImplTest {
 
             sut.exportProtocol(presenter, request)
 
-            val someResponse = ExportProtocolService.ResponseModel(
-                factory.researcher,
-                factory.systematicStudy,
-                type,
-                ""
-            )
-
-            verify(exactly = 0) {
-                presenter.prepareSuccessView(someResponse)
+            val message = "Invalid export format ${request.format}"
+            verify(exactly = 1) {
+                presenter.prepareFailView(match<EntityNotFoundException> { it.message == message })
             }
         }
     }
