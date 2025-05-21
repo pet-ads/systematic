@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.UUID
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -43,15 +44,22 @@ class FindKeywordsServiceImplTest {
     private lateinit var precondition: PreconditionCheckerMockingNew
     private lateinit var factory: StudyReviewFactory
 
+    private lateinit var researcherId: UUID
+    private lateinit var systematicStudyId: UUID
+
     @BeforeEach
     fun setup() {
         factory = StudyReviewFactory()
+
+        researcherId = factory.researcherId
+        systematicStudyId = factory.systematicStudyId
+
         precondition = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             systematicStudyRepository,
-            factory.researcherId,
-            factory.systematicStudyId
+            researcherId,
+            systematicStudyId
         )
         precondition.makeEverythingWork()
     }
@@ -76,12 +84,12 @@ class FindKeywordsServiceImplTest {
                 extractionStatus = "EXCLUDED",
                 keywords = setOf("key1;key4")
             )
-            every { studyReviewRepository.findAllFromReview(factory.systematicStudyId) }
+            every { studyReviewRepository.findAllFromReview(systematicStudyId) }
                 .returns(listOf(dto1, dto2, dto3))
 
             val request = FindKeywordsService.RequestModel(
-                userId = factory.researcherId,
-                systematicStudyId = factory.systematicStudyId,
+                userId = researcherId,
+                systematicStudyId = systematicStudyId,
                 filter = "selection"
             )
 
@@ -94,8 +102,8 @@ class FindKeywordsServiceImplTest {
             )
 
             val expectedResponse = FindKeywordsService.ResponseModel(
-                userId = factory.researcherId,
-                systematicStudyId = factory.systematicStudyId,
+                userId = researcherId,
+                systematicStudyId = systematicStudyId,
                 filter = "selection",
                 keywords = expectedKeywords,
                 keywordsQuantity = expectedKeywords.values.sum()
@@ -127,12 +135,12 @@ class FindKeywordsServiceImplTest {
                 extractionStatus = "EXCLUDED",
                 keywords = setOf("a;d")
             )
-            every { studyReviewRepository.findAllFromReview(factory.systematicStudyId) }
+            every { studyReviewRepository.findAllFromReview(systematicStudyId) }
                 .returns(listOf(dto1, dto2, dto3))
 
             val request = FindKeywordsService.RequestModel(
-                userId = factory.researcherId,
-                systematicStudyId = factory.systematicStudyId,
+                userId = researcherId,
+                systematicStudyId = systematicStudyId,
                 filter = "extraction"
             )
 
@@ -145,8 +153,8 @@ class FindKeywordsServiceImplTest {
             )
 
             val expectedResponse = FindKeywordsService.ResponseModel(
-                userId = factory.researcherId,
-                systematicStudyId = factory.systematicStudyId,
+                userId = researcherId,
+                systematicStudyId = systematicStudyId,
                 filter = "extraction",
                 keywords = expectedKeywords,
                 keywordsQuantity = expectedKeywords.values.sum()
@@ -173,12 +181,12 @@ class FindKeywordsServiceImplTest {
                 extractionStatus = "EXCLUDED",
                 keywords = setOf("y;z")
             )
-            every { studyReviewRepository.findAllFromReview(factory.systematicStudyId) }
+            every { studyReviewRepository.findAllFromReview(systematicStudyId) }
                 .returns(listOf(dto1, dto2))
 
             val request = FindKeywordsService.RequestModel(
-                userId = factory.researcherId,
-                systematicStudyId = factory.systematicStudyId,
+                userId = researcherId,
+                systematicStudyId = systematicStudyId,
                 filter = null
             )
 
@@ -191,8 +199,8 @@ class FindKeywordsServiceImplTest {
             )
 
             val expectedResponse = FindKeywordsService.ResponseModel(
-                userId = factory.researcherId,
-                systematicStudyId = factory.systematicStudyId,
+                userId = researcherId,
+                systematicStudyId = systematicStudyId,
                 filter = null,
                 keywords = expectedKeywords,
                 keywordsQuantity = expectedKeywords.values.sum()

@@ -17,6 +17,7 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.UUID
 import kotlin.test.Test
 
 @Tag("UnitTest")
@@ -45,15 +46,22 @@ class ExportProtocolServiceImplTest {
     private lateinit var precondition: PreconditionCheckerMockingNew
     private lateinit var factory: ProtocolDtoFactory
 
+    private lateinit var researcherId: UUID
+    private lateinit var systematicStudyId: UUID
+
     @BeforeEach
     fun setup() {
         factory = ProtocolDtoFactory()
+
+        researcherId = factory.researcher
+        systematicStudyId = factory.systematicStudy
+
         precondition = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             systematicStudyRepository,
-            factory.researcher,
-            factory.systematicStudy
+            researcherId,
+            systematicStudyId
         )
         precondition.makeEverythingWork()
     }
@@ -67,20 +75,20 @@ class ExportProtocolServiceImplTest {
             val type = "csv"
             val output = "id,goal,justification\n1,Test Goal,Test Justification"
 
-            every { protocolRepository.findById(factory.systematicStudy) } returns protocolDto
+            every { protocolRepository.findById(systematicStudyId) } returns protocolDto
             every { formatterFactoryService.format(type, any() ) } returns output
 
             val request = ExportProtocolService.RequestModel(
-                factory.researcher,
-                factory.systematicStudy,
+                researcherId,
+                systematicStudyId,
                 type
             )
 
             sut.exportProtocol(presenter, request)
 
             val expectedResponse = ExportProtocolService.ResponseModel(
-                factory.researcher,
-                factory.systematicStudy,
+                researcherId,
+                systematicStudyId,
                 type,
                 output
             )
@@ -100,20 +108,20 @@ class ExportProtocolServiceImplTest {
             val type = "Latex"
             val output = "\\documentclass{article}\n\\begin{document}\nProtocol Content\n\\end{document}"
 
-            every { protocolRepository.findById(factory.systematicStudy) } returns protocolDto
+            every { protocolRepository.findById(systematicStudyId) } returns protocolDto
             every { formatterFactoryService.format(type, any() ) } returns output
 
             val request = ExportProtocolService.RequestModel(
-                factory.researcher,
-                factory.systematicStudy,
+                researcherId,
+                systematicStudyId,
                 type
             )
 
             sut.exportProtocol(presenter, request)
 
             val expectedResponse = ExportProtocolService.ResponseModel(
-                factory.researcher,
-                factory.systematicStudy,
+                researcherId,
+                systematicStudyId,
                 type,
                 output
             )
@@ -133,12 +141,12 @@ class ExportProtocolServiceImplTest {
             val type = "pdf"
             val output = null
 
-            every { protocolRepository.findById(factory.systematicStudy) } returns protocolDto
+            every { protocolRepository.findById(systematicStudyId) } returns protocolDto
             every { formatterFactoryService.format(type, any() ) } returns output
 
             val request = ExportProtocolService.RequestModel(
-                factory.researcher,
-                factory.systematicStudy,
+                researcherId,
+                systematicStudyId,
                 type
             )
 
