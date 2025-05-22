@@ -24,7 +24,6 @@ import kotlin.test.Test
 import br.all.application.study.util.TestDataFactory as StudyReviewFactory
 import br.all.application.protocol.util.TestDataFactory as ProtocolDtoFactory
 
-
 @Tag("UnitTest")
 @Tag("ServiceTest")
 @ExtendWith(MockKExtension::class)
@@ -73,7 +72,6 @@ class FindSourceServiceImplTest {
 
         precondition.makeEverythingWork()
     }
-
 
     @Nested
     @DisplayName("When successfully finding studies by source")
@@ -130,7 +128,6 @@ class FindSourceServiceImplTest {
             }
         }
     }
-    
 
     @Nested
     @DisplayName("When failing finding studies by source")
