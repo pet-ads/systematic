@@ -9,7 +9,6 @@ import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
-import java.util.*
 
 class FindCriteriaServiceImpl(
     private val protocolRepository: ProtocolRepository,
@@ -46,8 +45,8 @@ class FindCriteriaServiceImpl(
         )
 
         val response = FindCriteriaService.ResponseModel(
-            userId = UUID.randomUUID(),
-            systematicStudyId = UUID.randomUUID(),
+            userId = request.userId,
+            systematicStudyId = request.systematicStudyId,
             criteria = filteredCriteria,
         )
 
