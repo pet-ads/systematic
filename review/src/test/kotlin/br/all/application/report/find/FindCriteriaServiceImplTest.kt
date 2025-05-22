@@ -82,9 +82,18 @@ class FindCriteriaServiceImplTest {
         fun `should return criteria with associated studies`() {
             val criteriaType = "INCLUSION"
 
-            val inclusionCriterion1 = criteriaFactory.criteriaDto()
-            val inclusionCriterion2 = criteriaFactory.criteriaDto()
-            val exclusionCriterion1 = criteriaFactory.criteriaDto()
+            val inclusionCriterion1 = criteriaFactory.criteriaDto(
+                description = "criterion1",
+                type = "INCLUSION"
+            )
+            val inclusionCriterion2 = criteriaFactory.criteriaDto(
+                description = "criterion2",
+                type = "INCLUSION"
+            )
+            val exclusionCriterion1 = criteriaFactory.criteriaDto(
+                description = "exclusion1",
+                type = "EXCLUSION"
+            )
 
             val protocolDto = protocolDtoFactory.protocolDto(
                 systematicStudy = systematicStudyId,
