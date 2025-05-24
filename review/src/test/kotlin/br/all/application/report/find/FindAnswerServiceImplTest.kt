@@ -61,7 +61,7 @@ class FindAnswerServiceImplTest {
 
         researcherId = studyFactory.researcherId
         systematicStudyId = studyFactory.systematicStudyId
-        questionId = UUID.randomUUID()
+        questionId = reportFactory.questionId
 
         precondition = PreconditionCheckerMockingNew(
             presenter,
