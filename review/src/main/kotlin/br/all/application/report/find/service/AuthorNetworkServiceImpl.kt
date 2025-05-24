@@ -7,6 +7,8 @@ import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
+import br.all.application.report.find.service.AuthorNetworkService.Edge
+import br.all.application.report.find.service.AuthorNetworkService.PaperNode
 
 class AuthorNetworkServiceImpl(
     private val credentialsService: CredentialsService,
@@ -43,33 +45,23 @@ class AuthorNetworkServiceImpl(
 
         presenter.prepareSuccessView(response)
     }
-}
 
-data class PaperNode(
-    val paperId: Long,
-    val authors: List<String>
-)
+    private fun generateGraph(papers: List<PaperNode>): Pair<Set<PaperNode>, List<Edge>> {
+        val nodes = papers.toSet()
+        val edges = mutableListOf<Edge>()
 
-data class Edge(
-    val paper1Id: Long,
-    val paper2Id: Long
-)
+        for (i in papers.indices) {
+            for (j in i + 1 until papers.size) {
+                val paper1 = papers[i]
+                val paper2 = papers[j]
 
-
-fun generateGraph(papers: List<PaperNode>): Pair<Set<PaperNode>, List<Edge>> {
-    val nodes = papers.toSet()
-    val edges = mutableListOf<Edge>()
-
-    for (i in papers.indices) {
-        for (j in i + 1 until papers.size) {
-            val paper1 = papers[i]
-            val paper2 = papers[j]
-
-            if (paper1.authors.intersect(paper2.authors.toSet()).size >= 2) {
-                edges.add(Edge(paper1.paperId, paper2.paperId))
+                if (paper1.authors.intersect(paper2.authors.toSet()).size >= 2) {
+                    edges.add(Edge(paper1.paperId, paper2.paperId))
+                }
             }
         }
+        return nodes to edges
     }
-
-    return nodes to edges
 }
+
+
