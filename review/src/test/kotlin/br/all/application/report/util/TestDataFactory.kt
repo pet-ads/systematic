@@ -5,10 +5,11 @@ import br.all.application.question.repository.QuestionDto
 import br.all.application.study.repository.AnswerDto
 import br.all.domain.model.question.QuestionContextEnum
 import io.github.serpro69.kfaker.Faker
-import java.util.*
+import java.util.UUID
 
 class TestDataFactory {
     val faker = Faker()
+    val questionId: UUID = UUID.randomUUID()
 
     fun criteriaDto(
         description: String = faker.leagueOfLegends.quote(),
