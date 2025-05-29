@@ -2,7 +2,7 @@ name: CI with Maven
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "test-sonarqube" ]
   pull_request:
     branches: [ "main" ]
 
