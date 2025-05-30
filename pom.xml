@@ -161,13 +161,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <compilerPlugins>
-                        <plugin>spring</plugin>
-                        <plugin>jpa</plugin>
-                        <compilerPlugins>
-                            <plugin>spring</plugin>
-                        </compilerPlugins>
-                    </compilerPlugins>
+                    <compilerPlugins>spring,jpa</compilerPlugins>
                 </configuration>
             </plugin>
             <plugin>
