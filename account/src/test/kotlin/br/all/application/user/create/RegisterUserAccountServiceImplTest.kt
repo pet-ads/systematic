@@ -58,6 +58,8 @@ class RegisterUserAccountServiceImplTest {
             every { userAccountRepository.existsByEmail(request.email) } returns true
             every { userAccountRepository.existsByUsername(request.username) } returns false
 
+            print(request.email)
+
             sut.register(presenter, request)
 
             verifyOrder {
