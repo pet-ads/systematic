@@ -1,8 +1,8 @@
-name: CI with Maven
+name: CI with Maven 2025
 
 on:
   push:
-    branches: [ "test-sonarqube" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
