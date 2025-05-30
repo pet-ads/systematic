@@ -53,7 +53,7 @@ class RegisterUserAccountServiceImplTest {
     inner class WhenFailingToRegisterUser {
         @Test
         fun `should not register user with existing email`() {
-            val request = factory.registerRequest()
+            val request = factory.registerRequest().copy(email = "user@example.com")
 
             every { userAccountRepository.existsByEmail(request.email) } returns true
             every { userAccountRepository.existsByUsername(request.username) } returns false
