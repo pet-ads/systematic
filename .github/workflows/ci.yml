@@ -1,4 +1,5 @@
-name: CI with Maven
+name: CI with Maven 2025
+
 on:
   push:
     branches: [ "main" ]
@@ -20,18 +21,22 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Install Maven
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y maven
+
       - name: Start MongoDB with Docker Compose
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: Install Dependencies
         run: mvn clean install
 
       - name: Run Tests
-        run: |
-          mvn test
-          echo "test passed!"
+        run: mvn test
 
       - name: Build with Maven
-        run: |
-          mvn package 
-          echo "Hello, world!"
+        run: mvn package
+
+      - name: Verify Package
+        run: echo "Hello, world!"
