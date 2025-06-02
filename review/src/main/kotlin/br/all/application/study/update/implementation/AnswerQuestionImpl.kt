@@ -49,7 +49,7 @@ class AnswerQuestionImpl (
 
         val questionDto = questionRepository.findById(systematicStudyId, questionId)
         if (questionDto == null) {
-            val message = "There is not a question with id $questionId defined in protocol $systematicStudyId"
+            val message = "There is no question with id $questionId defined in protocol $systematicStudyId"
             presenter.prepareFailView(EntityNotFoundException(message))
             return
         }
@@ -63,7 +63,7 @@ class AnswerQuestionImpl (
         }
 
         if (QuestionContextEnum.valueOf(context) != questionDto.context) {
-            val message = "Deve responder a questão com o contexto correto ${questionDto.context} found: $context"
+            val message = "Should answer question with the context: $context , found: ${questionDto.context}"
             presenter.prepareFailView(IllegalArgumentException(message))
             return
         }
