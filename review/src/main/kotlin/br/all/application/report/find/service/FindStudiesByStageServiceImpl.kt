@@ -1,6 +1,7 @@
 package br.all.application.report.find.service
 
 import br.all.application.report.find.presenter.FindStudiesByStagePresenter
+import br.all.application.report.find.service.FindStudiesByStageService.StudyCollection
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
@@ -67,10 +68,10 @@ class FindStudiesByStageServiceImpl(
             userId = request.userId,
             systematicStudyId = request.systematicStudyId,
             stage = request.stage,
-            included = FindStudiesByStageService.StudyCollection(includedStudiesIds, includedStudiesIds.size),
-            excluded = FindStudiesByStageService.StudyCollection(excludedStudiesIds, excludedStudiesIds.size),
-            unclassified = FindStudiesByStageService.StudyCollection(unclassifiedStudiesIds, unclassifiedStudiesIds.size),
-            duplicated = FindStudiesByStageService.StudyCollection(duplicatedStudiesIds, duplicatedStudiesIds.size)
+            included = StudyCollection(includedStudiesIds, includedStudiesIds.size),
+            excluded = StudyCollection(excludedStudiesIds, excludedStudiesIds.size),
+            unclassified = StudyCollection(unclassifiedStudiesIds, unclassifiedStudiesIds.size),
+            duplicated = StudyCollection(duplicatedStudiesIds, duplicatedStudiesIds.size)
         )
     }
 }

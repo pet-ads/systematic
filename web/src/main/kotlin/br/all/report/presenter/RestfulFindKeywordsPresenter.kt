@@ -38,7 +38,7 @@ class RestfulFindKeywordsPresenter(
         val userId: UUID,
         val systematicStudyId: UUID,
         val filter: String?,
-        val keywords: List<String>,
+        val keywords: Map<String, Int>,
         val totalOfKeywords: Int,
     ): RepresentationModel<ViewModel>()
 }

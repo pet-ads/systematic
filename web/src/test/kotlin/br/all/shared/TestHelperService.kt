@@ -23,7 +23,7 @@ class TestHelperService(
     fun createApplicationUser(): ApplicationUser {
         val userDto = UserAccountDto(
             id = UUID.randomUUID(),
-            username = faker.name.firstName(),
+            username = faker.name.firstName() + "_" + UUID.randomUUID().toString().take(8),
             password = faker.fallout.locations(),
             email = faker.internet.email(),
             country = faker.address.country(),
@@ -44,7 +44,7 @@ class TestHelperService(
     fun createUnauthorizedApplicationUser(): ApplicationUser {
         val userDto = UserAccountDto(
             id = UUID.randomUUID(),
-            username = faker.name.firstName(),
+            username = faker.name.firstName() + "_" + UUID.randomUUID().toString().take(8),
             password = faker.fallout.locations(),
             email = faker.internet.email(),
             country = faker.address.country(),

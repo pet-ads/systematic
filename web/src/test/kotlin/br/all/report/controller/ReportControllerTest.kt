@@ -93,20 +93,36 @@ class ReportControllerTest(
         factory.deleteQuestions(questionRepository)
         testHelperService.deleteApplicationUser(user.id)
     }
-    private fun findAnswerUrl(systematicStudy: UUID = this.systematicStudy.id, questionId: UUID) =
-        "/api/v1/systematic-study/$systematicStudy/report/find-answer/$questionId"
-    private fun findCriteriaUrl(systematicStudy: UUID = this.systematicStudy.id, type: String) =
-        "/api/v1/systematic-study/$systematicStudy/report/criteria/$type"
-    private fun findSourcesUrl(systematicStudy: UUID = this.systematicStudy.id, source: String) =
-        "/api/v1/systematic-study/$systematicStudy/report/source/$source"
-    private fun formatProtocolUrl(systematicStudy: UUID = this.systematicStudy.id, type: String) =
-        "/api/v1/systematic-study/$systematicStudy/report/exportable-protocol/$type?downloadable=false"
-    private fun authorNetworkUrl(systematicStudy: UUID = this.systematicStudy.id) =
-        "/api/v1/systematic-study/$systematicStudy/report/author-network"
-    private fun findStudiesByStageUrl(systematicStudy: UUID = this.systematicStudy.id, stage: String) =
-        "/api/v1/systematic-study/$systematicStudy/report/studies/$stage"
-    private fun studiesFunnelUrl(systematicStudy: UUID = this.systematicStudy.id) =
-        "/api/v1/systematic-study/$systematicStudy/report/studies-funnel"
+
+    private val baseReportUrl: String
+        get() = "/api/v1/systematic-study/${systematicStudy.id}/report"
+
+    private fun findAnswerUrl(questionId: UUID) =
+        "$baseReportUrl/find-answer/$questionId"
+
+    private fun findCriteriaUrl(type: String) =
+        "$baseReportUrl/criteria/$type"
+
+    private fun findSourcesUrl(source: String) =
+        "$baseReportUrl/source/$source"
+
+    private fun formatProtocolUrl(type: String) =
+        "$baseReportUrl/exportable-protocol/$type?downloadable=false"
+
+    private fun authorNetworkUrl() =
+        "$baseReportUrl/author-network"
+
+    private fun findStudiesByStageUrl(stage: String) =
+        "$baseReportUrl/studies/$stage"
+
+    private fun studiesFunnelUrl() =
+        "$baseReportUrl/studies-funnel"
+
+    private fun findKeywordsUrl(filter: String?) =
+        if (filter.isNullOrBlank())
+            "$baseReportUrl/keywords"
+        else
+            "$baseReportUrl/keywords?filter=$filter"
 
     @Nested
     @DisplayName("When searching answers of questions")
@@ -195,6 +211,7 @@ class ReportControllerTest(
                 )
             }
         }
+
         @Nested
         @DisplayName("And not finding them")
         inner class AndNotFindingThem {
@@ -282,7 +299,51 @@ class ReportControllerTest(
 
                 println(result.response.contentAsString)
             }
+        }
+        @Nested
+        @DisplayName("And failing")
+        inner class AndFailing {
+            @Test
+            fun `should return 404 if the source does not exist`() {
+                val protocol = protocolDataFactory.createProtocolDocument(
+                    id = systematicStudy.id,
+                    informationSources = setOf("Scopus")
+                )
+                val studyReviews = (1111L..1115L).map {
+                        id -> studyReviewDataFactory.reviewDocument(
+                    systematicStudyId = systematicStudy.id,
+                    studyReviewId = id,
+                    selectionStatus = faker.random.randomValue(listOf("INCLUDED", "EXCLUDED", "DUPLICATED")),
+                    sources = setOf("Scopus"),
+                )
+                }
 
+                protocolRepository.save(protocol)
+                studyReviewRepository.saveAll(studyReviews)
+
+                mockMvc.perform(
+                    get(findSourcesUrl(source = "DOES_NOT_EXIST"))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isNotFound)
+                    .andReturn()
+            }
+
+            @Test
+            fun `should not find source for unauthorized user`() {
+                testHelperService.testForUnauthorizedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(findSourcesUrl("Scopus"))
+                )
+            }
+
+            @Test
+            fun `should not find source for unauthenticated user`() {
+                testHelperService.testForUnauthenticatedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(findSourcesUrl("Scopus"))
+                )
+            }
         }
 
     }
@@ -300,14 +361,32 @@ class ReportControllerTest(
                 )
                 protocolRepository.save(protocolDocument)
 
-                val r = mockMvc.perform(
+                mockMvc.perform(
                     get(formatProtocolUrl(type = "csv"))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                 )
                     .andExpect(status().isOk)
                     .andReturn()
+            }
+        }
 
-                println(r.response.contentAsString)
+        @Nested
+        @DisplayName("And failing")
+        inner class AndFailing {
+            @Test
+            fun `should not find protocol for unauthorized user`() {
+                testHelperService.testForUnauthorizedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(formatProtocolUrl("latex"))
+                )
+            }
+
+            @Test
+            fun `should not find protocol for unauthenticated user`() {
+                testHelperService.testForUnauthenticatedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(formatProtocolUrl("csv"))
+                )
             }
         }
     }
@@ -531,6 +610,86 @@ class ReportControllerTest(
                 testHelperService.testForUnauthorizedUser(
                     mockMvc = mockMvc,
                     requestBuilder = get(studiesFunnelUrl())
+                )
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("When finding keywords")
+    inner class WhenFindingKeywords {
+        @Nested
+        @DisplayName("And having success")
+        inner class AndHavingSuccess {
+            @Test
+            fun `should return 200 and get keywords data`() {
+                val documents = mutableListOf<StudyReviewDocument>()
+
+                var nextStudyReviewId = 1_000L
+
+                repeat(10) {
+                    documents += studyReviewDataFactory.reviewDocument(
+                        systematicStudyId = systematicStudy.id,
+                        studyReviewId     = nextStudyReviewId++,
+                        selectionStatus   = "INCLUDED",
+                        extractionStatus  = "INCLUDED",
+                        sources           = setOf("Scopus", "IEEE"),
+                        keywords          = setOf("key1;key2")
+                    )
+                }
+
+                studyReviewRepository.saveAll(documents)
+
+                mockMvc.perform(
+                    get(findKeywordsUrl(filter = null))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isOk)
+            }
+
+            @Test
+            fun `should return 200 and get keywords data using filter`() {
+                val documents = mutableListOf<StudyReviewDocument>()
+
+                var nextStudyReviewId = 1_000L
+
+                repeat(10) {
+                    documents += studyReviewDataFactory.reviewDocument(
+                        systematicStudyId = systematicStudy.id,
+                        studyReviewId     = nextStudyReviewId++,
+                        selectionStatus   = "INCLUDED",
+                        extractionStatus  = "INCLUDED",
+                        sources           = setOf("Scopus", "IEEE"),
+                        keywords          = setOf("key1;key2")
+                    )
+                }
+
+                studyReviewRepository.saveAll(documents)
+
+                mockMvc.perform(
+                    get(findKeywordsUrl(filter = "selection"))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isOk)
+            }
+        }
+
+        @Nested
+        @DisplayName("And failing")
+        inner class AndFailing {
+            @Test
+            fun `should not allow unauthorized user to get studies funnel`() {
+                testHelperService.testForUnauthorizedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(findKeywordsUrl(filter = null))
+                )
+            }
+
+            @Test
+            fun `should not allow unauthenticated user to get studies funnel`() {
+                testHelperService.testForUnauthenticatedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(findKeywordsUrl(filter = null))
                 )
             }
         }
