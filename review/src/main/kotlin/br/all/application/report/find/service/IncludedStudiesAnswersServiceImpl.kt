@@ -1,5 +1,6 @@
 package br.all.application.report.find.service
 
+import br.all.application.question.repository.QuestionDto
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.report.find.presenter.IncludedStudiesAnswersPresenter
 import br.all.application.review.repository.SystematicStudyRepository
@@ -10,6 +11,7 @@ import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.model.question.QuestionContextEnum
 import br.all.domain.model.review.SystematicStudy
+import java.util.*
 
 class IncludedStudiesAnswersServiceImpl(
     private val questionRepository: QuestionRepository,
@@ -44,25 +46,11 @@ class IncludedStudiesAnswersServiceImpl(
             questionRepository.findAllBySystematicStudyId(request.systematicStudyId, QuestionContextEnum.ROB)
         val robAnswers = studyReviewDto.robAnswers
 
-        val extractionResponse: List<IncludedStudiesAnswersService.QuestionWithAnswer> = extractionQuestions.map { q ->
-            IncludedStudiesAnswersService.QuestionWithAnswer(
-                questionId = q.questionId,
-                code = q.code,
-                type = q.questionType,
-                description = q.description,
-                answer = extractionAnswers[q.questionId]
-            )
-        }
+        val extractionResponse: List<IncludedStudiesAnswersService.QuestionWithAnswer> =
+            questionWithAnswers(extractionQuestions, extractionAnswers)
 
-        val robResponse: List<IncludedStudiesAnswersService.QuestionWithAnswer> = robQuestions.map { q ->
-            IncludedStudiesAnswersService.QuestionWithAnswer(
-                questionId = q.questionId,
-                code = q.code,
-                type = q.questionType,
-                description = q.description,
-                answer = robAnswers[q.questionId]
-            )
-        }
+        val robResponse: List<IncludedStudiesAnswersService.QuestionWithAnswer> =
+            questionWithAnswers(robQuestions, robAnswers)
 
         val response = IncludedStudiesAnswersService.ResponseModel(
             userId = request.userId,
@@ -75,5 +63,21 @@ class IncludedStudiesAnswersServiceImpl(
         )
 
         presenter.prepareSuccessView(response)
+    }
+
+    private fun questionWithAnswers(
+        extractionQuestions: List<QuestionDto>,
+        extractionAnswers: Map<UUID, String>
+    ): List<IncludedStudiesAnswersService.QuestionWithAnswer> {
+        val extractionResponse: List<IncludedStudiesAnswersService.QuestionWithAnswer> = extractionQuestions.map { q ->
+            IncludedStudiesAnswersService.QuestionWithAnswer(
+                questionId = q.questionId,
+                code = q.code,
+                type = q.questionType,
+                description = q.description,
+                answer = extractionAnswers[q.questionId]
+            )
+        }
+        return extractionResponse
     }
 }
