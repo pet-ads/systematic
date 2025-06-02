@@ -64,7 +64,6 @@ class IncludedStudiesAnswersServiceImpl(
             )
         }
 
-
         val response = IncludedStudiesAnswersService.ResponseModel(
             userId = request.userId,
             systematicStudyId = request.systematicStudyId,
