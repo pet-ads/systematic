@@ -287,7 +287,7 @@ class IncludedStudiesAnswersServiceImplTest {
         }
 
         @Test
-        fun `should fail when there is no study review`() {
+        fun `should fail when there is no systematic study`() {
             precondition.makeSystematicStudyNonexistent()
 
             val studyReviewId = studyFactory.studyReviewId
