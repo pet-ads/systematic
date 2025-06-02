@@ -63,7 +63,7 @@ class AnswerQuestionImpl (
         }
 
         if (QuestionContextEnum.valueOf(context) != questionDto.context) {
-            val message = "Should answer question with the context: $context , found: ${questionDto.context}"
+            val message = "Should answer question with the context: $context, found: ${questionDto.context}"
             presenter.prepareFailView(IllegalArgumentException(message))
             return
         }
