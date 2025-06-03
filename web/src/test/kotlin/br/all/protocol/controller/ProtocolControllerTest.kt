@@ -1,5 +1,6 @@
 package br.all.protocol.controller
 
+import br.all.application.protocol.repository.CriterionDto
 import br.all.infrastructure.protocol.MongoProtocolRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.review.SystematicStudyDocument
@@ -153,7 +154,11 @@ class ProtocolControllerTest(
 
             @Test
             fun `should update an existing protocol without deleting existing collection-type variables`() {
-                val document = factory.createProtocolDocument()
+                val document = factory.createProtocolDocument(
+                    keywords = setOf("keyword1", "keyword2"),
+                    robQuestions = setOf(UUID.randomUUID(), UUID.randomUUID()),
+                    selectionCriteria = setOf(CriterionDto("desc", "INCLUSION"))
+                )
                 val json = factory.validPutRequest()
 
                 protocolRepository.save(document)
