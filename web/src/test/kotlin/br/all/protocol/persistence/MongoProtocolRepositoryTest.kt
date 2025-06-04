@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
 @Tag("IntegrationTest")
+@Tag("RepositoryTest")
 class MongoProtocolRepositoryTest(
     @Autowired private val sut: MongoProtocolRepository,
 ) {

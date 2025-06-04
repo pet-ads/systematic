@@ -27,6 +27,8 @@ import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Tag("IntegrationTest")
+@Tag("ControllerTest")
 class StudyReviewControllerTest(
     @Autowired val repository: MongoStudyReviewRepository,
     @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,

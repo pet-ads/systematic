@@ -1,8 +1,10 @@
 package br.all.domain.model.study
 
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Tag
 import kotlin.test.Test
 
+@Tag("UnitTest")
 class DoiTest {
 
     @Test

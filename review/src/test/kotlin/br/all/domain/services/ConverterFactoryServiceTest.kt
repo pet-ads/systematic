@@ -5,10 +5,13 @@ import br.all.domain.model.search.SearchSessionID
 import br.all.domain.services.RisTestData.testInput as risInput
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.util.*
 import kotlin.test.assertEquals
 
+@Tag("IntegrationTest")
+@Tag("ServiceTest")
 class ConverterFactoryServiceTest {
     private lateinit var sut: ConverterFactoryService
     private lateinit var bibtexConverterService: BibtexConverterService

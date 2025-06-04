@@ -8,6 +8,8 @@ import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@Tag("UnitTest")
+@Tag("ServiceTest")
 class BibtexConverterServiceTest {
 
     private lateinit var sut: BibtexConverterService

@@ -2,11 +2,13 @@ package br.all.domain.user
 
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Tag
 import java.time.LocalDateTime
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
+@Tag("UnitTest")
 class UserAccountTest{
 
     private val faker = Faker()

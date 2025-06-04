@@ -8,12 +8,15 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.UUID
 
 @SpringBootTest
+@Tag("IntegrationTest")
+@Tag("RepositoryTest")
 class MongoStudyReviewRepositoryTest (
     @Autowired private val sut: MongoStudyReviewRepository,
     @Autowired private val idService: StudyReviewIdGeneratorService

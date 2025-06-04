@@ -1,8 +1,10 @@
 package br.all.domain.shared.ddd
 
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
+@Tag("UnitTest")
 class NotificationTest {
     @Test
     fun `Should notification with no errors present no error message`(){

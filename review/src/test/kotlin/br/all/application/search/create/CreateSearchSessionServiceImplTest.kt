@@ -1,8 +1,7 @@
+package br.all.application.search.create
 
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.search.create.CreateSearchSessionServiceImpl
-import br.all.application.search.create.CreateSearchSessionPresenter
 import br.all.application.search.util.TestDataFactory
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
@@ -23,9 +22,12 @@ import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.Test
 
+@Tag("UnitTest")
+@Tag("ServiceTest")
 @ExtendWith(MockKExtension::class)
 class CreateSearchSessionServiceImplTest {
 

@@ -23,6 +23,7 @@ import java.util.*
 @SpringBootTest
 @AutoConfigureMockMvc
 @Tag("IntegrationTest")
+@Tag("ControllerTest")
 class SystematicStudyControllerTest(
     @Autowired private val repository: MongoSystematicStudyRepository,
     @Autowired private val testHelperService: TestHelperService,

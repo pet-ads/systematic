@@ -9,6 +9,8 @@ import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@Tag("UnitTest")
+@Tag("ServiceTest")
 class RisConverterServiceTest {
     private lateinit var sut: RisConverterService
     private lateinit var idGeneratorService: IdGeneratorService

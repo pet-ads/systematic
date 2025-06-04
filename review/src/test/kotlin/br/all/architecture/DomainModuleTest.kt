@@ -6,8 +6,9 @@ import com.tngtech.archunit.junit.AnalyzeClasses
 import com.tngtech.archunit.junit.ArchTest
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
+import org.junit.jupiter.api.Tag
 
-
+@Tag("ArchitectureTest")
 @AnalyzeClasses(packages = ["br.all"], importOptions = [ImportOption.DoNotIncludeTests::class])
 class DomainModuleTest {
 
