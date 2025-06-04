@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
-internal class DOITest {
+class DOITest {
     @Test
     fun `valid DOI should not throw an exception`() {
         assertDoesNotThrow { DOI("10.1590/1089-6891v16i428131") }

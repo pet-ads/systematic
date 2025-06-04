@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 
-internal class ProtocolIdTest{
+class ProtocolIdTest{
     @Test
     fun `valid ProtocolId`() {
         val uuid = UUID.randomUUID()
