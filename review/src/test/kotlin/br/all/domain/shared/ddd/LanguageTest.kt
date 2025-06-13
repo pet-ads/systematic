@@ -1,11 +1,13 @@
 package br.all.domain.shared.ddd
 
 import br.all.domain.shared.valueobject.Language
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
 
+@Tag("UnitTest")
 class LanguageTest {
 
     @Test

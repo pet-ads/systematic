@@ -4,6 +4,7 @@ import br.all.application.user.repository.UserAccountDto
 import br.all.application.user.repository.UserAccountRepository
 import br.all.security.service.ApplicationUser
 import io.github.serpro69.kfaker.Faker
+import org.junit.jupiter.api.Tag
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.stereotype.Service
@@ -14,6 +15,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Service
+@Tag("UnitTest")
 class TestHelperService(
     private val repository: UserAccountRepository,
 ) {

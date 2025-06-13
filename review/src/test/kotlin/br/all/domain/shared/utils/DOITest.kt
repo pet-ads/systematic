@@ -2,6 +2,7 @@ package br.all.domain.shared.utils
 
 
 import br.all.domain.shared.valueobject.DOI
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -9,7 +10,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
-internal class DOITest {
+@Tag("UnitTest")
+class DOITest {
     @Test
     fun `valid DOI should not throw an exception`() {
         assertDoesNotThrow { DOI("10.1590/1089-6891v16i428131") }

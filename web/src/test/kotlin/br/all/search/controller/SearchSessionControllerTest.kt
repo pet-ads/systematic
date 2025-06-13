@@ -29,6 +29,8 @@ import java.util.*
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Tag("IntegrationTest")
+@Tag("ControllerTest")
 class SearchSessionControllerTest(
     @Autowired val repository: MongoSearchSessionRepository,
     @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,

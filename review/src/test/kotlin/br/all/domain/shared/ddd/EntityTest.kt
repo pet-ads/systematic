@@ -1,8 +1,11 @@
 package br.all.domain.shared.ddd
 
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
+@Tag("UnitTest")
 class EntityTest{
 
     @JvmInline

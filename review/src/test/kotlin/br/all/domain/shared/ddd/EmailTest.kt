@@ -1,6 +1,7 @@
 package br.all.domain.shared.ddd
 
 import br.all.domain.shared.valueobject.Email
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -8,6 +9,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
+@Tag("UnitTest")
 class EmailTest {
 
     @Test

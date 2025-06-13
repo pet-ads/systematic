@@ -24,6 +24,7 @@ import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 @SpringBootTest
 @AutoConfigureMockMvc
 @Tag("IntegrationTest")
+@Tag("ControllerTest")
 @DisplayName("Protocol Controller Integration Tests")
 class ProtocolControllerTest(
     @Autowired private val protocolRepository: MongoProtocolRepository,

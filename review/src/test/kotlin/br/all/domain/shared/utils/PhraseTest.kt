@@ -1,10 +1,12 @@
 package br.all.domain.shared.utils
 
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
+@Tag("UnitTest")
 class PhraseTest {
     @Test
     fun `Should accept words with only lowercase letters`() {

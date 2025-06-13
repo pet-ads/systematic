@@ -3,11 +3,13 @@ package br.all.domain.shared.ddd
 import br.all.domain.model.protocol.ProtocolId
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 
-internal class ProtocolIdTest{
+@Tag("UnitTest")
+class ProtocolIdTest{
     @Test
     fun `valid ProtocolId`() {
         val uuid = UUID.randomUUID()

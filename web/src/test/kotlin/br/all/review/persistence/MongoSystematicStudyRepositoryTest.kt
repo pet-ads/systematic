@@ -11,6 +11,7 @@ import java.util.*
 
 @SpringBootTest
 @Tag("IntegrationTest")
+@Tag("RepositoryTest")
 class MongoSystematicStudyRepositoryTest(
     @Autowired private val sut: MongoSystematicStudyRepository,
 ) {
