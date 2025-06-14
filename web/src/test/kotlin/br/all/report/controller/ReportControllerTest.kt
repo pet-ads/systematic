@@ -704,7 +704,12 @@ class ReportControllerTest(
         @Test
         fun `should return 200 and find correctly the criteria`() {
             val systematicStudyId = systematicStudy.id
-            val studyReviewId = 1_000L
+            // o intelli j tava reclamando que o valor do id era sempre o mesmo
+            // então é por isso que tem esse negócio ai, qualquer coisa só
+            // coloca val studyReviewId = 1000L
+            val seed = System.currentTimeMillis()
+            val studyReviewId = (seed * 31) % Long.MAX_VALUE
+
 
             val studyReview = studyReviewDataFactory.reviewDocument(
                 criteria = setOf("criteria 1", "criteria 2"),
