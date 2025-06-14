@@ -1,14 +1,12 @@
 package br.all.review.shared
 
-import br.all.application.user.repository.UserAccountDto
 import br.all.infrastructure.review.SystematicStudyDocument
 import io.github.serpro69.kfaker.Faker
-import java.time.LocalDateTime
 import java.util.*
 
 class TestDataFactory {
     private val faker = Faker()
-    val researcherId: UUID = UUID.randomUUID()
+    private val researcherId: UUID = UUID.randomUUID()
     val systematicStudyId: UUID = UUID.randomUUID()
     val ownerId: UUID = UUID.randomUUID()
 
