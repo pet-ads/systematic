@@ -316,5 +316,12 @@ class LinksFactory {
                 questionId
             )
         }.withRel("find-answer").withType("GET")
-}
 
+    fun findStudyReviewCriteria(systematicStudyId: UUID, studyReviewId: Long): Link =
+        linkTo<ReportController> {
+            findCriteria(
+                systematicStudyId,
+                studyReviewId
+            )
+        }.withRel("find-study-criteria").withType("GET")
+}
