@@ -27,7 +27,6 @@ import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 import br.all.study.utils.TestDataFactory as StudyReviewTestDataFactory
 import br.all.protocol.shared.TestDataFactory as ProtocolTestDataFactory
 
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @Tag("IntegrationTest")
@@ -118,6 +117,9 @@ class ReportControllerTest(
 
     private fun studiesFunnelUrl() =
         "$baseReportUrl/studies-funnel"
+
+    private fun findStudyReviewCriteria(studyReviewId: Long) =
+        "$baseReportUrl/study-review/$studyReviewId/criteria"
 
     private fun findKeywordsUrl(filter: String?) =
         if (filter.isNullOrBlank())
@@ -693,6 +695,39 @@ class ReportControllerTest(
                     requestBuilder = get(findKeywordsUrl(filter = null))
                 )
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("When finding criteria of a study review")
+    inner class WhenFindingCriteriaOfAStudyReview {
+        @Test
+        fun `should return 200 and find correctly the criteria`() {
+            val systematicStudyId = systematicStudy.id
+            val studyReviewId = 1_000L
+
+            val studyReview = studyReviewDataFactory.reviewDocument(
+                criteria = setOf("criteria 1", "criteria 2"),
+                systematicStudyId = systematicStudyId,
+                studyReviewId = studyReviewId,
+            )
+            studyReviewRepository.save(studyReview)
+
+            val criteria1 = protocolDataFactory.createCriteria("INCLUSION", "criteria 1")
+
+            val criteria2 = protocolDataFactory.createCriteria("EXCLUSION", "criteria 2")
+
+            val protocol = protocolDataFactory.createProtocolDocument(
+                id = systematicStudyId,
+                selectionCriteria = setOf(criteria1, criteria2)
+            )
+            protocolRepository.save(protocol)
+
+            mockMvc.perform(
+                get(findStudyReviewCriteria(studyReviewId = studyReviewId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
+                .andExpect(status().isOk)
         }
     }
 }
