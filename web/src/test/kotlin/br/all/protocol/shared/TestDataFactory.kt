@@ -62,6 +62,14 @@ class TestDataFactory {
         picoc,
     )
 
+    fun createCriteria(
+        type: String,
+        description: String,
+    ) = CriterionDto(
+        type = type,
+        description = description,
+    )
+
     private fun eligibilityCriteria() = List(5) {
         CriterionDto(faker.paragraph(5), faker.random.randomValue(listOf("INCLUSION", "EXCLUSION")))
     }.toSet()
