@@ -137,4 +137,17 @@ class ReportControllerConfiguration {
         systematicStudyRepository,
         questionRepository
     )
+
+    @Bean
+    fun findStudyReviewCriteriaService(
+        systematicStudyRepository: SystematicStudyRepository,
+        studyReviewRepository: StudyReviewRepository,
+        credentialsService: CredentialsService,
+        protocolRepository: ProtocolRepository,
+    ) = FindStudyReviewCriteriaServiceImpl(
+        systematicStudyRepository,
+        studyReviewRepository,
+        credentialsService,
+        protocolRepository
+    )
 }
