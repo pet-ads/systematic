@@ -1,6 +1,6 @@
 package br.all.domain.model.review
 
-import br.all.domain.model.user.ResearcherId
+import br.all.domain.model.collaboration.CollaborationId
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.utils.exists
@@ -10,8 +10,8 @@ class SystematicStudy(
     id: SystematicStudyId,
     title: String,
     description: String,
-    owner: ResearcherId,
-    collaborators: Set<ResearcherId> = emptySet(),
+    owner: CollaborationId,
+    collaborators: Set<CollaborationId> = emptySet(),
 ) : Entity<UUID>(id) {
 
     private val _collaborators = collaborators.toMutableSet()
@@ -42,19 +42,19 @@ class SystematicStudy(
             it.addError("Systematic Study description must not be blank!")
     }
 
-    fun addCollaborator(researcherId: ResearcherId) = _collaborators.add(researcherId)
+    fun addCollaborator(collaborationId: CollaborationId) = _collaborators.add(collaborationId)
 
-    fun changeOwner(researcherId: ResearcherId) {
-        _collaborators.add(researcherId)
-        owner = researcherId
+    fun changeOwner(collaborationId: CollaborationId) {
+        _collaborators.add(collaborationId)
+        owner = collaborationId
     }
 
-    fun removeCollaborator(researcherId: ResearcherId) {
-        check(researcherId != owner) { "Cannot remove the Systematic Study owner: $owner" }
-        exists(researcherId in _collaborators) {
-            "Cannot remove member that is not part of the collaboration: $researcherId"
+    fun removeCollaborator(collaborationId: CollaborationId) {
+        check(collaborationId != owner) { "Cannot remove the Systematic Study owner: $owner" }
+        exists(collaborationId in _collaborators) {
+            "Cannot remove member that is not part of the collaboration: $collaborationId"
         }
-        _collaborators.remove(researcherId)
+        _collaborators.remove(collaborationId)
     }
 
     override fun toString() = "SystematicStudy(reviewId=$id, title='$title', description='$description', owner=$owner," +

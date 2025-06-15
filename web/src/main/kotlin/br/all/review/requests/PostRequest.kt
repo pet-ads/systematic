@@ -9,5 +9,5 @@ data class PostRequest(
     val collaborators: Set<UUID>,
 ) {
     fun toCreateRequestModel(userId: UUID) =
-        RequestModel(userId, title, description, collaborators)
+        RequestModel(userId, title, description)
 }
