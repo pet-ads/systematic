@@ -73,6 +73,12 @@ class CreateSearchSessionServiceImpl(
             mutableSetOf(source)
         )
 
+        /*
+        criar os request StudyInfo a partir dos studyReviews (infos)
+        val selectionSuggestions = selectionSuggestion.buildSuggestions(infos)
+        studyReviews.foreach(it.setSuggestedStatus(selectionsuggstion.filter(it.getId)
+         */
+
         val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocolDto.keywords)
 
         studyReviewRepository.saveOrUpdateBatch(scoredStudyReviews.map { it.toDto() })
