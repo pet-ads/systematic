@@ -138,4 +138,15 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository,
         credentialsService
     )
+
+    @Bean
+    fun removeCriteriaService(
+        studyReviewRepository: StudyReviewRepository,
+        systematicStudyRepository: SystematicStudyRepository,
+        credentialsService: CredentialsService,
+    ) = RemoveCriteriaServiceImpl(
+        studyReviewRepository,
+        systematicStudyRepository,
+        credentialsService
+    )
 }
