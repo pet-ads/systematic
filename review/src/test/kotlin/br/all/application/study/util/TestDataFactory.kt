@@ -6,10 +6,7 @@ import br.all.application.study.find.service.FindAllStudyReviewsBySourceService
 import br.all.application.study.find.service.FindAllStudyReviewsService
 import br.all.application.study.find.service.FindStudyReviewService
 import br.all.application.study.repository.StudyReviewDto
-import br.all.application.study.update.interfaces.AnswerRiskOfBiasQuestionService
-import br.all.application.study.update.interfaces.MarkAsDuplicatedService
-import br.all.application.study.update.interfaces.UpdateStudyReviewService
-import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
+import br.all.application.study.update.interfaces.*
 import br.all.domain.model.question.QuestionContextEnum
 import br.all.domain.model.study.StudyType
 import br.all.domain.shared.utils.paragraph
@@ -48,13 +45,14 @@ class TestDataFactory {
         comments: String = faker.paragraph(15),
         selectionStatus: String = "UNCLASSIFIED",
         extractionStatus: String = "UNCLASSIFIED",
-        readingPriority: String = "LOW"
+        readingPriority: String = "LOW",
+        score: Int = 0
     ): StudyReviewDto {
         return StudyReviewDto(
             studyReviewId, systematicStudyId, searchSessionId, type, title, year,
             authors, venue, abstract, keywords, references, doi, sources,
             criteria, formAnswers, robAnswers, comments, readingPriority,
-            extractionStatus, selectionStatus
+            extractionStatus, selectionStatus, score
         )
     }
 
@@ -127,22 +125,23 @@ class TestDataFactory {
         duplicateIds: List<Long>
     ) = MarkAsDuplicatedService.RequestModel(researcherId, systematicStudyId, keptStudyReviewId, duplicateIds)
 
-    fun <T> answerRequestModel(
+    fun <T> answerQuestionModel(
         questionId: UUID,
         type: String,
         answer: T,
-    ) = AnswerRiskOfBiasQuestionService.RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
+    ) = AnswerQuestionService.RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
 
-    fun labelDto(
+    fun questionLabelDto(
         name: String,
         value: Int,
-    ) = AnswerRiskOfBiasQuestionService.LabelDto(name, value)
+    ) = AnswerQuestionService.LabelDto(name, value)
 
     fun generateQuestionTextualDto(
         questionId: UUID,
         systematicStudyId: UUID = this.systematicStudyId,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
+        questionContext: String,
     ) =
         QuestionDto(
             questionId,
@@ -153,7 +152,8 @@ class TestDataFactory {
             null,
             null,
             null,
-            null, QuestionContextEnum.EXTRACTION
+            null,
+            QuestionContextEnum.valueOf(questionContext),
         )
 
     fun generateQuestionLabeledScaleDto(
@@ -161,7 +161,8 @@ class TestDataFactory {
         systematicStudyId: UUID = this.systematicStudyId,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
-        labelDto: AnswerRiskOfBiasQuestionService.LabelDto
+        labelDto: AnswerQuestionService.LabelDto,
+        questionContext: String
     ) =
         QuestionDto(
             questionId,
@@ -173,11 +174,53 @@ class TestDataFactory {
             null,
             null,
             null,
-            QuestionContextEnum.ROB
+            QuestionContextEnum.valueOf(questionContext),
         )
+
+    fun generateQuestionNumberedScaleDto(
+        questionId: UUID,
+        systematicStudyId: UUID = this.systematicStudyId,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+        higher: Int,
+        lower: Int,
+        questionContext: String
+    ) =
+        QuestionDto(
+            questionId,
+            systematicStudyId,
+            code,
+            description,
+            "NUMBERED_SCALE",
+            null,
+            higher,
+            lower,
+            null,
+            QuestionContextEnum.valueOf(questionContext),
+        )
+
+    fun generateQuestionPickListDto(
+        questionId: UUID,
+        systematicStudyId: UUID = this.systematicStudyId,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+        options: List<String>,
+        questionContext: String
+    ) =
+        QuestionDto(
+            questionId,
+            systematicStudyId,
+            code,
+            description,
+            "PICK_LIST",
+            null,
+            null,
+            null,
+            options,
+            QuestionContextEnum.valueOf(questionContext),
+        )
+
 
     operator fun component1() = researcherId
     operator fun component2() = studyReviewId
-
-
 }

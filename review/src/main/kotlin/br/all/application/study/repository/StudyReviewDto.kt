@@ -23,5 +23,6 @@ data class StudyReviewDto(
     val readingPriority: String,
     val extractionStatus: String,
     val selectionStatus: String,
+    val score: Int
 )
 

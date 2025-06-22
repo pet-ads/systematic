@@ -11,4 +11,10 @@ interface StudyReviewRepository {
     fun findById(reviewId: UUID, studyId: Long) : StudyReviewDto?
     fun updateSelectionStatus(reviewId: UUID, studyId: Long, attributeName: String, newStatus: Any)
     fun saveOrUpdateBatch(dtos: List<StudyReviewDto>)
+    fun findAllQuestionAnswers(reviewId: UUID, questionId: UUID): List<AnswerDto>
 }
+
+data class AnswerDto(
+    val studyReviewId: Long,
+    val answer: String
+)

@@ -6,8 +6,10 @@ import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
+import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
+import br.all.domain.services.ScoreCalculatorService
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -27,6 +29,10 @@ class UpdateProtocolServiceImplTest {
     private lateinit var systematicStudyRepository: SystematicStudyRepository
     @MockK
     private lateinit var credentialsService: CredentialsService
+    @MockK(relaxUnitFun = true)
+    private lateinit var studyReviewRepository: StudyReviewRepository
+    @MockK
+    private lateinit var scoreCalculatorService: ScoreCalculatorService
     @MockK(relaxed = true)
     private lateinit var presenter: UpdateProtocolPresenter
     @InjectMockKs
@@ -101,8 +107,34 @@ class UpdateProtocolServiceImplTest {
                 presenter.prepareSuccessView(response)
             }
         }
+
+        @Test
+        fun `should recalculate scores when keywords are updated`() {
+            val (_, systematicStudy) = factory
+            val oldKeywords = setOf("old1", "old2")
+            val newKeywords = setOf("new1", "new2")
+
+            val oldDto = factory.protocolDto().copy(keywords = oldKeywords)
+
+            val request = factory.updateRequestModel().copy(keywords = newKeywords)
+
+            val updatedDto = factory.updatedDto(oldDto, request)
+
+            every { protocolRepository.findById(systematicStudy) } returns oldDto
+            every { studyReviewRepository.findAllFromReview(systematicStudy) } returns emptyList()
+            every { scoreCalculatorService.applyScoreToManyStudyReviews(any(), newKeywords) } returns emptyList()
+
+            sut.update(presenter, request)
+
+            verify { 
+                protocolRepository.saveOrUpdate(updatedDto)
+                studyReviewRepository.findAllFromReview(systematicStudy)
+                studyReviewRepository.saveOrUpdateBatch(any())
+                presenter.prepareSuccessView(any())
+            }
+        }
     }
-    
+
     @Nested
     @Tag("InvalidClasses")
     @DisplayName("When preconditions fail")

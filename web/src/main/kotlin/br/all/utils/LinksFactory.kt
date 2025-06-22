@@ -4,6 +4,7 @@ import br.all.protocol.controller.ProtocolController
 import br.all.protocol.requests.PutRequest
 import br.all.question.controller.ExtractionQuestionController
 import br.all.question.controller.RiskOfBiasQuestionController
+import br.all.report.controller.ReportController
 import br.all.review.controller.SystematicStudyController
 import br.all.review.requests.PostRequest
 import br.all.search.controller.SearchSessionController
@@ -113,7 +114,6 @@ class LinksFactory {
             )
         )
     }.withRel("create-textual-rob-question").withType("POST")
-
 
     fun createPickListRobQuestion(systematicStudyId: UUID): Link = linkTo<RiskOfBiasQuestionController> {
         createPickListQuestion(
@@ -231,7 +231,7 @@ class LinksFactory {
         )
     }.withRel("update-study-reading-priority").withType("PATCH")
 
-    fun markStudyAsDuplicated(systematicStudyId: UUID, ): Link =
+    fun markStudyAsDuplicated(systematicStudyId: UUID): Link =
         linkTo<StudyReviewController> {
             markAsDuplicated(
                 systematicStudyId,
@@ -241,4 +241,80 @@ class LinksFactory {
                 )
             )
         }.withRel("mark-studies-as-duplicated").withType("PATCH")
+
+    fun includedStudiesAnswers(systematicStudyId: UUID, studyReviewId: Long): Link =
+        linkTo<ReportController> {
+            includedStudiesAnswers(
+                systematicStudyId,
+                studyReviewId,
+            )
+        }.withRel("included-studies-answers").withType("GET")
+
+    fun findCriteria(systematicStudyId: UUID, type: String): Link =
+        linkTo<ReportController> {
+            findCriteria(
+                systematicStudyId,
+                type
+            )
+        }.withRel("find-criteria").withType("GET")
+
+    fun findSource(systematicStudyId: UUID, source: String): Link =
+        linkTo<ReportController> {
+            findSource(
+                systematicStudyId,
+                source
+            )
+        }.withRel("find-source").withType("GET")
+
+    fun authorNetwork(systematicStudyId: UUID): Link =
+        linkTo<ReportController> {
+            authorNetwork(
+                systematicStudyId,
+            )
+        }.withRel("author-network").withType("GET")
+
+    fun keywords(systematicStudyId: UUID, filter: String?): Link =
+        linkTo<ReportController> {
+            findKeywords(
+                systematicStudyId,
+                filter
+            )
+        }.withRel("find-keywords").withType("GET")
+
+    fun exportProtocol(systematicStudyId: UUID, format: String, downloadable: Boolean): Link {
+        val uri = linkTo<ReportController> {
+            exportProtocol(systematicStudyId, format, downloadable)
+        }.toUriComponentsBuilder()
+            .queryParam("downloadable", downloadable)
+            .build()
+            .toUri()
+
+        return Link.of(uri.toString())
+            .withRel("exportable-protocol")
+            .withType("GET")
+    }
+
+    fun findStudiesByStage(systematicStudyId: UUID, stage: String): Link =
+        linkTo<ReportController> {
+            findStudiesByStage(
+                systematicStudyId,
+                stage
+            )
+        }.withRel("find-studies-stage").withType("GET")
+
+    fun studiesFunnel(systematicStudyId: UUID): Link =
+        linkTo<ReportController> {
+            studiesFunnel(
+                systematicStudyId,
+            )
+        }.withRel("studies-funnel").withType("GET")
+
+    fun findAnswer(systematicStudyId: UUID, questionId: UUID): Link =
+        linkTo<ReportController> {
+            findAnswer(
+                systematicStudyId,
+                questionId
+            )
+        }.withRel("find-answer").withType("GET")
 }
+

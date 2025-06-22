@@ -66,6 +66,9 @@ class StudyReviewControllerTest(
     fun answerRiskOfBiasQuestion(studyReviewId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}/riskOfBias-answer"
 
+    fun answerExtractionQuestion(studyReviewId: Long) =
+        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}/extraction-answer"
+
     @BeforeEach
     fun setUp() {
         repository.deleteAll()
@@ -107,7 +110,7 @@ class StudyReviewControllerTest(
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$.studyReviewId").exists())
-                //.andExpect(jsonPath("$._links").exists()) // TODO uncomment after include links
+                .andExpect(jsonPath("$._links").exists())
         }
 
         @Test
@@ -482,7 +485,6 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should not update if user is unauthenticated`() {
-            val studyId = idService.next()
 
             testHelperService.testForUnauthenticatedUser(mockMvc,
                 patch(updateStatusStatus("reading-priority")),
@@ -491,11 +493,10 @@ class StudyReviewControllerTest(
     }
 
     @Nested
-    @DisplayName("When answering questions in a review")
-    inner class AnswerQuestionsTests(
+    @DisplayName("When answering ROB questions in a review")
+    inner class AnswerRobQuestionsTests(
         @Autowired val questionRepository: MongoQuestionRepository
     ) {
-
         @Test
         fun `should assign answer to question and return 200`() {
             val studyId = idService.next()
@@ -504,10 +505,10 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            val question = factory.generateQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
+            val question = factory.generateRobQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
             questionRepository.insert(question)
 
-            val json = factory.validAnswerRiskOfBiasPatchRequest(studyId, questionId, "TEXTUAL", "TEST")
+            val json = factory.validAnswerQuestionRequest(studyId, questionId, "TEXTUAL", "TEST")
             mockMvc.perform(
                 patch(answerRiskOfBiasQuestion(studyId))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
@@ -528,7 +529,7 @@ class StudyReviewControllerTest(
             val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             repository.insert(studyReview)
 
-            val question = factory.generateQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
+            val question = factory.generateRobQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
             questionRepository.insert(question)
 
             val json = factory.invalidAnswerRiskOfBiasPatchRequest(studyId, questionId, "TEXTUAL")
@@ -549,7 +550,7 @@ class StudyReviewControllerTest(
             testHelperService.testForUnauthorizedUser(
                 mockMvc,
                 patch(answerRiskOfBiasQuestion(studyId))
-                    .content(factory.validAnswerRiskOfBiasPatchRequest(
+                    .content(factory.validAnswerQuestionRequest(
                         studyId, questionId, "TEXTUAL", "TEST"
                     ))
             )
@@ -560,6 +561,78 @@ class StudyReviewControllerTest(
             val studyId = idService.next()
 
             testHelperService.testForUnauthenticatedUser(mockMvc, patch(answerRiskOfBiasQuestion(studyId)),
+            )
+        }
+    }
+
+    @Nested
+    @DisplayName("When answering Extraction questions in a review")
+    inner class AnswerExtractionQuestionsTests(
+        @Autowired val questionRepository: MongoQuestionRepository
+    ) {
+        @Test
+        fun `should assign answer to question and return 200`() {
+            val studyId = idService.next()
+            val questionId = UUID.randomUUID()
+
+            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
+            repository.insert(studyReview)
+
+            val question = factory.generateExtractionQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
+            questionRepository.insert(question)
+
+            val json = factory.validAnswerQuestionRequest(studyId, questionId, "TEXTUAL", "TEST")
+            mockMvc.perform(
+                patch(answerExtractionQuestion(studyId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+            )
+                .andExpect(status().isOk)
+
+            val studyReviewId = StudyReviewId(systematicStudyId, studyId)
+            val updatedReview = repository.findById(studyReviewId)
+            assertEquals(updatedReview.get().formAnswers[questionId], "TEST")
+        }
+
+        @Test
+        fun `should not assign answer with invalid request`() {
+            val studyId = idService.next()
+            val questionId = UUID.randomUUID()
+
+            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
+            repository.insert(studyReview)
+
+            val question = factory.generateExtractionQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
+            questionRepository.insert(question)
+
+            val json = factory.invalidAnswerRiskOfBiasPatchRequest(studyId, questionId, "TEXTUAL")
+            mockMvc.perform(
+                patch(answerExtractionQuestion(studyId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+            )
+                .andExpect(status().isBadRequest)
+        }
+
+        @Test
+        fun `should not update if user is unauthorized`(){
+            val studyId = idService.next()
+            val questionId = UUID.randomUUID()
+
+            testHelperService.testForUnauthorizedUser(
+                mockMvc,
+                patch(answerExtractionQuestion(studyId))
+                    .content(factory.validAnswerQuestionRequest(
+                        studyId, questionId, "TEXTUAL", "TEST"
+                    ))
+            )
+        }
+
+        @Test
+        fun `should not update if user is unauthenticated`(){
+            val studyId = idService.next()
+
+            testHelperService.testForUnauthenticatedUser(mockMvc, patch(answerExtractionQuestion(studyId)),
             )
         }
     }

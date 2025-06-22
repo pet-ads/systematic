@@ -9,15 +9,22 @@ import br.all.application.protocol.update.UpdateProtocolService.ResponseModel
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
+import br.all.application.study.repository.StudyReviewRepository
+import br.all.application.study.repository.fromDto
+import br.all.application.study.repository.toDto
 import br.all.application.user.CredentialsService
 import br.all.domain.model.protocol.Protocol
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.toSystematicStudyId
+import br.all.domain.model.study.StudyReview
+import br.all.domain.services.ScoreCalculatorService
 
 class UpdateProtocolServiceImpl(
     private val protocolRepository: ProtocolRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val credentialsService: CredentialsService,
+    private val studyReviewRepository: StudyReviewRepository,
+    private val scoreCalculatorService: ScoreCalculatorService
 ) : UpdateProtocolService {
     override fun update(presenter: UpdateProtocolPresenter, request: RequestModel) {
         val userId = request.userId
@@ -35,10 +42,21 @@ class UpdateProtocolServiceImpl(
             systematicStudyId.toSystematicStudyId(),
             emptySet()
         ).build()
+
+        val keywordsUpdated = request.keywords.isNotEmpty() && request.keywords != dto?.keywords
+
         protocol.copyUpdates(request)
 
         val updatedDto = protocol.toDto()
         if (updatedDto != dto) protocolRepository.saveOrUpdate(updatedDto)
+
+        if (keywordsUpdated) {
+            val studyReviews = studyReviewRepository.findAllFromReview(systematicStudyId)
+                .map { StudyReview.fromDto(it) }
+
+            val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocol.keywords)
+            studyReviewRepository.saveOrUpdateBatch(scoredStudyReviews.map { it.toDto() })
+        }
 
         presenter.prepareSuccessView(ResponseModel(userId, systematicStudyId))
     }
