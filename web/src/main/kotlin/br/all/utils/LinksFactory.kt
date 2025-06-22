@@ -12,6 +12,7 @@ import br.all.study.controller.StudyReviewController
 import br.all.study.requests.PatchDuplicatedStudiesRequest
 import br.all.study.requests.PatchStatusStudyReviewRequest
 import br.all.study.requests.PostStudyReviewRequest
+import br.all.study.requests.RemoveCriteriaRequest
 import org.springframework.hateoas.Link
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.stereotype.Component
@@ -324,4 +325,13 @@ class LinksFactory {
                 studyReviewId
             )
         }.withRel("find-study-criteria").withType("GET")
+
+    fun removeStudyReviewCriteria(systematicStudyId: UUID, studyReviewId: Long, request: RemoveCriteriaRequest): Link =
+        linkTo<StudyReviewController> {
+            removeCriterion(
+                systematicStudyId,
+                studyReviewId,
+                request
+            )
+        }.withRel("remove-criteria").withType("PATCH")
 }
