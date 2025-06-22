@@ -35,6 +35,7 @@ class StudyReviewController(
     private val updateSelectionService: UpdateStudyReviewSelectionService,
     private val updateExtractionService: UpdateStudyReviewExtractionService,
     private val updateReadingPriorityService: UpdateStudyReviewPriorityService,
+    private val removeCriteriaService: RemoveCriteriaService,
     private val markAsDuplicatedService: MarkAsDuplicatedService,
     private val answerQuestionService: AnswerQuestionService,
     private val authenticationInfoService: AuthenticationInfoService,
@@ -479,6 +480,41 @@ class StudyReviewController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = duplicatedRequest.toRequestModel(userId, systematicStudy, referenceStudyId)
         markAsDuplicatedService.markAsDuplicated(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @PatchMapping("/study-review/remove-criteria/{studyReviewId}")
+    @Operation(summary = "Remove a criteria from study review")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Success removing criteria of study review",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail removing criteria of study review - invalid status",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail removing criteria of study review - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail removing criteria of study review - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+        ]
+    )
+    fun removeCriterion(
+        @PathVariable systematicStudy: UUID,
+        @PathVariable studyReviewId: Long,
+        @RequestBody patchRequest: RemoveCriteriaRequest
+    ): ResponseEntity<*> {
+        val presenter = RestfulRemoveCriteriaPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = patchRequest.toRequestModel(userId, systematicStudy, studyReviewId)
+        removeCriteriaService.removeCriteria(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
