@@ -15,6 +15,7 @@
         <module>review</module>
         <module>web</module>
         <module>account</module>
+        <module>scas</module>
     </modules>
 
     <parent>
