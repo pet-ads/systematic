@@ -155,9 +155,9 @@
                     </execution>
                 </executions>
 
-               This was the old executions property, it was removed because, as indicated by the kotlin docs,
-               from version 1.8.2 you can replace all of it with: <extensions>true</extensions>. This is a faulty
-               executions property, it is here only for eventual future reference.
+               This was the old executions configuration; it has been removed because, as indicated by the Kotlin docs, from version 1.8.2 onward you can replace all of it with:
+               <extensions>true</extensions>
+               This executions block is faulty and is included here only for eventual future reference.
                 -->
                 <extensions>true</extensions>
                 <configuration>
