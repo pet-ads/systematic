@@ -19,11 +19,23 @@ interface BatchAnswerQuestionService {
         )
     }
 
+    data class FailedAnswer(
+        val questionId: UUID,
+        val reason: String
+    )
+
+    data class LabelDto(
+        val name: String,
+        val value: Int
+    )
+
     @Schema(name = "BatchAnswerQuestionServiceResponseModel")
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
         val studyReviewId: Long,
-        val answersProcessed: Int
+        val succeededAnswers: List<UUID>,
+        val failedAnswers: List<FailedAnswer>,
+        val totalAnswered: Int
     )
 }

@@ -12,7 +12,10 @@ import br.all.application.study.repository.toDto
 import br.all.application.study.update.interfaces.BatchAnswerQuestionPresenter
 import br.all.application.study.update.interfaces.BatchAnswerQuestionService
 import br.all.application.study.update.interfaces.BatchAnswerQuestionService.RequestModel
+import br.all.application.study.update.interfaces.BatchAnswerQuestionService.RequestModel.AnswerDetail
 import br.all.application.study.update.interfaces.BatchAnswerQuestionService.ResponseModel
+import br.all.application.study.update.interfaces.BatchAnswerQuestionService.FailedAnswer
+import br.all.application.study.update.interfaces.BatchAnswerQuestionService.LabelDto
 import br.all.application.user.CredentialsService
 import br.all.domain.model.question.Label
 import br.all.domain.model.question.LabeledScale
@@ -24,6 +27,7 @@ import br.all.domain.model.question.Textual
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.study.Answer
 import br.all.domain.model.study.StudyReview
+import java.util.UUID
 
 class BatchAnswerQuestionServiceImpl(
     private val studyReviewRepository: StudyReviewRepository,
@@ -50,29 +54,38 @@ class BatchAnswerQuestionServiceImpl(
             presenter.prepareFailView(EntityNotFoundException(message))
             return
         }
-
         val review = StudyReview.fromDto(reviewDto)
-        var answersProcessed = 0
+
+        val questionContext = QuestionContextEnum.valueOf(context.uppercase())
+        val successfulQuestionIds = mutableListOf<UUID>()
+        val failedAnswers = mutableListOf<FailedAnswer>()
+        var totalAnswered = 0
 
         for (answerDetail in request.answers) {
-            val questionDto = questionRepository.findById(request.systematicStudyId, answerDetail.questionId)
-
-            if (questionDto == null) continue
-            if (QuestionContextEnum.valueOf(context) != questionDto.context) continue
-
             try {
-                val question = Question.fromDto(questionDto)
-                val answer = convertAnswer(answerDetail.type, answerDetail.answer, question)
+                val questionDto = questionRepository.findById(request.systematicStudyId, answerDetail.questionId)
 
-                if (questionDto.context == QuestionContextEnum.ROB) {
+                if (questionDto == null) throw EntityNotFoundException("Question with id ${answerDetail.questionId} in systematic study ${request.systematicStudyId} was not found!")
+                if (questionDto.context != questionContext) throw IllegalArgumentException("Should answer question with the context: $context, found: ${questionDto.context}")
+
+                val question = Question.fromDto(questionDto)
+                val answer = convertAnswer(question, answerDetail, questionDto.context.name)
+
+                if (questionContext == QuestionContextEnum.ROB) {
                     review.answerQualityQuestionOf(answer)
                 } else {
                     review.answerFormQuestionOf(answer)
                 }
 
-                answersProcessed++
+                successfulQuestionIds.add(answerDetail.questionId)
+                totalAnswered++
             } catch (e: Exception) {
-                continue
+                failedAnswers.add(
+                    FailedAnswer(
+                        questionId = answerDetail.questionId,
+                        reason = e.message ?: "An unknown error occurred!"
+                    )
+                )
             }
         }
 
@@ -80,36 +93,46 @@ class BatchAnswerQuestionServiceImpl(
 
         presenter.prepareSuccessView(
             ResponseModel(
-                request.userId,
-                request.systematicStudyId,
-                request.studyReviewId,
-                answersProcessed
+                userId = request.userId,
+                systematicStudyId = request.systematicStudyId,
+                studyReviewId = request.studyReviewId,
+                succeededAnswers = successfulQuestionIds,
+                failedAnswers = failedAnswers,
+                totalAnswered = totalAnswered
             )
         )
     }
 
     private fun convertAnswer(
-        type: String,
-        rawAnswer: Any,
-        question: Question<*>
+        question: Question<*>,
+        detail: AnswerDetail,
+        type: String
     ): Answer<*> {
+        if (detail.type != type) {
+            throw IllegalArgumentException("Type mismatch: Request payload type is '${detail.type}', but question ${question.id} is of type '${type}'")
+        }
         return when {
-            type == "TEXTUAL" && rawAnswer is String -> (question as Textual).answer(rawAnswer)
-            type == "PICK_LIST" && rawAnswer is String -> (question as PickList).answer(rawAnswer)
-            type == "NUMBERED_SCALE" && rawAnswer is Int -> (question as NumberScale).answer(rawAnswer)
+            type == "TEXTUAL" && detail.answer is String -> (question as Textual).answer(detail.answer)
+            type == "PICK_LIST" && detail.answer is String -> (question as PickList).answer(detail.answer)
+            type == "NUMBERED_SCALE" && detail.answer is Int -> (question as NumberScale).answer(detail.answer)
             type == "LABELED_SCALE" -> {
-                when (rawAnswer) {
-                    is Map<*, *> -> {
-                        val name = rawAnswer["name"] as? String
-                        val value = rawAnswer["value"] as? Int
-                        if (name != null && value != null) {
-                            (question as LabeledScale).answer(Label(name, value))
-                        } else throw IllegalArgumentException("Invalid labeled scale answer")
+                when (val answer = detail.answer) {
+                    is LinkedHashMap<*, *> -> {
+                        (answer["name"] as? String)?.let { name ->
+                            (answer["value"] as? Int)?.let { value ->
+                                (question as LabeledScale).answer(Label(name, value))
+                            }
+                        } ?: throw IllegalArgumentException("Invalid labeled scale answer: missing 'name' or 'value'")
                     }
-                    else -> throw IllegalArgumentException("Unsupported LABELED_SCALE format")
+                    is LabelDto -> {
+                        (question as LabeledScale).answer(Label(answer.name, answer.value))
+                    }
+                    else -> {
+                        throw IllegalArgumentException("Unsupported answer type for 'LABELED_SCALE'")
+                    }
                 }
             }
-            else -> throw IllegalArgumentException("Unsupported answer type or mismatched value")
+            else -> throw IllegalArgumentException("Answer type of '${detail.answer.javaClass}' is not compatible with question type '${type}'")
         }
     }
 }
