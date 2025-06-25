@@ -59,7 +59,6 @@ class BatchAnswerQuestionServiceImpl(
         val questionContext = QuestionContextEnum.valueOf(context.uppercase())
         val successfulQuestionIds = mutableListOf<UUID>()
         val failedAnswers = mutableListOf<FailedAnswer>()
-        var totalAnswered = 0
 
         for (answerDetail in request.answers) {
             try {
@@ -78,7 +77,6 @@ class BatchAnswerQuestionServiceImpl(
                 }
 
                 successfulQuestionIds.add(answerDetail.questionId)
-                totalAnswered++
             } catch (e: Exception) {
                 failedAnswers.add(
                     FailedAnswer(
@@ -98,7 +96,7 @@ class BatchAnswerQuestionServiceImpl(
                 studyReviewId = request.studyReviewId,
                 succeededAnswers = successfulQuestionIds,
                 failedAnswers = failedAnswers,
-                totalAnswered = totalAnswered
+                totalAnswered = successfulQuestionIds.size
             )
         )
     }
