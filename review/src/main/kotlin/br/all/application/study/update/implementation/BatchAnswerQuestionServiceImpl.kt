@@ -69,9 +69,9 @@ class BatchAnswerQuestionServiceImpl(
                 if (questionDto.context != questionContext) throw IllegalArgumentException("Should answer question with the context: $context, found: ${questionDto.context}")
 
                 val question = Question.fromDto(questionDto)
-                val answer = convertAnswer(question, answerDetail, questionDto.context.name)
+                val answer = convertAnswer(question, answerDetail, questionDto.questionType)
 
-                if (questionContext == QuestionContextEnum.ROB) {
+                if (questionDto.context == QuestionContextEnum.ROB) {
                     review.answerQualityQuestionOf(answer)
                 } else {
                     review.answerFormQuestionOf(answer)
@@ -106,16 +106,16 @@ class BatchAnswerQuestionServiceImpl(
     private fun convertAnswer(
         question: Question<*>,
         detail: AnswerDetail,
-        type: String
+        questionType: String
     ): Answer<*> {
-        if (detail.type != type) {
-            throw IllegalArgumentException("Type mismatch: Request payload type is '${detail.type}', but question ${question.id} is of type '${type}'")
+        if (detail.type != questionType) {
+            throw IllegalArgumentException("Type mismatch: Request payload type is '${detail.type}', but question ${question.id} is of type '${questionType}'")
         }
         return when {
-            type == "TEXTUAL" && detail.answer is String -> (question as Textual).answer(detail.answer)
-            type == "PICK_LIST" && detail.answer is String -> (question as PickList).answer(detail.answer)
-            type == "NUMBERED_SCALE" && detail.answer is Int -> (question as NumberScale).answer(detail.answer)
-            type == "LABELED_SCALE" -> {
+            questionType == "TEXTUAL" && detail.answer is String -> (question as Textual).answer(detail.answer)
+            questionType == "PICK_LIST" && detail.answer is String -> (question as PickList).answer(detail.answer)
+            questionType == "NUMBERED_SCALE" && detail.answer is Int -> (question as NumberScale).answer(detail.answer)
+            questionType == "LABELED_SCALE" -> {
                 when (val answer = detail.answer) {
                     is LinkedHashMap<*, *> -> {
                         (answer["name"] as? String)?.let { name ->
@@ -132,7 +132,7 @@ class BatchAnswerQuestionServiceImpl(
                     }
                 }
             }
-            else -> throw IllegalArgumentException("Answer type of '${detail.answer.javaClass}' is not compatible with question type '${type}'")
+            else -> throw IllegalArgumentException("Answer type of '${detail.answer.javaClass}' is not compatible with question type '${questionType}'")
         }
     }
 }
