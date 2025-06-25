@@ -27,14 +27,19 @@ import br.all.domain.model.question.Textual
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.study.Answer
 import br.all.domain.model.study.StudyReview
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
+@Service
 class BatchAnswerQuestionServiceImpl(
     private val studyReviewRepository: StudyReviewRepository,
     private val questionRepository: QuestionRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val credentialsService: CredentialsService,
 ): BatchAnswerQuestionService {
+
+    @Transactional
     override fun batchAnswerQuestion(
         presenter: BatchAnswerQuestionPresenter,
         request: RequestModel,
