@@ -164,6 +164,27 @@ class TestDataFactory {
             QuestionContextEnum.ROB
         )
 
+    fun generateRobQuestionNumberScaleDto(
+        questionId: UUID,
+        systematicStudyId: UUID = this.systematicStudyId,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+        lower: Int = 1,
+        higher: Int = 5
+    ) =
+        QuestionDocument(
+            questionId,
+            systematicStudyId,
+            code,
+            description,
+            "NUMBERED_SCALE",
+            null,
+            higher,
+            lower,
+            null,
+            QuestionContextEnum.ROB
+        )
+
     fun generateExtractionQuestionTextualDto(
         questionId: UUID,
         systematicStudyId: UUID = this.systematicStudyId,
@@ -180,6 +201,26 @@ class TestDataFactory {
             null,
             null,
             null,
+            QuestionContextEnum.EXTRACTION
+        )
+
+    fun generateExtractionQuestionPickListDto(
+        questionId: UUID,
+        systematicStudyId: UUID = this.systematicStudyId,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+        options: List<String> = listOf("Option A", "Option B", "Option C")
+    ) =
+        QuestionDocument(
+            questionId,
+            systematicStudyId,
+            code,
+            description,
+            "PICK_LIST",
+            null,
+            null,
+            null,
+            options,
             QuestionContextEnum.EXTRACTION
         )
 }
