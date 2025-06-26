@@ -33,7 +33,7 @@ class RegisterUserAccountServiceImplTest {
     inner class WhenSuccessfullyRegisteringUser {
         @Test
         fun `should register a new user`() {
-            val request = factory.registerRequest().copy(email = "user@example.com")
+            val request = factory.registerRequest()
 
             every { userAccountRepository.existsByEmail(request.email) } returns false
             every { userAccountRepository.existsByUsername(request.username) } returns false
@@ -53,7 +53,7 @@ class RegisterUserAccountServiceImplTest {
     inner class WhenFailingToRegisterUser {
         @Test
         fun `should not register user with existing email`() {
-            val request = factory.registerRequest().copy(email = "user@example.com")
+            val request = factory.registerRequest()
 
             every { userAccountRepository.existsByEmail(request.email) } returns true
             every { userAccountRepository.existsByUsername(request.username) } returns false
@@ -68,7 +68,7 @@ class RegisterUserAccountServiceImplTest {
 
         @Test
         fun `should not register user with existing username`() {
-            val request = factory.registerRequest().copy(email = "user@example.com")
+            val request = factory.registerRequest()
 
             every { userAccountRepository.existsByEmail(request.email) } returns false
             every { userAccountRepository.existsByUsername(request.username) } returns true
