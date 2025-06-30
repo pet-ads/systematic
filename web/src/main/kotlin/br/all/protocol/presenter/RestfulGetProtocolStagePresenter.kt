@@ -16,7 +16,7 @@ class RestfulGetProtocolStagePresenter(
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
-        val viewModel = ViewModel(response.userId, response.systematicStudyId, response.stage)
+        val viewModel = ViewModel(response.userId, response.systematicStudyId, response.currentStage)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(viewModel)
     }
 
@@ -24,7 +24,7 @@ class RestfulGetProtocolStagePresenter(
 
     override fun isDone() = responseEntity != null
 
-    private data class ViewModel(
+    data class ViewModel(
         val researcherId: UUID,
         val systematicStudyId: UUID,
         val currentStage: ProtocolStage,

@@ -1,5 +1,6 @@
 package br.all.application.protocol.find
 
+import io.swagger.v3.oas.annotations.media.Schema
 import java.util.UUID
 
 interface GetProtocolStageService {
@@ -10,10 +11,11 @@ interface GetProtocolStageService {
         val systematicStudyId: UUID
     )
 
+    @Schema(name = "GetProtocolStageServiceResponseModel", description = "Response model for Get Protocol Stage Service")
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val stage: ProtocolStage
+        val currentStage: ProtocolStage
     )
 
     enum class ProtocolStage {
