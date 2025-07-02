@@ -44,7 +44,6 @@ class GetProtocolStageServiceImpl(
         val extractedStudiesCount = allStudies.count { it.extractionStatus == "INCLUDED" }
 
         val stage = evaluateStage(protocolDto, totalStudiesCount, includedStudiesCount, extractedStudiesCount)
-        println(stage)
 
         presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, stage))
     }
@@ -86,7 +85,7 @@ class GetProtocolStageServiceImpl(
                 hasExclusionCriteria &&
                 dto.informationSources.isNotEmpty()
 
-        val areFinalFieldsFilled = !dto.analysisAndSynthesisProcess.isNullOrBlank()
+        val areFinalFieldsFilled =  dto.researchQuestions.isNotEmpty() && dto.analysisAndSynthesisProcess.isNullOrBlank()
 
         if (!isSetupComplete || !areFinalFieldsFilled) {
             return ProtocolStage.PROTOCOL_PART_III
