@@ -85,9 +85,14 @@ class GetProtocolStageServiceImpl(
                 hasExclusionCriteria &&
                 dto.informationSources.isNotEmpty()
 
-        val areFinalFieldsFilled =  dto.researchQuestions.isNotEmpty() && dto.analysisAndSynthesisProcess.isNullOrBlank()
+        if (!isSetupComplete) {
+            return ProtocolStage.PROTOCOL_PART_III
+        }
 
-        if (!isSetupComplete || !areFinalFieldsFilled) {
+        val areFinalFieldsEmpty = dto.researchQuestions.isEmpty() &&
+                dto.analysisAndSynthesisProcess.isNullOrBlank()
+
+        if (areFinalFieldsEmpty) {
             return ProtocolStage.PROTOCOL_PART_III
         }
 
