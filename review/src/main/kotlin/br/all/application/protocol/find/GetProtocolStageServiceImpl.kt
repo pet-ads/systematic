@@ -44,6 +44,7 @@ class GetProtocolStageServiceImpl(
         val extractedStudiesCount = allStudies.count { it.extractionStatus == "INCLUDED" }
 
         val stage = evaluateStage(protocolDto, totalStudiesCount, includedStudiesCount, extractedStudiesCount)
+        println(stage)
 
         presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, stage))
     }
@@ -55,9 +56,18 @@ class GetProtocolStageServiceImpl(
         }
 
         val picoc = dto.picoc
-        if (picoc == null || (picoc.population.isNullOrBlank() && picoc.intervention.isNullOrBlank() &&
-                    picoc.control.isNullOrBlank() && picoc.outcome.isNullOrBlank() && picoc.context.isNullOrBlank())) {
-            return ProtocolStage.PICOC
+        val picocIsStarted = picoc != null && (
+                    !picoc.population.isNullOrBlank() || !picoc.intervention.isNullOrBlank() ||
+                    !picoc.control.isNullOrBlank() || !picoc.outcome.isNullOrBlank() || !picoc.context.isNullOrBlank()
+                )
+
+        if (picocIsStarted) {
+            val picocIsCompleted = !picoc!!.population.isNullOrBlank() && !picoc.intervention.isNullOrBlank() &&
+                    !picoc.control.isNullOrBlank() && !picoc.outcome.isNullOrBlank() && !picoc.context.isNullOrBlank()
+
+            if (!picocIsCompleted) {
+                return ProtocolStage.PICOC
+            }
         }
 
         if (dto.studiesLanguages.isEmpty() && dto.eligibilityCriteria.isEmpty() &&
@@ -76,8 +86,7 @@ class GetProtocolStageServiceImpl(
                 hasExclusionCriteria &&
                 dto.informationSources.isNotEmpty()
 
-        val areFinalFieldsFilled = dto.researchQuestions.isNotEmpty() &&
-                !dto.analysisAndSynthesisProcess.isNullOrBlank()
+        val areFinalFieldsFilled = !dto.analysisAndSynthesisProcess.isNullOrBlank()
 
         if (!isSetupComplete || !areFinalFieldsFilled) {
             return ProtocolStage.PROTOCOL_PART_III

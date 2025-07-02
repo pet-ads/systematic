@@ -101,7 +101,13 @@ class GetProtocolStageServiceImplTest {
                 systematicStudy = systematicStudyId,
                 goal = "A goal",
                 justification = "A justification",
-                picoc = null
+                picoc = PicocDto(
+                    population = "P",
+                    intervention = null,
+                    control = null,
+                    outcome = null,
+                    context = null
+                )
             )
             every { protocolRepository.findById(systematicStudyId) } returns protocolDto
             every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns emptyList()
