@@ -65,6 +65,12 @@ class ProtocolControllerTest(
     private fun getUrl(systematicStudy: UUID = factory.protocol) =
         "/systematic-study/$systematicStudy/protocol"
 
+    private fun putUrl(systematicStudyId: UUID = factory.protocol) =
+        "/systematic-study/$systematicStudyId/protocol"
+
+    private fun getStage(systematicStudy: UUID = factory.protocol) =
+        "/systematic-study/$systematicStudy/protocol/stage"
+
     @Nested
     @DisplayName("When getting protocols")
     inner class WhenGettingProtocols {
@@ -125,9 +131,6 @@ class ProtocolControllerTest(
             }
         }
     }
-
-    private fun putUrl(systematicStudyId: UUID = factory.protocol) =
-        "/systematic-study/$systematicStudyId/protocol"
 
     @Nested
     @DisplayName("When putting protocols")
@@ -253,6 +256,45 @@ class ProtocolControllerTest(
                     put(putUrl()).content(factory.validPutRequest())
                 )
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("When getting protocol stage")
+    inner class WhenGettingProtocolStage {
+        @Test
+        fun `should return protocol stage with 200 status when protocol exists`() {
+            val document = factory.createProtocolDocument()
+            protocolRepository.save(document)
+
+            mockMvc.perform(get(getStage())
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(factory.protocol.toString()))
+                .andExpect(jsonPath("$.currentStage").exists())
+        }
+
+        @Test
+        fun `should return 404 when protocol does not exist`() {
+            mockMvc.perform(get(getStage())
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isNotFound)
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.detail").exists())
+        }
+
+        @Test
+        fun `should not authorize researchers that are not collaborators to get protocol stage`() {
+            testHelperService.testForUnauthorizedUser(mockMvc, get(getStage()))
+        }
+
+        @Test
+        fun `should not allow unauthenticated users to get protocol stage`() {
+            testHelperService.testForUnauthenticatedUser(mockMvc, get(getStage()))
         }
     }
 }
