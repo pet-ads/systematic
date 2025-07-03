@@ -78,14 +78,15 @@ class GetProtocolStageServiceImpl(
 
         val hasInclusionCriteria = dto.eligibilityCriteria.any { it.type.equals("INCLUSION", true) }
         val hasExclusionCriteria = dto.eligibilityCriteria.any { it.type.equals("EXCLUSION", true) }
+        val extractionAndRobDefined = dto.extractionQuestions.isNotEmpty() && dto.robQuestions.isNotEmpty()
+        val hasDatabases = dto.informationSources.isNotEmpty()
 
-        val isProtocolTextComplete = hasInclusionCriteria &&
-                hasExclusionCriteria &&
-                dto.informationSources.isNotEmpty() &&
+        val protocolPartIIICompleted = hasInclusionCriteria && hasExclusionCriteria &&
+                extractionAndRobDefined && hasDatabases &&
                 dto.researchQuestions.isNotEmpty() &&
                 !dto.analysisAndSynthesisProcess.isNullOrBlank()
 
-        if (!isProtocolTextComplete) {
+        if (!protocolPartIIICompleted) {
             return ProtocolStage.PROTOCOL_PART_III
         }
 
@@ -95,13 +96,6 @@ class GetProtocolStageServiceImpl(
 
         if (includedStudiesCount == 0) {
             return ProtocolStage.SELECTION
-        }
-
-        val areExtractionFormsDefined = dto.extractionQuestions.isNotEmpty() &&
-                dto.robQuestions.isNotEmpty()
-
-        if (!areExtractionFormsDefined) {
-            return ProtocolStage.PROTOCOL_PART_III
         }
 
         if (extractedStudiesCount == 0) {
