@@ -2,7 +2,7 @@ name: CI with Maven 2025
 
 on:
   push:
-    branches: [ "fix-pom" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
