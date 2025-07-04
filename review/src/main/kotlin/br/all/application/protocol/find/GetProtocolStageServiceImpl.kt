@@ -7,10 +7,12 @@ import br.all.application.protocol.find.GetProtocolStageService.RequestModel
 import br.all.application.protocol.find.GetProtocolStageService.ResponseModel
 import br.all.application.protocol.find.GetProtocolStageService.ProtocolStage
 import br.all.application.protocol.repository.ProtocolDto
+import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewRepository
+import br.all.domain.model.question.QuestionContextEnum
 import br.all.domain.model.review.SystematicStudy
 import org.springframework.stereotype.Service
 
@@ -19,7 +21,8 @@ class GetProtocolStageServiceImpl(
     private val protocolRepository: ProtocolRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,
-    private val credentialsService: CredentialsService
+    private val credentialsService: CredentialsService,
+    private val questionRepository: QuestionRepository
 ) : GetProtocolStageService {
     override fun getStage(presenter: GetProtocolStagePresenter, request: RequestModel) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
@@ -38,18 +41,33 @@ class GetProtocolStageServiceImpl(
         }
 
         val allStudies = studyReviewRepository.findAllFromReview(request.systematicStudyId)
-
+        val robQuestions = questionRepository.findAllBySystematicStudyId(systematicStudyDto!!.id, QuestionContextEnum.ROB).size
+        val extractionQuestions = questionRepository.findAllBySystematicStudyId(systematicStudyDto.id, QuestionContextEnum.EXTRACTION).size
         val totalStudiesCount = allStudies.size
         val includedStudiesCount = allStudies.count { it.selectionStatus == "INCLUDED" }
         val extractedStudiesCount = allStudies.count { it.extractionStatus == "INCLUDED" }
 
-        val stage = evaluateStage(protocolDto, totalStudiesCount, includedStudiesCount, extractedStudiesCount)
+        val stage = evaluateStage(
+            protocolDto,
+            totalStudiesCount,
+            includedStudiesCount,
+            extractedStudiesCount,
+            robQuestions,
+            extractionQuestions,
+        )
 
         presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, stage))
     }
 
 
-    private fun evaluateStage(dto: ProtocolDto, totalStudiesCount: Int, includedStudiesCount: Int, extractedStudiesCount: Int) : ProtocolStage {
+    private fun evaluateStage(
+        dto: ProtocolDto,
+        totalStudiesCount: Int,
+        includedStudiesCount: Int,
+        extractedStudiesCount: Int,
+        robQuestionCount: Int,
+        extractionQuestionsCount: Int
+    ): ProtocolStage {
         if (dto.goal.isNullOrBlank() && dto.justification.isNullOrBlank()) {
             return ProtocolStage.PROTOCOL_PART_I
         }
@@ -78,7 +96,7 @@ class GetProtocolStageServiceImpl(
 
         val hasInclusionCriteria = dto.eligibilityCriteria.any { it.type.equals("INCLUSION", true) }
         val hasExclusionCriteria = dto.eligibilityCriteria.any { it.type.equals("EXCLUSION", true) }
-        val extractionAndRobDefined = dto.extractionQuestions.isNotEmpty() && dto.robQuestions.isNotEmpty()
+        val extractionAndRobDefined = isThereExtractionAndRobQuestions(robQuestionCount, extractionQuestionsCount)
         val hasDatabases = dto.informationSources.isNotEmpty()
 
         val protocolPartIIICompleted = hasInclusionCriteria && hasExclusionCriteria &&
@@ -107,5 +125,9 @@ class GetProtocolStageServiceImpl(
         return ProtocolStage.GRAPHICS
 
         // Finalization would be returned here once its criteria are defined.
+    }
+
+    private fun isThereExtractionAndRobQuestions(robQuestionCount: Int, extractionQuestionsCount: Int): Boolean {
+        return robQuestionCount > 0 && extractionQuestionsCount > 0
     }
 }
