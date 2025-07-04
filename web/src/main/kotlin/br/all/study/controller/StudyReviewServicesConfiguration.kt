@@ -140,6 +140,19 @@ class StudyReviewServicesConfiguration {
     )
 
     @Bean
+    fun batchAnswerQuestionService(
+        studyReviewRepository: StudyReviewRepository,
+        questionRepository: QuestionRepository,
+        systematicStudyRepository: SystematicStudyRepository,
+        credentialsService: CredentialsService
+    ) = BatchAnswerQuestionServiceImpl(
+        studyReviewRepository,
+        questionRepository,
+        systematicStudyRepository,
+        credentialsService
+    )
+
+    @Bean
     fun removeCriteriaService(
         studyReviewRepository: StudyReviewRepository,
         systematicStudyRepository: SystematicStudyRepository,
