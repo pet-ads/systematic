@@ -3,6 +3,7 @@ package br.all.application.protocol.find
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.util.TestDataFactory as ProtocolFactory
 import br.all.application.study.util.TestDataFactory as StudyReviewFactory
+import br.all.application.question.util.TestDataFactory as QuestionFactory
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
@@ -23,6 +24,8 @@ import br.all.application.protocol.find.GetProtocolStageService.ResponseModel
 import br.all.application.protocol.find.GetProtocolStageService.ProtocolStage
 import br.all.application.protocol.repository.CriterionDto
 import br.all.application.protocol.repository.PicocDto
+import br.all.application.question.repository.QuestionRepository
+import br.all.domain.model.question.QuestionContextEnum
 import io.mockk.verify
 
 @Tag("UnitTest")
@@ -39,6 +42,9 @@ class GetProtocolStageServiceImplTest {
     @MockK(relaxUnitFun = true)
     private lateinit var studyReviewRepository: StudyReviewRepository
 
+    @MockK(relaxUnitFun = true)
+    private lateinit var questionRepository: QuestionRepository
+
     @MockK
     private lateinit var credentialsService: CredentialsService
 
@@ -51,6 +57,7 @@ class GetProtocolStageServiceImplTest {
     private lateinit var precondition: PreconditionCheckerMockingNew
     private lateinit var protocolFactory: ProtocolFactory
     private lateinit var studyReviewFactory: StudyReviewFactory
+    private lateinit var questionFactory: QuestionFactory
 
     private lateinit var researcherId: UUID
     private lateinit var systematicStudyId: UUID
@@ -59,6 +66,7 @@ class GetProtocolStageServiceImplTest {
     fun setup() {
         protocolFactory = ProtocolFactory()
         studyReviewFactory = StudyReviewFactory()
+        questionFactory = QuestionFactory()
 
         researcherId = protocolFactory.researcher
         systematicStudyId = protocolFactory.systematicStudy
@@ -84,8 +92,11 @@ class GetProtocolStageServiceImplTest {
                 goal = null,
                 justification = null
             )
+
             every { protocolRepository.findById(systematicStudyId) } returns protocolDto
             every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns emptyList()
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.ROB) } returns emptyList()
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.EXTRACTION) } returns emptyList()
 
             val request = RequestModel(researcherId, systematicStudyId)
 
@@ -109,8 +120,11 @@ class GetProtocolStageServiceImplTest {
                     context = null
                 )
             )
+
             every { protocolRepository.findById(systematicStudyId) } returns protocolDto
             every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns emptyList()
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.ROB) } returns emptyList()
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.EXTRACTION) } returns emptyList()
 
             val request = RequestModel(researcherId, systematicStudyId)
 
@@ -132,8 +146,11 @@ class GetProtocolStageServiceImplTest {
                 informationSources = emptySet(),
                 keywords = emptySet()
             )
+
             every { protocolRepository.findById(systematicStudyId) } returns protocolDto
             every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns emptyList()
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.ROB) } returns emptyList()
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.EXTRACTION) } returns emptyList()
 
             val request = RequestModel(researcherId, systematicStudyId)
 
@@ -153,8 +170,11 @@ class GetProtocolStageServiceImplTest {
                 keywords = setOf("test"),
                 extractionQuestions = emptySet()
             )
+
             every { protocolRepository.findById(systematicStudyId) } returns protocolDto
             every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns emptyList()
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.ROB) } returns emptyList()
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.EXTRACTION) } returns emptyList()
 
             val request = RequestModel(researcherId, systematicStudyId)
 
@@ -167,9 +187,14 @@ class GetProtocolStageServiceImplTest {
         @Test
         fun `should return IDENTIFICATION stage when no studies have been submitted`() {
             val protocolDto = createFullProtocolDto()
+            val questions = listOf(
+                questionFactory.generateTextualDto()
+            )
 
             every { protocolRepository.findById(systematicStudyId) } returns protocolDto
             every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns emptyList()
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.ROB) } returns questions
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.EXTRACTION) } returns questions
 
             val request = RequestModel(researcherId, systematicStudyId)
 
@@ -182,13 +207,17 @@ class GetProtocolStageServiceImplTest {
         @Test
         fun `should return SELECTION stage when studies exist but none are included`() {
             val protocolDto = createFullProtocolDto()
-
             val studies = listOf(
-                createFullStudyReviewDto(selectionStatus = "REJECTED", extractionStatus = "PENDING")
+                createFullStudyReviewDto(selectionStatus = "", extractionStatus = "")
+            )
+            val questions = listOf(
+                questionFactory.generateTextualDto()
             )
 
             every { protocolRepository.findById(systematicStudyId) } returns protocolDto
             every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns studies
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.ROB) } returns questions
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.EXTRACTION) } returns questions
 
             val request = RequestModel(researcherId, systematicStudyId)
 
@@ -201,13 +230,17 @@ class GetProtocolStageServiceImplTest {
         @Test
         fun `should return EXTRACTION stage when studies are included but none are extracted`() {
             val protocolDto = createFullProtocolDto()
-
             val studies = listOf(
-                createFullStudyReviewDto(selectionStatus = "INCLUDED", extractionStatus = "PENDING")
+                createFullStudyReviewDto(selectionStatus = "INCLUDED", extractionStatus = "")
+            )
+            val questions = listOf(
+                questionFactory.generateTextualDto()
             )
 
             every { protocolRepository.findById(systematicStudyId) } returns protocolDto
             every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns studies
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.ROB) } returns questions
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.EXTRACTION) } returns questions
 
             val request = RequestModel(researcherId, systematicStudyId)
 
@@ -220,13 +253,17 @@ class GetProtocolStageServiceImplTest {
         @Test
         fun `should return GRAPHICS stage when studies have been extracted`() {
             val protocolDto = createFullProtocolDto()
-
             val studies = listOf(
                 createFullStudyReviewDto(selectionStatus = "INCLUDED", extractionStatus = "INCLUDED")
+            )
+            val questions = listOf(
+                questionFactory.generateTextualDto()
             )
 
             every { protocolRepository.findById(systematicStudyId) } returns protocolDto
             every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns studies
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.ROB) } returns questions
+            every { questionRepository.findAllBySystematicStudyId(systematicStudyId, QuestionContextEnum.EXTRACTION) } returns questions
 
             val request = RequestModel(researcherId, systematicStudyId)
 
@@ -236,6 +273,7 @@ class GetProtocolStageServiceImplTest {
             verify(exactly = 1) { presenter.prepareSuccessView(expectedResponse) }
         }
     }
+
 
     private fun createFullProtocolDto() = protocolFactory.protocolDto(
         systematicStudy = systematicStudyId,
