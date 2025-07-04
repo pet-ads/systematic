@@ -26,7 +26,6 @@ class GetProtocolStageServiceImpl(
 ) : GetProtocolStageService {
     override fun getStage(presenter: GetProtocolStagePresenter, request: RequestModel) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
-
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
 
@@ -43,6 +42,7 @@ class GetProtocolStageServiceImpl(
         val allStudies = studyReviewRepository.findAllFromReview(request.systematicStudyId)
         val robQuestions = questionRepository.findAllBySystematicStudyId(systematicStudyDto!!.id, QuestionContextEnum.ROB).size
         val extractionQuestions = questionRepository.findAllBySystematicStudyId(systematicStudyDto.id, QuestionContextEnum.EXTRACTION).size
+
         val totalStudiesCount = allStudies.size
         val includedStudiesCount = allStudies.count { it.selectionStatus == "INCLUDED" }
         val extractedStudiesCount = allStudies.count { it.extractionStatus == "INCLUDED" }
@@ -59,7 +59,6 @@ class GetProtocolStageServiceImpl(
         presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, stage))
     }
 
-
     private fun evaluateStage(
         dto: ProtocolDto,
         totalStudiesCount: Int,
@@ -68,66 +67,63 @@ class GetProtocolStageServiceImpl(
         robQuestionCount: Int,
         extractionQuestionsCount: Int
     ): ProtocolStage {
-        if (dto.goal.isNullOrBlank() && dto.justification.isNullOrBlank()) {
-            return ProtocolStage.PROTOCOL_PART_I
+        return when {
+            isProtocolPartI(dto) -> ProtocolStage.PROTOCOL_PART_I
+            picocStage(dto) -> ProtocolStage.PICOC
+            isProtocolPartII(dto) -> ProtocolStage.PROTOCOL_PART_II
+            !isProtocolPartIIICompleted(dto, robQuestionCount, extractionQuestionsCount) -> ProtocolStage.PROTOCOL_PART_III
+            totalStudiesCount == 0 -> ProtocolStage.IDENTIFICATION
+            includedStudiesCount == 0 -> ProtocolStage.SELECTION
+            extractedStudiesCount == 0 -> ProtocolStage.EXTRACTION
+            else -> ProtocolStage.GRAPHICS
         }
+    }
 
+    private fun isProtocolPartI(dto: ProtocolDto): Boolean {
+        return dto.goal.isNullOrBlank() && dto.justification.isNullOrBlank()
+    }
+
+    private fun isProtocolPartII(dto: ProtocolDto): Boolean {
+        return dto.studiesLanguages.isEmpty() &&
+                dto.eligibilityCriteria.isEmpty() &&
+                dto.informationSources.isEmpty() &&
+                dto.keywords.isEmpty() &&
+                dto.sourcesSelectionCriteria.isNullOrBlank() &&
+                dto.searchMethod.isNullOrBlank() &&
+                dto.selectionProcess.isNullOrBlank()
+    }
+
+    private fun isProtocolPartIIICompleted(dto: ProtocolDto, robQuestionCount: Int, extractionQuestionsCount: Int): Boolean {
+        val hasInclusionCriteria = dto.eligibilityCriteria.any { it.type.equals("INCLUSION", ignoreCase = true) }
+        val hasExclusionCriteria = dto.eligibilityCriteria.any { it.type.equals("EXCLUSION", ignoreCase = true) }
+
+        val hasExtractionAndRob = robQuestionCount > 0 && extractionQuestionsCount > 0
+
+        val hasDatabases = dto.informationSources.isNotEmpty()
+        val hasResearchQuestions = dto.researchQuestions.isNotEmpty()
+        val hasAnalysisProcess = !dto.analysisAndSynthesisProcess.isNullOrBlank()
+
+        return hasInclusionCriteria && hasExclusionCriteria &&
+                hasExtractionAndRob && hasDatabases &&
+                hasResearchQuestions && hasAnalysisProcess
+    }
+
+    private fun picocStage(dto: ProtocolDto): Boolean {
         val picoc = dto.picoc
-        val picocIsStarted = picoc != null && (
-                    !picoc.population.isNullOrBlank() || !picoc.intervention.isNullOrBlank() ||
-                    !picoc.control.isNullOrBlank() || !picoc.outcome.isNullOrBlank() || !picoc.context.isNullOrBlank()
-                )
+        if (picoc == null) return false
+
+        val picocIsStarted = !picoc.population.isNullOrBlank() || !picoc.intervention.isNullOrBlank() ||
+                !picoc.control.isNullOrBlank() || !picoc.outcome.isNullOrBlank() || !picoc.context.isNullOrBlank()
 
         if (picocIsStarted) {
-            val picocIsCompleted = !picoc!!.population.isNullOrBlank() && !picoc.intervention.isNullOrBlank() &&
+            val picocIsCompleted = !picoc.population.isNullOrBlank() && !picoc.intervention.isNullOrBlank() &&
                     !picoc.control.isNullOrBlank() && !picoc.outcome.isNullOrBlank() && !picoc.context.isNullOrBlank()
 
             if (!picocIsCompleted) {
-                return ProtocolStage.PICOC
+                return true
             }
         }
 
-        if (dto.studiesLanguages.isEmpty() && dto.eligibilityCriteria.isEmpty() &&
-            dto.informationSources.isEmpty() && dto.keywords.isEmpty() &&
-            dto.sourcesSelectionCriteria.isNullOrBlank() && dto.searchMethod.isNullOrBlank() &&
-            dto.selectionProcess.isNullOrBlank()) {
-            return ProtocolStage.PROTOCOL_PART_II
-        }
-
-        val hasInclusionCriteria = dto.eligibilityCriteria.any { it.type.equals("INCLUSION", true) }
-        val hasExclusionCriteria = dto.eligibilityCriteria.any { it.type.equals("EXCLUSION", true) }
-        val extractionAndRobDefined = isThereExtractionAndRobQuestions(robQuestionCount, extractionQuestionsCount)
-        val hasDatabases = dto.informationSources.isNotEmpty()
-
-        val protocolPartIIICompleted = hasInclusionCriteria && hasExclusionCriteria &&
-                extractionAndRobDefined && hasDatabases &&
-                dto.researchQuestions.isNotEmpty() &&
-                !dto.analysisAndSynthesisProcess.isNullOrBlank()
-
-        if (!protocolPartIIICompleted) {
-            return ProtocolStage.PROTOCOL_PART_III
-        }
-
-        if (totalStudiesCount == 0) {
-            return ProtocolStage.IDENTIFICATION
-        }
-
-        if (includedStudiesCount == 0) {
-            return ProtocolStage.SELECTION
-        }
-
-        if (extractedStudiesCount == 0) {
-            return ProtocolStage.EXTRACTION
-        }
-
-        // This stage is reached when extraction is complete, but finalization has not yet begun.
-        // As Finalization criteria are not yet defined, this is the default final step.
-        return ProtocolStage.GRAPHICS
-
-        // Finalization would be returned here once its criteria are defined.
-    }
-
-    private fun isThereExtractionAndRobQuestions(robQuestionCount: Int, extractionQuestionsCount: Int): Boolean {
-        return robQuestionCount > 0 && extractionQuestionsCount > 0
+        return false
     }
 }
