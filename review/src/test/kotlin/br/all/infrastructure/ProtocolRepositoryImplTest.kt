@@ -18,8 +18,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 
-@Tag("UnitTests")
-@Tag("ServiceTests")
+@Tag("UnitTest")
+@Tag("ServiceTest")
 @ExtendWith(MockKExtension::class)
 class ProtocolRepositoryImplTest {
     @MockK

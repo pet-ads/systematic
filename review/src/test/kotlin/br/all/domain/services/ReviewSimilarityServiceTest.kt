@@ -16,6 +16,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @Tag("IntegrationTest")
+@Tag("ServiceTest")
 class ReviewSimilarityServiceTest {
 
     private lateinit var sut: ReviewSimilarityService

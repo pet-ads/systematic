@@ -11,9 +11,11 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.util.*
 
+@Tag("UnitTest")
 class PreconditionCheckerTest {
 
     private lateinit var presenter: GenericPresenter<*>

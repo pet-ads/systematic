@@ -7,10 +7,12 @@ import br.all.domain.model.search.SearchSessionID
 import br.all.domain.shared.utils.paragraph
 import br.all.domain.shared.utils.year
 import io.github.serpro69.kfaker.Faker
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.assertAll
 import java.util.*
 import kotlin.test.*
 
+@Tag("UnitTest")
 class StudyReviewTest {
 
     private val faker = Faker()

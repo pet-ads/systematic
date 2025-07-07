@@ -3,6 +3,7 @@ package br.all.domain.model.search
 import br.all.domain.model.protocol.SearchSource
 import br.all.domain.model.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDateTime
@@ -10,6 +11,7 @@ import java.util.*
 
 import kotlin.test.assertEquals
 
+@Tag("UnitTest")
 class SearchSessionTest {
 
 

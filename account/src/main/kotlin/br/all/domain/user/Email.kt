@@ -7,51 +7,60 @@ data class Email(val value: String) : ValueObject() {
 
     init {
         val notification = validate()
-        require(notification.hasNoErrors()) {notification.message()}
+        require(notification.hasNoErrors()) { notification.message() }
     }
 
     override fun validate(): Notification {
         val notification = Notification()
 
+        if (value.isEmpty()) {
+            notification.addError("Email must not be empty.")
+            return notification
+        }
+
         if (value.isBlank()) {
             notification.addError("Email must not be blank.")
             return notification
         }
+
         if (!isValidEmailFormat(value)) notification.addError("Wrong Email format.")
+
         return notification
     }
 
     private fun isValidEmailFormat(email: String): Boolean {
-        if (!isValidEmailAddress(email)) return false
-        if (!hasLengthBelowMaximum(email)) return false
-        if (hasRepeatedSubdomains(email)) return false
-        if (email.contains("..")) return false
-        if (email.contains("@.")) return false
-        if (email.contains(".@")) return false
+        if (email.contains("..") || email.contains(".@") || email.contains("@.")) return false
+        if (email.startsWith(".") || email.endsWith(".")) return false
+        if (email.startsWith("@") || email.endsWith("@")) return false
+
+        val parts = email.split("@")
+        if (parts.size != 2) return false
+
+        val localPart = parts[0]
+        val domainPart = parts[1]
+
+        if (!hasValidLength(localPart, domainPart)) return false
+        if (!isValidStructure(localPart, domainPart)) return false
+
         return true
     }
 
-    private fun isValidEmailAddress(email: String): Boolean {
-        val regex = Regex("^[A-Za-z0-9+_.-]+@[a-z.]+$")
-        return regex.matches(email)
-    }
+    private fun isValidStructure(localPart: String, domainPart: String): Boolean {
+        val localRegex = Regex("^[A-Za-z0-9_!#$%&'*+/=?`{|}~^.-]+$")
+        val domainRegex = Regex("^[A-Za-z0-9.-]+$")
 
-    fun hasRepeatedSubdomains(email: String): Boolean {
-        val parts = email.split("@")
-
-        if (parts.size == 2) {
-            val subdomains = parts[1].split(".")
-            val verifyedSubdomains = HashSet<String>()
-
-            for (subdomain in subdomains){
-                if (!verifyedSubdomains.add(subdomain)) return true
-            }
+        val domainLabels = domainPart.split(".")
+        if (domainLabels.last().length < 2 || domainLabels.any { it.startsWith("-") || it.endsWith("-") }) {
+            return false
         }
-        return false
+
+        return localRegex.matches(localPart) && domainRegex.matches(domainPart)
     }
 
-    fun hasLengthBelowMaximum(email: String): Boolean {
-        val parts = email.split("@")
-        return !(parts[0].length > 64 || parts[1].length > 255)
+    private fun hasValidLength(localPart: String, domainPart: String): Boolean {
+        if (localPart.length > 64) return false
+        if (domainPart.length > 255) return false
+        if ((localPart.length + 1 + domainPart.length) > 254) return false
+        return true
     }
 }

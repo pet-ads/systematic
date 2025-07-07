@@ -3,6 +3,7 @@ package br.all.report.controller
 import br.all.application.report.find.service.*
 import br.all.report.presenter.*
 import br.all.security.service.AuthenticationInfoService
+import br.all.report.presenter.RestfulFindStudyReviewCriteriaPresenter
 import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -27,6 +28,7 @@ class ReportController(
     private val authorNetworkService: AuthorNetworkService,
     private val findKeywordsService: FindKeywordsService,
     private val findStudiesByStageService: FindStudiesByStageService,
+    private val findStudyReviewCriteriaService: FindStudyReviewCriteriaService,
     private val exportProtocolService: ExportProtocolService,
     private val findAnswerService: FindAnswerServiceImpl,
     private val studiesFunnelService: StudiesFunnelService,
@@ -348,6 +350,34 @@ class ReportController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindAnswerService.RequestModel(userId, systematicStudyId, questionId)
         findAnswerService.find(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("/study-review/{studyReview}/criteria")
+    @Operation(summary = "Return inclusion and exclusion criteria of study review")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200", description = "Success getting criteria of a review",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = FindStudyReviewCriteriaService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(responseCode = "401", description = "Fail getting criteria of a review - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "403", description = "Fail getting criteria of a review - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]),
+        ]
+    )
+    fun findCriteria(
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable studyReview: Long
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindStudyReviewCriteriaPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindStudyReviewCriteriaService.RequestModel(userId, systematicStudyId, studyReview)
+        findStudyReviewCriteriaService.findCriteria(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

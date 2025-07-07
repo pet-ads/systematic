@@ -11,6 +11,7 @@ import java.util.*
 import kotlin.test.assertEquals
 
 @Tag("IntegrationTest")
+@Tag("ServiceTest")
 class ScoreCalculatorServiceTest {
 
     private lateinit var sut: ScoreCalculatorService

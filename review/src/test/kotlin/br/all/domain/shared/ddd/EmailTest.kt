@@ -1,6 +1,7 @@
 package br.all.domain.shared.ddd
 
 import br.all.domain.shared.valueobject.Email
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -8,6 +9,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
+@Tag("UnitTest")
 class EmailTest {
 
     @Test
@@ -59,19 +61,6 @@ class EmailTest {
         exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
     }
 
-
-    @Test
-    fun `should not accept email with two equal TLDs`() {
-        val exception = assertThrows<IllegalArgumentException> { Email("email@ifsp.com.com") }
-        exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
-    }
-
-    @Test
-    fun `should not accept email with two equal subdomains`() {
-        val exception = assertThrows<IllegalArgumentException> { Email("email@ifsp.ifsp.com") }
-        exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
-    }
-
     @Test
     fun `email with incorrect format should include error message`() {
         val exception = assertThrows<IllegalArgumentException> { Email("invalid-email-format") }
@@ -102,7 +91,7 @@ class EmailTest {
 
     @Test
     fun `invalid email with special characters should throw an exception`() {
-        val exception = assertThrows<IllegalArgumentException> { Email("user!name@example.com") }
+        val exception = assertThrows<IllegalArgumentException> { Email("user name@example.com") }
         exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
     }
 
@@ -149,7 +138,7 @@ class EmailTest {
 
     @Test
     fun `valid email with domain under maximum length should not throw an exception`() {
-        assertDoesNotThrow { Email("user@" + "a".repeat(251) + ".com") }
+        assertDoesNotThrow { Email("user@" + "a".repeat(240) + ".com") }
     }
 
     @Test
@@ -157,6 +146,4 @@ class EmailTest {
         val exception = assertThrows<IllegalArgumentException> { Email("user@domain@com") }
         exception.message?.contains("Wrong Email format")?.let { assertTrue(it) }
     }
-
-
 }

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
+@Tag("UnitTest")
 class TextTest {
 
     @Test

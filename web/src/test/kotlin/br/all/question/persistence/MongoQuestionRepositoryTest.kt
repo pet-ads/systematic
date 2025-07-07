@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import java.util.UUID
 
 @SpringBootTest
+@Tag("IntegrationTest")
+@Tag("RepositoryTest")
 class MongoQuestionRepositoryTest(
     @Autowired private val sut: MongoQuestionRepository,
 ) {

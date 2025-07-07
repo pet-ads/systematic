@@ -220,6 +220,27 @@ class TestDataFactory {
             QuestionContextEnum.valueOf(questionContext),
         )
 
+    fun batchAnswerRequest(
+        answers: List<BatchAnswerQuestionService.RequestModel.AnswerDetail>,
+        researcherId: UUID = this.researcherId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        studyReviewId: Long = this.studyReviewId,
+    ) = BatchAnswerQuestionService.RequestModel(
+        userId = researcherId,
+        systematicStudyId = systematicStudyId,
+        studyReviewId = studyReviewId,
+        answers = answers
+    )
+
+    fun answerDetail(
+        questionId: UUID,
+        type: String,
+        answer: Any,
+    ) = BatchAnswerQuestionService.RequestModel.AnswerDetail(
+        questionId = questionId,
+        type = type,
+        answer = answer
+    )
 
     operator fun component1() = researcherId
     operator fun component2() = studyReviewId
