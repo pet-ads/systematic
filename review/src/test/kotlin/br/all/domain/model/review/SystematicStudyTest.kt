@@ -1,5 +1,8 @@
 package br.all.domain.model.review
 
+import br.all.domain.model.collaboration.Collaboration
+import br.all.domain.model.collaboration.CollaborationId
+import br.all.domain.model.collaboration.CollaborationPermission
 import br.all.domain.model.user.ResearcherId
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
@@ -17,7 +20,7 @@ class SystematicStudyTest {
     fun setUp() {
         val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         val owner = ResearcherId(UUID.randomUUID())
-        sut = SystematicStudy(systematicStudyId, "Some title", "Some description", owner)
+        sut = SystematicStudy(systematicStudyId, "Some title", "Some description", owner, setOf())
     }
 
     @Nested
@@ -31,18 +34,9 @@ class SystematicStudyTest {
             fun `should successfully create an systematic study`() {
                 val id = SystematicStudyId(UUID.randomUUID())
                 val owner = ResearcherId(UUID.randomUUID())
-                val collaborators = mutableSetOf(ResearcherId(UUID.randomUUID()))
+                val collaborators = mutableSetOf(CollaborationId(UUID.randomUUID()))
 
                 assertDoesNotThrow { SystematicStudy(id, "Title", "Description", owner, collaborators) }
-            }
-
-            @Test
-            fun `should owner be a collaborator`() {
-                val id = SystematicStudyId(UUID.randomUUID())
-                val ownerId = ResearcherId(UUID.randomUUID())
-                val sut = SystematicStudy(id, "Title", "Description", ownerId, mutableSetOf())
-                
-                assertTrue(ownerId in sut.collaborators)
             }
         }
 
@@ -56,7 +50,7 @@ class SystematicStudyTest {
                 val id = SystematicStudyId(UUID.randomUUID())
                 val owner = ResearcherId(UUID.randomUUID())
 
-                assertThrows<IllegalArgumentException> { SystematicStudy(id, title, description, owner) }
+                assertThrows<IllegalArgumentException> { SystematicStudy(id, title, description, owner, setOf()) }
             }
         }
     }
@@ -65,16 +59,9 @@ class SystematicStudyTest {
     @DisplayName("When adding new collaborators")
     inner class WhenAddingNewCollaborators {
         @Test
-        @Tag("ValidClasses")
-        fun `should add new collaborator`() {
-            sut.addCollaborator(ResearcherId(UUID.randomUUID()))
-            assertEquals(2, sut.collaborators.size)
-        }
-
-        @Test
         @Tag("InvalidClasses")
         fun `should not add duplicated researchers`() {
-            val duplicatedResearcher = ResearcherId(UUID.randomUUID())
+            val duplicatedResearcher = CollaborationId(UUID.randomUUID())
             
             sut.addCollaborator(duplicatedResearcher)
             sut.addCollaborator(duplicatedResearcher)
@@ -93,12 +80,14 @@ class SystematicStudyTest {
             @Test
             fun `should remove valid collaborator`() {
                 val researcherId = ResearcherId(UUID.randomUUID())
+                val collabId = CollaborationId(UUID.randomUUID())
+                val collaboration = Collaboration(collabId, sut.id as SystematicStudyId, researcherId, permissions = setOf(CollaborationPermission.VIEW))
 
-                sut.addCollaborator(researcherId)
-                assertTrue(researcherId in sut.collaborators, "researcher was not even added" )
+                sut.addCollaborator(collabId)
+                assertTrue(collabId in sut.collaborators, "researcher was not even added" )
 
-                sut.removeCollaborator(researcherId)
-                assertFalse(researcherId in sut.collaborators, "researcher was not removed")
+                sut.removeCollaborator(collaboration)
+                assertFalse(collabId in sut.collaborators, "researcher was not removed")
             }
         }
 
@@ -109,30 +98,16 @@ class SystematicStudyTest {
             @Test
             fun `should not allow removing owner from collaborators`(){
                 val ownerId = sut.owner
-                assertThrows<IllegalStateException> {  sut.removeCollaborator(ownerId) }
+                val collaboration = Collaboration(CollaborationId(UUID.randomUUID()), sut.id as SystematicStudyId, ownerId, permissions = setOf(CollaborationPermission.VIEW))
+                assertThrows<NoSuchElementException> {  sut.removeCollaborator(collaboration) }
             }
 
             @Test
             fun `should throw if try to remove absent collaborator`(){
                 val absentResearcher = ResearcherId(UUID.randomUUID())
-                assertThrows<NoSuchElementException> { sut.removeCollaborator(absentResearcher) }
+                val collaboration = Collaboration(CollaborationId(UUID.randomUUID()), sut.id as SystematicStudyId, absentResearcher, permissions = setOf(CollaborationPermission.VIEW))
+                assertThrows<NoSuchElementException> { sut.removeCollaborator(collaboration) }
             }
-        }
-    }
-
-    @Nested
-    @DisplayName("When changing the owner")
-    inner class WhenChangingTheOwner {
-        @Test
-        @Tag("ValidClasses")
-        fun `should add new owner to collaborators if not present yet`(){
-            val newOwner = ResearcherId(UUID.randomUUID())
-            sut.changeOwner(newOwner)
-
-            Assertions.assertAll("change owner",
-                { assertTrue(newOwner in sut.collaborators) },
-                { assertEquals(sut.owner, newOwner) }
-            )
         }
     }
 
