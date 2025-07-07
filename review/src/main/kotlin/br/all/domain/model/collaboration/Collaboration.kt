@@ -12,29 +12,34 @@ class Collaboration(
     val userId: ResearcherId,
     status: CollaborationStatus = CollaborationStatus.ACTIVE,
     permissions: Set<CollaborationPermission> = emptySet()
-    ): Entity<UUID>(id) {
-        
-        init{
-            val notification = validate()
-            require(notification.hasNoErrors()) { notification.message() }
-        }
-    
+) : Entity<UUID>(id) {
+
     private val _permissions = permissions.toMutableSet()
-    val permissions get() = _permissions
-    
+    val permissions: Set<CollaborationPermission>
+        get() = _permissions.toSet() 
+
     var status = status
         private set
+
+    init {
+        val notification = validate()
+        require(notification.hasNoErrors()) { notification.message() }
+    }
     
-    fun addPermission(permission: CollaborationPermission) = _permissions.add(permission)
-    
-    fun removePermission(permission: CollaborationPermission) = _permissions.remove(permission)
+    fun addPermission(permission: CollaborationPermission) {
+        _permissions.add(permission)
+    }
+
+    fun removePermission(permission: CollaborationPermission) {
+        _permissions.remove(permission)
+    }
 
     fun removeCollaboration() {
         status = CollaborationStatus.REMOVED
     }
-    
-    private fun validate() = Notification().also{
-        if(permissions.isEmpty())
+
+    private fun validate() = Notification().also {
+        if (_permissions.isEmpty())
             it.addError("Collaboration must have at least one permission")
     }
 }

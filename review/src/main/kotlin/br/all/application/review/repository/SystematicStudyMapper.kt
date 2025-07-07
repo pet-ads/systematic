@@ -15,18 +15,19 @@ fun SystematicStudy.toDto() = SystematicStudyDto(
     collaborators.map { it.value }.toSet(),
 )
 
-fun SystematicStudy.Companion.fromRequestModel(id: UUID, requestModel: RequestModel) = SystematicStudy(
+fun SystematicStudy.Companion.fromRequestModel(id: UUID, requestModel: RequestModel, ownerCollaborationId: CollaborationId) = SystematicStudy(
     SystematicStudyId(id),
     requestModel.title,
     requestModel.description,
-    CollaborationId(requestModel.userId),
+    ResearcherId(requestModel.userId),
+    setOf(ownerCollaborationId)
 )
 
 fun SystematicStudy.Companion.fromDto(dto: SystematicStudyDto) = SystematicStudy(
     SystematicStudyId(dto.id),
     dto.title,
     dto.description,
-    CollaborationId(dto.owner),
+    ResearcherId(dto.owner),
     dto.collaborators
         .map { CollaborationId(it) }
         .toMutableSet(),

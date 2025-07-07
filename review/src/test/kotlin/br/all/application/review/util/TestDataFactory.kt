@@ -6,6 +6,7 @@ import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
 import br.all.application.review.update.services.UpdateSystematicStudyService.ResponseModel
+import br.all.domain.model.collaboration.CollaborationId
 import br.all.domain.model.protocol.Protocol
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.toSystematicStudyId
@@ -46,19 +47,13 @@ class TestDataFactory {
     fun createRequestModel(
         researcherId: UUID = researcher,
         title: String = faker.book.title(),
-        description: String = faker.lorem.words(),
-        collaborators: Set<UUID> = emptySet()
-    ) = CreateRequestModel(researcherId, title, description, collaborators)
+        description: String = faker.lorem.words()
+    ) = CreateRequestModel(researcherId, title, description)
 
     fun createResponseModel(
         researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
     ) = CreateResponseModel(researcherId, systematicStudyId)
-
-    fun dtoFromCreateRequest(
-        request: CreateRequestModel,
-        systematicStudyId: UUID = systematicStudy,
-    ) = SystematicStudy.fromRequestModel(systematicStudyId, request).toDto()
 
     fun findOneRequestModel(
         researcherId: UUID = researcher,
