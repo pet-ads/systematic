@@ -280,7 +280,7 @@ class IncludedStudiesAnswersServiceImplTest {
             sut.findAnswers(presenter, request)
 
             verify(exactly = 1) {
-                presenter.prepareIfFailsPreconditions(any(), any())
+                presenter.prepareIfFailsPreconditions(any(), any(),)
             }
 
             assertEquals(true, presenter.isDone())
@@ -317,7 +317,7 @@ class IncludedStudiesAnswersServiceImplTest {
             sut.findAnswers(presenter, request)
 
             verify(exactly = 1) {
-                presenter.prepareIfFailsPreconditions(any(), any())
+                presenter.prepareIfFailsPreconditions(any(), any(),)
             }
 
             assertEquals(true, presenter.isDone())

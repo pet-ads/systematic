@@ -163,7 +163,7 @@ class AuthorNetworkServiceImplTest {
             sut.findAuthors(presenter, request)
 
             verify(exactly = 1) {
-                presenter.prepareIfFailsPreconditions(any(), any())
+                presenter.prepareIfFailsPreconditions(any(), any(),)
             }
             assertTrue { presenter.isDone() }
         }
@@ -183,7 +183,7 @@ class AuthorNetworkServiceImplTest {
             sut.findAuthors(presenter, request)
 
             verify(exactly = 1) {
-                presenter.prepareIfFailsPreconditions(any(), any())
+                presenter.prepareIfFailsPreconditions(any(), any(),)
             }
             assertTrue { presenter.isDone() }
         }

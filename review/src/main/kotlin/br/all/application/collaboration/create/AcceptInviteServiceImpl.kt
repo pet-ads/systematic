@@ -4,7 +4,7 @@ import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.collaboration.repository.toDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
-import br.all.application.shared.presenter.prepareIfFailsPreconditions
+import br.all.application.shared.presenter.prepareIfUnauthorized
 import br.all.application.user.CredentialsService
 import br.all.domain.model.collaboration.Collaboration
 import br.all.domain.model.collaboration.CollaborationPermission
@@ -25,7 +25,7 @@ class AcceptInviteServiceImpl(
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy)
+        presenter.prepareIfUnauthorized(user)
 
         if(presenter.isDone()) return
 

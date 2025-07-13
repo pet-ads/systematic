@@ -191,7 +191,7 @@ class StudiesFunnelServiceImplTest {
             sut.studiesFunnel(presenter, request)
 
             verify(exactly = 1) {
-                presenter.prepareIfFailsPreconditions(any(), any())
+                presenter.prepareIfFailsPreconditions(any(), any(),)
             }
             assertTrue { presenter.isDone() }
         }
@@ -211,7 +211,7 @@ class StudiesFunnelServiceImplTest {
             sut.studiesFunnel(presenter, request)
 
             verify(exactly = 1) {
-                presenter.prepareIfFailsPreconditions(any(), any())
+                presenter.prepareIfFailsPreconditions(any(), any(),)
             }
             assertTrue { presenter.isDone() }
         }
