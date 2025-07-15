@@ -127,19 +127,6 @@ class StudyReviewServicesConfiguration {
     )
 
     @Bean
-    fun answerQuestionService(
-        studyReviewRepository: StudyReviewRepository,
-        questionRepository: QuestionRepository,
-        systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: CredentialsService,
-    ) = AnswerQuestionImpl(
-        studyReviewRepository,
-        questionRepository,
-        systematicStudyRepository,
-        credentialsService
-    )
-
-    @Bean
     fun batchAnswerQuestionService(
         studyReviewRepository: StudyReviewRepository,
         questionRepository: QuestionRepository,

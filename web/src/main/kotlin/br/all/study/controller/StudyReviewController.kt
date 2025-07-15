@@ -40,7 +40,6 @@ class StudyReviewController(
     private val updateReadingPriorityService: UpdateStudyReviewPriorityService,
     private val removeCriteriaService: RemoveCriteriaService,
     private val markAsDuplicatedService: MarkAsDuplicatedService,
-    private val answerQuestionService: AnswerQuestionService,
     private val batchAnswerQuestionService: BatchAnswerQuestionService,
     private val authenticationInfoService: AuthenticationInfoService,
     private val linksFactory: LinksFactory
@@ -365,84 +364,6 @@ class StudyReviewController(
         val userID = authenticationInfoService.getAuthenticatedUserId()
         val request = patchRequest.toRequestModel(userID, systematicStudy)
         updateReadingPriorityService.changeStatus(presenter, request)
-        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
-    }
-
-    @PatchMapping("/study-review/{studyReview}/riskOfBias-answer")
-    @Operation(summary = "Update the answer of a risk of bias question")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "200", description = "Success updating answer to risk of bias question",
-                content = [Content(
-                    mediaType = "application/json",
-                    schema = Schema(implementation = AnswerQuestionService.ResponseModel::class)
-                )]
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Fail updating answer to risk of bias question",
-                content = [Content(schema = Schema(hidden = true))]
-            ),
-            ApiResponse(
-                responseCode = "401",
-                description = "Fail updating answer to risk of bias question - unauthenticated user",
-                content = [Content(schema = Schema(hidden = true))]
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Fail updating answer to risk of bias question - unauthorized user",
-                content = [Content(schema = Schema(hidden = true))]
-            ),
-        ]
-    )
-    fun riskOfBiasAnswer(
-        @PathVariable systematicStudy: UUID,
-        @PathVariable studyReview: Long,
-        @RequestBody patchRequest: PatchAnswerQuestionStudyReviewRequest<*>,
-    ) : ResponseEntity<*> {
-        val presenter = RestfulAnswerQuestionPresenter(linksFactory)
-        val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
-        answerQuestionService.answerQuestion(presenter, request, context = "ROB")
-        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
-    }
-
-    @PatchMapping("/study-review/{studyReview}/extraction-answer")
-    @Operation(summary = "Update the answer of a extraction question")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "200", description = "Success updating answer to extraction question",
-                content = [Content(
-                    mediaType = "application/json",
-                    schema = Schema(implementation = AnswerQuestionService.ResponseModel::class)
-                )]
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Fail updating answer to extraction question",
-                content = [Content(schema = Schema(hidden = true))]
-            ),
-            ApiResponse(
-                responseCode = "401",
-                description = "Fail updating answer to extraction question - unauthenticated user",
-                content = [Content(schema = Schema(hidden = true))]
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Fail updating answer to extraction question - unauthorized user",
-                content = [Content(schema = Schema(hidden = true))]
-            ),
-        ]
-    )
-    fun extractionAnswer(
-        @PathVariable systematicStudy: UUID,
-        @PathVariable studyReview: Long,
-        @RequestBody patchRequest: PatchAnswerQuestionStudyReviewRequest<*>,
-    ) : ResponseEntity<*> {
-        val presenter = RestfulAnswerQuestionPresenter(linksFactory)
-        val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = patchRequest.toRequestModel(userId, systematicStudy, studyReview)
-        answerQuestionService.answerQuestion(presenter, request, context = "EXTRACTION")
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
