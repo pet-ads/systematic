@@ -42,8 +42,7 @@ class BatchAnswerQuestionServiceImpl(
     @Transactional
     override fun batchAnswerQuestion(
         presenter: BatchAnswerQuestionPresenter,
-        request: RequestModel,
-        context: String
+        request: RequestModel
     ) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
@@ -61,7 +60,6 @@ class BatchAnswerQuestionServiceImpl(
         }
         val review = StudyReview.fromDto(reviewDto)
 
-        val questionContext = QuestionContextEnum.valueOf(context.uppercase())
         val successfulQuestionIds = mutableListOf<UUID>()
         val failedAnswers = mutableListOf<FailedAnswer>()
 
@@ -70,7 +68,6 @@ class BatchAnswerQuestionServiceImpl(
                 val questionDto = questionRepository.findById(request.systematicStudyId, answerDetail.questionId)
 
                 if (questionDto == null) throw EntityNotFoundException("Question with id ${answerDetail.questionId} in systematic study ${request.systematicStudyId} was not found!")
-                if (questionDto.context != questionContext) throw IllegalArgumentException("Should answer question with the context: $context, found: ${questionDto.context}")
 
                 val question = Question.fromDto(questionDto)
                 val answer = convertAnswer(question, answerDetail, questionDto.questionType)

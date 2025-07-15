@@ -446,11 +446,11 @@ class StudyReviewController(
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    @PatchMapping("/study-review/{studyReview}/batch-riskOfBias-answers")
-    @Operation(summary = "Update a batch of answers for risk of bias questions")
+    @PatchMapping("/study-review/{studyReview}/batch-answer-question")
+    @Operation(summary = "Update a batch of answers for both rob and/or extraction questions")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Success updating a batch of answers to risk of bias questions",
+            ApiResponse(responseCode = "200", description = "Success updating a batch of answers",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(implementation = BatchAnswerQuestionService.ResponseModel::class)
@@ -473,7 +473,7 @@ class StudyReviewController(
             ),
         ]
     )
-    fun batchRiskOfBiasAnswers(
+    fun batchAnswerQuestions(
         @PathVariable systematicStudy: UUID,
         @PathVariable studyReview: Long,
         @RequestBody requestBody: PatchBatchAnswerQuestionStudyReviewRequest
@@ -482,47 +482,7 @@ class StudyReviewController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = requestBody.toRequestModel(userId, systematicStudy, studyReview)
 
-        batchAnswerQuestionService.batchAnswerQuestion(presenter, request, "ROB")
-        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
-    }
-
-    @PatchMapping("/study-review/{studyReview}/batch-extraction-answers")
-    @Operation(summary = "Update a batch of answers for extraction questions")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "200", description = "Success updating a batch of answers to extraction questions",
-                content = [Content(
-                    mediaType = "application/json",
-                    schema = Schema(implementation = BatchAnswerQuestionService.ResponseModel::class)
-                )]
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Fail updating answers - invalid payload",
-                content = [Content(schema = Schema(hidden = true))]
-            ),
-            ApiResponse(
-                responseCode = "401",
-                description = "Fail updating answers - unauthenticated user",
-                content = [Content(schema = Schema(hidden = true))]
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Fail updating answers - unauthorized user",
-                content = [Content(schema = Schema(hidden = true))]
-            ),
-        ]
-    )
-    fun batchExtractionAnswers(
-        @PathVariable systematicStudy: UUID,
-        @PathVariable studyReview: Long,
-        @RequestBody requestBody: PatchBatchAnswerQuestionStudyReviewRequest
-    ): ResponseEntity<*> {
-        val presenter = RestfulBatchAnswerQuestionPresenter(linksFactory)
-        val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = requestBody.toRequestModel(userId, systematicStudy, studyReview)
-
-        batchAnswerQuestionService.batchAnswerQuestion(presenter, request, "EXTRACTION")
+        batchAnswerQuestionService.batchAnswerQuestion(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 

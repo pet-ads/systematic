@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.util.UUID
 
 interface BatchAnswerQuestionService {
-    fun batchAnswerQuestion(presenter: BatchAnswerQuestionPresenter, request: RequestModel, context: String)
+    fun batchAnswerQuestion(presenter: BatchAnswerQuestionPresenter, request: RequestModel)
 
     data class RequestModel(
         val userId: UUID,
