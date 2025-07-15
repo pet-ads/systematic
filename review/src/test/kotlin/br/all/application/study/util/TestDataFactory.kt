@@ -125,17 +125,6 @@ class TestDataFactory {
         duplicateIds: List<Long>
     ) = MarkAsDuplicatedService.RequestModel(researcherId, systematicStudyId, keptStudyReviewId, duplicateIds)
 
-    fun <T> answerQuestionModel(
-        questionId: UUID,
-        type: String,
-        answer: T,
-    ) = AnswerQuestionService.RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
-
-    fun questionLabelDto(
-        name: String,
-        value: Int,
-    ) = AnswerQuestionService.LabelDto(name, value)
-
     fun generateQuestionTextualDto(
         questionId: UUID,
         systematicStudyId: UUID = this.systematicStudyId,
@@ -161,7 +150,7 @@ class TestDataFactory {
         systematicStudyId: UUID = this.systematicStudyId,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
-        labelDto: AnswerQuestionService.LabelDto,
+        labelDto: BatchAnswerQuestionService.LabelDto,
         questionContext: String
     ) =
         QuestionDto(

@@ -4,8 +4,8 @@ import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.update.implementation.BatchAnswerQuestionServiceImpl
-import br.all.application.study.update.interfaces.AnswerQuestionService
 import br.all.application.study.update.interfaces.BatchAnswerQuestionPresenter
+import br.all.application.study.update.interfaces.BatchAnswerQuestionService
 import br.all.application.study.util.TestDataFactory
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
@@ -232,7 +232,7 @@ class BatchAnswerQuestionServiceImplTest {
         fun `should create a failed answer entry for unsupported labeled scale answer type`() {
             val reviewDto = factory.generateDto()
             val questionId = UUID.randomUUID()
-            val labelDto = AnswerQuestionService.LabelDto("LabelTest", 1)
+            val labelDto = BatchAnswerQuestionService.LabelDto("LabelTest", 1)
             val questionDto = factory.generateQuestionLabeledScaleDto(questionId, factory.systematicStudyId, labelDto = labelDto, questionContext = "ROB")
 
             val answerDetail = factory.answerDetail(questionId, "LABELED_SCALE", "invalid answer format")
