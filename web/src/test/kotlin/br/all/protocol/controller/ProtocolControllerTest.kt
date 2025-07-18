@@ -68,7 +68,7 @@ class ProtocolControllerTest(
     private fun putUrl(systematicStudyId: UUID = factory.protocol) =
         "/systematic-study/$systematicStudyId/protocol"
 
-    private fun getStage(systematicStudy: UUID = factory.protocol) =
+    private fun findStage(systematicStudy: UUID = factory.protocol) =
         "/systematic-study/$systematicStudy/protocol/stage"
 
     @Nested
@@ -267,7 +267,7 @@ class ProtocolControllerTest(
             val document = factory.createProtocolDocument()
             protocolRepository.save(document)
 
-            mockMvc.perform(get(getStage())
+            mockMvc.perform(get(findStage())
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
                 .contentType(MediaType.APPLICATION_JSON)
             )
@@ -278,7 +278,7 @@ class ProtocolControllerTest(
 
         @Test
         fun `should return 404 when protocol does not exist`() {
-            mockMvc.perform(get(getStage())
+            mockMvc.perform(get(findStage())
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
                 .contentType(MediaType.APPLICATION_JSON)
             )
@@ -289,12 +289,12 @@ class ProtocolControllerTest(
 
         @Test
         fun `should not authorize researchers that are not collaborators to get protocol stage`() {
-            testHelperService.testForUnauthorizedUser(mockMvc, get(getStage()))
+            testHelperService.testForUnauthorizedUser(mockMvc, get(findStage()))
         }
 
         @Test
         fun `should not allow unauthenticated users to get protocol stage`() {
-            testHelperService.testForUnauthenticatedUser(mockMvc, get(getStage()))
+            testHelperService.testForUnauthenticatedUser(mockMvc, get(findStage()))
         }
     }
 }

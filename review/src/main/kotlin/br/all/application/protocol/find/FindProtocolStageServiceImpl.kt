@@ -3,9 +3,9 @@ package br.all.application.protocol.find
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.user.CredentialsService
-import br.all.application.protocol.find.GetProtocolStageService.RequestModel
-import br.all.application.protocol.find.GetProtocolStageService.ResponseModel
-import br.all.application.protocol.find.GetProtocolStageService.ProtocolStage
+import br.all.application.protocol.find.FindProtocolStageService.RequestModel
+import br.all.application.protocol.find.FindProtocolStageService.ResponseModel
+import br.all.application.protocol.find.FindProtocolStageService.ProtocolStage
 import br.all.application.protocol.repository.ProtocolDto
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.fromDto
@@ -17,14 +17,14 @@ import br.all.domain.model.review.SystematicStudy
 import org.springframework.stereotype.Service
 
 @Service
-class GetProtocolStageServiceImpl(
+class FindProtocolStageServiceImpl(
     private val protocolRepository: ProtocolRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,
     private val credentialsService: CredentialsService,
     private val questionRepository: QuestionRepository
-) : GetProtocolStageService {
-    override fun getStage(presenter: GetProtocolStagePresenter, request: RequestModel) {
+) : FindProtocolStageService {
+    override fun getStage(presenter: FindProtocolStagePresenter, request: RequestModel) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }

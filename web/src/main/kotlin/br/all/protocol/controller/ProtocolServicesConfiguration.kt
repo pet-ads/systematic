@@ -1,7 +1,7 @@
 package br.all.protocol.controller
 
 import br.all.application.protocol.find.FindProtocolServiceImpl
-import br.all.application.protocol.find.GetProtocolStageServiceImpl
+import br.all.application.protocol.find.FindProtocolStageServiceImpl
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.update.UpdateProtocolServiceImpl
 import br.all.application.question.repository.QuestionRepository
@@ -31,11 +31,11 @@ class ProtocolServicesConfiguration {
     ) = UpdateProtocolServiceImpl(protocolRepository, systematicStudyRepository, credentialsService, studyReviewRepository, scoreCalculatorService)
 
     @Bean
-    fun getProtocolStageService(
+    fun findProtocolStageService(
         protocolRepository: ProtocolRepository,
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService,
         questionRepository: QuestionRepository
-    ) = GetProtocolStageServiceImpl(protocolRepository, systematicStudyRepository, studyReviewRepository, credentialsService, questionRepository)
+    ) = FindProtocolStageServiceImpl(protocolRepository, systematicStudyRepository, studyReviewRepository, credentialsService, questionRepository)
 }

@@ -19,9 +19,9 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.UUID
 import kotlin.test.Test
-import br.all.application.protocol.find.GetProtocolStageService.RequestModel
-import br.all.application.protocol.find.GetProtocolStageService.ResponseModel
-import br.all.application.protocol.find.GetProtocolStageService.ProtocolStage
+import br.all.application.protocol.find.FindProtocolStageService.RequestModel
+import br.all.application.protocol.find.FindProtocolStageService.ResponseModel
+import br.all.application.protocol.find.FindProtocolStageService.ProtocolStage
 import br.all.application.protocol.repository.CriterionDto
 import br.all.application.protocol.repository.PicocDto
 import br.all.application.question.repository.QuestionRepository
@@ -31,7 +31,7 @@ import io.mockk.verify
 @Tag("UnitTest")
 @Tag("ServiceTest")
 @ExtendWith(MockKExtension::class)
-class GetProtocolStageServiceImplTest {
+class FindProtocolStageServiceImplTest {
 
     @MockK(relaxUnitFun = true)
     private lateinit var protocolRepository: ProtocolRepository
@@ -49,10 +49,10 @@ class GetProtocolStageServiceImplTest {
     private lateinit var credentialsService: CredentialsService
 
     @MockK(relaxUnitFun = true)
-    private lateinit var presenter: GetProtocolStagePresenter
+    private lateinit var presenter: FindProtocolStagePresenter
 
     @InjectMockKs
-    private lateinit var sut: GetProtocolStageServiceImpl
+    private lateinit var sut: FindProtocolStageServiceImpl
 
     private lateinit var precondition: PreconditionCheckerMockingNew
     private lateinit var protocolFactory: ProtocolFactory
