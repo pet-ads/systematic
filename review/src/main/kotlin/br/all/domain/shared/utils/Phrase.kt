@@ -2,6 +2,7 @@ package br.all.domain.shared.utils
 
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.ddd.ValueObject
+import kotlin.text.iterator
 
 data class Phrase(private val text: String) : ValueObject() {
     init {

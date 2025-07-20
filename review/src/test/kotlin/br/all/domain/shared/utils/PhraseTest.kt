@@ -1,5 +1,7 @@
 package br.all.domain.shared.utils
 
+import br.all.domain.shared.utils.Phrase
+import br.all.domain.shared.utils.toPhrase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow

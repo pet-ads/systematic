@@ -1,7 +1,7 @@
 package br.all.domain.model.study
 
-import br.all.domain.model.protocol.Criterion
 import br.all.domain.shared.ddd.Entity
+import br.all.domain.model.protocol.Criterion
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
 

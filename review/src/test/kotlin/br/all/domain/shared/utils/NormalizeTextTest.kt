@@ -1,5 +1,6 @@
 package br.all.domain.shared.utils
 
+import br.all.domain.shared.utils.normalizeText
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.assertAll
 import kotlin.test.Test

@@ -1,7 +1,6 @@
 package br.all.domain.shared.ddd
 
 abstract class Entity <T> (val id: Identifier<T>) {
-
     final override fun equals(other: Any?) = when {
         this === other -> true
         other !is Entity<*> -> false

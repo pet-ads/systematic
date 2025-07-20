@@ -6,7 +6,7 @@ fun UserAccount.toDto() = UserAccountDto(
     id.value(),
     accountCredentials.username.value,
     accountCredentials.password,
-    email.value,
+    email.email,
     country.value,
     affiliation,
     createdAt,

@@ -1,6 +1,7 @@
 package br.all.domain.user
 
 import br.all.domain.shared.ddd.Entity
+import br.all.domain.shared.user.Email
 import java.time.LocalDateTime
 import java.util.UUID
 

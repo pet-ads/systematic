@@ -3,7 +3,7 @@ package br.all.domain.user
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.ddd.ValueObject
 
-data class Username(val value: String) : ValueObject (){
+data class Username(val value: String) : ValueObject(){
 
     init {
         val notification = validate()

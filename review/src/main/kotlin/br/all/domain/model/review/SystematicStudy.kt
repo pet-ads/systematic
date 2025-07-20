@@ -1,7 +1,7 @@
 package br.all.domain.model.review
 
-import br.all.domain.model.user.ResearcherId
 import br.all.domain.shared.ddd.Entity
+import br.all.domain.model.user.ResearcherId
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.utils.exists
 import java.util.*
