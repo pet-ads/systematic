@@ -1,8 +1,8 @@
 package br.all.domain.model.protocol
 
+import br.all.domain.shared.ddd.Entity
 import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.SystematicStudyId
-import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.utils.exists
 import br.all.domain.shared.valueobject.Language
 import java.util.*

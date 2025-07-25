@@ -1,9 +1,9 @@
-package br.all.domain.user
+package br.all.domain.shared.user
 
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.ddd.ValueObject
 
-data class Email(val value: String) : ValueObject() {
+data class Email(val email: String) : ValueObject() {
 
     init {
         val notification = validate()
@@ -13,17 +13,17 @@ data class Email(val value: String) : ValueObject() {
     override fun validate(): Notification {
         val notification = Notification()
 
-        if (value.isEmpty()) {
+        if (email.isEmpty()) {
             notification.addError("Email must not be empty.")
             return notification
         }
 
-        if (value.isBlank()) {
+        if (email.isBlank()) {
             notification.addError("Email must not be blank.")
             return notification
         }
 
-        if (!isValidEmailFormat(value)) notification.addError("Wrong Email format.")
+        if (!isValidEmailFormat(email)) notification.addError("Wrong Email format.")
 
         return notification
     }

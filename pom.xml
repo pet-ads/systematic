@@ -16,6 +16,7 @@
         <module>web</module>
         <module>account</module>
         <module>scas</module>
+        <module>shared</module>
     </modules>
 
     <parent>
