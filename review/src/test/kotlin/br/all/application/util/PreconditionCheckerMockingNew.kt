@@ -28,6 +28,7 @@ class PreconditionCheckerMockingNew(
 ) {
     private val faker = Faker()
     private val systematicStudy = generateSystematicStudy()
+    private val collaboration = generateCollaborationDto()
 
     fun makeEverythingWork() {
         val user = generateUserDto()
@@ -42,13 +43,16 @@ class PreconditionCheckerMockingNew(
         ) } returns Unit
         every { collaborationRepository.
                 listAllCollaborationsBySystematicStudyId(systematicStudyId)
-        } returns collaborationId
+        } returns listOf(collaboration)
         every { presenter.isDone() } returns false
     }
 
     fun makeUserUnauthenticated() {
         every { credentialsService.loadCredentials(userId) } returns null
         every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
+        every { collaborationRepository.
+        listAllCollaborationsBySystematicStudyId(systematicStudyId)
+        } returns listOf(collaboration)
         every { presenter.isDone() } returns true
     }
 
@@ -56,6 +60,9 @@ class PreconditionCheckerMockingNew(
         val user = generateUnauthorizedUserDto()
         every { credentialsService.loadCredentials(userId) } returns user
         every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
+        every { collaborationRepository.
+        listAllCollaborationsBySystematicStudyId(systematicStudyId)
+        } returns listOf(collaboration)
         every { presenter.isDone() } returns true
     }
 
@@ -63,6 +70,9 @@ class PreconditionCheckerMockingNew(
         val user = generateUserDto()
         every { credentialsService.loadCredentials(userId) } returns user
         every { systematicStudyRepository.findById(systematicStudyId) } returns null
+        every { collaborationRepository.
+        listAllCollaborationsBySystematicStudyId(systematicStudyId)
+        } returns emptyList()
         every { presenter.isDone() } returns false andThen true
     }
 
@@ -70,6 +80,9 @@ class PreconditionCheckerMockingNew(
         val user = generateUserDto()
         every { credentialsService.loadCredentials(userId) } returns user
         every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
+        every { collaborationRepository.
+        listAllCollaborationsBySystematicStudyId(systematicStudyId)
+        } returns listOf(collaboration)
         every { repository.findById(systematicStudyId, questionId) } returns null
         every { presenter.isDone() } returns false andThen false andThen true
     }
@@ -144,8 +157,8 @@ class PreconditionCheckerMockingNew(
 
     private fun generateCollaborationDto(
         id: UUID = collaborationId,
-        status: String = faker.rockBand.name(),
-        permissions: Set<String> = emptySet()
+        status: String = "ACTIVE",
+        permissions: Set<String> = setOf("EDIT")
     ) = CollaborationDto(
         id = id,
         systematicStudyId = systematicStudyId,
