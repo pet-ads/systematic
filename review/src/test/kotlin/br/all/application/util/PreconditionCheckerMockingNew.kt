@@ -1,5 +1,7 @@
 package br.all.application.util
 
+import br.all.application.collaboration.repository.CollaborationDto
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
@@ -19,8 +21,10 @@ class PreconditionCheckerMockingNew(
     private val presenter: GenericPresenter<*>,
     private val credentialsService: CredentialsService,
     private val systematicStudyRepository: SystematicStudyRepository,
+    private val collaborationRepository: CollaborationRepository,
     private val userId: UUID,
     private val systematicStudyId: UUID,
+    private val collaborationId: UUID,
 ) {
     private val faker = Faker()
     private val systematicStudy = generateSystematicStudy()
@@ -30,7 +34,12 @@ class PreconditionCheckerMockingNew(
         mockkStatic(GenericPresenter<*>::prepareIfFailsPreconditions)
         every { credentialsService.loadCredentials(userId) } returns user
         every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
-        every { presenter.prepareIfFailsPreconditions(any(), any()) } returns Unit
+        every { presenter.prepareIfFailsPreconditions(
+            any(),
+            any(),
+            allowedRoles = any(),
+            collaborations = any()
+        ) } returns Unit
         every { presenter.isDone() } returns false
     }
 
@@ -128,6 +137,18 @@ class PreconditionCheckerMockingNew(
         description,
         ownerId,
         mutableSetOf(ownerId).also { it.addAll(collaborators) },
+    )
+
+    private fun generateCollaborationDto(
+        id: UUID = collaborationId,
+        status: String = faker.rockBand.name(),
+        permissions: Set<String> = emptySet()
+    ) = CollaborationDto(
+        id = id,
+        systematicStudyId = systematicStudyId,
+        userId = userId,
+        status = status,
+        permissions = permissions
     )
 
     private fun generateUserDto(

@@ -1,5 +1,7 @@
 package br.all.application.protocol.update
 
+import br.all.application.collaboration.repository.CollaborationRepository
+import br.all.application.collaboration.repository.toDomain
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.repository.copyUpdates
 import br.all.application.protocol.repository.fromDto
@@ -24,17 +26,22 @@ class UpdateProtocolServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val credentialsService: CredentialsService,
     private val studyReviewRepository: StudyReviewRepository,
-    private val scoreCalculatorService: ScoreCalculatorService
+    private val scoreCalculatorService: ScoreCalculatorService,
+    private val collaborationRepository: CollaborationRepository
 ) : UpdateProtocolService {
     override fun update(presenter: UpdateProtocolPresenter, request: RequestModel) {
         val userId = request.userId
-        val user = credentialsService.loadCredentials(userId)?.toUser()
 
         val systematicStudyId = request.systematicStudyId
-        val systematicStudyDto = systematicStudyRepository.findById(systematicStudyId)
-        val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+        val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy)
+        val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
+        val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+        val collaborations = collaborationRepository
+            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
+            .map { it.toDomain() }
+
+        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
         if (presenter.isDone()) return
 
         val dto = protocolRepository.findById(systematicStudyId)
