@@ -1,5 +1,7 @@
 package br.all.application.report.find.service
 
+import br.all.application.collaboration.repository.CollaborationRepository
+import br.all.application.collaboration.repository.toDomain
 import br.all.application.report.find.presenter.StudiesFunnelPresenter
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
@@ -15,14 +17,18 @@ class StudiesFunnelServiceImpl(
     private val credentialsService: CredentialsService,
     private val studyReviewRepository: StudyReviewRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
+    private val collaborationRepository: CollaborationRepository
 ): StudiesFunnelService {
     override fun studiesFunnel(presenter: StudiesFunnelPresenter, request: StudiesFunnelService.RequestModel) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+        val collaborations = collaborationRepository
+            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
+            .map { it.toDomain() }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy)
+        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
         if (presenter.isDone()) return
 
         val allStudies = studyReviewRepository.findAllFromReview(request.systematicStudyId)
