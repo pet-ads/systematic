@@ -1,5 +1,6 @@
 package br.all.application.search.update
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.repository.SearchSessionRepository
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.UUID
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -36,6 +38,10 @@ class UpdateSearchSessionServiceImplTest {
 
     @MockK(relaxed = true)
     private lateinit var presenter: UpdateSearchSessionPresenter
+
+    @MockK
+    private lateinit var collaborationRepository: CollaborationRepository
+
     @InjectMockKs
     private lateinit var sut: UpdateSearchSessionServiceImpl
 
@@ -49,8 +55,10 @@ class UpdateSearchSessionServiceImplTest {
             presenter,
             credentialService,
             systematicStudyRepository,
+            collaborationRepository,
             factory.userId,
             factory.systematicStudyId,
+            UUID.randomUUID()
         )
     }
 

@@ -1,5 +1,6 @@
 package br.all.application.study.update
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
@@ -27,6 +28,8 @@ class AnswerQuestionImplTest {
     @MockK private lateinit var questionRepository: QuestionRepository
     @MockK private lateinit var credentialService: CredentialsService
     @MockK(relaxed = true) private lateinit var presenter: AnswerQuestionPresenter
+    @MockK
+    private lateinit var collaborationRepository: CollaborationRepository
 
     private lateinit var sut: AnswerQuestionService
 
@@ -42,14 +45,17 @@ class AnswerQuestionImplTest {
             presenter,
             credentialService,
             systematicStudyRepository,
+            collaborationRepository,
             factory.researcherId,
-            factory.systematicStudyId
+            factory.systematicStudyId,
+            UUID.randomUUID()
         )
         sut = AnswerQuestionImpl(
             studyReviewRepository,
             questionRepository,
             systematicStudyRepository,
             credentialService,
+            collaborationRepository,
         )
         questionId = UUID.randomUUID()
     }

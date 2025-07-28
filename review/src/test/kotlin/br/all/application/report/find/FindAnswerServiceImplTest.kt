@@ -1,5 +1,6 @@
 package br.all.application.report.find
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.report.find.presenter.FindAnswerPresenter
 import br.all.application.report.find.service.FindAnswerService
@@ -43,6 +44,9 @@ class FindAnswerServiceImplTest {
     @MockK(relaxUnitFun = true)
     private lateinit var presenter: FindAnswerPresenter
 
+    @MockK
+    private lateinit var collaborationRepository: CollaborationRepository
+
     @InjectMockKs
     private lateinit var sut: FindAnswerServiceImpl
 
@@ -67,8 +71,10 @@ class FindAnswerServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
+            collaborationRepository,
             researcherId,
-            systematicStudyId
+            systematicStudyId,
+            UUID.randomUUID()
         )
         precondition.makeEverythingWork()
     }

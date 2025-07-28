@@ -1,5 +1,7 @@
 package br.all.application.report.find.service
 
+import br.all.application.collaboration.repository.CollaborationRepository
+import br.all.application.collaboration.repository.toDomain
 import br.all.application.report.find.presenter.FindStudiesByStagePresenter
 import br.all.application.report.find.service.FindStudiesByStageService.StudyCollection
 import br.all.application.review.repository.SystematicStudyRepository
@@ -16,14 +18,18 @@ class FindStudiesByStageServiceImpl(
     private val credentialsService: CredentialsService,
     private val studyReviewRepository: StudyReviewRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
+    private val collaborationRepository: CollaborationRepository,
 ): FindStudiesByStageService {
     override fun findStudiesByStage(presenter: FindStudiesByStagePresenter, request: FindStudiesByStageService.RequestModel) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+        val collaborations = collaborationRepository
+            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
+            .map { it.toDomain() }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy)
+        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
         if (presenter.isDone()) return
 
         if (request.stage != "selection" && request.stage != "extraction") {

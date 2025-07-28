@@ -1,5 +1,7 @@
 package br.all.application.search.update
 
+import br.all.application.collaboration.repository.CollaborationRepository
+import br.all.application.collaboration.repository.toDomain
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.search.repository.SearchSessionRepository
@@ -18,6 +20,7 @@ class UpdateSearchSessionServiceImpl (
     private val systematicStudyRepository: SystematicStudyRepository,
     private val searchSessionRepository: SearchSessionRepository,
     private val credentialsService: CredentialsService,
+    private val collaborationRepository: CollaborationRepository,
 ) : UpdateSearchSessionService {
     override fun updateSession(presenter: UpdateSearchSessionPresenter, request: RequestModel
     ) {
@@ -25,8 +28,11 @@ class UpdateSearchSessionServiceImpl (
 
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+        val collaborations = collaborationRepository
+            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
+            .map { it.toDomain() }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy)
+        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
 
 
         if(presenter.isDone()) return

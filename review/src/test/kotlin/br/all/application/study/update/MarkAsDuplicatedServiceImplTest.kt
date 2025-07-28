@@ -1,5 +1,6 @@
 package br.all.application.study.update
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.study.repository.StudyReviewRepository
@@ -24,6 +25,8 @@ class MarkAsDuplicatedServiceImplTest {
     @MockK(relaxUnitFun = true) private lateinit var systematicStudyRepository: SystematicStudyRepository
     @MockK private lateinit var credentialService: CredentialsService
     @MockK(relaxed = true) private lateinit var presenter: MarkAsDuplicatedPresenter
+    @MockK
+    private lateinit var collaborationRepository: CollaborationRepository
 
     private lateinit var sut: MarkAsDuplicatedServiceImpl
 
@@ -37,13 +40,16 @@ class MarkAsDuplicatedServiceImplTest {
             presenter,
             credentialService,
             systematicStudyRepository,
+            collaborationRepository,
             factory.researcherId,
-            factory.systematicStudyId
+            factory.systematicStudyId,
+            UUID.randomUUID()
         )
         sut = MarkAsDuplicatedServiceImpl(
             systematicStudyRepository,
             studyReviewRepository,
             credentialService,
+            collaborationRepository
         )
     }
 
