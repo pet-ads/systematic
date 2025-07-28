@@ -1,5 +1,6 @@
 package br.all.application.protocol.find
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.util.TestDataFactory as ProtocolFactory
 import br.all.application.study.util.TestDataFactory as StudyReviewFactory
@@ -27,6 +28,7 @@ import br.all.application.protocol.repository.PicocDto
 import br.all.application.question.repository.QuestionRepository
 import br.all.domain.model.question.QuestionContextEnum
 import io.mockk.verify
+import org.springframework.boot.autoconfigure.security.SecurityProperties
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -51,6 +53,9 @@ class GetProtocolStageServiceImplTest {
     @MockK(relaxUnitFun = true)
     private lateinit var presenter: GetProtocolStagePresenter
 
+    @MockK
+    private lateinit var collaborationRepository: CollaborationRepository
+
     @InjectMockKs
     private lateinit var sut: GetProtocolStageServiceImpl
 
@@ -61,6 +66,7 @@ class GetProtocolStageServiceImplTest {
 
     private lateinit var researcherId: UUID
     private lateinit var systematicStudyId: UUID
+    private lateinit var collaboration: UUID
 
     @BeforeEach
     fun setup() {
@@ -70,13 +76,16 @@ class GetProtocolStageServiceImplTest {
 
         researcherId = protocolFactory.researcher
         systematicStudyId = protocolFactory.systematicStudy
+        collaboration = protocolFactory.collaboration
 
         precondition = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             systematicStudyRepository,
+            collaborationRepository,
             researcherId,
-            systematicStudyId
+            systematicStudyId,
+            collaboration
         )
 
         precondition.makeEverythingWork()

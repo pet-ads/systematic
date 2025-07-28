@@ -1,5 +1,6 @@
 package br.all.application.report.find
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.report.find.presenter.StudiesFunnelPresenter
 import br.all.application.report.find.service.StudiesFunnelService
 import br.all.application.report.find.service.StudiesFunnelServiceImpl
@@ -39,6 +40,9 @@ class StudiesFunnelServiceImplTest {
     @MockK
     lateinit var credentialsService: CredentialsService
 
+    @MockK
+    private lateinit var collaborationRepository: CollaborationRepository
+
     @InjectMockKs
     lateinit var sut: StudiesFunnelServiceImpl
 
@@ -54,8 +58,10 @@ class StudiesFunnelServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
+            collaborationRepository,
             researcherId,
-            systematicStudyId
+            systematicStudyId,
+            UUID.randomUUID()
         )
         precondition.makeEverythingWork()
     }
@@ -191,7 +197,7 @@ class StudiesFunnelServiceImplTest {
             sut.studiesFunnel(presenter, request)
 
             verify(exactly = 1) {
-                presenter.prepareIfFailsPreconditions(any(), any(),)
+                presenter.prepareIfFailsPreconditions(any(), any(), any(), any())
             }
             assertTrue { presenter.isDone() }
         }
@@ -211,7 +217,7 @@ class StudiesFunnelServiceImplTest {
             sut.studiesFunnel(presenter, request)
 
             verify(exactly = 1) {
-                presenter.prepareIfFailsPreconditions(any(), any(),)
+                presenter.prepareIfFailsPreconditions(any(), any(), any(), any())
             }
             assertTrue { presenter.isDone() }
         }

@@ -1,5 +1,6 @@
 package br.all.application.report.find
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.repository.CriterionDto
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.report.find.presenter.FindCriteriaPresenter
@@ -42,6 +43,9 @@ class FindCriteriaServiceImplTest {
     @MockK(relaxUnitFun = true)
     private lateinit var studyReviewRepository: StudyReviewRepository
 
+    @MockK
+    private lateinit var collaborationRepository: CollaborationRepository
+
     @MockK(relaxUnitFun = true)
     private lateinit var presenter: FindCriteriaPresenter
 
@@ -69,8 +73,10 @@ class FindCriteriaServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
+            collaborationRepository,
             researcherId,
-            systematicStudyId
+            systematicStudyId,
+            UUID.randomUUID()
         )
         precondition.makeEverythingWork()
     }

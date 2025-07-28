@@ -1,5 +1,6 @@
 package br.all.application.report.find
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.report.find.presenter.AuthorNetworkPresenter
 import br.all.application.report.find.service.AuthorNetworkService
 import br.all.application.report.find.service.AuthorNetworkService.Edge
@@ -39,6 +40,9 @@ class AuthorNetworkServiceImplTest {
     @MockK
     lateinit var credentialsService: CredentialsService
 
+    @MockK
+    private lateinit var collaborationRepository: CollaborationRepository
+
     @InjectMockKs
     lateinit var sut: AuthorNetworkServiceImpl
 
@@ -54,8 +58,10 @@ class AuthorNetworkServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
+            collaborationRepository,
             researcherId,
-            systematicStudyId
+            systematicStudyId,
+            UUID.randomUUID()
         )
         precondition.makeEverythingWork()
     }
@@ -163,7 +169,7 @@ class AuthorNetworkServiceImplTest {
             sut.findAuthors(presenter, request)
 
             verify(exactly = 1) {
-                presenter.prepareIfFailsPreconditions(any(), any(),)
+                presenter.prepareIfFailsPreconditions(any(), any(), any(), any())
             }
             assertTrue { presenter.isDone() }
         }
@@ -183,7 +189,7 @@ class AuthorNetworkServiceImplTest {
             sut.findAuthors(presenter, request)
 
             verify(exactly = 1) {
-                presenter.prepareIfFailsPreconditions(any(), any(),)
+                presenter.prepareIfFailsPreconditions(any(), any(), any(), any())
             }
             assertTrue { presenter.isDone() }
         }

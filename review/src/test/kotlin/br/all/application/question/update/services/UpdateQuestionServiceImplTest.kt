@@ -1,5 +1,6 @@
 package br.all.application.question.update.services
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.question.create.CreateQuestionService.*
 import br.all.application.question.create.CreateQuestionService.QuestionType.*
 import br.all.application.question.repository.QuestionRepository
@@ -41,6 +42,9 @@ class UpdateQuestionServiceImplTest {
     @MockK(relaxed = true)
     private lateinit var presenter: UpdateQuestionPresenter
 
+    @MockK
+    private lateinit var collaborationRepository: CollaborationRepository
+
     @InjectMockKs
     private lateinit var sut: UpdateQuestionServiceImpl
 
@@ -54,8 +58,10 @@ class UpdateQuestionServiceImplTest {
             presenter,
             credentialsService,
             systematicRepository,
+            collaborationRepository,
             factory.researcher,
-            factory.systematicStudy
+            factory.systematicStudy,
+            factory.collaboration
         )
     }
 
