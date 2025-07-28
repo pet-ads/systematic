@@ -1,6 +1,5 @@
 package br.all.application.report.find
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.question.repository.QuestionDto
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.report.find.presenter.IncludedStudiesAnswersPresenter
@@ -47,9 +46,6 @@ class IncludedStudiesAnswersServiceImplTest {
     @MockK
     lateinit var credentialsService: CredentialsService
 
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
-
     @InjectMockKs
     lateinit var sut: IncludedStudiesAnswersServiceImpl
 
@@ -75,10 +71,8 @@ class IncludedStudiesAnswersServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
-            collaborationRepository,
             researcherId,
-            systematicStudyId,
-            UUID.randomUUID()
+            systematicStudyId
         )
 
         precondition.makeEverythingWork()
@@ -107,6 +101,7 @@ class IncludedStudiesAnswersServiceImplTest {
                 when (secondArg<QuestionContextEnum>()) {
                     QuestionContextEnum.ROB -> listOf(question1)
                     QuestionContextEnum.EXTRACTION -> listOf(question2)
+                    else -> emptyList()
                 }
             }
 
@@ -151,6 +146,7 @@ class IncludedStudiesAnswersServiceImplTest {
                 when (secondArg<QuestionContextEnum>()) {
                     QuestionContextEnum.ROB -> robQuestions
                     QuestionContextEnum.EXTRACTION -> extractionQuestions
+                    else -> emptyList()
                 }
             }
 
@@ -194,6 +190,7 @@ class IncludedStudiesAnswersServiceImplTest {
                 when (secondArg<QuestionContextEnum>()) {
                     QuestionContextEnum.ROB -> robQuestions
                     QuestionContextEnum.EXTRACTION -> extractionQuestions
+                    else -> emptyList()
                 }
             }
 
@@ -227,6 +224,7 @@ class IncludedStudiesAnswersServiceImplTest {
                 when (secondArg<QuestionContextEnum>()) {
                     QuestionContextEnum.ROB -> robQuestions
                     QuestionContextEnum.EXTRACTION -> extractionQuestions
+                    else -> emptyList()
                 }
             }
 
@@ -269,6 +267,7 @@ class IncludedStudiesAnswersServiceImplTest {
                 when (secondArg<QuestionContextEnum>()) {
                     QuestionContextEnum.ROB -> robQuestions
                     QuestionContextEnum.EXTRACTION -> extractionQuestions
+                    else -> emptyList()
                 }
             }
 
@@ -281,7 +280,7 @@ class IncludedStudiesAnswersServiceImplTest {
             sut.findAnswers(presenter, request)
 
             verify(exactly = 1) {
-                presenter.prepareIfFailsPreconditions(any(), any(), any(), any())
+                presenter.prepareIfFailsPreconditions(any(), any())
             }
 
             assertEquals(true, presenter.isDone())
@@ -309,6 +308,7 @@ class IncludedStudiesAnswersServiceImplTest {
                 when (secondArg<QuestionContextEnum>()) {
                     QuestionContextEnum.ROB -> listOf(question1)
                     QuestionContextEnum.EXTRACTION -> listOf(question2)
+                    else -> emptyList()
                 }
             }
 
@@ -317,7 +317,7 @@ class IncludedStudiesAnswersServiceImplTest {
             sut.findAnswers(presenter, request)
 
             verify(exactly = 1) {
-                presenter.prepareIfFailsPreconditions(any(), any(), any(), any())
+                presenter.prepareIfFailsPreconditions(any(), any())
             }
 
             assertEquals(true, presenter.isDone())

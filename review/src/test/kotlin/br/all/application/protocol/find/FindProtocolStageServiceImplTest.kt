@@ -1,6 +1,5 @@
 package br.all.application.protocol.find
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.util.TestDataFactory as ProtocolFactory
 import br.all.application.study.util.TestDataFactory as StudyReviewFactory
@@ -52,9 +51,6 @@ class FindProtocolStageServiceImplTest {
     @MockK(relaxUnitFun = true)
     private lateinit var presenter: FindProtocolStagePresenter
 
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
-
     @InjectMockKs
     private lateinit var sut: FindProtocolStageServiceImpl
 
@@ -65,7 +61,6 @@ class FindProtocolStageServiceImplTest {
 
     private lateinit var researcherId: UUID
     private lateinit var systematicStudyId: UUID
-    private lateinit var collaboration: UUID
 
     @BeforeEach
     fun setup() {
@@ -75,16 +70,13 @@ class FindProtocolStageServiceImplTest {
 
         researcherId = protocolFactory.researcher
         systematicStudyId = protocolFactory.systematicStudy
-        collaboration = protocolFactory.collaboration
 
         precondition = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             systematicStudyRepository,
-            collaborationRepository,
             researcherId,
-            systematicStudyId,
-            collaboration
+            systematicStudyId
         )
 
         precondition.makeEverythingWork()

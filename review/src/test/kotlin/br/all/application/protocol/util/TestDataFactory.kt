@@ -14,7 +14,6 @@ import br.all.application.protocol.update.UpdateProtocolService.ResponseModel as
 class TestDataFactory {
     val researcher: UUID = UUID.randomUUID()
     val systematicStudy: UUID = UUID.randomUUID()
-    val collaboration: UUID = UUID.randomUUID()
 
     private val faker = Faker()
 
@@ -164,6 +163,4 @@ class TestDataFactory {
     operator fun component1() = researcher
 
     operator fun component2() = systematicStudy
-
-    operator fun component3() = collaboration
 }

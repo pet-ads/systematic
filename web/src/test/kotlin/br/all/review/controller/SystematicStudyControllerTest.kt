@@ -1,6 +1,5 @@
 package br.all.review.controller
 
-import br.all.infrastructure.collaboration.MongoCollaborationRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.review.shared.TestDataFactory
@@ -27,7 +26,6 @@ import java.util.*
 @Tag("ControllerTest")
 class SystematicStudyControllerTest(
     @Autowired private val repository: MongoSystematicStudyRepository,
-    @Autowired private val collaborationRepository: MongoCollaborationRepository,
     @Autowired private val testHelperService: TestHelperService,
     @Autowired private val mockMvc: MockMvc,
 ) {
@@ -39,13 +37,6 @@ class SystematicStudyControllerTest(
         repository.deleteAll()
         factory = TestDataFactory()
         user = testHelperService.createApplicationUser()
-        collaborationRepository.deleteAll()
-        collaborationRepository.save(
-            TestDataFactory().createCollaborationDocument(
-                systematicStudyId = factory.systematicStudyId,
-                researcherId = user.id
-            )
-        )
     }
 
     @AfterEach

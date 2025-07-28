@@ -1,6 +1,5 @@
 package br.all.application.search.create
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.util.TestDataFactory
@@ -25,7 +24,6 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.UUID
 import kotlin.test.Test
 
 @Tag("UnitTest")
@@ -60,9 +58,6 @@ class CreateSearchSessionServiceImplTest {
     @MockK
     private lateinit var reviewSimilarityService: ReviewSimilarityService
 
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
-
     @MockK(relaxed = true)
     private lateinit var presenter: CreateSearchSessionPresenter
 
@@ -82,18 +77,15 @@ class CreateSearchSessionServiceImplTest {
             studyReviewRepository,
             credentialsService,
             scoreCalculatorService,
-            reviewSimilarityService,
-            collaborationRepository,
+            reviewSimilarityService
         )
         testDataFactory = TestDataFactory()
         preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             systematicStudyRepository,
-            collaborationRepository,
             testDataFactory.userId,
             testDataFactory.systematicStudyId,
-            UUID.randomUUID()
         )
     }
 

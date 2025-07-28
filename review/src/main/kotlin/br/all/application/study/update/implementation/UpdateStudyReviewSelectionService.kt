@@ -1,7 +1,5 @@
 package br.all.application.study.update.implementation
 
-import br.all.application.collaboration.repository.CollaborationRepository
-import br.all.application.collaboration.repository.toDomain
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.shared.exceptions.EntityNotFoundException
@@ -22,7 +20,6 @@ class UpdateStudyReviewSelectionService(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,
     private val credentialsService: CredentialsService,
-    private val collaborationRepository: CollaborationRepository
 ) : UpdateStudyReviewStatusService {
 
     override fun changeStatus(presenter: UpdateStudyReviewStatusPresenter, request: RequestModel){
@@ -30,11 +27,8 @@ class UpdateStudyReviewSelectionService(
 
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
-        val collaborations = collaborationRepository
-            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
-            .map { it.toDomain() }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
         if(presenter.isDone()) return
 

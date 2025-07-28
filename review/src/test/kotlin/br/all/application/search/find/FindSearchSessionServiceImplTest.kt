@@ -1,6 +1,5 @@
 package br.all.application.search.find
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.find.presenter.FindSearchSessionPresenter
 import br.all.application.search.find.service.FindSearchSessionServiceImpl
@@ -21,7 +20,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.UUID
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -35,9 +33,6 @@ class FindSearchSessionServiceImplTest {
 
     @MockK
     private lateinit var credentialsService: CredentialsService
-
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
 
     @MockK(relaxed = true)
     private lateinit var presenter: FindSearchSessionPresenter
@@ -53,10 +48,8 @@ class FindSearchSessionServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
-            collaborationRepository,
             factory.userId,
             factory.systematicStudyId,
-            UUID.randomUUID()
         )
     }
 
@@ -68,8 +61,7 @@ class FindSearchSessionServiceImplTest {
             sut = FindSearchSessionServiceImpl(
                 systematicStudyRepository,
                 searchSessionRepository,
-                credentialsService,
-                collaborationRepository,
+                credentialsService
             )
             run { preconditionCheckerMocking.makeEverythingWork() }
         }
@@ -94,8 +86,7 @@ class FindSearchSessionServiceImplTest {
             sut = FindSearchSessionServiceImpl(
                 systematicStudyRepository,
                 searchSessionRepository,
-                credentialsService,
-                collaborationRepository,
+                credentialsService
             )
         }
 

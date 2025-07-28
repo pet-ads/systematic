@@ -15,7 +15,6 @@ class TestDataFactory {
     val question: UUID = UUID.randomUUID()
     val code: String = faker.lorem.words()
     val description: String = faker.lorem.words()
-    val collaboration: UUID = UUID.randomUUID()
 
     fun generateTextualDto(
         questionId: UUID = question,
@@ -234,5 +233,4 @@ class TestDataFactory {
     operator fun component1() = researcher
     operator fun component2() = systematicStudy
     operator fun component3() = question
-    operator fun component4() = collaboration
 }

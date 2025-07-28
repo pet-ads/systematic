@@ -1,7 +1,5 @@
 package br.all.review.shared
 
-import br.all.domain.model.review.SystematicStudyId
-import br.all.infrastructure.collaboration.CollaborationDocument
 import br.all.infrastructure.review.SystematicStudyDocument
 import io.github.serpro69.kfaker.Faker
 import java.util.*
@@ -20,12 +18,6 @@ class TestDataFactory {
         collaborators: MutableSet<UUID> = mutableSetOf(),
     ) = SystematicStudyDocument(id, title, description, owner, collaborators.also { it.add(owner) }.toSet())
 
-    fun createCollaborationDocument(
-        id: UUID = UUID.randomUUID(),
-        systematicStudyId: UUID = this.systematicStudyId,
-        researcherId : UUID = this.ownerId
-    ) = CollaborationDocument(id, systematicStudyId, researcherId, "ACTIVE", setOf("EDIT", "REVIEW_STUDIES", "VIEW"))
-    
     fun createValidPostRequest(
         title: String = faker.book.title(),
         description: String = faker.lorem.words(),

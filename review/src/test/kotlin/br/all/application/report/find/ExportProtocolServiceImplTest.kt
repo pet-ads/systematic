@@ -1,6 +1,5 @@
 package br.all.application.report.find
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.report.find.presenter.ExportProtocolPresenter
 import br.all.application.report.find.service.ExportProtocolService
@@ -38,9 +37,6 @@ class ExportProtocolServiceImplTest {
     @MockK
     private lateinit var formatterFactoryService: FormatterFactoryService
 
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
-
     @MockK(relaxUnitFun = true)
     private lateinit var presenter: ExportProtocolPresenter
 
@@ -64,10 +60,8 @@ class ExportProtocolServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
-            collaborationRepository,
             researcherId,
-            systematicStudyId,
-            factory.collaboration
+            systematicStudyId
         )
         precondition.makeEverythingWork()
     }

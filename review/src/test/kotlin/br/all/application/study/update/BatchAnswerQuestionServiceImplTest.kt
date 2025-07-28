@@ -1,6 +1,5 @@
 package br.all.application.study.update
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.repository.StudyReviewRepository
@@ -41,9 +40,6 @@ class BatchAnswerQuestionServiceImplTest {
     @MockK
     private lateinit var credentialsService: CredentialsService
 
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
-
     @MockK(relaxed = true)
     private lateinit var presenter: BatchAnswerQuestionPresenter
 
@@ -58,17 +54,14 @@ class BatchAnswerQuestionServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
-            collaborationRepository,
             factory.researcherId,
-            factory.systematicStudyId,
-            UUID.randomUUID()
+            factory.systematicStudyId
         )
         sut = BatchAnswerQuestionServiceImpl(
             studyReviewRepository,
             questionRepository,
             systematicStudyRepository,
-            credentialsService,
-            collaborationRepository,
+            credentialsService
         )
     }
 

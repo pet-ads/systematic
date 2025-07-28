@@ -1,7 +1,5 @@
 package br.all.application.util
 
-import br.all.application.collaboration.repository.CollaborationDto
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
@@ -21,38 +19,24 @@ class PreconditionCheckerMockingNew(
     private val presenter: GenericPresenter<*>,
     private val credentialsService: CredentialsService,
     private val systematicStudyRepository: SystematicStudyRepository,
-    private val collaborationRepository: CollaborationRepository,
     private val userId: UUID,
     private val systematicStudyId: UUID,
-    private val collaborationId: UUID,
 ) {
     private val faker = Faker()
     private val systematicStudy = generateSystematicStudy()
-    private val collaboration = generateCollaborationDto()
 
     fun makeEverythingWork() {
         val user = generateUserDto()
         mockkStatic(GenericPresenter<*>::prepareIfFailsPreconditions)
         every { credentialsService.loadCredentials(userId) } returns user
         every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
-        every { presenter.prepareIfFailsPreconditions(
-            any(),
-            any(),
-            allowedRoles = any(),
-            collaborations = any()
-        ) } returns Unit
-        every { collaborationRepository.
-                listAllCollaborationsBySystematicStudyId(systematicStudyId)
-        } returns listOf(collaboration)
+        every { presenter.prepareIfFailsPreconditions(any(), any()) } returns Unit
         every { presenter.isDone() } returns false
     }
 
     fun makeUserUnauthenticated() {
         every { credentialsService.loadCredentials(userId) } returns null
         every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
-        every { collaborationRepository.
-        listAllCollaborationsBySystematicStudyId(systematicStudyId)
-        } returns listOf(collaboration)
         every { presenter.isDone() } returns true
     }
 
@@ -60,9 +44,6 @@ class PreconditionCheckerMockingNew(
         val user = generateUnauthorizedUserDto()
         every { credentialsService.loadCredentials(userId) } returns user
         every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
-        every { collaborationRepository.
-        listAllCollaborationsBySystematicStudyId(systematicStudyId)
-        } returns listOf(collaboration)
         every { presenter.isDone() } returns true
     }
 
@@ -70,9 +51,6 @@ class PreconditionCheckerMockingNew(
         val user = generateUserDto()
         every { credentialsService.loadCredentials(userId) } returns user
         every { systematicStudyRepository.findById(systematicStudyId) } returns null
-        every { collaborationRepository.
-        listAllCollaborationsBySystematicStudyId(systematicStudyId)
-        } returns emptyList()
         every { presenter.isDone() } returns false andThen true
     }
 
@@ -80,9 +58,6 @@ class PreconditionCheckerMockingNew(
         val user = generateUserDto()
         every { credentialsService.loadCredentials(userId) } returns user
         every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
-        every { collaborationRepository.
-        listAllCollaborationsBySystematicStudyId(systematicStudyId)
-        } returns listOf(collaboration)
         every { repository.findById(systematicStudyId, questionId) } returns null
         every { presenter.isDone() } returns false andThen false andThen true
     }
@@ -153,18 +128,6 @@ class PreconditionCheckerMockingNew(
         description,
         ownerId,
         mutableSetOf(ownerId).also { it.addAll(collaborators) },
-    )
-
-    private fun generateCollaborationDto(
-        id: UUID = collaborationId,
-        status: String = "ACTIVE",
-        permissions: Set<String> = setOf("EDIT")
-    ) = CollaborationDto(
-        id = id,
-        systematicStudyId = systematicStudyId,
-        userId = userId,
-        status = status,
-        permissions = permissions
     )
 
     private fun generateUserDto(

@@ -1,6 +1,5 @@
 package br.all.application.protocol.find
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.util.TestDataFactory
 import br.all.application.review.repository.SystematicStudyRepository
@@ -30,8 +29,6 @@ class FindProtocolServiceImplTest {
     private lateinit var credentialsService: CredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: FindProtocolPresenter
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
     @InjectMockKs
     private lateinit var sut: FindProtocolServiceImpl
 
@@ -45,10 +42,8 @@ class FindProtocolServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
-            collaborationRepository,
             factory.researcher,
             factory.systematicStudy,
-            factory.collaboration
         )
     }
 

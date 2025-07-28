@@ -1,6 +1,5 @@
 package br.all.application.review.update.services
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter
@@ -18,7 +17,6 @@ import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.UUID
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -30,8 +28,6 @@ class UpdateSystematicStudyServiceImplTest {
     private lateinit var credentialsService: CredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: UpdateSystematicStudyPresenter
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
     @InjectMockKs
     private lateinit var sut: UpdateSystematicStudyServiceImpl
 
@@ -45,10 +41,8 @@ class UpdateSystematicStudyServiceImplTest {
             presenter,
             credentialsService,
             repository,
-            collaborationRepository,
             factory.researcher,
             factory.systematicStudy,
-            UUID.randomUUID(),
         )
     }
 

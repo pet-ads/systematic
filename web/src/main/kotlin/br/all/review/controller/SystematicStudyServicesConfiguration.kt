@@ -1,6 +1,5 @@
 package br.all.review.controller
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.user.CredentialsService
 import br.all.application.review.create.CreateSystematicStudyServiceImpl
@@ -20,13 +19,11 @@ class SystematicStudyServicesConfiguration {
         protocolRepository: ProtocolRepository,
         uuidGeneratorService: UuidGeneratorService,
         credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
     ) = CreateSystematicStudyServiceImpl(
         systematicStudyRepository,
         protocolRepository,
         uuidGeneratorService,
         credentialsService,
-        collaborationRepository,
     )
 
     @Bean

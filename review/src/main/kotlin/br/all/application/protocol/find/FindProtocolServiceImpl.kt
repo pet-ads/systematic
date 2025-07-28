@@ -1,7 +1,5 @@
 package br.all.application.protocol.find
 
-import br.all.application.collaboration.repository.CollaborationRepository
-import br.all.application.collaboration.repository.toDomain
 import br.all.application.protocol.find.FindProtocolService.RequestModel
 import br.all.application.protocol.find.FindProtocolService.ResponseModel
 import br.all.application.protocol.repository.ProtocolRepository
@@ -16,20 +14,16 @@ class FindProtocolServiceImpl(
     private val protocolRepository: ProtocolRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val credentialsService: CredentialsService,
-    private val collaborationRepository: CollaborationRepository
 ) : FindProtocolService {
     override fun findById(presenter: FindProtocolPresenter, request: RequestModel) {
         val userId = request.userId
-        val user = credentialsService.loadCredentials(request.userId)?.toUser()
+        val user = credentialsService.loadCredentials(userId)?.toUser()
 
         val systematicStudyId = request.systematicStudyId
-        val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
+        val systematicStudyDto = systematicStudyRepository.findById(systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
-        val collaborations = collaborationRepository
-            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
-            .map { it.toDomain() }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
         if (presenter.isDone()) return
 

@@ -1,6 +1,5 @@
 package br.all.search.controller
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.create.CreateSearchSessionServiceImpl
@@ -49,7 +48,6 @@ class SearchSessionServicesConfiguration {
         protocolRepository: ProtocolRepository,
         scoreCalculatorService: ScoreCalculatorService,
         reviewSimilarityService: ReviewSimilarityService,
-        collaborationRepository: CollaborationRepository
     ) = PatchSearchSessionServiceImpl(
         systematicStudyRepository,
         searchSessionRepository,
@@ -58,8 +56,7 @@ class SearchSessionServicesConfiguration {
         converterFactoryService,
         protocolRepository,
         scoreCalculatorService,
-        reviewSimilarityService,
-        collaborationRepository
+        reviewSimilarityService
     )
 
     @Bean
@@ -72,8 +69,7 @@ class SearchSessionServicesConfiguration {
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService,
         scoreCalculatorService: ScoreCalculatorService,
-        reviewSimilarityService: ReviewSimilarityService,
-        collaborationRepository: CollaborationRepository
+        reviewSimilarityService: ReviewSimilarityService
     ) = CreateSearchSessionServiceImpl(
         searchSessionRepository,
         systematicStudyRepository,
@@ -83,64 +79,56 @@ class SearchSessionServicesConfiguration {
         studyReviewRepository,
         credentialsService,
         scoreCalculatorService,
-        reviewSimilarityService,
-        collaborationRepository
+        reviewSimilarityService
     )
 
     @Bean
     fun findSearchSession(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
+        credentialsService: CredentialsService
     ) = FindSearchSessionServiceImpl (
         systematicStudyRepository,
         searchSessionRepository,
-        credentialsService,
-        collaborationRepository
+        credentialsService
     )
 
     @Bean
     fun findAllSessionService(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
+        credentialsService: CredentialsService
     ) = FindAllSearchSessionsServiceImpl (
-        systematicStudyRepository, searchSessionRepository, credentialsService, collaborationRepository
+        systematicStudyRepository, searchSessionRepository, credentialsService
     )
 
     @Bean
     fun findAllSearchSessionsBySourceService(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
+        credentialsService: CredentialsService
     ) = FindAllSearchSessionsBySourceServiceImpl (
-        systematicStudyRepository, searchSessionRepository, credentialsService, collaborationRepository
+        systematicStudyRepository, searchSessionRepository, credentialsService
     )
 
     @Bean
     fun updateSessionService(
         searchSessionRepository: SearchSessionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
+        credentialsService: CredentialsService
     ) = UpdateSearchSessionServiceImpl (
-        systematicStudyRepository, searchSessionRepository, credentialsService, collaborationRepository
+        systematicStudyRepository, searchSessionRepository, credentialsService
     )
 
     @Bean
     fun deleteSearchSessionService(
         credentialsService: CredentialsService,
         searchSessionRepository: SearchSessionRepository,
-        systematicStudyRepository: SystematicStudyRepository,
-        collaborationRepository: CollaborationRepository
+        systematicStudyRepository: SystematicStudyRepository
     ) = DeleteSearchSessionServiceImpl(
         systematicStudyRepository,
         searchSessionRepository,
-        credentialsService,
-        collaborationRepository
+        credentialsService
     )
 
 }

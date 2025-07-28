@@ -1,6 +1,5 @@
 package br.all.application.question.find
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.question.create.CreateQuestionService.*
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.util.TestDataFactory
@@ -36,9 +35,6 @@ class FindQuestionServiceImplTest {
     @MockK(relaxed = true)
     private lateinit var presenter: FindQuestionPresenter
 
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
-
     @InjectMockKs
     private lateinit var sut: FindQuestionServiceImpl
 
@@ -49,13 +45,7 @@ class FindQuestionServiceImplTest {
     fun setUp() {
         factory = TestDataFactory()
         preconditionCheckerMocking = PreconditionCheckerMockingNew(
-            presenter,
-            credentialsService,
-            systematicRepository,
-            collaborationRepository,
-            factory.researcher,
-            factory.systematicStudy,
-            factory.collaboration
+            presenter, credentialsService, systematicRepository, factory.researcher, factory.systematicStudy
         )
     }
 

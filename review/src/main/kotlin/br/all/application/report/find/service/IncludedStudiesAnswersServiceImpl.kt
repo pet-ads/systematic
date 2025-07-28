@@ -1,7 +1,5 @@
 package br.all.application.report.find.service
 
-import br.all.application.collaboration.repository.CollaborationRepository
-import br.all.application.collaboration.repository.toDomain
 import br.all.application.question.repository.QuestionDto
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.report.find.presenter.IncludedStudiesAnswersPresenter
@@ -20,7 +18,6 @@ class IncludedStudiesAnswersServiceImpl(
     private val studyReviewRepository: StudyReviewRepository,
     private val credentialsService: CredentialsService,
     private val systematicStudyRepository: SystematicStudyRepository,
-    private val collaborationRepository: CollaborationRepository,
 ) : IncludedStudiesAnswersService {
 
     override fun findAnswers(presenter: IncludedStudiesAnswersPresenter, request: IncludedStudiesAnswersService.RequestModel) {
@@ -28,11 +25,8 @@ class IncludedStudiesAnswersServiceImpl(
 
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
-        val collaborations = collaborationRepository
-            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
-            .map { it.toDomain() }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
         if (presenter.isDone()) return
 

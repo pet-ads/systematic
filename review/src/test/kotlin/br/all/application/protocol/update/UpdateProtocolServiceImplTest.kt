@@ -1,6 +1,5 @@
 package br.all.application.protocol.update
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.util.TestDataFactory
 import br.all.application.review.repository.SystematicStudyRepository
@@ -36,8 +35,6 @@ class UpdateProtocolServiceImplTest {
     private lateinit var scoreCalculatorService: ScoreCalculatorService
     @MockK(relaxed = true)
     private lateinit var presenter: UpdateProtocolPresenter
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
     @InjectMockKs
     private lateinit var sut: UpdateProtocolServiceImpl
 
@@ -47,15 +44,13 @@ class UpdateProtocolServiceImplTest {
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
-        val (researcher, systematicStudy, collaboration) = factory
+        val (researcher, systematicStudy) = factory
         preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             systematicStudyRepository,
-            collaborationRepository,
             researcher,
             systematicStudy,
-            collaboration
         )
     }
 
