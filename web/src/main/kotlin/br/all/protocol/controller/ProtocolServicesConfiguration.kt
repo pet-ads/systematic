@@ -1,5 +1,6 @@
 package br.all.protocol.controller
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.find.FindProtocolServiceImpl
 import br.all.application.protocol.find.GetProtocolStageServiceImpl
 import br.all.application.protocol.repository.ProtocolRepository
@@ -19,7 +20,8 @@ class ProtocolServicesConfiguration {
         protocolRepository: ProtocolRepository,
         systematicStudyRepository: SystematicStudyRepository,
         credentialsService: CredentialsService,
-    ) = FindProtocolServiceImpl(protocolRepository, systematicStudyRepository, credentialsService)
+        collaborationRepository: CollaborationRepository
+    ) = FindProtocolServiceImpl(protocolRepository, systematicStudyRepository, credentialsService, collaborationRepository)
 
     @Bean
     fun updateProtocolService(
@@ -27,8 +29,16 @@ class ProtocolServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         credentialsService: CredentialsService,
         studyReviewRepository: StudyReviewRepository,
-        scoreCalculatorService: ScoreCalculatorService
-    ) = UpdateProtocolServiceImpl(protocolRepository, systematicStudyRepository, credentialsService, studyReviewRepository, scoreCalculatorService)
+        scoreCalculatorService: ScoreCalculatorService,
+        collaborationRepository: CollaborationRepository
+    ) = UpdateProtocolServiceImpl(
+        protocolRepository,
+        systematicStudyRepository,
+        credentialsService,
+        studyReviewRepository,
+        scoreCalculatorService,
+        collaborationRepository
+    )
 
     @Bean
     fun getProtocolStageService(
@@ -36,6 +46,14 @@ class ProtocolServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService,
-        questionRepository: QuestionRepository
-    ) = GetProtocolStageServiceImpl(protocolRepository, systematicStudyRepository, studyReviewRepository, credentialsService, questionRepository)
+        questionRepository: QuestionRepository,
+        collaborationRepository: CollaborationRepository
+    ) = GetProtocolStageServiceImpl(
+        protocolRepository,
+        systematicStudyRepository,
+        studyReviewRepository,
+        credentialsService,
+        questionRepository,
+        collaborationRepository
+    )
 }
