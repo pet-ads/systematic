@@ -1,5 +1,7 @@
 package br.all.application.search.update
 
+import br.all.application.collaboration.repository.CollaborationRepository
+import br.all.application.collaboration.repository.toDomain
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
@@ -29,20 +31,24 @@ class PatchSearchSessionServiceImpl (
     private val converterFactoryService: ConverterFactoryService,
     private val protocolRepository: ProtocolRepository,
     private val scoreCalculatorService: ScoreCalculatorService,
-    private val reviewSimilarityService: ReviewSimilarityService
+    private val reviewSimilarityService: ReviewSimilarityService,
+    private val collaborationRepository: CollaborationRepository
 ) : PatchSearchSessionService {
     override fun patchSession(
         presenter: PatchSearchSessionPresenter,
         request: PatchSearchSessionService.RequestModel,
         file: String
     ) {
+        val searchSessionDto = searchSessionRepository.findById(request.sessionId)
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
-        val searchSessionDto = searchSessionRepository.findById(request.sessionId)
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+        val collaborations = collaborationRepository
+            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
+            .map { it.toDomain() }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy)
+        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
 
         if (presenter.isDone()) return
 
