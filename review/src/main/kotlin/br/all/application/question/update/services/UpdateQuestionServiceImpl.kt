@@ -1,5 +1,7 @@
 package br.all.application.question.update.services
 
+import br.all.application.collaboration.repository.CollaborationRepository
+import br.all.application.collaboration.repository.toDomain
 import br.all.application.question.create.CreateQuestionService.QuestionType
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.repository.toDto
@@ -18,15 +20,19 @@ class UpdateQuestionServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val questionRepository: QuestionRepository,
     private val credentialsService: CredentialsService,
+    private val collaborationRepository: CollaborationRepository
 ) : UpdateQuestionService {
     override fun update(presenter: UpdateQuestionPresenter, request: RequestModel) {
         val systematicStudyId = request.systematicStudyId
         val userId = request.userId
-        val user = credentialsService.loadCredentials(userId)?.toUser()
+        val user = credentialsService.loadCredentials(request.userId)?.toUser()
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
-        presenter.prepareIfFailsPreconditions(user, systematicStudy)
+        val collaborations = collaborationRepository
+            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
+            .map { it.toDomain() }
 
+        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
         if (presenter.isDone()) return
 
         val type = request.questionType

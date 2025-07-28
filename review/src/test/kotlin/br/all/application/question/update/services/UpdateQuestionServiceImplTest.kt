@@ -1,15 +1,13 @@
 package br.all.application.question.update.services
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.question.create.CreateQuestionService.*
 import br.all.application.question.create.CreateQuestionService.QuestionType.*
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.update.presenter.UpdateQuestionPresenter
 import br.all.application.question.util.TestDataFactory
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.user.CredentialsService
-import br.all.application.util.PreconditionCheckerMocking
 import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.services.UuidGeneratorService
 import io.mockk.every
@@ -35,11 +33,11 @@ class UpdateQuestionServiceImplTest {
     @MockK
     private lateinit var credentialsService: CredentialsService
 
-    @MockK
-    private lateinit var uuidGeneratorService: UuidGeneratorService
-
     @MockK(relaxed = true)
     private lateinit var presenter: UpdateQuestionPresenter
+
+    @MockK
+    private lateinit var collaborationRepository: CollaborationRepository
 
     @InjectMockKs
     private lateinit var sut: UpdateQuestionServiceImpl
@@ -54,8 +52,10 @@ class UpdateQuestionServiceImplTest {
             presenter,
             credentialsService,
             systematicRepository,
+            collaborationRepository,
             factory.researcher,
-            factory.systematicStudy
+            factory.systematicStudy,
+            factory.collaboration
         )
     }
 

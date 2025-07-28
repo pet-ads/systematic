@@ -1,5 +1,6 @@
 package br.all.search.controller
 
+import br.all.infrastructure.collaboration.MongoCollaborationRepository
 import br.all.infrastructure.protocol.MongoProtocolRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.search.MongoSearchSessionRepository
@@ -35,6 +36,7 @@ class SearchSessionControllerTest(
     @Autowired val repository: MongoSearchSessionRepository,
     @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
     @Autowired val studyReviewRepository: MongoStudyReviewRepository,
+    @Autowired val collaborationRepository: MongoCollaborationRepository,
     @Autowired val protocolRepository: MongoProtocolRepository,
     @Autowired val idService: StudyReviewIdGeneratorService,
     @Autowired private val testHelperService: TestHelperService,
@@ -48,7 +50,7 @@ class SearchSessionControllerTest(
 
 
     fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/search-session"
-    fun patchUrl(sessionId: UUID) = "/api/v1/systematic-study/$systematicStudyId/patch-search-session/${sessionId}"
+    // fun patchUrl(sessionId: UUID) = "/api/v1/systematic-study/$systematicStudyId/patch-search-session/${sessionId}"
     fun findUrl(sessionId: UUID) =
         "/api/v1/systematic-study/$systematicStudyId/search-session/${sessionId}"
     fun findAllUrl() = "/api/v1/systematic-study/$systematicStudyId/search-session"
@@ -71,6 +73,14 @@ class SearchSessionControllerTest(
             br.all.review.shared.TestDataFactory().createSystematicStudyDocument(
                 id = systematicStudyId,
                 owner = user.id,
+            )
+        )
+
+        collaborationRepository.deleteAll()
+        collaborationRepository.save(
+            br.all.review.shared.TestDataFactory().createCollaborationDocument(
+                systematicStudyId = systematicStudyId,
+                researcherId = user.id
             )
         )
     }

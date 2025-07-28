@@ -1,5 +1,6 @@
 package br.all.application.report.find
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.report.find.presenter.FindStudiesByStagePresenter
 import br.all.application.report.find.service.FindStudiesByStageService.RequestModel
 import br.all.application.report.find.service.FindStudiesByStageService.ResponseModel
@@ -39,6 +40,9 @@ class FindStudiesByStageServiceImplTest {
     lateinit var studyReviewRepository: StudyReviewRepository
 
     @MockK
+    private lateinit var collaborationRepository: CollaborationRepository
+
+    @MockK
     lateinit var credentialsService: CredentialsService
 
     @InjectMockKs
@@ -56,8 +60,10 @@ class FindStudiesByStageServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
+            collaborationRepository,
             researcherId,
-            systematicStudyId
+            systematicStudyId,
+            UUID.randomUUID()
         )
         precondition.makeEverythingWork()
     }
@@ -192,7 +198,7 @@ class FindStudiesByStageServiceImplTest {
             sut.findStudiesByStage(presenter, request)
 
             verify(exactly = 1) {
-                presenter.prepareIfFailsPreconditions(any(), any())
+                presenter.prepareIfFailsPreconditions(any(), any(), any(), any())
             }
             assertTrue { presenter.isDone() }
         }
@@ -210,7 +216,7 @@ class FindStudiesByStageServiceImplTest {
             sut.findStudiesByStage(presenter, request)
 
             verify(exactly = 1) {
-                presenter.prepareIfFailsPreconditions(any(), any())
+                presenter.prepareIfFailsPreconditions(any(), any(), any(), any())
             }
             assertTrue { presenter.isDone() }
         }

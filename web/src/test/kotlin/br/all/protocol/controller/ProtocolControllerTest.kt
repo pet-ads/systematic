@@ -1,6 +1,7 @@
 package br.all.protocol.controller
 
 import br.all.application.protocol.repository.CriterionDto
+import br.all.infrastructure.collaboration.MongoCollaborationRepository
 import br.all.infrastructure.protocol.MongoProtocolRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.review.SystematicStudyDocument
@@ -29,6 +30,7 @@ import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 class ProtocolControllerTest(
     @Autowired private val protocolRepository: MongoProtocolRepository,
     @Autowired private val systematicStudyRepository: MongoSystematicStudyRepository,
+    @Autowired val collaborationRepository: MongoCollaborationRepository,
     @Autowired private val mockMvc: MockMvc,
     @Autowired private val testHelperService: TestHelperService
 ) {
@@ -53,6 +55,13 @@ class ProtocolControllerTest(
             collaborators = mutableSetOf(user.id)
         )
         systematicStudyRepository.save(systematicStudy)
+        collaborationRepository.deleteAll()
+        collaborationRepository.save(
+            br.all.review.shared.TestDataFactory().createCollaborationDocument(
+                systematicStudyId = systematicStudyId,
+                researcherId = user.id
+            )
+        )
     }
 
     @AfterEach

@@ -1,6 +1,7 @@
 package br.all.question.controller
 
 import br.all.domain.model.question.QuestionContextEnum
+import br.all.infrastructure.collaboration.MongoCollaborationRepository
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.question.utils.TestDataFactory
@@ -26,6 +27,7 @@ import java.util.*
 class RiskOfBiasQuestionControllerTest(
     @Autowired val repository: MongoQuestionRepository,
     @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
+    @Autowired val collaborationRepository: MongoCollaborationRepository,
     @Autowired val mockMvc: MockMvc,
     @Autowired private val testHelperService: TestHelperService,
     ) {
@@ -50,6 +52,13 @@ class RiskOfBiasQuestionControllerTest(
             br.all.review.shared.TestDataFactory().createSystematicStudyDocument(
                 id = systematicStudyId,
                 owner = user.id,
+            )
+        )
+        collaborationRepository.deleteAll()
+        collaborationRepository.save(
+            br.all.review.shared.TestDataFactory().createCollaborationDocument(
+                systematicStudyId = systematicStudyId,
+                researcherId = user.id
             )
         )
     }

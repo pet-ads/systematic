@@ -1,6 +1,7 @@
 package br.all.report.controller
 
 import br.all.domain.model.question.QuestionContextEnum
+import br.all.infrastructure.collaboration.MongoCollaborationRepository
 import br.all.infrastructure.protocol.MongoProtocolRepository
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.question.QuestionDocument
@@ -37,6 +38,7 @@ class ReportControllerTest(
     @Autowired private val systematicStudyRepository: MongoSystematicStudyRepository,
     @Autowired private val questionRepository: MongoQuestionRepository,
     @Autowired private val protocolRepository: MongoProtocolRepository,
+    @Autowired private val collaborationRepository: MongoCollaborationRepository,
     @Autowired private val mockMvc: MockMvc,
     @Autowired private val testHelperService: TestHelperService
 ) {
@@ -84,6 +86,13 @@ class ReportControllerTest(
 
         studyReviewRepository.save(studyReview)
         systematicStudyRepository.save(systematicStudy)
+        collaborationRepository.deleteAll()
+        collaborationRepository.save(
+            br.all.review.shared.TestDataFactory().createCollaborationDocument(
+                systematicStudyId = systematicStudy.id,
+                researcherId = user.id
+            )
+        )
     }
 
     @AfterEach

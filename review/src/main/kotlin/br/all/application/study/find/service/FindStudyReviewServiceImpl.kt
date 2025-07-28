@@ -1,5 +1,7 @@
 package br.all.application.study.find.service
 
+import br.all.application.collaboration.repository.CollaborationRepository
+import br.all.application.collaboration.repository.toDomain
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.shared.exceptions.EntityNotFoundException
@@ -15,6 +17,7 @@ class FindStudyReviewServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,
     private val credentialsService: CredentialsService,
+    private val collaborationRepository: CollaborationRepository,
 ) : FindStudyReviewService {
 
     override fun findOne(presenter: FindStudyReviewPresenter, request: RequestModel) {
@@ -22,8 +25,11 @@ class FindStudyReviewServiceImpl(
 
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+        val collaborations = collaborationRepository
+            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
+            .map { it.toDomain() }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy)
+        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
 
         if(presenter.isDone()) return
 

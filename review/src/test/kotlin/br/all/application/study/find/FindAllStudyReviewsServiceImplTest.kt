@@ -1,5 +1,6 @@
 package br.all.application.study.find
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
 import br.all.application.study.find.service.FindAllStudyReviewsServiceImpl
@@ -12,6 +13,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.UUID
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -26,6 +28,8 @@ class FindAllStudyReviewsServiceImplTest {
     private lateinit var credentialService: CredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: FindAllStudyReviewsPresenter
+    @MockK
+    private lateinit var collaborationRepository: CollaborationRepository
 
     private lateinit var sut: FindAllStudyReviewsServiceImpl
 
@@ -39,13 +43,16 @@ class FindAllStudyReviewsServiceImplTest {
             presenter,
             credentialService,
             systematicStudyRepository,
+            collaborationRepository,
             factory.researcherId,
-            factory.systematicStudyId
+            factory.systematicStudyId,
+            UUID.randomUUID()
         )
         sut = FindAllStudyReviewsServiceImpl(
             systematicStudyRepository,
             studyReviewRepository,
             credentialService,
+            collaborationRepository,
         )
     }
 

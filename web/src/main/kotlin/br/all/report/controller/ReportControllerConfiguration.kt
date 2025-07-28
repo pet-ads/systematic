@@ -1,5 +1,6 @@
 package br.all.report.controller
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.report.find.service.*
@@ -35,11 +36,13 @@ class ReportControllerConfiguration {
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService,
         systematicStudyRepository: SystematicStudyRepository,
+        collaborationRepository: CollaborationRepository
     ) = IncludedStudiesAnswersServiceImpl(
         questionRepository,
         studyReviewRepository,
         credentialsService,
         systematicStudyRepository,
+        collaborationRepository
     )
 
     @Bean
@@ -47,12 +50,14 @@ class ReportControllerConfiguration {
         protocolRepository: ProtocolRepository,
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService,
-        systematicStudyRepository: SystematicStudyRepository
+        systematicStudyRepository: SystematicStudyRepository,
+        collaborationRepository: CollaborationRepository
     ) = FindCriteriaServiceImpl(
         protocolRepository,
         systematicStudyRepository,
         credentialsService,
         studyReviewRepository,
+        collaborationRepository
     )
 
     @Bean
@@ -61,11 +66,13 @@ class ReportControllerConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService,
+        collaborationRepository: CollaborationRepository
     ) = FindSourceServiceImpl(
         protocolRepository,
         systematicStudyRepository,
         studyReviewRepository,
         credentialsService,
+        collaborationRepository
     )
 
     @Bean
@@ -73,10 +80,12 @@ class ReportControllerConfiguration {
         credentialsService: CredentialsService,
         studyReviewRepository: StudyReviewRepository,
         systematicStudyRepository: SystematicStudyRepository,
+        collaborationRepository: CollaborationRepository
     ) = AuthorNetworkServiceImpl(
         credentialsService,
         studyReviewRepository,
         systematicStudyRepository,
+        collaborationRepository
     )
 
     @Bean
@@ -84,10 +93,12 @@ class ReportControllerConfiguration {
         credentialsService: CredentialsService,
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
+        collaborationRepository: CollaborationRepository
     ) = FindKeywordsServiceImpl(
         systematicStudyRepository,
         studyReviewRepository,
-        credentialsService
+        credentialsService,
+        collaborationRepository
     )
 
     @Bean
@@ -96,11 +107,13 @@ class ReportControllerConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         formatterFactoryService: FormatterFactoryService,
         protocolRepository: ProtocolRepository,
+        collaborationRepository: CollaborationRepository
     ) = ExportProtocolServiceImpl(
         credentialsService,
         systematicStudyRepository,
         formatterFactoryService,
-        protocolRepository
+        protocolRepository,
+        collaborationRepository
     )
 
     @Bean
@@ -108,10 +121,12 @@ class ReportControllerConfiguration {
         credentialsService: CredentialsService,
         studyReviewRepository: StudyReviewRepository,
         systematicStudyRepository: SystematicStudyRepository,
+        collaborationRepository: CollaborationRepository
     ) = FindStudiesByStageServiceImpl(
         credentialsService,
         studyReviewRepository,
         systematicStudyRepository,
+        collaborationRepository
     )
 
     @Bean
@@ -119,10 +134,12 @@ class ReportControllerConfiguration {
         credentialsService: CredentialsService,
         studyReviewRepository: StudyReviewRepository,
         systematicStudyRepository: SystematicStudyRepository,
+        collaborationRepository: CollaborationRepository
     ) = StudiesFunnelServiceImpl(
         credentialsService,
         studyReviewRepository,
         systematicStudyRepository,
+        collaborationRepository
     )
 
     @Bean
@@ -130,12 +147,14 @@ class ReportControllerConfiguration {
         credentialsService: CredentialsService,
         studyReviewRepository: StudyReviewRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        questionRepository: QuestionRepository
+        questionRepository: QuestionRepository,
+        collaborationRepository: CollaborationRepository
     ) = FindAnswerServiceImpl(
         credentialsService,
         studyReviewRepository,
         systematicStudyRepository,
-        questionRepository
+        questionRepository,
+        collaborationRepository
     )
 
     @Bean
@@ -144,10 +163,12 @@ class ReportControllerConfiguration {
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService,
         protocolRepository: ProtocolRepository,
+        collaborationRepository: CollaborationRepository
     ) = FindStudyReviewCriteriaServiceImpl(
         systematicStudyRepository,
         studyReviewRepository,
         credentialsService,
-        protocolRepository
+        protocolRepository,
+        collaborationRepository
     )
 }
