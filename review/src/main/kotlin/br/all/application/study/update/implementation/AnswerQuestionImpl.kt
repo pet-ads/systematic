@@ -1,5 +1,7 @@
 package br.all.application.study.update.implementation
 
+import br.all.application.collaboration.repository.CollaborationRepository
+import br.all.application.collaboration.repository.toDomain
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.repository.fromDto
 import br.all.application.review.repository.SystematicStudyRepository
@@ -21,6 +23,7 @@ class AnswerQuestionImpl (
     private val questionRepository: QuestionRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val credentialsService: CredentialsService,
+    private val collaborationRepository: CollaborationRepository,
 ): AnswerQuestionService {
     override fun answerQuestion(
         presenter: AnswerQuestionPresenter,
@@ -31,8 +34,11 @@ class AnswerQuestionImpl (
 
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+        val collaborations = collaborationRepository
+            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
+            .map { it.toDomain() }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy)
+        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
 
         if (presenter.isDone()) return
 
