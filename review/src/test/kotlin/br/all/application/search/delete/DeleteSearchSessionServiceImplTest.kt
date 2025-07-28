@@ -2,6 +2,7 @@
 
 package br.all.application.search.delete
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.search.util.TestDataFactory
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.UUID
 
 @ExtendWith(MockKExtension::class)
 class DeleteSearchSessionServiceImplTest {
@@ -34,6 +36,9 @@ class DeleteSearchSessionServiceImplTest {
     @MockK
     private lateinit var credentialService: CredentialsService
 
+    @MockK
+    private lateinit var collaborationRepository: CollaborationRepository
+
     @InjectMockKs
     private lateinit var sut: DeleteSearchSessionServiceImpl
 
@@ -48,8 +53,10 @@ class DeleteSearchSessionServiceImplTest {
                 presenter,
                 credentialService,
                 systematicStudyRepository,
+                collaborationRepository,
                 factory.userId,
                 factory.systematicStudyId,
+                UUID.randomUUID()
             )
     }
 

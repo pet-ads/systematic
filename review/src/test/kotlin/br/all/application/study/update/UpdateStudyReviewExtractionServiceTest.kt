@@ -1,5 +1,6 @@
 package br.all.application.study.update
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.study.repository.StudyReviewRepository
@@ -13,6 +14,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.UUID
 import kotlin.test.assertFailsWith
 
 @Tag("UnitTest")
@@ -24,6 +26,8 @@ class UpdateStudyReviewExtractionServiceTest {
     @MockK(relaxUnitFun = true) private lateinit var systematicStudyRepository: SystematicStudyRepository
     @MockK private lateinit var credentialService: CredentialsService
     @MockK(relaxed = true) private lateinit var presenter: UpdateStudyReviewStatusPresenter
+    @MockK
+    private lateinit var collaborationRepository: CollaborationRepository
 
     private lateinit var sut: UpdateStudyReviewExtractionService
 
@@ -37,13 +41,16 @@ class UpdateStudyReviewExtractionServiceTest {
             presenter,
             credentialService,
             systematicStudyRepository,
+            collaborationRepository,
             factory.researcherId,
-            factory.systematicStudyId
+            factory.systematicStudyId,
+            UUID.randomUUID()
         )
         sut = UpdateStudyReviewExtractionService(
             systematicStudyRepository,
             studyReviewRepository,
             credentialService,
+            collaborationRepository
         )
     }
 

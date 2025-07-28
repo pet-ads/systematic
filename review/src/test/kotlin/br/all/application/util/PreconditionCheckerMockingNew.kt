@@ -40,6 +40,9 @@ class PreconditionCheckerMockingNew(
             allowedRoles = any(),
             collaborations = any()
         ) } returns Unit
+        every { collaborationRepository.
+                listAllCollaborationsBySystematicStudyId(systematicStudyId)
+        } returns collaborationId
         every { presenter.isDone() } returns false
     }
 

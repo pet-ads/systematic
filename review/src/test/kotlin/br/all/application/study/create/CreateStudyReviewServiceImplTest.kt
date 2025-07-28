@@ -1,5 +1,6 @@
 package br.all.application.study.create
 
+import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.util.TestDataFactory
@@ -11,6 +12,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.UUID
+
 @Tag("UnitTest")
 @Tag("ServiceTest")
 @ExtendWith(MockKExtension::class)
@@ -24,6 +27,8 @@ class CreateStudyReviewServiceImplTest {
     private lateinit var idGenerator: IdGeneratorService
     @MockK
     private lateinit var credentialService: CredentialsService
+    @MockK
+    private lateinit var collaborationRepository: CollaborationRepository
     @MockK(relaxUnitFun = true)
     private lateinit var presenter: CreateStudyReviewPresenter
 
@@ -39,14 +44,17 @@ class CreateStudyReviewServiceImplTest {
             presenter,
             credentialService,
             systematicStudyRepository,
+            collaborationRepository,
             factory.researcherId,
-            factory.systematicStudyId
+            factory.systematicStudyId,
+            UUID.randomUUID()
         )
         sut = CreateStudyReviewServiceImpl(
             systematicStudyRepository,
             studyReviewRepository,
             credentialService,
-            idGenerator
+            idGenerator,
+            collaborationRepository,
         )
     }
 

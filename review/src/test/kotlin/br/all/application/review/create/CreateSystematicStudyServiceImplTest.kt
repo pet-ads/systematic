@@ -17,6 +17,7 @@ import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.UUID
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -47,8 +48,10 @@ class CreateSystematicStudyServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
+            collaborationRepository,
             factory.researcher,
-            factory.systematicStudy
+            factory.systematicStudy,
+            UUID.randomUUID(),
         )
         
         every { collaborationRepository.saveOrUpdateCollaboration(any()) } returns Unit
