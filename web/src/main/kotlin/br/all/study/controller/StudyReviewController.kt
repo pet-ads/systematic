@@ -94,10 +94,13 @@ class StudyReviewController(
     )
     fun findAllStudyReviews(
         @PathVariable systematicStudy: UUID,
+        @RequestParam("page", required = false, defaultValue = "0") page: Int,
+        @RequestParam("size", required = false, defaultValue = "20") size: Int,
+        @RequestParam("sort", required = false, defaultValue = "id,asc") sort: String,
     ): ResponseEntity<*> {
         val presenter = RestfulFindAllStudyReviewsPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = FindAllStudyReviewsService.RequestModel(userId, systematicStudy)
+        val request = FindAllStudyReviewsService.RequestModel(userId, systematicStudy, page, size, sort)
         findAllService.findAllFromReview(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }

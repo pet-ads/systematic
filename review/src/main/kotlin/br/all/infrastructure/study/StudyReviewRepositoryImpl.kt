@@ -4,6 +4,9 @@ import br.all.application.study.repository.AnswerDto
 import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.infrastructure.shared.toNullable
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -14,8 +17,13 @@ open class  StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRe
     override fun findById(reviewId: UUID, studyId: Long) =
         repository.findById(StudyReviewId(reviewId, studyId)).toNullable()?.toDto()
 
-    override fun findAllFromReview(reviewId: UUID): List<StudyReviewDto> =
-        repository.findAllById_SystematicStudyId(reviewId).map { it.toDto() }
+    override fun findAllFromReview(reviewId: UUID, pageable: Pageable): List<StudyReviewDto> =
+        repository.findAllById_SystematicStudyId(reviewId, pageable).content.map { it.toDto() }
+        
+    override fun findAllFromReviewPaged(reviewId: UUID, pageable: Pageable): Page<StudyReviewDto> {
+        val documentsPage = repository.findAllById_SystematicStudyId(reviewId, pageable)
+        return documentsPage.map { it.toDto() }
+    }
 
     override fun findAllBySource(reviewId: UUID, source: String): List<StudyReviewDto> =
 //        repository.findAllById_SystematicStudyId(reviewId).map { it.toDto() }

@@ -80,10 +80,18 @@ class TestDataFactory {
 
     fun findAllResponseModel(
         amountOfStudies: Int,
+        page: Int = 0,
+        size: Int = 20,
+        totalElements: Long = amountOfStudies.toLong(),
+        totalPages: Int = if (amountOfStudies == 0) 0 else (amountOfStudies + size - 1) / size
     ) = FindAllStudyReviewsService.ResponseModel(
         researcherId,
         systematicStudyId,
-        List(amountOfStudies) { generateDto(studyReviewId = Random(1).nextLong()) }
+        List(amountOfStudies) { generateDto(studyReviewId = Random(1).nextLong()) },
+        page,
+        size,
+        totalElements,
+        totalPages
     )
 
     fun findAllBySourceRequestModel(

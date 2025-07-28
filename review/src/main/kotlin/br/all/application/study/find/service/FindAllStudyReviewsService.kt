@@ -10,12 +10,20 @@ interface FindAllStudyReviewsService {
 
     data class RequestModel(
         val userId: UUID,
-        val systematicStudyId: UUID
+        val systematicStudyId: UUID,
+        val page: Int = 0,
+        val pageSize: Int = 20,
+        val sort: String = "id,asc"
     )
+
     @Schema(name = "FindAllStudyReviewsServiceResponseModel")
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val studyReviews: List<StudyReviewDto>
+        val studyReviews: List<StudyReviewDto>,
+        val page: Int,
+        val size: Int,
+        val totalElements: Long,
+        val totalPages: Int
     )
 }

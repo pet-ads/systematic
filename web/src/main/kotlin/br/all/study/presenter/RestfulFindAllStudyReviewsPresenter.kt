@@ -19,9 +19,31 @@ class RestfulFindAllStudyReviewsPresenter(
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
-        val restfulResponse = ViewModel(response.systematicStudyId, response.studyReviews.size, response.studyReviews)
+        val restfulResponse = ViewModel(
+            systematicStudyId = response.systematicStudyId, 
+            size = response.studyReviews.size, 
+            studyReviews = response.studyReviews,
+            page = response.page,
+            totalElements = response.totalElements,
+            totalPages = response.totalPages
+        )
 
-        val selfRef = linksFactory.findAllStudies(response.systematicStudyId)
+        val selfRef = linksFactory.findAllStudies(response.systematicStudyId, response.page, response.size)
+        
+        // Add pagination links
+        if (response.totalPages > 0) {
+            restfulResponse.add(linksFactory.findAllStudiesFirstPage(response.systematicStudyId, response.size))
+            restfulResponse.add(linksFactory.findAllStudiesLastPage(response.systematicStudyId, response.totalPages, response.size))
+            
+            if (response.page < response.totalPages - 1) {
+                restfulResponse.add(linksFactory.findAllStudiesNextPage(response.systematicStudyId, response.page, response.size))
+            }
+            
+            if (response.page > 0) {
+                restfulResponse.add(linksFactory.findAllStudiesPrevPage(response.systematicStudyId, response.page, response.size))
+            }
+        }
+        
         val sources = getSources(response.studyReviews)
         for (source in sources) {
             restfulResponse.add(linksFactory.findAllStudiesBySource(response.systematicStudyId, source))
@@ -42,5 +64,8 @@ class RestfulFindAllStudyReviewsPresenter(
         val systematicStudyId : UUID,
         val size: Int,
         val studyReviews: List<StudyReviewDto>,
+        val page: Int,
+        val totalElements: Long,
+        val totalPages: Int
     ) : RepresentationModel<ViewModel>()
 }
