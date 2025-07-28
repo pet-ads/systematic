@@ -5,9 +5,7 @@ import br.all.application.question.create.CreateQuestionServiceImpl
 import br.all.application.question.find.FindQuestionServiceImpl
 import br.all.application.question.findAll.FindAllBySystematicStudyIdServiceImpl
 import br.all.application.question.repository.QuestionRepository
-import br.all.application.question.update.presenter.UpdateQuestionPresenter
 import br.all.application.question.update.services.UpdateQuestionServiceImpl
-import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.services.UuidGeneratorService
