@@ -41,7 +41,7 @@ class SystematicStudyControllerTest(
         user = testHelperService.createApplicationUser()
         collaborationRepository.deleteAll()
         collaborationRepository.save(
-            br.all.review.shared.TestDataFactory().createCollaborationDocument(
+            TestDataFactory().createCollaborationDocument(
                 systematicStudyId = factory.systematicStudyId,
                 researcherId = user.id
             )

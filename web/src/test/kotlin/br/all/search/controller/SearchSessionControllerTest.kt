@@ -50,7 +50,7 @@ class SearchSessionControllerTest(
 
 
     fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/search-session"
-    fun patchUrl(sessionId: UUID) = "/api/v1/systematic-study/$systematicStudyId/patch-search-session/${sessionId}"
+    // fun patchUrl(sessionId: UUID) = "/api/v1/systematic-study/$systematicStudyId/patch-search-session/${sessionId}"
     fun findUrl(sessionId: UUID) =
         "/api/v1/systematic-study/$systematicStudyId/search-session/${sessionId}"
     fun findAllUrl() = "/api/v1/systematic-study/$systematicStudyId/search-session"
