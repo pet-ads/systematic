@@ -9,7 +9,6 @@ import br.all.application.shared.exceptions.UnauthenticatedUserException
 import br.all.application.shared.exceptions.UnauthorizedUserException
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
-import br.all.infrastructure.collaboration.MongoCollaborationRepository
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

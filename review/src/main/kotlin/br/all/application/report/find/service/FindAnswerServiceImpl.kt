@@ -11,7 +11,6 @@ import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
-import java.util.*
 
 class FindAnswerServiceImpl(
     private val credentialsService: CredentialsService,

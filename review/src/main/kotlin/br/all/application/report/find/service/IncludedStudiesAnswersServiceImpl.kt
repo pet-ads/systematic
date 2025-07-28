@@ -13,7 +13,6 @@ import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.model.question.QuestionContextEnum
 import br.all.domain.model.review.SystematicStudy
-import org.springframework.boot.autoconfigure.security.SecurityProperties
 import java.util.*
 
 class IncludedStudiesAnswersServiceImpl(

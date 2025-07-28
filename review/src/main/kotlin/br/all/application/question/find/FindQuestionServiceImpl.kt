@@ -9,7 +9,6 @@ import br.all.application.review.repository.fromDto
 import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.user.CredentialsService
-import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.SystematicStudy
 
 class FindQuestionServiceImpl(
