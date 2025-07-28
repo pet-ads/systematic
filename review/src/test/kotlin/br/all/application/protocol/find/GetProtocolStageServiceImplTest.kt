@@ -28,7 +28,6 @@ import br.all.application.protocol.repository.PicocDto
 import br.all.application.question.repository.QuestionRepository
 import br.all.domain.model.question.QuestionContextEnum
 import io.mockk.verify
-import org.springframework.boot.autoconfigure.security.SecurityProperties
 
 @Tag("UnitTest")
 @Tag("ServiceTest")

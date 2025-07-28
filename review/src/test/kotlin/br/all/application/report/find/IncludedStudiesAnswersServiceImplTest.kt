@@ -309,7 +309,6 @@ class IncludedStudiesAnswersServiceImplTest {
                 when (secondArg<QuestionContextEnum>()) {
                     QuestionContextEnum.ROB -> listOf(question1)
                     QuestionContextEnum.EXTRACTION -> listOf(question2)
-                    else -> emptyList()
                 }
             }
 
