@@ -1,5 +1,6 @@
 package br.all.study.controller
 
+import br.all.infrastructure.collaboration.MongoCollaborationRepository
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.shared.toNullable
@@ -36,6 +37,7 @@ import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 class StudyReviewControllerTest(
     @Autowired val repository: MongoStudyReviewRepository,
     @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
+    @Autowired val collaborationRepository: MongoCollaborationRepository,
     @Autowired private val testHelperService: TestHelperService,
     @Autowired val idService: StudyReviewIdGeneratorService,
     @Autowired val mockMvc: MockMvc,
@@ -97,6 +99,14 @@ class StudyReviewControllerTest(
             SystematicStudyTestDataFactory().createSystematicStudyDocument(
                 id = systematicStudyId,
                 owner = user.id,
+            )
+        )
+
+        collaborationRepository.deleteAll()
+        collaborationRepository.save(
+            br.all.review.shared.TestDataFactory().createCollaborationDocument(
+                systematicStudyId = systematicStudyId,
+                researcherId = user.id
             )
         )
     }
