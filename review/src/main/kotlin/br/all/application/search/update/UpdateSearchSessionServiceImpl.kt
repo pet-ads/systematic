@@ -7,7 +7,7 @@ import br.all.application.search.repository.fromDto
 import br.all.application.search.repository.toDto
 import br.all.application.search.update.UpdateSearchSessionService.RequestModel
 import br.all.application.search.update.UpdateSearchSessionService.ResponseModel
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.user.CredentialsService
 import br.all.domain.model.protocol.toSearchSource

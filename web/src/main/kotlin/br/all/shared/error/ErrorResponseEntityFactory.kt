@@ -1,9 +1,9 @@
 package br.all.shared.error
 
-import br.all.application.shared.exceptions.EntityNotFoundException
-import br.all.application.shared.exceptions.UnauthenticatedUserException
-import br.all.application.shared.exceptions.UnauthorizedUserException
-import br.all.application.shared.exceptions.UniquenessViolationException
+import br.all.domain.shared.exception.EntityNotFoundException
+import br.all.domain.shared.exception.UnauthenticatedUserException
+import br.all.domain.shared.exception.UnauthorizedUserException
+import br.all.domain.shared.exception.UniquenessViolationException
 import org.springframework.http.HttpStatus.*
 import org.springframework.http.ResponseEntity
 

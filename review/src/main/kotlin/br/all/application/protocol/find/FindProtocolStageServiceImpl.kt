@@ -9,7 +9,7 @@ import br.all.application.protocol.find.FindProtocolStageService.ProtocolStage
 import br.all.application.protocol.repository.ProtocolDto
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.fromDto
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.domain.model.question.QuestionContextEnum

@@ -3,9 +3,9 @@ package br.all.application.review.find.services
 import br.all.application.review.find.presenter.FindSystematicStudyPresenter
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.TestDataFactory
-import br.all.application.shared.exceptions.EntityNotFoundException
-import br.all.application.shared.exceptions.UnauthenticatedUserException
-import br.all.application.shared.exceptions.UnauthorizedUserException
+import br.all.domain.shared.exception.EntityNotFoundException
+import br.all.domain.shared.exception.UnauthenticatedUserException
+import br.all.domain.shared.exception.UnauthorizedUserException
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.every

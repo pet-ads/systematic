@@ -4,12 +4,11 @@ import br.all.application.question.repository.QuestionRepository
 import br.all.application.report.find.presenter.FindAnswerPresenter
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
-import java.util.*
 
 class FindAnswerServiceImpl(
     private val credentialsService: CredentialsService,

@@ -1,8 +1,8 @@
 package br.all.application.shared.presenter
 
-import br.all.application.shared.exceptions.EntityNotFoundException
-import br.all.application.shared.exceptions.UnauthenticatedUserException
-import br.all.application.shared.exceptions.UnauthorizedUserException
+import br.all.domain.shared.exception.EntityNotFoundException
+import br.all.domain.shared.exception.UnauthenticatedUserException
+import br.all.domain.shared.exception.UnauthorizedUserException
 import br.all.domain.model.user.Researcher
 import br.all.domain.model.user.Role
 import br.all.domain.model.user.Role.ADMIN

@@ -1,6 +1,6 @@
 package br.all.security.service
 
-import br.all.application.shared.exceptions.UnauthorizedUserException
+import br.all.domain.shared.exception.UnauthorizedUserException
 import br.all.application.user.find.LoadAccountCredentialsService
 import br.all.application.user.update.UpdateRefreshTokenService
 import br.all.application.user.update.UpdateRefreshTokenService.RequestModel

@@ -11,7 +11,7 @@ import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.application.report.find.service.IncludedStudiesAnswersService.RequestModel
 import br.all.application.report.util.TestDataFactory
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.domain.model.question.QuestionContextEnum
 import io.mockk.every

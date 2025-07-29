@@ -4,7 +4,7 @@ import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.report.find.presenter.FindSourcePresenter
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository

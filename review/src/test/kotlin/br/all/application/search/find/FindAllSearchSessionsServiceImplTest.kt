@@ -5,8 +5,8 @@ import br.all.application.search.find.presenter.FindAllSearchSessionsPresenter
 import br.all.application.search.find.service.FindAllSearchSessionsServiceImpl
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.search.util.TestDataFactory
-import br.all.application.shared.exceptions.UnauthenticatedUserException
-import br.all.application.shared.exceptions.UnauthorizedUserException
+import br.all.domain.shared.exception.UnauthenticatedUserException
+import br.all.domain.shared.exception.UnauthorizedUserException
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.every
