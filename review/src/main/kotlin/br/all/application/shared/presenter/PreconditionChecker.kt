@@ -5,7 +5,7 @@ import br.all.application.review.repository.SystematicStudyRepository
 import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.domain.shared.exception.UnauthenticatedUserException
 import br.all.domain.shared.exception.UnauthorizedUserException
-import br.all.domain.model.user.ResearcherId
+import br.all.domain.shared.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.shared.presenter.GenericPresenter
 

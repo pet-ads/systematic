@@ -1,4 +1,4 @@
-package br.all.domain.model.user
+package br.all.domain.shared.user
 
 import br.all.domain.shared.ddd.Entity
 import java.util.UUID

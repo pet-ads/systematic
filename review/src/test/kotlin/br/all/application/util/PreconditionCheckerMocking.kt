@@ -4,7 +4,7 @@ import br.all.application.question.repository.QuestionRepository
 import br.all.application.user.credentials.ResearcherCredentialsService
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.domain.shared.presenter.GenericPresenter
-import br.all.domain.model.user.toResearcherId
+import br.all.domain.shared.user.toResearcherId
 import br.all.domain.model.review.toSystematicStudyId
 import io.mockk.every
 import java.util.*

@@ -1,7 +1,7 @@
 package br.all.domain.model.search
 
 import br.all.domain.model.protocol.SearchSource
-import br.all.domain.model.user.ResearcherId
+import br.all.domain.shared.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test

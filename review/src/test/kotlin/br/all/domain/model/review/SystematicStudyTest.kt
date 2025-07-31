@@ -1,6 +1,6 @@
 package br.all.domain.model.review
 
-import br.all.domain.model.user.ResearcherId
+import br.all.domain.shared.user.ResearcherId
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.assertDoesNotThrow

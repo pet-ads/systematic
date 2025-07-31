@@ -10,7 +10,7 @@ import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.update.UpdateSearchSessionService
 import br.all.application.search.update.UpdateSearchSessionService.RequestModel
 import br.all.domain.model.protocol.SearchSource
-import br.all.domain.model.user.ResearcherId
+import br.all.domain.shared.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID

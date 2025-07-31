@@ -1,7 +1,7 @@
 package br.all.application.review.repository
 
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel
-import br.all.domain.model.user.ResearcherId
+import br.all.domain.shared.user.ResearcherId
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.SystematicStudyId
 import java.util.*
