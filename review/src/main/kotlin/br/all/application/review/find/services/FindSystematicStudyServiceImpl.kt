@@ -4,7 +4,7 @@ import br.all.application.review.find.presenter.FindSystematicStudyPresenter
 import br.all.application.review.find.services.FindSystematicStudyService.RequestModel
 import br.all.application.review.find.services.FindSystematicStudyService.ResponseModel
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfUnauthorized
 import br.all.application.user.CredentialsService
 

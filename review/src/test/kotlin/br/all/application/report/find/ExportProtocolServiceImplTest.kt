@@ -5,7 +5,7 @@ import br.all.application.report.find.presenter.ExportProtocolPresenter
 import br.all.application.report.find.service.ExportProtocolService
 import br.all.application.report.find.service.ExportProtocolServiceImpl
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.protocol.util.TestDataFactory as ProtocolDtoFactory
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew

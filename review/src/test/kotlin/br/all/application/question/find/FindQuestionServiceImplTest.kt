@@ -4,8 +4,8 @@ import br.all.application.question.create.CreateQuestionService.*
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.util.TestDataFactory
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.exceptions.UnauthenticatedUserException
-import br.all.application.shared.exceptions.UnauthorizedUserException
+import br.all.domain.shared.exception.UnauthenticatedUserException
+import br.all.domain.shared.exception.UnauthorizedUserException
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.every

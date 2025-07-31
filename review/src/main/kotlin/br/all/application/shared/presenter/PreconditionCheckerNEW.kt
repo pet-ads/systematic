@@ -1,13 +1,14 @@
 package br.all.application.shared.presenter
 
-import br.all.application.shared.exceptions.EntityNotFoundException
-import br.all.application.shared.exceptions.UnauthenticatedUserException
-import br.all.application.shared.exceptions.UnauthorizedUserException
-import br.all.domain.model.user.Researcher
-import br.all.domain.model.user.Role
-import br.all.domain.model.user.Role.ADMIN
-import br.all.domain.model.user.Role.COLLABORATOR
+import br.all.domain.shared.exception.EntityNotFoundException
+import br.all.domain.shared.exception.UnauthenticatedUserException
+import br.all.domain.shared.exception.UnauthorizedUserException
+import br.all.domain.shared.user.Researcher
+import br.all.domain.shared.user.Role
+import br.all.domain.shared.user.Role.ADMIN
+import br.all.domain.shared.user.Role.COLLABORATOR
 import br.all.domain.model.review.SystematicStudy
+import br.all.domain.shared.presenter.GenericPresenter
 
 
 fun GenericPresenter<*>.prepareIfFailsPreconditions(

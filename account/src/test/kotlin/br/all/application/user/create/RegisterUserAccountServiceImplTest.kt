@@ -1,6 +1,5 @@
 package br.all.application.user.create
 
-import br.all.application.shared.UniquenessViolationException
 import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.utils.TestDataFactory
 import io.mockk.every
@@ -9,6 +8,7 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.verifyOrder
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
+import br.all.domain.shared.exception.UniquenessViolationException
 
 @Tag("UnitTest")
 @Tag("ServiceTest")

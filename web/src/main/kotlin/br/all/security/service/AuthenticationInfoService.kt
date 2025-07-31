@@ -1,10 +1,8 @@
 package br.all.security.service
 
-import br.all.application.shared.exceptions.UnauthorizedUserException
-import org.springframework.http.HttpStatus
+import br.all.domain.shared.exception.UnauthorizedUserException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
 @Service

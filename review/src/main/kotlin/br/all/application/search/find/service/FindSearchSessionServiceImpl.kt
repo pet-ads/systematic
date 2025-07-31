@@ -6,7 +6,7 @@ import br.all.application.search.find.presenter.FindSearchSessionPresenter
 import br.all.application.search.find.service.FindSearchSessionService.RequestModel
 import br.all.application.search.find.service.FindSearchSessionService.ResponseModel
 import br.all.application.search.repository.SearchSessionRepository
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy

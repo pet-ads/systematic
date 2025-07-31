@@ -1,7 +1,7 @@
 package br.all.application.study.update
 
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.update.implementation.MarkAsDuplicatedServiceImpl
 import br.all.application.study.update.interfaces.MarkAsDuplicatedPresenter
@@ -13,7 +13,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.*
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
