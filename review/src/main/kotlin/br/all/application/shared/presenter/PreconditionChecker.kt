@@ -7,6 +7,7 @@ import br.all.domain.shared.exception.UnauthenticatedUserException
 import br.all.domain.shared.exception.UnauthorizedUserException
 import br.all.domain.model.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.shared.presenter.GenericPresenter
 
 class PreconditionChecker(
     private val reviewRepository: SystematicStudyRepository,

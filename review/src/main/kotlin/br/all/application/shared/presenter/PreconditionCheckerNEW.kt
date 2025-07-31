@@ -8,6 +8,7 @@ import br.all.domain.model.user.Role
 import br.all.domain.model.user.Role.ADMIN
 import br.all.domain.model.user.Role.COLLABORATOR
 import br.all.domain.model.review.SystematicStudy
+import br.all.domain.shared.presenter.GenericPresenter
 
 
 fun GenericPresenter<*>.prepareIfFailsPreconditions(

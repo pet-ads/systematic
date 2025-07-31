@@ -6,7 +6,7 @@ import br.all.application.review.repository.SystematicStudyRepository
 import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.domain.shared.exception.UnauthenticatedUserException
 import br.all.domain.shared.exception.UnauthorizedUserException
-import br.all.application.shared.presenter.GenericPresenter
+import br.all.domain.shared.presenter.GenericPresenter
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.user.CredentialsService
 import io.github.serpro69.kfaker.Faker

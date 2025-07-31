@@ -7,6 +7,7 @@ import br.all.domain.shared.exception.UnauthenticatedUserException
 import br.all.domain.shared.exception.UnauthorizedUserException
 import br.all.domain.model.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.shared.presenter.GenericPresenter
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
