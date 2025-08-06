@@ -1,4 +1,5 @@
 package br.all.application.user.find
+import java.time.LocalDateTime
 import java.util.UUID
 
 interface RetrieveUserProfileService {
@@ -13,6 +14,7 @@ interface RetrieveUserProfileService {
         val username: String,
         val email: String,
         val affiliation: String,
-        val country: String
+        val country: String,
+        val authorities: Set<String>,
     )
 }

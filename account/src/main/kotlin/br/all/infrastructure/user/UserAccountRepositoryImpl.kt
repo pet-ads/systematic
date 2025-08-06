@@ -3,6 +3,7 @@ package br.all.infrastructure.user
 import br.all.application.user.repository.AccountCredentialsDto
 import br.all.application.user.repository.UserAccountDto
 import br.all.application.user.repository.UserAccountRepository
+import br.all.application.user.repository.UserProfileDto
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -22,8 +23,8 @@ class UserAccountRepositoryImpl(
         credentialsRepository.deleteById(id)
     }
 
-    override fun loadUserProfileById(id: UUID): UserAccountDto? =
-        userAccountRepository.findById(id).orElse(null)?.toUserAccountDto()
+    override fun loadUserProfileById(id: UUID): UserProfileDto? =
+        userAccountRepository.findById(id).orElse(null)?.toUserProfileDto()
 
     override fun loadCredentialsByUsername(username: String) =
         credentialsRepository.findByUsername(username)?.toAccountCredentialsDto()

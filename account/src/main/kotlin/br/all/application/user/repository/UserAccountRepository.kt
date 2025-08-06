@@ -11,5 +11,5 @@ interface UserAccountRepository {
     fun existsByEmail(email: String): Boolean
     fun existsByUsername(username: String): Boolean
     fun deleteById(id: UUID)
-    fun loadUserProfileById(id: UUID): UserAccountDto?
+    fun loadUserProfileById(id: UUID): UserProfileDto?
 }

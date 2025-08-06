@@ -18,7 +18,8 @@ class RestfulRetrieveUserProfilePresenter : RetrieveUserProfilePresenter {
             response.username,
             response.email,
             response.affiliation,
-            response.country
+            response.country,
+            response.authorities
         )
         responseEntity = ok(restfulResponse)
     }
@@ -32,6 +33,7 @@ class RestfulRetrieveUserProfilePresenter : RetrieveUserProfilePresenter {
         val username: String,
         val email: String,
         val affiliation: String,
-        val country: String
+        val country: String,
+        val authorities: Set<String>
     ) : RepresentationModel<ViewModel>()
 }
