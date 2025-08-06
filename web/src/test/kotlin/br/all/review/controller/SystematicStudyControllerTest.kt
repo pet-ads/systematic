@@ -1,8 +1,5 @@
 package br.all.review.controller
 
-import br.all.application.protocol.repository.ProtocolDto
-import br.all.application.protocol.repository.ProtocolRepository
-import br.all.application.shared.exceptions.EntityNotFoundException
 import br.all.infrastructure.protocol.MongoProtocolRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.review.SystematicStudyDocument
@@ -10,8 +7,7 @@ import br.all.infrastructure.shared.toNullable
 import br.all.review.shared.TestDataFactory
 import br.all.security.service.ApplicationUser
 import br.all.shared.TestHelperService
-import com.ninjasquad.springmockk.MockkBean
-import io.mockk.every
+import br.all.utils.example.CreateSearchSessionExampleService
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
@@ -20,9 +16,9 @@ import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -40,8 +36,13 @@ class SystematicStudyControllerTest(
 ) {
     private lateinit var factory: TestDataFactory
     private lateinit var user: ApplicationUser
-    
-    @MockBean private lateinit var protocolRepository: MongoProtocolRepository
+
+    // This prevents the tests breaking
+    @MockitoBean
+    private lateinit var createSearchSessionExampleService: CreateSearchSessionExampleService
+
+    @MockitoBean
+    private lateinit var protocolRepository: MongoProtocolRepository
 
     @BeforeEach
     fun setUp() {

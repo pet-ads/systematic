@@ -13,9 +13,10 @@ import br.all.domain.model.protocol.Protocol
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.services.UuidGeneratorService
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-@Transactional
+@Service
 class CreateSystematicStudyServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val protocolRepository: ProtocolRepository,
