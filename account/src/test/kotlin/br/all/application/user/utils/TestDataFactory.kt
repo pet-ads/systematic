@@ -2,6 +2,7 @@ package br.all.application.user.utils
 
 import br.all.application.user.create.RegisterUserAccountService
 import br.all.application.user.repository.AccountCredentialsDto
+import br.all.application.user.repository.UserProfileDto
 import io.github.serpro69.kfaker.Faker
 import java.util.*
 
@@ -25,4 +26,10 @@ class TestDataFactory {
         refreshToken = faker.lorem.words()
     )
 
+    fun userProfile() = UserProfileDto(
+        id = UUID.randomUUID(),
+        email = faker.internet.email(),
+        country = faker.address.countryCode(),
+        affiliation = faker.leagueOfLegends.rank(),
+    )
 }

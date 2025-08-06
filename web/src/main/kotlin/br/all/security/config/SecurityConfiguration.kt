@@ -44,6 +44,7 @@ class SecurityConfiguration(
                         "/webjars/**"
                     ).permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/user").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/user").authenticated()
                     .anyRequest().fullyAuthenticated()
 
             }

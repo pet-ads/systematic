@@ -2,6 +2,7 @@ package br.all.infrastructure.user
 
 import br.all.application.user.repository.AccountCredentialsDto
 import br.all.application.user.repository.UserAccountDto
+import br.all.application.user.repository.UserProfileDto
 
 fun UserAccountDto.toUserAccountEntity(): UserAccountEntity {
     val credentials = AccountCredentialsEntity(
@@ -19,3 +20,10 @@ fun UserAccountDto.toUserAccountEntity(): UserAccountEntity {
 }
 
 fun AccountCredentialsEntity.toAccountCredentialsDto() = AccountCredentialsDto(id, username, password, authorities, refreshToken)
+
+fun UserAccountEntity.toUserProfileDto() = UserProfileDto(
+    id = this.id,
+    email = this.email,
+    country = this.country,
+    affiliation = this.affiliation
+)

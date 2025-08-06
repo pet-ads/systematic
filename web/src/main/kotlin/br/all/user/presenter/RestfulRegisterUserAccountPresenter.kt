@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.status
 import java.util.*
 
-class RestfullRegisterUserAccountPresenter : RegisterUserAccountPresenter {
+class RestfulRegisterUserAccountPresenter : RegisterUserAccountPresenter {
 
     var responseEntity: ResponseEntity<*>? = null
 
