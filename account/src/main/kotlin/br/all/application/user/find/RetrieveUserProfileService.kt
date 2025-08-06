@@ -1,5 +1,4 @@
 package br.all.application.user.find
-import java.time.LocalDateTime
 import java.util.UUID
 
 interface RetrieveUserProfileService {
