@@ -3,7 +3,7 @@ package br.all.user.controller
 import br.all.application.user.CredentialsService
 import br.all.application.user.create.RegisterUserAccountService
 import br.all.application.user.create.RegisterUserAccountService.RequestModel
-import br.all.user.presenter.RestfullRegisterUserAccountPresenter
+import br.all.user.presenter.RestfulRegisterUserAccountPresenter
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -49,7 +49,7 @@ class UserAccountController(
         ]
     )
     fun registerUser(@RequestBody request: RequestModel): ResponseEntity<*> {
-        val presenter = RestfullRegisterUserAccountPresenter()
+        val presenter = RestfulRegisterUserAccountPresenter()
         val encodedPasswordRequest = request.copy(password = encoder.encode(request.password))
         registerUserAccountService.register(presenter, encodedPasswordRequest)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
