@@ -19,3 +19,19 @@ fun UserAccountDto.toUserAccountEntity(): UserAccountEntity {
 }
 
 fun AccountCredentialsEntity.toAccountCredentialsDto() = AccountCredentialsDto(id, username, password, authorities, refreshToken)
+
+fun UserAccountEntity.toUserAccountDto() = UserAccountDto(
+    id = this.id,
+    username = this.accountCredentialsEntity.username,
+    password = this.accountCredentialsEntity.password,
+    email = this.email,
+    country = this.country,
+    affiliation = this.affiliation,
+    createdAt = this.createdAt,
+    authorities = this.accountCredentialsEntity.authorities,
+    refreshToken = this.accountCredentialsEntity.refreshToken,
+    isAccountNonExpired = this.accountCredentialsEntity.isAccountNonExpired,
+    isAccountNonLocked = this.accountCredentialsEntity.isAccountNonLocked,
+    isCredentialsNonExpired = this.accountCredentialsEntity.isCredentialsNonExpired,
+    isEnabled = this.accountCredentialsEntity.isEnabled
+)

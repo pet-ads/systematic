@@ -22,6 +22,9 @@ class UserAccountRepositoryImpl(
         credentialsRepository.deleteById(id)
     }
 
+    override fun loadUserProfileById(id: UUID): UserAccountDto? =
+        userAccountRepository.findById(id).orElse(null)?.toUserAccountDto()
+
     override fun loadCredentialsByUsername(username: String) =
         credentialsRepository.findByUsername(username)?.toAccountCredentialsDto()
 
