@@ -104,6 +104,7 @@ class SystematicStudyControllerTest(
         // When @Transactional is used in an environment that doesn't support it,
         // Spring doesn't throw an error, it simply becomes a no-op.
         // The annotation is effectively ignored.
+        @Disabled
         @Test
         fun `should not save systematic study if protocol creation fails`(){
             val json = factory.createValidPostRequest()
@@ -116,8 +117,7 @@ class SystematicStudyControllerTest(
                     .contentType(MediaType.APPLICATION_JSON).content(json)
             ).andExpect(status().isBadRequest)
 
-//            assertEquals(emptyList<SystematicStudyDocument>(), repository.findAll())
-            assertEquals(0, 0) // Uncomment the real assertion if you want to try.
+            assertEquals(emptyList<SystematicStudyDocument>(), repository.findAll())
         }
 
         @Test
