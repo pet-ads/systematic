@@ -14,7 +14,6 @@ class TextTest {
 
     @Test
     fun `should create Text when value is valid`() {
-        // This text is now valid as it only contains letters and spaces.
         val textValue = "Mussum Ipsum cacilds vidis litro abertis"
         Assertions.assertDoesNotThrow {
             Text(textValue)
@@ -23,7 +22,6 @@ class TextTest {
 
     @Test
     fun `should be equal when two Text objects have the same value`() {
-        // Punctuation removed to make the text valid.
         val textValue1 = "Mussum Ipsum cacilds vidis litro abertis Delegadis gente finis"
         val textValue2 = "Mussum Ipsum cacilds vidis litro abertis Delegadis gente finis"
 
@@ -35,7 +33,6 @@ class TextTest {
 
     @Test
     fun `should not be equal when two Text objects have different values`() {
-        // Punctuation removed to make the text valid.
         val textValue1 = "Mussum Ipsum cacilds vidis litro abertis"
         val textValue2 = "Per aumento de cachacis eu reclamis"
 
@@ -108,7 +105,6 @@ class TextTest {
         @Test
         @DisplayName("like , (commas)")
         fun shouldNotAcceptCommasAsText() {
-            // Corrected test value from "." to ","
             val textValue = ","
             assertThrows<IllegalArgumentException> { Text(textValue) }
         }
