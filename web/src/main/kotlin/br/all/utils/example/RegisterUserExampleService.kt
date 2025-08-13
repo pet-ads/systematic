@@ -3,6 +3,7 @@ package br.all.utils.example
 import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.repository.toDto
 import br.all.domain.shared.user.Email
+import br.all.domain.shared.user.Text
 import br.all.domain.user.*
 import org.springframework.stereotype.Service
 import java.util.*

@@ -4,7 +4,7 @@ import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.update.PatchUserProfileService.RequestModel
 import br.all.application.user.update.PatchUserProfileService.ResponseModel
 import br.all.domain.shared.user.Email
-import br.all.domain.user.Text
+import br.all.domain.shared.user.Text
 import br.all.domain.user.Username
 
 class PatchUserProfileServiceImpl(

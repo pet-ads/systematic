@@ -2,6 +2,7 @@ package br.all.domain.user
 
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.user.Email
+import br.all.domain.shared.user.Text
 import java.time.LocalDateTime
 import java.util.UUID
 
