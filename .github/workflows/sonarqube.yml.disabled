@@ -1,3 +1,7 @@
+# This action is disabled because it does
+# the same thing as CI with Maven (run all tests and build).
+# The SonarQube Cloud Analysis already happens without this, so no worries.
+
 name: SonarQube
 on:
   push:
