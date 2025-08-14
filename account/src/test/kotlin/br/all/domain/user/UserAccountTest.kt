@@ -1,6 +1,7 @@
 package br.all.domain.user
 
 import br.all.domain.shared.user.Email
+import br.all.domain.shared.user.Text
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
