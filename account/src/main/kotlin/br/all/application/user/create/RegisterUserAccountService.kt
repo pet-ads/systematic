@@ -7,6 +7,7 @@ interface RegisterUserAccountService {
     fun register(presenter: RegisterUserAccountPresenter, request: RequestModel)
 
     data class RequestModel(
+        val name: String,
         val username: String,
         val password: String,
         val email: String,

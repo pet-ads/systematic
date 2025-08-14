@@ -5,6 +5,7 @@ import java.util.*
 
 data class UserAccountDto(
     val id: UUID,
+    val name: String,
     val username: String,
     val password: String,
     val email: String,

@@ -26,6 +26,7 @@ class RetrieveUserProfileServiceImpl(
 
         val profile = ResponseModel(
             userId = userProfile.id,
+            name = userProfile.name,
             username = userCredentials.username,
             email = userProfile.email,
             affiliation = userProfile.affiliation,

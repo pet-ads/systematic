@@ -6,7 +6,9 @@ import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.repository.toDto
 import br.all.domain.shared.exception.UniquenessViolationException
 import br.all.domain.shared.user.Email
+import br.all.domain.shared.user.Name
 import br.all.domain.shared.user.Text
+import br.all.domain.shared.user.Username
 import br.all.domain.user.*
 
 class RegisterUserAccountServiceImpl(private val repository: UserAccountRepository) : RegisterUserAccountService {
@@ -21,12 +23,14 @@ class RegisterUserAccountServiceImpl(private val repository: UserAccountReposito
         if (presenter.isDone()) return
 
         val userAccountId = UserAccountId()
+        val name = Name(request.name)
         val username = Username(request.username)
         val email = Email(request.email)
         val country = Text(request.country)
 
         val userAccount = UserAccount(
             id = userAccountId,
+            name = name,
             username = username,
             password = request.password,
             email = email,
