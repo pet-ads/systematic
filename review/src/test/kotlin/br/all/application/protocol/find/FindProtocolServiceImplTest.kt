@@ -1,12 +1,11 @@
 package br.all.application.protocol.find
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.util.TestDataFactory
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.exceptions.EntityNotFoundException
-import br.all.application.shared.exceptions.UnauthenticatedUserException
-import br.all.application.shared.exceptions.UnauthorizedUserException
+import br.all.domain.shared.exception.EntityNotFoundException
+import br.all.domain.shared.exception.UnauthenticatedUserException
+import br.all.domain.shared.exception.UnauthorizedUserException
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.every
@@ -30,8 +29,6 @@ class FindProtocolServiceImplTest {
     private lateinit var credentialsService: CredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: FindProtocolPresenter
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
     @InjectMockKs
     private lateinit var sut: FindProtocolServiceImpl
 
@@ -45,10 +42,8 @@ class FindProtocolServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
-            collaborationRepository,
             factory.researcher,
             factory.systematicStudy,
-            factory.collaboration
         )
     }
 

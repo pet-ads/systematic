@@ -1,10 +1,10 @@
 package br.all.protocol.controller
 
 import br.all.application.protocol.find.FindProtocolService
-import br.all.application.protocol.find.GetProtocolStageService
+import br.all.application.protocol.find.FindProtocolStageService
 import br.all.application.protocol.update.UpdateProtocolService
 import br.all.protocol.presenter.RestfulFindProtocolPresenter
-import br.all.protocol.presenter.RestfulGetProtocolStagePresenter
+import br.all.protocol.presenter.RestfulFindProtocolStagePresenter
 import br.all.protocol.presenter.RestfulUpdateProtocolPresenter
 import br.all.protocol.requests.PutRequest
 import br.all.security.service.AuthenticationInfoService
@@ -19,14 +19,14 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 import br.all.application.protocol.find.FindProtocolService.RequestModel as FindOneRequestModel
-import br.all.application.protocol.find.GetProtocolStageService.RequestModel as FindStageRequestModel
+import br.all.application.protocol.find.FindProtocolStageService.RequestModel as FindStageRequestModel
 
 @RestController
 @RequestMapping("/systematic-study/{systematicStudyId}/protocol")
 class ProtocolController(
     private val findProtocolService: FindProtocolService,
     private val updateProtocolService: UpdateProtocolService,
-    private val getProtocolStageService: GetProtocolStageService,
+    private val findProtocolStageService: FindProtocolStageService,
     private val authenticationInfoService: AuthenticationInfoService,
     private val linksFactory: LinksFactory
 ) {
@@ -96,7 +96,7 @@ class ProtocolController(
         ApiResponse(responseCode = "200", description = "Success getting the protocol stage",
             content = [Content(
                 mediaType = "application/json",
-                schema = Schema(implementation = GetProtocolStageService.ResponseModel::class)
+                schema = Schema(implementation = FindProtocolStageService.ResponseModel::class)
             )]),
         ApiResponse(
             responseCode = "401",
@@ -114,14 +114,14 @@ class ProtocolController(
             content = [Content(schema = Schema(hidden = true))]
         ),
     ])
-    fun getStage(
+    fun findStage(
         @PathVariable systematicStudyId: UUID
     ) : ResponseEntity<*> {
-        val presenter = RestfulGetProtocolStagePresenter(linksFactory)
+        val presenter = RestfulFindProtocolStagePresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindStageRequestModel(userId, systematicStudyId)
 
-        getProtocolStageService.getStage(presenter, request)
+        findProtocolStageService.getStage(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

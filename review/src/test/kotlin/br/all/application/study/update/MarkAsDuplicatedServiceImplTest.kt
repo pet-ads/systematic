@@ -1,8 +1,7 @@
 package br.all.application.study.update
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.update.implementation.MarkAsDuplicatedServiceImpl
 import br.all.application.study.update.interfaces.MarkAsDuplicatedPresenter
@@ -14,7 +13,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.*
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -25,8 +23,6 @@ class MarkAsDuplicatedServiceImplTest {
     @MockK(relaxUnitFun = true) private lateinit var systematicStudyRepository: SystematicStudyRepository
     @MockK private lateinit var credentialService: CredentialsService
     @MockK(relaxed = true) private lateinit var presenter: MarkAsDuplicatedPresenter
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
 
     private lateinit var sut: MarkAsDuplicatedServiceImpl
 
@@ -40,16 +36,13 @@ class MarkAsDuplicatedServiceImplTest {
             presenter,
             credentialService,
             systematicStudyRepository,
-            collaborationRepository,
             factory.researcherId,
-            factory.systematicStudyId,
-            UUID.randomUUID()
+            factory.systematicStudyId
         )
         sut = MarkAsDuplicatedServiceImpl(
             systematicStudyRepository,
             studyReviewRepository,
             credentialService,
-            collaborationRepository
         )
     }
 

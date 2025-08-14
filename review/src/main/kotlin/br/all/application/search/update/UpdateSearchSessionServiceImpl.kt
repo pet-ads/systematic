@@ -1,7 +1,5 @@
 package br.all.application.search.update
 
-import br.all.application.collaboration.repository.CollaborationRepository
-import br.all.application.collaboration.repository.toDomain
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.search.repository.SearchSessionRepository
@@ -9,7 +7,7 @@ import br.all.application.search.repository.fromDto
 import br.all.application.search.repository.toDto
 import br.all.application.search.update.UpdateSearchSessionService.RequestModel
 import br.all.application.search.update.UpdateSearchSessionService.ResponseModel
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.user.CredentialsService
 import br.all.domain.model.protocol.toSearchSource
@@ -20,7 +18,6 @@ class UpdateSearchSessionServiceImpl (
     private val systematicStudyRepository: SystematicStudyRepository,
     private val searchSessionRepository: SearchSessionRepository,
     private val credentialsService: CredentialsService,
-    private val collaborationRepository: CollaborationRepository,
 ) : UpdateSearchSessionService {
     override fun updateSession(presenter: UpdateSearchSessionPresenter, request: RequestModel
     ) {
@@ -28,11 +25,8 @@ class UpdateSearchSessionServiceImpl (
 
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
-        val collaborations = collaborationRepository
-            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
-            .map { it.toDomain() }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
 
         if(presenter.isDone()) return

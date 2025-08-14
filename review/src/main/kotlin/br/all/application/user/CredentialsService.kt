@@ -1,8 +1,8 @@
 package br.all.application.user
 
-import br.all.domain.model.user.Researcher
-import br.all.domain.model.user.ResearcherId
-import br.all.domain.model.user.Role
+import br.all.domain.shared.user.Researcher
+import br.all.domain.shared.user.ResearcherId
+import br.all.domain.shared.user.Role
 import io.swagger.v3.oas.annotations.media.Schema
 import java.util.UUID
 

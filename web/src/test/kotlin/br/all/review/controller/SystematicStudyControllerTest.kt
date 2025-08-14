@@ -1,20 +1,24 @@
 package br.all.review.controller
 
-import br.all.infrastructure.collaboration.MongoCollaborationRepository
+import br.all.infrastructure.protocol.MongoProtocolRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
+import br.all.infrastructure.review.SystematicStudyDocument
 import br.all.infrastructure.shared.toNullable
 import br.all.review.shared.TestDataFactory
 import br.all.security.service.ApplicationUser
 import br.all.shared.TestHelperService
+import br.all.utils.example.CreateSearchSessionExampleService
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -27,25 +31,24 @@ import java.util.*
 @Tag("ControllerTest")
 class SystematicStudyControllerTest(
     @Autowired private val repository: MongoSystematicStudyRepository,
-    @Autowired private val collaborationRepository: MongoCollaborationRepository,
     @Autowired private val testHelperService: TestHelperService,
     @Autowired private val mockMvc: MockMvc,
 ) {
     private lateinit var factory: TestDataFactory
     private lateinit var user: ApplicationUser
 
+    // This prevents the tests breaking
+    @MockitoBean
+    private lateinit var createSearchSessionExampleService: CreateSearchSessionExampleService
+
+    @MockitoBean
+    private lateinit var protocolRepository: MongoProtocolRepository
+
     @BeforeEach
     fun setUp() {
         repository.deleteAll()
         factory = TestDataFactory()
         user = testHelperService.createApplicationUser()
-        collaborationRepository.deleteAll()
-        collaborationRepository.save(
-            TestDataFactory().createCollaborationDocument(
-                systematicStudyId = factory.systematicStudyId,
-                researcherId = user.id
-            )
-        )
     }
 
     @AfterEach
@@ -93,6 +96,28 @@ class SystematicStudyControllerTest(
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
                 .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isBadRequest)
+        }
+
+        // This test should pass, but it doesn't.
+        // We are using a standalone MongoDB instance for our testing environment,
+        // which means that multi-document transactions are not supported.
+        // When @Transactional is used in an environment that doesn't support it,
+        // Spring doesn't throw an error, it simply becomes a no-op.
+        // The annotation is effectively ignored.
+        @Disabled
+        @Test
+        fun `should not save systematic study if protocol creation fails`(){
+            val json = factory.createValidPostRequest()
+
+            Mockito.`when`(protocolRepository.save(Mockito.any())).thenThrow(RuntimeException())
+
+            mockMvc.perform(
+                post(postUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON).content(json)
+            ).andExpect(status().isBadRequest)
+
+            assertEquals(emptyList<SystematicStudyDocument>(), repository.findAll())
         }
 
         @Test

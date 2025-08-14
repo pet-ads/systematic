@@ -1,6 +1,8 @@
 package br.all.infrastructure.study
 
 import br.all.application.study.repository.AnswerDto
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.mongodb.repository.Aggregation
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.data.mongodb.repository.Update
@@ -9,7 +11,11 @@ import java.util.*
 
 interface MongoStudyReviewRepository : MongoRepository<StudyReviewDocument, StudyReviewId> {
 
+    fun findAllById_SystematicStudyId(reviewID: UUID, pageable: Pageable): Page<StudyReviewDocument>
+    
     fun findAllById_SystematicStudyId(reviewID: UUID): List<StudyReviewDocument>
+    
+    fun countById_SystematicStudyId(reviewID: UUID): Long
 
     fun findAllById_SystematicStudyIdAndSearchSourcesContaining(reviewID: UUID, source: String): List<StudyReviewDocument>
 

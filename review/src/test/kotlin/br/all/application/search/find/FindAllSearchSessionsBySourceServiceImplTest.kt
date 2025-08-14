@@ -1,14 +1,13 @@
 package br.all.application.search.find
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.search.find.presenter.FindAllSearchSessionsBySourcePresenter
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceServiceImpl
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.search.util.TestDataFactory
-import br.all.application.shared.exceptions.UnauthenticatedUserException
-import br.all.application.shared.exceptions.UnauthorizedUserException
+import br.all.domain.shared.exception.UnauthenticatedUserException
+import br.all.domain.shared.exception.UnauthorizedUserException
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
 import io.mockk.every
@@ -21,7 +20,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.UUID
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -37,9 +35,6 @@ class FindAllSearchSessionsBySourceServiceImplTest {
     @MockK
     private lateinit var credentialsService: CredentialsService
 
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
-
     @MockK(relaxed = true)
     private lateinit var presenter: FindAllSearchSessionsBySourcePresenter
 
@@ -54,10 +49,8 @@ class FindAllSearchSessionsBySourceServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
-            collaborationRepository,
             factory.userId,
             factory.systematicStudyId,
-            UUID.randomUUID()
         )
     }
 
@@ -69,8 +62,7 @@ class FindAllSearchSessionsBySourceServiceImplTest {
             sut = FindAllSearchSessionsBySourceServiceImpl(
                 systematicStudyRepository,
                 searchSessionRepository,
-                credentialsService,
-                collaborationRepository,
+                credentialsService
             )
             run { preconditionCheckerMocking.makeEverythingWork() }
         }
@@ -105,8 +97,7 @@ class FindAllSearchSessionsBySourceServiceImplTest {
             sut = FindAllSearchSessionsBySourceServiceImpl(
                 systematicStudyRepository,
                 searchSessionRepository,
-                credentialsService,
-                collaborationRepository,
+                credentialsService
             )
         }
         @Test

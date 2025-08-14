@@ -1,7 +1,5 @@
 package br.all.application.question.findAll
 
-import br.all.application.collaboration.repository.CollaborationRepository
-import br.all.application.collaboration.repository.toDomain
 import br.all.application.question.findAll.FindAllBySystematicStudyIdService.*
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyRepository
@@ -14,20 +12,16 @@ import br.all.domain.model.review.SystematicStudy
 class FindAllBySystematicStudyIdServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val questionRepository: QuestionRepository,
-    private val credentialsService: CredentialsService,
-    private val collaborationRepository: CollaborationRepository
+    private val credentialsService: CredentialsService
 ) : FindAllBySystematicStudyIdService {
 
     override fun findAllBySystematicStudyId(presenter: FindAllBySystematicStudyIdPresenter, request: RequestModel) {
-        val user = credentialsService.loadCredentials(request.userId)?.toUser()
-
+        val userId = request.userId
+        val user = credentialsService.loadCredentials(userId)?.toUser()
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
-        val collaborations = collaborationRepository
-            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
-            .map { it.toDomain() }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
         if (presenter.isDone()) return
 
         val questions = questionRepository.findAllBySystematicStudyId(

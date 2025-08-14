@@ -1,9 +1,9 @@
 package br.all.application.study.find
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
 import br.all.application.study.find.service.FindAllStudyReviewsServiceImpl
+import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.util.TestDataFactory
 import br.all.application.user.CredentialsService
@@ -13,7 +13,9 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.UUID
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -28,8 +30,6 @@ class FindAllStudyReviewsServiceImplTest {
     private lateinit var credentialService: CredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: FindAllStudyReviewsPresenter
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
 
     private lateinit var sut: FindAllStudyReviewsServiceImpl
 
@@ -43,16 +43,13 @@ class FindAllStudyReviewsServiceImplTest {
             presenter,
             credentialService,
             systematicStudyRepository,
-            collaborationRepository,
             factory.researcherId,
-            factory.systematicStudyId,
-            UUID.randomUUID()
+            factory.systematicStudyId
         )
         sut = FindAllStudyReviewsServiceImpl(
             systematicStudyRepository,
             studyReviewRepository,
             credentialService,
-            collaborationRepository,
         )
     }
 
@@ -69,7 +66,7 @@ class FindAllStudyReviewsServiceImplTest {
 
             preconditionCheckerMocking.makeEverythingWork()
 
-            every { studyReviewRepository.findAllFromReview(request.systematicStudyId) } returns response.studyReviews
+            every { studyReviewRepository.findAllFromReviewPaged(request.systematicStudyId, any<Pageable>()) } returns PageImpl(response.studyReviews)
 
             sut.findAllFromReview(presenter, request)
 
@@ -85,7 +82,7 @@ class FindAllStudyReviewsServiceImplTest {
 
             preconditionCheckerMocking.makeEverythingWork()
 
-            every { studyReviewRepository.findAllFromReview(request.systematicStudyId) } returns response.studyReviews
+            every { studyReviewRepository.findAllFromReviewPaged(request.systematicStudyId, any<Pageable>()) } returns PageImpl(response.studyReviews)
 
             sut.findAllFromReview(presenter, request)
 
@@ -102,7 +99,7 @@ class FindAllStudyReviewsServiceImplTest {
             val request = factory.findAllRequestModel()
 
             preconditionCheckerMocking.makeEverythingWork()
-            every {studyReviewRepository.findAllFromReview(factory.systematicStudyId)} returns emptyList()
+            every {studyReviewRepository.findAllFromReviewPaged(factory.systematicStudyId, any<Pageable>())} returns PageImpl(emptyList<StudyReviewDto>())
 
             sut.findAllFromReview(presenter, request)
 

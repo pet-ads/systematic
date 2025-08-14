@@ -1,13 +1,11 @@
 package br.all.application.search.update
 
-import br.all.application.collaboration.repository.CollaborationRepository
-import br.all.application.collaboration.repository.toDomain
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.search.update.PatchSearchSessionService.ResponseModel
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.toDto
@@ -31,24 +29,20 @@ class PatchSearchSessionServiceImpl (
     private val converterFactoryService: ConverterFactoryService,
     private val protocolRepository: ProtocolRepository,
     private val scoreCalculatorService: ScoreCalculatorService,
-    private val reviewSimilarityService: ReviewSimilarityService,
-    private val collaborationRepository: CollaborationRepository
+    private val reviewSimilarityService: ReviewSimilarityService
 ) : PatchSearchSessionService {
     override fun patchSession(
         presenter: PatchSearchSessionPresenter,
         request: PatchSearchSessionService.RequestModel,
         file: String
     ) {
-        val searchSessionDto = searchSessionRepository.findById(request.sessionId)
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
+        val searchSessionDto = searchSessionRepository.findById(request.sessionId)
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
-        val collaborations = collaborationRepository
-            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
-            .map { it.toDomain() }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
         if (presenter.isDone()) return
 

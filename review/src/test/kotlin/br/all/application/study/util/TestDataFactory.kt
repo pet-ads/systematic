@@ -80,10 +80,18 @@ class TestDataFactory {
 
     fun findAllResponseModel(
         amountOfStudies: Int,
+        page: Int = 0,
+        size: Int = 20,
+        totalElements: Long = amountOfStudies.toLong(),
+        totalPages: Int = if (amountOfStudies == 0) 0 else (amountOfStudies + size - 1) / size
     ) = FindAllStudyReviewsService.ResponseModel(
         researcherId,
         systematicStudyId,
-        List(amountOfStudies) { generateDto(studyReviewId = Random(1).nextLong()) }
+        List(amountOfStudies) { generateDto(studyReviewId = Random(1).nextLong()) },
+        page,
+        size,
+        totalElements,
+        totalPages
     )
 
     fun findAllBySourceRequestModel(
@@ -125,17 +133,6 @@ class TestDataFactory {
         duplicateIds: List<Long>
     ) = MarkAsDuplicatedService.RequestModel(researcherId, systematicStudyId, keptStudyReviewId, duplicateIds)
 
-    fun <T> answerQuestionModel(
-        questionId: UUID,
-        type: String,
-        answer: T,
-    ) = AnswerQuestionService.RequestModel(researcherId, systematicStudyId, studyReviewId, questionId, type, answer)
-
-    fun questionLabelDto(
-        name: String,
-        value: Int,
-    ) = AnswerQuestionService.LabelDto(name, value)
-
     fun generateQuestionTextualDto(
         questionId: UUID,
         systematicStudyId: UUID = this.systematicStudyId,
@@ -161,7 +158,7 @@ class TestDataFactory {
         systematicStudyId: UUID = this.systematicStudyId,
         code: String = faker.lorem.words(),
         description: String = faker.lorem.words(),
-        labelDto: AnswerQuestionService.LabelDto,
+        labelDto: BatchAnswerQuestionService.LabelDto,
         questionContext: String
     ) =
         QuestionDto(

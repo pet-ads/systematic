@@ -1,12 +1,11 @@
 package br.all.application.report.find
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.report.find.presenter.FindSourcePresenter
 import br.all.application.report.find.service.FindSourceService
 import br.all.application.report.find.service.FindSourceServiceImpl
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
@@ -42,9 +41,6 @@ class FindSourceServiceImplTest {
     @MockK
     private lateinit var credentialsService: CredentialsService
 
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
-
     @MockK(relaxUnitFun = true)
     private lateinit var presenter: FindSourcePresenter
 
@@ -70,10 +66,8 @@ class FindSourceServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
-            collaborationRepository,
             researcherId,
-            systematicStudyId,
-            UUID.randomUUID()
+            systematicStudyId
         )
 
         precondition.makeEverythingWork()

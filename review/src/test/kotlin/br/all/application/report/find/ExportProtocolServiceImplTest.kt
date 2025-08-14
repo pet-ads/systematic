@@ -1,12 +1,11 @@
 package br.all.application.report.find
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.report.find.presenter.ExportProtocolPresenter
 import br.all.application.report.find.service.ExportProtocolService
 import br.all.application.report.find.service.ExportProtocolServiceImpl
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.protocol.util.TestDataFactory as ProtocolDtoFactory
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
@@ -38,9 +37,6 @@ class ExportProtocolServiceImplTest {
     @MockK
     private lateinit var formatterFactoryService: FormatterFactoryService
 
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
-
     @MockK(relaxUnitFun = true)
     private lateinit var presenter: ExportProtocolPresenter
 
@@ -64,10 +60,8 @@ class ExportProtocolServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
-            collaborationRepository,
             researcherId,
-            systematicStudyId,
-            factory.collaboration
+            systematicStudyId
         )
         precondition.makeEverythingWork()
     }

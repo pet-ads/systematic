@@ -1,12 +1,10 @@
 package br.all.application.study.update.implementation
 
-import br.all.application.collaboration.repository.CollaborationRepository
-import br.all.application.collaboration.repository.toDomain
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.repository.fromDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromDto
@@ -39,24 +37,19 @@ class BatchAnswerQuestionServiceImpl(
     private val questionRepository: QuestionRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val credentialsService: CredentialsService,
-    private val collaborationRepository: CollaborationRepository
 ): BatchAnswerQuestionService {
 
     @Transactional
     override fun batchAnswerQuestion(
         presenter: BatchAnswerQuestionPresenter,
-        request: RequestModel,
-        context: String
+        request: RequestModel
     ) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
-        val collaborations = collaborationRepository
-            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
-            .map { it.toDomain() }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
         if (presenter.isDone()) return
 
         val reviewDto = studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId)
@@ -67,7 +60,6 @@ class BatchAnswerQuestionServiceImpl(
         }
         val review = StudyReview.fromDto(reviewDto)
 
-        val questionContext = QuestionContextEnum.valueOf(context.uppercase())
         val successfulQuestionIds = mutableListOf<UUID>()
         val failedAnswers = mutableListOf<FailedAnswer>()
 
@@ -76,7 +68,6 @@ class BatchAnswerQuestionServiceImpl(
                 val questionDto = questionRepository.findById(request.systematicStudyId, answerDetail.questionId)
 
                 if (questionDto == null) throw EntityNotFoundException("Question with id ${answerDetail.questionId} in systematic study ${request.systematicStudyId} was not found!")
-                if (questionDto.context != questionContext) throw IllegalArgumentException("Should answer question with the context: $context, found: ${questionDto.context}")
 
                 val question = Question.fromDto(questionDto)
                 val answer = convertAnswer(question, answerDetail, questionDto.questionType)

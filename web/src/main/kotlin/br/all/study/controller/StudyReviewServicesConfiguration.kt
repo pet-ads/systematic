@@ -1,6 +1,5 @@
 package br.all.study.controller
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.create.CreateStudyReviewServiceImpl
@@ -24,10 +23,9 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService,
-        idGenerator: IdGeneratorService,
-        collaborationRepository: CollaborationRepository
+        idGenerator: IdGeneratorService
     ) = CreateStudyReviewServiceImpl(
-        systematicStudyRepository, studyReviewRepository, credentialsService, idGenerator, collaborationRepository
+        systematicStudyRepository, studyReviewRepository, credentialsService, idGenerator
     )
 
     @Bean
@@ -35,9 +33,8 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
     ) = UpdateStudyReviewServiceImpl(
-        systematicStudyRepository, studyReviewRepository, credentialsService, collaborationRepository
+        systematicStudyRepository, studyReviewRepository, credentialsService,
     )
 
     @Bean
@@ -45,10 +42,9 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         findAllStudyReviewsPresenter: FindAllStudyReviewsPresenter,
-        credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
+        credentialsService: CredentialsService
     ) = FindAllStudyReviewsServiceImpl(
-        systematicStudyRepository, studyReviewRepository, credentialsService, collaborationRepository
+        systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
     @Bean
@@ -57,40 +53,36 @@ class StudyReviewServicesConfiguration {
         studyReviewRepository: StudyReviewRepository,
         //protocolRepository: ProtocolRepository,
         findAllStudyReviewsBySourcePresenter: FindAllStudyReviewsBySourcePresenter,
-        credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
+        credentialsService: CredentialsService
     ) = FindAllStudyReviewsBySourceServiceImpl(
-        systematicStudyRepository, studyReviewRepository, credentialsService, collaborationRepository
+        systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
     @Bean
     fun findAllReviewBySessionService(
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
-        credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
+        credentialsService: CredentialsService
     ) = FindAllStudyReviewsBySessionServiceImpl(
-        systematicStudyRepository, studyReviewRepository, credentialsService, collaborationRepository
+        systematicStudyRepository, studyReviewRepository, credentialsService
     )
     @Bean
     fun findReviewService(
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         findStudyReviewPresenter: FindStudyReviewPresenter,
-        credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
+        credentialsService: CredentialsService
     ) = FindStudyReviewServiceImpl(
-        systematicStudyRepository, studyReviewRepository, credentialsService, collaborationRepository
+        systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
     @Bean
     fun findAllByAuthorService(
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
-        credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
+        credentialsService: CredentialsService
     ) = FindAllStudyReviewsByAuthorServiceImpl(
-        systematicStudyRepository, studyReviewRepository, credentialsService, collaborationRepository
+        systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
 
@@ -99,10 +91,9 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
-        credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
+        credentialsService: CredentialsService
     ) = UpdateStudyReviewSelectionService(
-        systematicStudyRepository, studyReviewRepository, credentialsService, collaborationRepository
+        systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
     @Bean
@@ -110,10 +101,9 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
-        credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
+        credentialsService: CredentialsService
     ) = UpdateStudyReviewExtractionService(
-        systematicStudyRepository, studyReviewRepository, credentialsService, collaborationRepository
+        systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
     @Bean
@@ -121,10 +111,9 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
-        credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
+        credentialsService: CredentialsService
     ) = UpdateStudyReviewPriorityService(
-        systematicStudyRepository, studyReviewRepository, credentialsService, collaborationRepository
+        systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
     @Bean
@@ -132,25 +121,9 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
-        credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
+        credentialsService: CredentialsService
     ) = MarkAsDuplicatedServiceImpl(
-        systematicStudyRepository, studyReviewRepository, credentialsService, collaborationRepository
-    )
-
-    @Bean
-    fun answerQuestionService(
-        studyReviewRepository: StudyReviewRepository,
-        questionRepository: QuestionRepository,
-        systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
-    ) = AnswerQuestionImpl(
-        studyReviewRepository,
-        questionRepository,
-        systematicStudyRepository,
-        credentialsService,
-        collaborationRepository
+        systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
     @Bean
@@ -158,14 +131,12 @@ class StudyReviewServicesConfiguration {
         studyReviewRepository: StudyReviewRepository,
         questionRepository: QuestionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
+        credentialsService: CredentialsService
     ) = BatchAnswerQuestionServiceImpl(
         studyReviewRepository,
         questionRepository,
         systematicStudyRepository,
-        credentialsService,
-        collaborationRepository
+        credentialsService
     )
 
     @Bean
@@ -173,11 +144,9 @@ class StudyReviewServicesConfiguration {
         studyReviewRepository: StudyReviewRepository,
         systematicStudyRepository: SystematicStudyRepository,
         credentialsService: CredentialsService,
-        collaborationRepository: CollaborationRepository
     ) = RemoveCriteriaServiceImpl(
         studyReviewRepository,
         systematicStudyRepository,
-        credentialsService,
-        collaborationRepository
+        credentialsService
     )
 }

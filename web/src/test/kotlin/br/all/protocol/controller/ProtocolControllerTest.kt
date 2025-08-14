@@ -1,7 +1,6 @@
 package br.all.protocol.controller
 
 import br.all.application.protocol.repository.CriterionDto
-import br.all.infrastructure.collaboration.MongoCollaborationRepository
 import br.all.infrastructure.protocol.MongoProtocolRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.review.SystematicStudyDocument
@@ -30,7 +29,6 @@ import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 class ProtocolControllerTest(
     @Autowired private val protocolRepository: MongoProtocolRepository,
     @Autowired private val systematicStudyRepository: MongoSystematicStudyRepository,
-    @Autowired val collaborationRepository: MongoCollaborationRepository,
     @Autowired private val mockMvc: MockMvc,
     @Autowired private val testHelperService: TestHelperService
 ) {
@@ -55,13 +53,6 @@ class ProtocolControllerTest(
             collaborators = mutableSetOf(user.id)
         )
         systematicStudyRepository.save(systematicStudy)
-        collaborationRepository.deleteAll()
-        collaborationRepository.save(
-            br.all.review.shared.TestDataFactory().createCollaborationDocument(
-                systematicStudyId = systematicStudyId,
-                researcherId = user.id
-            )
-        )
     }
 
     @AfterEach
@@ -77,7 +68,7 @@ class ProtocolControllerTest(
     private fun putUrl(systematicStudyId: UUID = factory.protocol) =
         "/systematic-study/$systematicStudyId/protocol"
 
-    private fun getStage(systematicStudy: UUID = factory.protocol) =
+    private fun findStage(systematicStudy: UUID = factory.protocol) =
         "/systematic-study/$systematicStudy/protocol/stage"
 
     @Nested
@@ -276,7 +267,7 @@ class ProtocolControllerTest(
             val document = factory.createProtocolDocument()
             protocolRepository.save(document)
 
-            mockMvc.perform(get(getStage())
+            mockMvc.perform(get(findStage())
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
                 .contentType(MediaType.APPLICATION_JSON)
             )
@@ -287,7 +278,7 @@ class ProtocolControllerTest(
 
         @Test
         fun `should return 404 when protocol does not exist`() {
-            mockMvc.perform(get(getStage())
+            mockMvc.perform(get(findStage())
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
                 .contentType(MediaType.APPLICATION_JSON)
             )
@@ -298,12 +289,12 @@ class ProtocolControllerTest(
 
         @Test
         fun `should not authorize researchers that are not collaborators to get protocol stage`() {
-            testHelperService.testForUnauthorizedUser(mockMvc, get(getStage()))
+            testHelperService.testForUnauthorizedUser(mockMvc, get(findStage()))
         }
 
         @Test
         fun `should not allow unauthenticated users to get protocol stage`() {
-            testHelperService.testForUnauthenticatedUser(mockMvc, get(getStage()))
+            testHelperService.testForUnauthenticatedUser(mockMvc, get(findStage()))
         }
     }
 }

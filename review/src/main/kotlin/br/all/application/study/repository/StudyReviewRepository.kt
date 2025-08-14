@@ -1,11 +1,14 @@
 package br.all.application.study.repository
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import java.util.UUID
 
 
 interface StudyReviewRepository {
     fun saveOrUpdate(dto: StudyReviewDto): Any
-    fun findAllFromReview(reviewId: UUID): List<StudyReviewDto>
+    fun findAllFromReview(reviewId: UUID, pageable: Pageable = Pageable.unpaged()): List<StudyReviewDto>
+    fun findAllFromReviewPaged(reviewId: UUID, pageable: Pageable = Pageable.unpaged()): Page<StudyReviewDto>
     fun findAllBySource(reviewId: UUID, source: String): List<StudyReviewDto>
     fun findAllBySession(reviewId: UUID, searchSessionId: UUID): List<StudyReviewDto>
     fun findById(reviewId: UUID, studyId: Long) : StudyReviewDto?

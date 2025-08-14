@@ -1,7 +1,5 @@
 package br.all.application.report.find.service
 
-import br.all.application.collaboration.repository.CollaborationRepository
-import br.all.application.collaboration.repository.toDomain
 import br.all.application.protocol.repository.CriterionDto
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.review.repository.SystematicStudyRepository
@@ -18,7 +16,6 @@ class FindStudyReviewCriteriaServiceImpl(
     private val studyReviewRepository: StudyReviewRepository,
     private val credentialsService: CredentialsService,
     private val protocolRepository: ProtocolRepository,
-    private val collaborationRepository: CollaborationRepository
 ): FindStudyReviewCriteriaService {
     override fun findCriteria(
         presenter: FindStudyReviewCriteriaPresenter,
@@ -28,11 +25,8 @@ class FindStudyReviewCriteriaServiceImpl(
 
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
-        val collaborations = collaborationRepository
-            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
-            .map { it.toDomain() }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
         if(presenter.isDone()) return
 

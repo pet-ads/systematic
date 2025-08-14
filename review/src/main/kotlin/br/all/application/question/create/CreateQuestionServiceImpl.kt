@@ -1,7 +1,5 @@
 package br.all.application.question.create
 
-import br.all.application.collaboration.repository.CollaborationRepository
-import br.all.application.collaboration.repository.toDomain
 import br.all.application.question.create.CreateQuestionService.QuestionType.*
 import br.all.application.question.create.CreateQuestionService.RequestModel
 import br.all.application.question.create.CreateQuestionService.ResponseModel
@@ -22,7 +20,6 @@ class CreateQuestionServiceImpl(
     private val questionRepository: QuestionRepository,
     private val uuidGeneratorService: UuidGeneratorService,
     private val credentialsService: CredentialsService,
-    private val collaborationRepository: CollaborationRepository,
 ) : CreateQuestionService {
 
     override fun create(
@@ -30,15 +27,11 @@ class CreateQuestionServiceImpl(
         request: RequestModel
     ) {
         val systematicStudyId = request.systematicStudyId
-        val user = credentialsService.loadCredentials(request.userId)?.toUser()
-
-        val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
+        val userId = request.userId
+        val user = credentialsService.loadCredentials(userId)?.toUser()
+        val systematicStudyDto = systematicStudyRepository.findById(systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
-        val collaborations = collaborationRepository
-            .listAllCollaborationsBySystematicStudyId(request.systematicStudyId)
-            .map { it.toDomain() }
-
-        presenter.prepareIfFailsPreconditions(user, systematicStudy, collaborations = collaborations)
+        presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
         if (presenter.isDone()) return
 

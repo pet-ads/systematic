@@ -1,6 +1,5 @@
 package br.all.study.controller
 
-import br.all.infrastructure.collaboration.MongoCollaborationRepository
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.shared.toNullable
@@ -37,7 +36,6 @@ import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 class StudyReviewControllerTest(
     @Autowired val repository: MongoStudyReviewRepository,
     @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
-    @Autowired val collaborationRepository: MongoCollaborationRepository,
     @Autowired private val testHelperService: TestHelperService,
     @Autowired val idService: StudyReviewIdGeneratorService,
     @Autowired val mockMvc: MockMvc,
@@ -71,17 +69,8 @@ class StudyReviewControllerTest(
     fun markAsDuplicatedUrl(studyToUpdateId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated"
 
-    fun answerRiskOfBiasQuestion(studyReviewId: Long) =
-        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}/riskOfBias-answer"
-
-    fun answerExtractionQuestion(studyReviewId: Long) =
-        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}/extraction-answer"
-
-    fun batchAnswerRiskOfBiasQuestion(studyReviewId: Long) =
-        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}/batch-riskOfBias-answers"
-
-    fun batchAnswerExtractionQuestion(studyReviewId: Long) =
-        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}/batch-extraction-answers"
+    fun batchAnswerQuestion(studyReviewId: Long) =
+        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}/batch-answer-question"
 
     @BeforeEach
     fun setUp() {
@@ -99,14 +88,6 @@ class StudyReviewControllerTest(
             SystematicStudyTestDataFactory().createSystematicStudyDocument(
                 id = systematicStudyId,
                 owner = user.id,
-            )
-        )
-
-        collaborationRepository.deleteAll()
-        collaborationRepository.save(
-            br.all.review.shared.TestDataFactory().createCollaborationDocument(
-                systematicStudyId = systematicStudyId,
-                researcherId = user.id
             )
         )
     }
@@ -515,169 +496,28 @@ class StudyReviewControllerTest(
     }
 
     @Nested
-    @DisplayName("When answering ROB questions in a review")
-    inner class AnswerRobQuestionsTests(
+    @DisplayName("When batch answering questions in a review")
+    inner class BatchAnswerQuestionTests(
         @Autowired val questionRepository: MongoQuestionRepository
     ) {
         @Test
-        fun `should assign answer to question and return 200`() {
+        fun `should handle partial success correctly by saving answers to their respective contexts`() {
             val studyId = idService.next()
-            val questionId = UUID.randomUUID()
-
-            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
+            val studyReview = factory.reviewDocument(systematicStudyId, studyId).copy(
+                qualityAnswers = mutableMapOf(),
+                formAnswers = mutableMapOf()
+            )
             repository.insert(studyReview)
 
-            val question = factory.generateRobQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
-            questionRepository.insert(question)
+            val validRobQId = UUID.randomUUID()
+            val validExtractionQId = UUID.randomUUID()
+            val invalidRobQId = UUID.randomUUID()
 
-            val json = factory.validAnswerQuestionRequest(studyId, questionId, "TEXTUAL", "TEST")
-            mockMvc.perform(
-                patch(answerRiskOfBiasQuestion(studyId))
-                    .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)
-            )
-                .andExpect(status().isOk)
+            val question1 = factory.generateRobQuestionTextualDto(validRobQId, systematicStudyId)
 
-            val studyReviewId = StudyReviewId(systematicStudyId, studyId)
-            val updatedReview = repository.findById(studyReviewId)
-            assertEquals(updatedReview.get().qualityAnswers[questionId], "TEST")
-        }
+            val question2 = factory.generateExtractionQuestionTextualDto(validExtractionQId, systematicStudyId)
 
-        @Test
-        fun `should not assign answer with invalid request`() {
-            val studyId = idService.next()
-            val questionId = UUID.randomUUID()
-
-            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
-            repository.insert(studyReview)
-
-            val question = factory.generateRobQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
-            questionRepository.insert(question)
-
-            val json = factory.invalidAnswerRiskOfBiasPatchRequest(studyId, questionId, "TEXTUAL")
-            mockMvc.perform(
-                patch(answerRiskOfBiasQuestion(studyId))
-                    .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)
-            )
-                .andExpect(status().isBadRequest)
-        }
-
-        @Test
-        fun `should not update if user is unauthorized`(){
-            val studyId = idService.next()
-            val questionId = UUID.randomUUID()
-
-
-            testHelperService.testForUnauthorizedUser(
-                mockMvc,
-                patch(answerRiskOfBiasQuestion(studyId))
-                    .content(factory.validAnswerQuestionRequest(
-                        studyId, questionId, "TEXTUAL", "TEST"
-                    ))
-            )
-        }
-
-        @Test
-        fun `should not update if user is unauthenticated`(){
-            val studyId = idService.next()
-
-            testHelperService.testForUnauthenticatedUser(mockMvc, patch(answerRiskOfBiasQuestion(studyId)),
-            )
-        }
-    }
-
-    @Nested
-    @DisplayName("When answering Extraction questions in a review")
-    inner class AnswerExtractionQuestionsTests(
-        @Autowired val questionRepository: MongoQuestionRepository
-    ) {
-        @Test
-        fun `should assign answer to question and return 200`() {
-            val studyId = idService.next()
-            val questionId = UUID.randomUUID()
-
-            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
-            repository.insert(studyReview)
-
-            val question = factory.generateExtractionQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
-            questionRepository.insert(question)
-
-            val json = factory.validAnswerQuestionRequest(studyId, questionId, "TEXTUAL", "TEST")
-            mockMvc.perform(
-                patch(answerExtractionQuestion(studyId))
-                    .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)
-            )
-                .andExpect(status().isOk)
-
-            val studyReviewId = StudyReviewId(systematicStudyId, studyId)
-            val updatedReview = repository.findById(studyReviewId)
-            assertEquals(updatedReview.get().formAnswers[questionId], "TEST")
-        }
-
-        @Test
-        fun `should not assign answer with invalid request`() {
-            val studyId = idService.next()
-            val questionId = UUID.randomUUID()
-
-            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
-            repository.insert(studyReview)
-
-            val question = factory.generateExtractionQuestionTextualDto(questionId, systematicStudyId = systematicStudyId)
-            questionRepository.insert(question)
-
-            val json = factory.invalidAnswerRiskOfBiasPatchRequest(studyId, questionId, "TEXTUAL")
-            mockMvc.perform(
-                patch(answerExtractionQuestion(studyId))
-                    .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)
-            )
-                .andExpect(status().isBadRequest)
-        }
-
-        @Test
-        fun `should not update if user is unauthorized`(){
-            val studyId = idService.next()
-            val questionId = UUID.randomUUID()
-
-            testHelperService.testForUnauthorizedUser(
-                mockMvc,
-                patch(answerExtractionQuestion(studyId))
-                    .content(factory.validAnswerQuestionRequest(
-                        studyId, questionId, "TEXTUAL", "TEST"
-                    ))
-            )
-        }
-
-        @Test
-        fun `should not update if user is unauthenticated`(){
-            val studyId = idService.next()
-
-            testHelperService.testForUnauthenticatedUser(mockMvc, patch(answerExtractionQuestion(studyId)),
-            )
-        }
-    }
-
-    @Nested
-    @DisplayName("When batch answering ROB questions in a review")
-    inner class BatchAnswerRobQuestionsTests(
-        @Autowired val questionRepository: MongoQuestionRepository
-    ) {
-        @Test
-        @DisplayName("should save valid answers, ignore invalid ones, and return 200 with a detailed report")
-        fun `should handle partial success correctly`() {
-            val studyId = idService.next()
-            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
-            repository.insert(studyReview)
-
-            val validQId1 = UUID.randomUUID()
-            val validQId2 = UUID.randomUUID()
-            val invalidQId = UUID.randomUUID()
-
-            val question1 = factory.generateRobQuestionTextualDto(validQId1, systematicStudyId)
-            val question2 = factory.generateRobQuestionTextualDto(validQId2, systematicStudyId)
-            val question3 = factory.generateRobQuestionNumberScaleDto(invalidQId, systematicStudyId)
+            val question3 = factory.generateRobQuestionNumberScaleDto(invalidRobQId, systematicStudyId)
 
             questionRepository.insert(question1)
             questionRepository.insert(question2)
@@ -686,136 +526,50 @@ class StudyReviewControllerTest(
             val jsonPayload = """
                 {
                   "answers": [
-                    { "questionId": "$validQId1", "type": "TEXTUAL", "answer": "First valid answer" },
-                    { "questionId": "$validQId2", "type": "TEXTUAL", "answer": "Second valid answer" },
-                    { "questionId": "$invalidQId", "type": "NUMBERED_SCALE", "answer": "This shouldn't be a string" }
+                    { "questionId": "$validRobQId", "type": "TEXTUAL", "answer": "Valid ROB answer" },
+                    { "questionId": "$validExtractionQId", "type": "TEXTUAL", "answer": "Valid Extraction answer" },
+                    { "questionId": "$invalidRobQId", "type": "NUMBERED_SCALE", "answer": "This answer is invalid for a number scale" }
                   ]
                 }
             """.trimIndent()
 
             mockMvc.perform(
-                patch(batchAnswerRiskOfBiasQuestion(studyId))
+                patch(batchAnswerQuestion(studyId))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(jsonPayload)
             )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.totalAnswered").value(2))
                 .andExpect(jsonPath("$.succeededAnswers", hasSize<Any>(2)))
-                .andExpect(jsonPath("$.succeededAnswers", hasItem(validQId1.toString())))
-                .andExpect(jsonPath("$.succeededAnswers", hasItem(validQId2.toString())))
+                .andExpect(jsonPath("$.succeededAnswers", hasItem(validRobQId.toString())))
+                .andExpect(jsonPath("$.succeededAnswers", hasItem(validExtractionQId.toString())))
                 .andExpect(jsonPath("$.failedAnswers", hasSize<Any>(1)))
-                .andExpect(jsonPath("$.failedAnswers[0].questionId").value(invalidQId.toString()))
+                .andExpect(jsonPath("$.failedAnswers[0].questionId").value(invalidRobQId.toString()))
                 .andExpect(jsonPath("$.failedAnswers[0].reason", containsString("not compatible with question type 'NUMBERED_SCALE'")))
 
             val updatedReview = repository.findById(StudyReviewId(systematicStudyId, studyId)).get()
 
-            assertEquals(3, updatedReview.qualityAnswers.size)
-            assertEquals("First valid answer", updatedReview.qualityAnswers[validQId1])
-            assertEquals("Second valid answer", updatedReview.qualityAnswers[validQId2])
-            assertNull(updatedReview.qualityAnswers[invalidQId])
+            assertEquals(1, updatedReview.qualityAnswers.size)
+            assertEquals("Valid ROB answer", updatedReview.qualityAnswers[validRobQId])
+
+            assertEquals(1, updatedReview.formAnswers.size)
+            assertEquals("Valid Extraction answer", updatedReview.formAnswers[validExtractionQId])
+
+            assertNull(updatedReview.qualityAnswers[invalidRobQId])
+            assertNull(updatedReview.formAnswers[invalidRobQId])
         }
 
         @Test
-        @DisplayName("should return 401 for unauthenticated users")
         fun `should not update if user is unauthenticated`() {
-            testHelperService.testForUnauthenticatedUser(mockMvc, patch(batchAnswerRiskOfBiasQuestion(1L)))
+            testHelperService.testForUnauthenticatedUser(mockMvc, patch(batchAnswerQuestion(1L)))
         }
 
         @Test
-        @DisplayName("should return 403 for unauthorized users")
         fun `should not update if user is unauthorized`() {
             val jsonPayload = """{ "answers": [] }"""
             testHelperService.testForUnauthorizedUser(
                 mockMvc,
-                patch(batchAnswerRiskOfBiasQuestion(1L)).content(jsonPayload)
-            )
-        }
-    }
-
-    @Nested
-    @DisplayName("When batch answering Extraction questions in a review")
-    inner class BatchAnswerExtractionQuestionsTests(
-        @Autowired val questionRepository: MongoQuestionRepository
-    ) {
-        @Test
-        @DisplayName("should save all valid answers and return 200 with no failures")
-        fun `should handle full success correctly`() {
-            val studyId = idService.next()
-            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
-            repository.insert(studyReview)
-
-            val textQId = UUID.randomUUID()
-            val pickListQId = UUID.randomUUID()
-
-            val question1 = factory.generateExtractionQuestionTextualDto(textQId, systematicStudyId = systematicStudyId)
-            val question2 = factory.generateExtractionQuestionPickListDto(pickListQId, systematicStudyId = systematicStudyId)
-
-            questionRepository.insert(question1)
-            questionRepository.insert(question2)
-
-            val jsonPayload = """
-                {
-                  "answers": [
-                    { "questionId": "$textQId", "type": "TEXTUAL", "answer": "Another valid answer" },
-                    { "questionId": "$pickListQId", "type": "PICK_LIST", "answer": "Option A" }
-                  ]
-                }
-            """.trimIndent()
-
-            mockMvc.perform(
-                patch(batchAnswerExtractionQuestion(studyId))
-                    .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(jsonPayload)
-            )
-                .andExpect(status().isOk)
-                .andExpect(jsonPath("$.totalAnswered").value(2))
-                .andExpect(jsonPath("$.succeededAnswers", hasSize<Any>(2)))
-                .andExpect(jsonPath("$.failedAnswers", hasSize<Any>(0)))
-
-            val updatedReview = repository.findById(StudyReviewId(systematicStudyId, studyId)).get()
-            assertEquals(3, updatedReview.formAnswers.size)
-            assertEquals("Another valid answer", updatedReview.formAnswers[textQId])
-            assertEquals("Option A", updatedReview.formAnswers[pickListQId])
-        }
-
-        @Test
-        @DisplayName("should not save answers if the question context is wrong")
-        fun `should fail on context mismatch`() {
-            val studyId = idService.next()
-            repository.insert(factory.reviewDocument(systematicStudyId, studyId))
-
-            val extractionQId = UUID.randomUUID()
-            questionRepository.insert(factory.generateExtractionQuestionTextualDto(extractionQId, systematicStudyId = systematicStudyId))
-
-            val jsonPayload = """
-                { "answers": [{ "questionId": "$extractionQId", "type": "TEXTUAL", "answer": "some answer" }] }
-            """
-
-            mockMvc.perform(
-                patch(batchAnswerRiskOfBiasQuestion(studyId))
-                    .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(jsonPayload)
-            )
-                .andExpect(status().isOk)
-                .andExpect(jsonPath("$.totalAnswered").value(0))
-                .andExpect(jsonPath("$.failedAnswers", hasSize<Any>(1)))
-                .andExpect(jsonPath("$.failedAnswers[0].questionId").value(extractionQId.toString()))
-                .andExpect(jsonPath("$.failedAnswers[0].reason", containsString("Should answer question with the context: ROB")))
-        }
-
-        @Test
-        @DisplayName("should return 401 for unauthenticated users")
-        fun `should not update if user is unauthenticated`() {
-            testHelperService.testForUnauthenticatedUser(mockMvc, patch(batchAnswerExtractionQuestion(1L)))
-        }
-
-        @Test
-        @DisplayName("should return 403 for unauthorized users")
-        fun `should not update if user is unauthorized`() {
-            val jsonPayload = """{ "answers": [] }"""
-            testHelperService.testForUnauthorizedUser(
-                mockMvc,
-                patch(batchAnswerExtractionQuestion(1L)).content(jsonPayload)
+                patch(batchAnswerQuestion(1L)).content(jsonPayload)
             )
         }
     }

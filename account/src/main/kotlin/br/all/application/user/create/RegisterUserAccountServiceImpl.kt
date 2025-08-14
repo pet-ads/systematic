@@ -1,10 +1,11 @@
 package br.all.application.user.create
 
-import br.all.application.shared.UniquenessViolationException
 import br.all.application.user.create.RegisterUserAccountService.RequestModel
 import br.all.application.user.create.RegisterUserAccountService.ResponseModel
 import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.repository.toDto
+import br.all.domain.shared.exception.UniquenessViolationException
+import br.all.domain.shared.user.Email
 import br.all.domain.user.*
 
 class RegisterUserAccountServiceImpl(private val repository: UserAccountRepository) : RegisterUserAccountService {

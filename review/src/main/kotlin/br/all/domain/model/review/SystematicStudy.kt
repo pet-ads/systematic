@@ -1,11 +1,7 @@
 package br.all.domain.model.review
 
-import br.all.domain.model.collaboration.Collaboration
-import br.all.domain.model.collaboration.CollaborationId
-import br.all.domain.model.collaboration.toCollaborationId
-import br.all.domain.model.user.ResearcherId
-import br.all.domain.model.user.toResearcherId
 import br.all.domain.shared.ddd.Entity
+import br.all.domain.shared.user.ResearcherId
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.utils.exists
 import java.util.*
@@ -15,7 +11,7 @@ class SystematicStudy(
     title: String,
     description: String,
     owner: ResearcherId,
-    collaborators: Set<CollaborationId>
+    collaborators: Set<ResearcherId> = emptySet(),
 ) : Entity<UUID>(id) {
 
     private val _collaborators = collaborators.toMutableSet()
@@ -36,6 +32,7 @@ class SystematicStudy(
     init {
         val notification = validate()
         require(notification.hasNoErrors()) { notification.message() }
+        _collaborators.add(owner)
     }
 
     private fun validate() = Notification().also {
@@ -45,20 +42,19 @@ class SystematicStudy(
             it.addError("Systematic Study description must not be blank!")
     }
 
-    fun addCollaborator(collaborationId: CollaborationId) = _collaborators.add(collaborationId)
+    fun addCollaborator(researcherId: ResearcherId) = _collaborators.add(researcherId)
 
-    fun changeOwner(previousOwnerCollaborationId: CollaborationId, newCollaboration: Collaboration) {
-        _collaborators.remove(previousOwnerCollaborationId)
-        owner = newCollaboration.userId
-        _collaborators.add(newCollaboration.id as CollaborationId)
-    }   
+    fun changeOwner(researcherId: ResearcherId) {
+        _collaborators.add(researcherId)
+        owner = researcherId
+    }
 
-    fun removeCollaborator(collaboration: Collaboration) {
-        check(collaboration.id.value().toResearcherId() != owner) { "Cannot remove the Systematic Study owner: $owner" }
-        exists(collaboration.id.value().toCollaborationId() in _collaborators) {
-            "Cannot remove member that is not part of the collaboration: ${collaboration.id}"
+    fun removeCollaborator(researcherId: ResearcherId) {
+        check(researcherId != owner) { "Cannot remove the Systematic Study owner: $owner" }
+        exists(researcherId in _collaborators) {
+            "Cannot remove member that is not part of the collaboration: $researcherId"
         }
-        _collaborators.remove(collaboration.id)
+        _collaborators.remove(researcherId)
     }
 
     override fun toString() = "SystematicStudy(reviewId=$id, title='$title', description='$description', owner=$owner," +

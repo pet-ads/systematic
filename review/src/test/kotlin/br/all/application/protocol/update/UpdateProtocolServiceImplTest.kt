@@ -1,12 +1,11 @@
 package br.all.application.protocol.update
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.util.TestDataFactory
 import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.shared.exceptions.EntityNotFoundException
-import br.all.application.shared.exceptions.UnauthenticatedUserException
-import br.all.application.shared.exceptions.UnauthorizedUserException
+import br.all.domain.shared.exception.EntityNotFoundException
+import br.all.domain.shared.exception.UnauthenticatedUserException
+import br.all.domain.shared.exception.UnauthorizedUserException
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
@@ -36,8 +35,6 @@ class UpdateProtocolServiceImplTest {
     private lateinit var scoreCalculatorService: ScoreCalculatorService
     @MockK(relaxed = true)
     private lateinit var presenter: UpdateProtocolPresenter
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
     @InjectMockKs
     private lateinit var sut: UpdateProtocolServiceImpl
 
@@ -47,15 +44,13 @@ class UpdateProtocolServiceImplTest {
     @BeforeEach
     fun setUp() {
         factory = TestDataFactory()
-        val (researcher, systematicStudy, collaboration) = factory
+        val (researcher, systematicStudy) = factory
         preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
             credentialsService,
             systematicStudyRepository,
-            collaborationRepository,
             researcher,
             systematicStudy,
-            collaboration
         )
     }
 

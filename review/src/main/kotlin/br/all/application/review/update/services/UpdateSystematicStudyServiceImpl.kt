@@ -6,7 +6,7 @@ import br.all.application.review.repository.toDto
 import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter
 import br.all.application.review.update.services.UpdateSystematicStudyService.RequestModel
 import br.all.application.review.update.services.UpdateSystematicStudyService.ResponseModel
-import br.all.application.shared.exceptions.EntityNotFoundException
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfUnauthorized
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy

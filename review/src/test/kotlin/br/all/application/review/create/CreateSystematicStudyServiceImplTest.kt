@@ -1,11 +1,10 @@
 package br.all.application.review.create
 
-import br.all.application.collaboration.repository.CollaborationRepository
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.TestDataFactory
-import br.all.application.shared.exceptions.UnauthenticatedUserException
-import br.all.application.shared.exceptions.UnauthorizedUserException
+import br.all.domain.shared.exception.UnauthenticatedUserException
+import br.all.domain.shared.exception.UnauthorizedUserException
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.services.UuidGeneratorService
@@ -17,7 +16,6 @@ import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.UUID
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -31,8 +29,6 @@ class CreateSystematicStudyServiceImplTest {
     private lateinit var uuidGeneratorService: UuidGeneratorService
     @MockK
     private lateinit var credentialsService: CredentialsService
-    @MockK
-    private lateinit var collaborationRepository: CollaborationRepository
     @MockK(relaxed = true)
     private lateinit var presenter: CreateSystematicStudyPresenter
     @InjectMockKs
@@ -48,13 +44,9 @@ class CreateSystematicStudyServiceImplTest {
             presenter,
             credentialsService,
             systematicStudyRepository,
-            collaborationRepository,
             factory.researcher,
-            factory.systematicStudy,
-            UUID.randomUUID(),
+            factory.systematicStudy
         )
-        
-        every { collaborationRepository.saveOrUpdateCollaboration(any()) } returns Unit
     }
 
     @Nested
@@ -66,6 +58,7 @@ class CreateSystematicStudyServiceImplTest {
             val (_, systematicStudy) = factory
             val request = factory.createRequestModel()
             val response = factory.createResponseModel()
+            val dto = factory.dtoFromCreateRequest(request)
             val protocolDto = factory.protocolDto()
 
             preconditionCheckerMocking.makeEverythingWork()
@@ -74,7 +67,8 @@ class CreateSystematicStudyServiceImplTest {
             sut.create(presenter, request)
 
             verify(exactly = 1) {
-                systematicStudyRepository.saveOrUpdate(any())
+                uuidGeneratorService.next()
+                systematicStudyRepository.saveOrUpdate(dto)
                 protocolRepository.saveOrUpdate(protocolDto)
                 presenter.prepareSuccessView(response)
             }

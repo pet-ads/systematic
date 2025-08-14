@@ -3,7 +3,6 @@ package br.all.application.search.util
 import br.all.application.protocol.repository.CriterionDto
 import br.all.application.protocol.repository.PicocDto
 import br.all.application.protocol.repository.ProtocolDto
-import br.all.application.search.delete.DeleteSearchSessionService
 import br.all.application.search.find.service.FindAllSearchSessionsBySourceService
 import br.all.application.search.find.service.FindAllSearchSessionsService
 import br.all.application.search.find.service.FindSearchSessionService
@@ -11,7 +10,7 @@ import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.update.UpdateSearchSessionService
 import br.all.application.search.update.UpdateSearchSessionService.RequestModel
 import br.all.domain.model.protocol.SearchSource
-import br.all.domain.model.user.ResearcherId
+import br.all.domain.shared.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
@@ -64,26 +63,6 @@ class TestDataFactory {
         sessionId: UUID = this.searchSessionId,
         invalidEntries: List<String> = emptyList()
     ) = CreateResponseModel(userId, systematicStudyId, sessionId, invalidEntries)
-
-    fun deleteRequestModel(
-        userId: UUID = this.userId,
-        systematicStudyId: UUID = this.systematicStudyId,
-        sessionId: UUID = this.searchSessionId,
-    ) = DeleteSearchSessionService.RequestModel(
-        userId,
-        systematicStudyId,
-        sessionId,
-    )
-
-    fun deleteResponseModel(
-        userId: UUID = this.userId,
-        systematicStudyId: UUID = this.systematicStudyId,
-        sessionId: UUID = this.searchSessionId,
-    ) = DeleteSearchSessionService.ResponseModel(
-        userId,
-        systematicStudyId,
-        sessionId,
-    )
 
     fun findOneRequestModel(
         userId: UUID = this.userId,
