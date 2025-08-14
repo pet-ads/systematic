@@ -21,7 +21,7 @@ data class Name(val value: String) : ValueObject() {
             }
 
             if (!value.matches(Regex("[\\p{L}.' ]+"))) {
-                notification.addError("The name must contain only letters, dots, and blank spaces!")
+                notification.addError("The name must contain only letters, dots, apostrophes, and blank spaces!")
             }
         }
 
