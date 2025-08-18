@@ -123,7 +123,7 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     }
 
     private fun parseKeywords(keywords: String?): Set<String> {
-        return keywords?.split(",")?.map { it.trim() }?.toSet() ?: emptySet()
+        return keywords?.split(",", ";")?.map { it.trim() }?.toSet() ?: emptySet()
     }
 
     private fun parseReferences(references: String?): List<String> {
