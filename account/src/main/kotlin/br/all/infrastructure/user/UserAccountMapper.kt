@@ -16,13 +16,14 @@ fun UserAccountDto.toUserAccountEntity(): UserAccountEntity {
         isCredentialsNonExpired,
         isEnabled
     )
-    return UserAccountEntity(id, credentials, email, country, affiliation, createdAt)
+    return UserAccountEntity(id, name, credentials, email, country, affiliation, createdAt)
 }
 
 fun AccountCredentialsEntity.toAccountCredentialsDto() = AccountCredentialsDto(id, username, password, authorities, refreshToken)
 
 fun UserAccountEntity.toUserProfileDto() = UserProfileDto(
     id = this.id,
+    name = this.name,
     email = this.email,
     country = this.country,
     affiliation = this.affiliation

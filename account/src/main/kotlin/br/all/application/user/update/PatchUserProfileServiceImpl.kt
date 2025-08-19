@@ -5,7 +5,7 @@ import br.all.application.user.update.PatchUserProfileService.RequestModel
 import br.all.application.user.update.PatchUserProfileService.ResponseModel
 import br.all.domain.shared.user.Email
 import br.all.domain.shared.user.Text
-import br.all.domain.user.Username
+import br.all.domain.shared.user.Username
 
 class PatchUserProfileServiceImpl(
     private val repository: UserAccountRepository
@@ -20,10 +20,10 @@ class PatchUserProfileServiceImpl(
 
         if (presenter.isDone()) return
 
-        val newUsername = Username(request.username)
-        val newEmail = Email(request.email)
-        val affiliation = Text(request.affiliation)
-        val country = Text(request.country)
+//        val newUsername = Username(request.username)
+//        val newEmail = Email(request.email)
+//        val affiliation = Text(request.affiliation)
+//        val country = Text(request.country)
 
         // TODO(): add invalid entries to the response model array
         // TODO(): update only the valid entries

@@ -4,6 +4,7 @@ import br.all.domain.user.UserAccount
 
 fun UserAccount.toDto() = UserAccountDto(
     id.value(),
+    name.value,
     accountCredentials.username.value,
     accountCredentials.password,
     email.email,
@@ -17,4 +18,3 @@ fun UserAccount.toDto() = UserAccountDto(
     accountCredentials.isCredentialsNonExpired,
     accountCredentials.isEnabled
 )
-

@@ -8,6 +8,8 @@ import java.util.*
 @Table(name = "USER_ACCOUNTS")
 class UserAccountEntity (
     @Id var id: UUID,
+    @Column(nullable = false)
+    var name: String,
     @OneToOne( mappedBy = "userAccount", cascade = [CascadeType.ALL])
     @PrimaryKeyJoinColumn
     var accountCredentialsEntity: AccountCredentialsEntity,

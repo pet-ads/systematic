@@ -10,6 +10,7 @@ interface RetrieveUserProfileService {
 
     data class ResponseModel(
         val userId: UUID,
+        val name: String,
         val username: String,
         val email: String,
         val affiliation: String,

@@ -1,5 +1,7 @@
 package br.all.domain.user
 
+import br.all.domain.shared.user.Username
+
 class AccountCredentials (
     val username: Username,
     val password: String,
