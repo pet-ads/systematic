@@ -2,8 +2,15 @@ package br.all.domain.services
 
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
-import br.all.domain.model.study.*
-import java.util.*
+import br.all.domain.model.study.Doi
+import br.all.domain.model.study.ExtractionStatus
+import br.all.domain.model.study.ReadingPriority
+import br.all.domain.model.study.SelectionStatus
+import br.all.domain.model.study.Study
+import br.all.domain.model.study.StudyReview
+import br.all.domain.model.study.StudyReviewId
+import br.all.domain.model.study.StudyType
+import java.util.Locale
 
 class BibtexConverterService(private val studyReviewIdGeneratorService: IdGeneratorService) {
 
@@ -81,7 +88,7 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
         val authors = getValueFromFieldMap(fieldMap, authorTypes)
         val venue = getValueFromFieldMap(fieldMap, venueTypes)
         val abstract = fieldMap["abstract"] ?: " "
-        val keywords = parseKeywords(fieldMap["keywords"])
+        val keywords = parseKeywords(fieldMap["keywords"] ?: fieldMap["keyword"])
         val references = parseReferences(fieldMap["references"])
         val doi = fieldMap["doi"]?.let {
             val cleanDoi = it.replace(Regex("}"), "")
