@@ -91,10 +91,14 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
         val keywords = parseKeywords(fieldMap["keywords"] ?: fieldMap["keyword"])
         val references = parseReferences(fieldMap["references"])
         val doi = fieldMap["doi"]?.let {
-            val cleanDoi = it.replace(Regex("}"), "")
-            Doi("https://doi.org/$cleanDoi")
+            val cleanDoi = it.replace(Regex("[{}]"), "").trim()
+            val fullUrl = if (cleanDoi.startsWith("http")) {
+                cleanDoi
+            } else {
+                "https://doi.org/$cleanDoi"
+            }
+            Doi(fullUrl)
         }
-
         val type = extractStudyType(bibtexEntry)
 
         return Study(type, title, year, authors, venue, abstract, keywords, references, doi)
