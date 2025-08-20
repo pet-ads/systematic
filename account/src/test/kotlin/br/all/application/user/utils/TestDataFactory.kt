@@ -10,7 +10,7 @@ class TestDataFactory {
     val faker = Faker()
 
     fun registerRequest() = RegisterUserAccountService.RequestModel(
-        username = faker.leagueOfLegends.champion(),
+        username = faker.name.firstName(),
         password = faker.pearlJam.songs(),
         email = faker.internet.email(),
         country = faker.address.countryCode(),
