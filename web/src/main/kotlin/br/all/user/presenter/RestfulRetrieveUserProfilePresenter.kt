@@ -15,6 +15,7 @@ class RestfulRetrieveUserProfilePresenter : RetrieveUserProfilePresenter {
     override fun prepareSuccessView(response: ResponseModel) {
         val restfulResponse = ViewModel(
             response.userId,
+            response.name,
             response.username,
             response.email,
             response.affiliation,
@@ -30,6 +31,7 @@ class RestfulRetrieveUserProfilePresenter : RetrieveUserProfilePresenter {
 
     private data class ViewModel(
         val userId: UUID,
+        val name: String,
         val username: String,
         val email: String,
         val affiliation: String,
