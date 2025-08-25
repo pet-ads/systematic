@@ -64,6 +64,7 @@ class CreateQuestionServiceImplTest {
                 TEXTUAL -> factory.createTextualRequestModel()
                 NUMBERED_SCALE -> factory.createNumberedScaleRequestModel()
                 PICK_LIST -> factory.createPickListRequestModel()
+                PICK_MANY -> factory.createPickManyRequestModel()
                 LABELED_SCALE -> factory.createLabeledScaleRequestModel()
             }
 
@@ -107,6 +108,21 @@ class CreateQuestionServiceImplTest {
         @Test
         fun `should not be able to create picklist question if options is empty`() {
             val request = factory.createPickListRequestModel(options = emptyList())
+            val (_, _, question) = factory
+
+            every { uuidGeneratorService.next() } returns question
+            preconditionCheckerMocking.makeEverythingWork()
+
+            sut.create(presenter, request)
+            verify {
+                presenter.isDone()
+                presenter.prepareFailView(any<IllegalArgumentException>())
+            }
+        }
+
+        @Test
+        fun `should not be able to create pickmany question if options is empty`() {
+            val request = factory.createPickManyRequestModel(options = emptyList())
             val (_, _, question) = factory
 
             every { uuidGeneratorService.next() } returns question

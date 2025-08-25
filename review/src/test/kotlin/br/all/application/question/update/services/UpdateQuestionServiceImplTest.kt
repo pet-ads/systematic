@@ -73,6 +73,7 @@ class UpdateQuestionServiceImplTest {
                 TEXTUAL -> factory.generateTextualDto()
                 NUMBERED_SCALE -> factory.generateNumberedScaleDto()
                 PICK_LIST -> factory.generatePickListDto()
+                PICK_MANY -> factory.generatePickManyDto()
                 LABELED_SCALE -> factory.generateLabeledScaleDto()
             }
             val updatedDto = dto.copy(code = "new code")
@@ -95,6 +96,7 @@ class UpdateQuestionServiceImplTest {
                 TEXTUAL -> factory.generateTextualDto()
                 NUMBERED_SCALE -> factory.generateNumberedScaleDto()
                 PICK_LIST -> factory.generatePickListDto()
+                PICK_MANY -> factory.generatePickManyDto()
                 LABELED_SCALE -> factory.generateLabeledScaleDto()
             }
             val updatedDto = dto.copy(description = "new description")

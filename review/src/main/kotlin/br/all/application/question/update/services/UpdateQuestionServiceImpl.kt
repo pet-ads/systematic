@@ -50,6 +50,7 @@ class UpdateQuestionServiceImpl(
         val question = when (request.questionType) {
             QuestionType.TEXTUAL -> builder.buildTextual()
             QuestionType.PICK_LIST -> builder.buildPickList(request.options!!)
+            QuestionType.PICK_MANY -> builder.buildPickMany(request.options!!)
             QuestionType.NUMBERED_SCALE -> builder.buildNumberScale(request.lower!!, request.higher!!)
             QuestionType.LABELED_SCALE -> builder.buildLabeledScale(request.scales!!)
         }
