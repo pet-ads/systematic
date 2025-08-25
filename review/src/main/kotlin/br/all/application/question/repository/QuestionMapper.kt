@@ -12,7 +12,7 @@ fun Question<*>.toDto(type: QuestionType, context: String) = QuestionDto(
     (this as? LabeledScale)?.scales?.mapValues { it.value.value },
     (this as? NumberScale)?.higher,
     (this as? NumberScale)?.lower,
-    (this as? PickList)?.options,
+    (this as? PickList)?.options ?: (this as? PickMany)?.options,
     context = QuestionContextEnum.valueOf(context)
 )
 
@@ -26,6 +26,7 @@ fun Question.Companion.fromDto(dto: QuestionDto): Question<*> {
 
     return when {
         dto.questionType == "PICK_LIST" && dto.options != null -> builder.buildPickList(dto.options)
+        dto.questionType == "PICK_MANY" && dto.options != null -> builder.buildPickMany(dto.options)
         dto.questionType == "NUMBERED_SCALE" && dto.higher != null && dto.lower != null ->
             builder.buildNumberScale(dto.lower, dto.higher)
 
@@ -36,4 +37,3 @@ fun Question.Companion.fromDto(dto: QuestionDto): Question<*> {
         println("Loaded question with context: ${dto.context}")
     }
 }
-
