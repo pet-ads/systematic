@@ -24,6 +24,8 @@ class QuestionBuilder private constructor(
     fun buildNumberScale(lower: Int, higher: Int) = NumberScale(questionId, systematicStudyId, code, description, lower, higher)
 
     fun buildPickList(options: List<String>) = PickList(questionId, systematicStudyId, code, description, options)
+
+    fun buildPickMany(options: List<String>) = PickMany(questionId, systematicStudyId, code, description, options)
 }
 
 
