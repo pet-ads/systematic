@@ -37,7 +37,7 @@ class CreateQuestionServiceImpl(
 
         val type = request.questionType
 
-        if (type == PICK_LIST && request.options.isNullOrEmpty()) {
+        if ((type == PICK_LIST || type == PICK_MANY) && request.options.isNullOrEmpty()) {
             presenter.prepareFailView(IllegalArgumentException("Options must not be null or empty."))
             return
         }
@@ -57,6 +57,7 @@ class CreateQuestionServiceImpl(
         val question = when (type) {
             TEXTUAL -> builder.buildTextual()
             PICK_LIST -> builder.buildPickList(request.options!!)
+            PICK_MANY -> builder.buildPickMany(request.options!!)
             NUMBERED_SCALE -> builder.buildNumberScale(request.lower!!, request.higher!!)
             LABELED_SCALE -> builder.buildLabeledScale(request.scales!!)
         }
