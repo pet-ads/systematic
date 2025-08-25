@@ -121,23 +121,23 @@ class ExtractionQuestionController(
     )
 
     @PostMapping("/pick-many")
-    @Operation(summary = "Create a extraction pick-list question in the protocol")
+    @Operation(summary = "Create a extraction pick-many question in the protocol")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "201", description = "Success creating a pick-list question in the protocol",
+            ApiResponse(responseCode = "201", description = "Success creating a pick-many question in the protocol",
                 content = [Content(schema = Schema(hidden = true))]),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a pick-list question in the protocol - invalid input",
+                description = "Fail creating a pick-many question in the protocol - invalid input",
                 content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail creating a pick-list question in the protocol - unauthenticated user",
+                description = "Fail creating a pick-many question in the protocol - unauthenticated user",
                 content = [Content(schema = Schema(hidden = true))]
             ),ApiResponse(
                 responseCode = "403",
-                description = "Fail creating a pick-list question in the protocol - unauthorized user",
+                description = "Fail creating a pick-many question in the protocol - unauthorized user",
                 content = [Content(schema = Schema(hidden = true))]
             ),
         ]
@@ -149,7 +149,7 @@ class ExtractionQuestionController(
             authenticationInfoService.getAuthenticatedUserId(),
             systematicStudyId,
             questionContext,
-            PICK_LIST,
+            PICK_MANY,
             request.code,
             request.description,
             options = request.options
