@@ -22,10 +22,11 @@ class RestfulFindAllRoBQuestionPresenter(
         val selfRef = linksFactory.findAllReviewRobQuestions(response.systematicStudyId)
         val createQuestion = linksFactory.createTextualRobQuestion(response.systematicStudyId)
         val createPickList = linksFactory.createPickListRobQuestion(response.systematicStudyId)
+        val createPickMany = linksFactory.createPickManyRobQuestion(response.systematicStudyId)
         val createLabeledScale = linksFactory.createLabeledScaleRobQuestion(response.systematicStudyId)
         val createNumberScale = linksFactory.createNumberScaleRobQuestion(response.systematicStudyId)
 
-        restfulResponse.add(selfRef, createQuestion ,createPickList,createLabeledScale,createNumberScale)
+        restfulResponse.add(selfRef, createQuestion, createPickList, createPickMany, createLabeledScale, createNumberScale)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
