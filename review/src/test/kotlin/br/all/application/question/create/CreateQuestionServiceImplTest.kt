@@ -106,6 +106,36 @@ class CreateQuestionServiceImplTest {
         }
 
         @Test
+        fun `should not be able to create numbered-scale if lower boundary is greater than higher boundary`() {
+            val request = factory.createNumberedScaleRequestModel(lower = 10, higher = 5)
+            preconditionCheckerMocking.makeEverythingWork()
+            every { uuidGeneratorService.next() } returns factory.question
+
+            sut.create(presenter, request)
+
+            verify { presenter.prepareFailView(any<IllegalArgumentException>()) }
+            verify(exactly = 0) { repository.createOrUpdate(any()) }
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = QuestionType::class, names = ["PICK_LIST", "PICK_MANY"])
+        fun `should not be able to create a question with a blank option in the list`(questionType: QuestionType) {
+            val blankOptions = listOf("Valid Option 1", "   ", "Valid Option 2")
+            val request = when (questionType) {
+                PICK_LIST -> factory.createPickListRequestModel(options = blankOptions)
+                PICK_MANY -> factory.createPickManyRequestModel(options = blankOptions)
+                else -> throw IllegalStateException("Test configuration error")
+            }
+            preconditionCheckerMocking.makeEverythingWork()
+            every { uuidGeneratorService.next() } returns factory.question
+
+            sut.create(presenter, request)
+
+            verify { presenter.prepareFailView(any<IllegalArgumentException>()) }
+            verify(exactly = 0) { repository.createOrUpdate(any()) }
+        }
+
+        @Test
         fun `should not be able to create picklist question if options is empty`() {
             val request = factory.createPickListRequestModel(options = emptyList())
             val (_, _, question) = factory
