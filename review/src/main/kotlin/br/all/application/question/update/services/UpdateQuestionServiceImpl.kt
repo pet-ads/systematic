@@ -61,6 +61,7 @@ class UpdateQuestionServiceImpl(
             questionRepository.createOrUpdate(question.toDto(type, request.questionContext))
         } catch (e: IllegalArgumentException) {
             presenter.prepareFailView(e)
+            return
         }
 
         presenter.prepareSuccessView(ResponseModel(userId, systematicStudyId, questionId.value))
