@@ -54,15 +54,19 @@ class CreateQuestionServiceImpl(
         val questionId = QuestionId(generatedId)
 
         val builder = QuestionBuilder.with(questionId, SystematicStudyId(systematicStudyId), request.code, request.description)
-        val question = when (type) {
-            TEXTUAL -> builder.buildTextual()
-            PICK_LIST -> builder.buildPickList(request.options!!)
-            PICK_MANY -> builder.buildPickMany(request.options!!)
-            NUMBERED_SCALE -> builder.buildNumberScale(request.lower!!, request.higher!!)
-            LABELED_SCALE -> builder.buildLabeledScale(request.scales!!)
-        }
 
-        questionRepository.createOrUpdate(question.toDto(type, request.questionContext))
+        try {
+            val question = when (type) {
+                TEXTUAL -> builder.buildTextual()
+                PICK_LIST -> builder.buildPickList(request.options!!)
+                PICK_MANY -> builder.buildPickMany(request.options!!)
+                NUMBERED_SCALE -> builder.buildNumberScale(request.lower!!, request.higher!!)
+                LABELED_SCALE -> builder.buildLabeledScale(request.scales!!)
+            }
+            questionRepository.createOrUpdate(question.toDto(type, request.questionContext))
+        } catch (e: IllegalArgumentException) {
+            presenter.prepareFailView(e)
+        }
 
         presenter.prepareSuccessView(ResponseModel(request.userId, systematicStudyId, generatedId))
     }
