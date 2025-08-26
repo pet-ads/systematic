@@ -42,6 +42,22 @@ class TestDataFactory {
         }
         """
 
+    fun validCreatePickManyRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId) =
+        """
+        {
+            "researcherId": "$researcher",
+            "systematicStudyId": "$systematicStudyId",
+            "type": "PICK_MANY",
+            "code": "${faker.lorem.words()}",
+            "description": "${faker.paragraph(8)}",
+            "options": [
+                "${faker.lorem.words()}",
+                "${faker.lorem.words()}",
+                "${faker.lorem.words()}"
+            ]
+        }
+        """
+
     fun validCreateLabeledScaleRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId) =
         """
         {
@@ -91,6 +107,21 @@ class TestDataFactory {
             "code": "${faker.lorem.words()}",
             "description": "${faker.paragraph(8)}",
             "options": []
+        }
+        """
+
+    fun invalidCreatePickManyRequest(researcher: UUID = researcherId, systematicStudyId: UUID = this.systematicStudyId) =
+        """
+        {
+            "researcherId": "$researcher",
+            "systematicStudyId": "$systematicStudyId",
+            "type": "PICK_MANY",
+            "code": "${faker.lorem.words()}",
+            "description": "${faker.paragraph(8)}",
+            "options": [
+                "${faker.lorem.words()}",
+                ""
+            ]
         }
         """
 
@@ -151,6 +182,25 @@ class TestDataFactory {
         code,
         description,
         "PICK_LIST",
+        null,
+        null,
+        null,
+        listOf(faker.lorem.words(), faker.lorem.words()),
+        questionType
+    )
+
+    fun validCreatePickManyQuestionDocument(
+        questionId: UUID,
+        systematicStudyId: UUID,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+        questionType: QuestionContextEnum = QuestionContextEnum.ROB
+    ) = QuestionDocument(
+        questionId,
+        systematicStudyId,
+        code,
+        description,
+        "PICK_MANY",
         null,
         null,
         null,
