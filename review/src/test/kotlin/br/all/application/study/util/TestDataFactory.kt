@@ -217,6 +217,27 @@ class TestDataFactory {
             QuestionContextEnum.valueOf(questionContext),
         )
 
+    fun generateQuestionPickManyDto(
+        questionId: UUID,
+        systematicStudyId: UUID = this.systematicStudyId,
+        code: String = faker.lorem.words(),
+        description: String = faker.lorem.words(),
+        options: List<String>,
+        questionContext: String
+    ) =
+        QuestionDto(
+            questionId,
+            systematicStudyId,
+            code,
+            description,
+            "PICK_MANY",
+            null,
+            null,
+            null,
+            options,
+            QuestionContextEnum.valueOf(questionContext),
+        )
+
     fun batchAnswerRequest(
         answers: List<BatchAnswerQuestionService.RequestModel.AnswerDetail>,
         researcherId: UUID = this.researcherId,
