@@ -1,6 +1,8 @@
 package br.all.application.question.update.services
 
 import br.all.application.question.create.CreateQuestionService.QuestionType
+import br.all.application.question.create.CreateQuestionService.QuestionType.PICK_LIST
+import br.all.application.question.create.CreateQuestionService.QuestionType.PICK_MANY
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.repository.toDto
 import br.all.application.question.update.presenter.UpdateQuestionPresenter
@@ -31,7 +33,7 @@ class UpdateQuestionServiceImpl(
 
         val type = request.questionType
 
-        if (type == QuestionType.PICK_LIST && request.options.isNullOrEmpty()) {
+        if ((type == PICK_LIST || type == PICK_MANY) && request.options.isNullOrEmpty()) {
             presenter.prepareFailView(IllegalArgumentException("Options must not be null or empty."))
             return
         }
