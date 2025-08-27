@@ -50,6 +50,22 @@ class TestDataFactory {
         context = QuestionContextEnum.EXTRACTION
     )
 
+    fun generatePickManyDto(
+        questionId: UUID = question,
+        systematicStudyId: UUID = systematicStudy,
+    ) = QuestionDto(
+        questionId,
+        systematicStudyId,
+        code,
+        description,
+        "PICK_MANY",
+        null,
+        null,
+        null,
+        listOf(faker.lorem.words(), faker.lorem.words()),
+        context = QuestionContextEnum.EXTRACTION
+    )
+
     fun generateLabeledScaleDto(
         questionId: UUID = question,
         systematicStudyId: UUID = systematicStudy,
@@ -139,6 +155,25 @@ class TestDataFactory {
         options
     )
 
+    fun createPickManyRequestModel(
+        researcherId: UUID = researcher,
+        systematicStudyId: UUID = systematicStudy,
+        questionType: QuestionType = QuestionType.PICK_MANY,
+        options: List<String>? = listOf(faker.lorem.words(), faker.lorem.words()),
+        context: String = QuestionContextEnum.EXTRACTION.toString(),
+    ) = RequestModel(
+        researcherId,
+        systematicStudyId,
+        context,
+        questionType,
+        code,
+        description,
+        null,
+        null,
+        null,
+        options
+    )
+
     fun createLabeledScaleRequestModel(
         researcherId: UUID = researcher,
         systematicStudyId: UUID = systematicStudy,
@@ -200,6 +235,11 @@ class TestDataFactory {
     fun findOnePickListResponseModel(
         researcherId: UUID = this.researcher,
         questionDto: QuestionDto = generatePickListDto()
+    ) = Find.ResponseModel(researcherId, questionDto)
+
+    fun findOnePickManyResponseModel(
+        researcherId: UUID = this.researcher,
+        questionDto: QuestionDto = generatePickManyDto()
     ) = Find.ResponseModel(researcherId, questionDto)
 
     fun findOneLabeledScaleResponseModel(

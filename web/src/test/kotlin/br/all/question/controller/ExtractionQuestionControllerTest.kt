@@ -94,6 +94,19 @@ class ExtractionQuestionControllerTest(
         }
 
         @Test
+        fun `should create pickmany question and return 201`() {
+            val json = factory.validCreatePickManyRequest()
+            mockMvc.perform(
+                post(postUrl() + "/pick-many").contentType(MediaType.APPLICATION_JSON).content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
+                .andDo(print())
+                .andExpect(status().isCreated)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
+        }
+
+        @Test
         fun `should create labeledscale question and return 201`() {
             val json = factory.validCreateLabeledScaleRequest()
             mockMvc.perform(
@@ -153,6 +166,22 @@ class ExtractionQuestionControllerTest(
                 .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
                 .andExpect(jsonPath("$._links").exists())
 
+        }
+
+        @Test
+        fun `should find pickmany question and return 200`() {
+            val question = factory.validCreatePickManyQuestionDocument(questionId, systematicStudyId)
+
+            repository.insert(question)
+
+            val questionIdUrl = "/${questionId}"
+            mockMvc.perform(get(getUrl(questionIdUrl)).contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+            )
+
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(question.systematicStudyId.toString()))
+                .andExpect(jsonPath("$._links").exists())
         }
 
         @Test
@@ -239,6 +268,17 @@ class ExtractionQuestionControllerTest(
             val json = factory.invalidCreatePickListRequest()
             mockMvc.perform(
                 post(postUrl() + "/pick-list")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+            ).andExpect(status().isBadRequest)
+        }
+
+        @Test
+        fun `should not create pickmany question with invalid input and return 400`() {
+            val json = factory.invalidCreatePickManyRequest()
+            mockMvc.perform(
+                post(postUrl() + "/pick-many")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
                     .with(SecurityMockMvcRequestPostProcessors.user(user))

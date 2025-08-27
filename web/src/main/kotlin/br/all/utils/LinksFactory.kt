@@ -81,6 +81,15 @@ class LinksFactory {
         )
     }.withRel("create-pick-list-extraction-question").withType("POST")
 
+    fun createPickManyExtractionQuestion(systematicStudyId: UUID): Link = linkTo<ExtractionQuestionController> {
+        createPickManyQuestion(
+            systematicStudyId,
+            request = ExtractionQuestionController.PickManyRequest(
+                "code", "description", listOf("option1")
+            )
+        )
+    }.withRel("create-pick-many-extraction-question").withType("POST")
+
     fun createLabeledScaleExtractionQuestion(systematicStudyId: UUID): Link = linkTo<ExtractionQuestionController> {
         createLabeledScaleQuestion(
             systematicStudyId,
@@ -124,6 +133,15 @@ class LinksFactory {
             )
         )
     }.withRel("create-pick-list-rob-question").withType("POST")
+
+    fun createPickManyRobQuestion(systematicStudyId: UUID): Link = linkTo<RiskOfBiasQuestionController> {
+        createPickManyQuestion(
+            systematicStudyId,
+            request = RiskOfBiasQuestionController.PickManyRequest(
+                "code", "description", listOf("option1")
+            )
+        )
+    }.withRel("create-pick-many-rob-question").withType("POST")
 
     fun createLabeledScaleRobQuestion(systematicStudyId: UUID): Link = linkTo<RiskOfBiasQuestionController> {
         createLabeledScaleQuestion(

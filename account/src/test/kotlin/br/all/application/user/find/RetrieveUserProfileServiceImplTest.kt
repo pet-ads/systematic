@@ -56,6 +56,7 @@ class RetrieveUserProfileServiceImplTest {
 
             val capturedResponse = responseSlot.captured
             assertEquals(userProfile.id, capturedResponse.userId)
+            assertEquals(userProfile.name, capturedResponse.name)
             assertEquals(userCredentials.username, capturedResponse.username)
             assertEquals(userProfile.email, capturedResponse.email)
             assertEquals(userProfile.affiliation, capturedResponse.affiliation)
