@@ -28,7 +28,10 @@ class FindProtocolStageServiceImpl(
     override fun getStage(presenter: FindProtocolStagePresenter, request: RequestModel) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
-        val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+
+        val systematicStudy = runCatching {
+            systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+        }.getOrNull()
 
         presenter.prepareIfFailsPreconditions(user, systematicStudy)
         if (presenter.isDone()) return
