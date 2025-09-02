@@ -12,6 +12,7 @@ fun SystematicStudy.toDto() = SystematicStudyDto(
     description,
     owner.value,
     collaborators.map { it.value }.toSet(),
+    objectives,
 )
 
 fun SystematicStudy.Companion.fromRequestModel(id: UUID, requestModel: RequestModel) = SystematicStudy(
@@ -19,6 +20,7 @@ fun SystematicStudy.Companion.fromRequestModel(id: UUID, requestModel: RequestMo
     requestModel.title,
     requestModel.description,
     ResearcherId(requestModel.userId),
+    objectives = requestModel.objectives,
 )
 
 fun SystematicStudy.Companion.fromDto(dto: SystematicStudyDto) = SystematicStudy(
@@ -29,4 +31,5 @@ fun SystematicStudy.Companion.fromDto(dto: SystematicStudyDto) = SystematicStudy
     dto.collaborators
         .map { ResearcherId(it) }
         .toMutableSet(),
+    dto.objectives,
 )
