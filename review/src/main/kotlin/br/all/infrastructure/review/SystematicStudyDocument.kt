@@ -11,4 +11,5 @@ data class SystematicStudyDocument(
     val description: String,
     val owner: UUID,
     val collaborators: Set<UUID> = emptySet(),
+    val objectives: String,
 )
