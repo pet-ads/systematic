@@ -8,4 +8,5 @@ data class SystematicStudyDto(
     val description : String,
     val owner : UUID,
     val collaborators : Set<UUID>,
+    val objectives: String,
 )
