@@ -32,7 +32,8 @@ class CreateSystematicReviewExampleService(
                 technologies, methodologies, and software engineering guidelines in the field.
             """.trimIndent(),
                 owner = ownerId,
-                collaborators = collaboratorIds
+                collaborators = collaboratorIds,
+                objectives = "These are the main objectives of this systematic review."
             )
         )
 
