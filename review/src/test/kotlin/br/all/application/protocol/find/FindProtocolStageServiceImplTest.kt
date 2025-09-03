@@ -249,13 +249,15 @@ class FindProtocolStageServiceImplTest {
     private fun createFullSystematicStudyDto(
         id: UUID = systematicStudyId,
         title: String = "A complete systematic study",
-        description: String = "A complete description"
+        description: String = "A complete description",
+        objectives: String = "A complete objective",
     ) = SystematicStudyDto(
         id = id,
         title = title,
         description = description,
         owner = UUID.randomUUID(),
-        collaborators = emptySet()
+        collaborators = emptySet(),
+        objectives = objectives,
     )
 
     private fun createFullProtocolDto(
