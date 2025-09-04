@@ -7,11 +7,10 @@ interface PatchUserProfileService {
 
     data class RequestModel(
         val userId: UUID,
-        val name: String?,
-        val username: String?,
-        val email: String?,
-        val affiliation: String?,
-        val country: String?
+        val name: String,
+        val email: String,
+        val affiliation: String,
+        val country: String
     )
 
     data class ResponseModel(
@@ -21,6 +20,12 @@ interface PatchUserProfileService {
         val email: String,
         val affiliation: String,
         val country: String,
-        val invalidEntries: List<String>
+        val invalidEntries: List<InvalidEntry>
+    )
+
+    data class InvalidEntry(
+        val field: String,
+        val entry: String,
+        val message: String
     )
 }
