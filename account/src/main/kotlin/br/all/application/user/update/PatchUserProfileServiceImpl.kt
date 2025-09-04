@@ -3,9 +3,10 @@ package br.all.application.user.update
 import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.update.PatchUserProfileService.RequestModel
 import br.all.application.user.update.PatchUserProfileService.ResponseModel
+import br.all.application.user.update.PatchUserProfileService.InvalidEntry
 import br.all.domain.shared.user.Email
+import br.all.domain.shared.user.Name
 import br.all.domain.shared.user.Text
-import br.all.domain.shared.user.Username
 
 class PatchUserProfileServiceImpl(
     private val repository: UserAccountRepository
@@ -14,35 +15,80 @@ class PatchUserProfileServiceImpl(
         presenter: PatchUserProfilePresenter,
         request: RequestModel
     ) {
-        if (repository.loadCredentialsById(request.userId) == null) {
-            presenter.prepareFailView(NoSuchElementException("User with id ${request.userId} not found!"))
+        val userAccount = repository.loadFullUserAccountById(request.userId)
+        if (userAccount == null) {
+            presenter.prepareFailView(NoSuchElementException("User with id ${request.userId} doesn't exist!"))
+            return
         }
 
-        if (presenter.isDone()) return
+        val invalidEntries: MutableList<InvalidEntry> = mutableListOf()
+        var updatedName = userAccount.name
+        var updatedEmail = userAccount.email
+        var updatedCountry = userAccount.country
+        var updatedAffiliation = userAccount.affiliation
 
-//        val newUsername = Username(request.username)
-//        val newEmail = Email(request.email)
-//        val affiliation = Text(request.affiliation)
-//        val country = Text(request.country)
+        try {
+            val newName = Name(request.name)
+            updatedName = newName.value
+        } catch (e: Exception) {
+            invalidEntries.add(InvalidEntry(
+                field = "name",
+                entry = request.name,
+                message = e.message ?: "Invalid name format"
+            ))
+        }
 
-        // TODO(): add invalid entries to the response model array
-        // TODO(): update only the valid entries
+        try {
+            val newEmail = Email(request.email)
+            updatedEmail = newEmail.email
+        } catch (e: Exception) {
+            invalidEntries.add(InvalidEntry(
+                field = "email",
+                entry = request.email,
+                message = e.message ?: "Invalid email format"
+            ))
+        }
 
-        //    data class RequestModel(
-        //        val userId: UUID,
-        //        val username: String,
-        //        val email: String,
-        //        val affiliation: String,
-        //        val country: String
-        //    )
-        //
-        //    data class ResponseModel(
-        //        val userId: UUID,
-        //        val username: String,
-        //        val email: String,
-        //        val affiliation: String,
-        //        val country: String,
-        //        val invalidEntries: List<String>
-        //    )
+        try {
+            val newCountry = Text(request.country)
+            updatedCountry = newCountry.value
+        } catch (e: Exception) {
+            invalidEntries.add(InvalidEntry(
+                field = "country",
+                entry = request.country,
+                message = e.message ?: "Invalid country format"
+            ))
+        }
+
+        try {
+            val newAffiliation = Text(request.affiliation)
+            updatedAffiliation = newAffiliation.value
+        } catch (e: Exception) {
+            invalidEntries.add(InvalidEntry(
+                field = "affiliation",
+                entry = request.affiliation,
+                message = e.message ?: "Invalid affiliation format"
+            ))
+        }
+
+        val updatedUserAccount = userAccount.copy(
+            name = updatedName,
+            email = updatedEmail,
+            country = updatedCountry,
+            affiliation = updatedAffiliation
+        )
+
+        val responseModel = ResponseModel(
+            userId = request.userId,
+            name = updatedName,
+            username = userAccount.username,
+            email = updatedEmail,
+            affiliation = updatedAffiliation,
+            country = updatedCountry,
+            invalidEntries = invalidEntries
+        )
+
+        repository.save(updatedUserAccount)
+        presenter.prepareSuccessView(responseModel)
     }
 }
