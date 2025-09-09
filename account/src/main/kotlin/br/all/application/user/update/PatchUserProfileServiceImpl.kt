@@ -21,55 +21,12 @@ class PatchUserProfileServiceImpl(
             return
         }
 
-        val invalidEntries: MutableList<InvalidEntry> = mutableListOf()
-        var updatedName = userAccount.name
-        var updatedEmail = userAccount.email
-        var updatedCountry = userAccount.country
-        var updatedAffiliation = userAccount.affiliation
+        val invalidEntries = mutableListOf<InvalidEntry>()
 
-        try {
-            val newName = Name(request.name)
-            updatedName = newName.value
-        } catch (e: Exception) {
-            invalidEntries.add(InvalidEntry(
-                field = "name",
-                entry = request.name,
-                message = e.message ?: "Invalid name format"
-            ))
-        }
-
-        try {
-            val newEmail = Email(request.email)
-            updatedEmail = newEmail.email
-        } catch (e: Exception) {
-            invalidEntries.add(InvalidEntry(
-                field = "email",
-                entry = request.email,
-                message = e.message ?: "Invalid email format"
-            ))
-        }
-
-        try {
-            val newCountry = Text(request.country)
-            updatedCountry = newCountry.value
-        } catch (e: Exception) {
-            invalidEntries.add(InvalidEntry(
-                field = "country",
-                entry = request.country,
-                message = e.message ?: "Invalid country format"
-            ))
-        }
-
-        try {
-            val newAffiliation = Text(request.affiliation)
-            updatedAffiliation = newAffiliation.value
-        } catch (e: Exception) {
-            invalidEntries.add(InvalidEntry(
-                field = "affiliation",
-                entry = request.affiliation,
-                message = e.message ?: "Invalid affiliation format"
-            ))
-        }
+        val updatedName = validateField("name", request.name, userAccount.name, invalidEntries) { Name(it).value }
+        val updatedEmail = validateField("email", request.email, userAccount.email, invalidEntries) { Email(it).email }
+        val updatedCountry = validateField("country", request.country, userAccount.country, invalidEntries) { Text(it).value }
+        val updatedAffiliation = validateField("affiliation", request.affiliation, userAccount.affiliation, invalidEntries) { Text(it).value }
 
         val updatedUserAccount = userAccount.copy(
             name = updatedName,
@@ -90,5 +47,25 @@ class PatchUserProfileServiceImpl(
 
         repository.save(updatedUserAccount)
         presenter.prepareSuccessView(responseModel)
+    }
+
+    private fun validateField(
+        fieldName: String,
+        newValue: String,
+        currentValue: String,
+        errors: MutableList<InvalidEntry>,
+        validationLogic: (String) -> String
+    ): String {
+        return try {
+            validationLogic(newValue)
+        } catch (e: Exception) {
+            errors.add(InvalidEntry(
+                field = fieldName,
+                entry = newValue,
+                message = e.message ?: "Invalid $fieldName format"
+            ))
+
+            currentValue
+        }
     }
 }
