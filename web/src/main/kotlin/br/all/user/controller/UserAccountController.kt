@@ -35,12 +35,12 @@ class UserAccountController(
 ) {
 
     @PostMapping
-    @Operation(summary = "Create a new user")
+    @Operation(summary = "Create an new user")
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "201",
-                description = "Success creating a user",
+                description = "Success creating an user",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(implementation = CredentialsService.ResponseModel::class)
@@ -48,12 +48,12 @@ class UserAccountController(
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a user - invalid input",
+                description = "Fail creating an user - invalid input",
                 content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "409",
-                description = "Fail creating a user - user already exists",
+                description = "Fail creating an user - user already exists",
                 content = [Content(schema = Schema(hidden = true))]
             ),
         ]
@@ -66,7 +66,7 @@ class UserAccountController(
     }
 
     @GetMapping("/profile")
-    @Operation(summary = "Retrieve public information of a user")
+    @Operation(summary = "Retrieve public information of an user")
     @ApiResponses(
         value = [
             ApiResponse(
@@ -104,7 +104,7 @@ class UserAccountController(
 
 
     @PatchMapping("/profile")
-    @Operation(summary = "Update public information of a user")
+    @Operation(summary = "Update public information of an user")
     @ApiResponses(
         value = [
             ApiResponse(
