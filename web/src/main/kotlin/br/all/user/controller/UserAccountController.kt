@@ -9,6 +9,7 @@ import br.all.security.service.AuthenticationInfoService
 import br.all.user.presenter.RestfulPatchUserProfilePresenter
 import br.all.user.presenter.RestfulRegisterUserAccountPresenter
 import br.all.user.presenter.RestfulRetrieveUserProfilePresenter
+import br.all.user.requests.PatchUserProfileRequest
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -131,7 +132,7 @@ class UserAccountController(
                 content = [Content(schema = Schema(hidden = true))]
             ),
         ])
-    fun patchUserPublicData(@RequestBody body: PatchUserProfileService.RequestModel): ResponseEntity<*> {
+    fun patchUserPublicData(@RequestBody body: PatchUserProfileRequest): ResponseEntity<*> {
         val presenter = RestfulPatchUserProfilePresenter()
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = PatchUserProfileService.RequestModel(
