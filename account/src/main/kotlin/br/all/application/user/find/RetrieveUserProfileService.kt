@@ -1,4 +1,5 @@
 package br.all.application.user.find
+import io.swagger.v3.oas.annotations.media.Schema
 import java.util.UUID
 
 interface RetrieveUserProfileService {
@@ -8,6 +9,7 @@ interface RetrieveUserProfileService {
         val userId: UUID
     )
 
+    @Schema(name = "RetrieveUserProfileService", description = "Response model for Retrieve User Profile Service")
     data class ResponseModel(
         val userId: UUID,
         val name: String,

@@ -1,5 +1,6 @@
 package br.all.application.user.update
 
+import io.swagger.v3.oas.annotations.media.Schema
 import java.util.UUID
 
 interface PatchUserProfileService {
@@ -13,6 +14,7 @@ interface PatchUserProfileService {
         val country: String
     )
 
+    @Schema(name = "PatchUserProfileServiceResponseModel", description = "Response model for Patch User Profile Service")
     data class ResponseModel(
         val userId: UUID,
         val name: String,
