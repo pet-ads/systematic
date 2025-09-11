@@ -4,9 +4,12 @@ import br.all.application.user.CredentialsService
 import br.all.application.user.create.RegisterUserAccountService
 import br.all.application.user.create.RegisterUserAccountService.RequestModel
 import br.all.application.user.find.RetrieveUserProfileService
+import br.all.application.user.update.PatchUserProfileService
 import br.all.security.service.AuthenticationInfoService
+import br.all.user.presenter.RestfulPatchUserProfilePresenter
 import br.all.user.presenter.RestfulRegisterUserAccountPresenter
 import br.all.user.presenter.RestfulRetrieveUserProfilePresenter
+import br.all.user.requests.PatchUserProfileRequest
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -16,6 +19,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -27,16 +31,17 @@ class UserAccountController(
     private val registerUserAccountService: RegisterUserAccountService,
     private val encoder: PasswordEncoder,
     private val retrieveUserProfileService: RetrieveUserProfileService,
-    private val authenticationInfoService: AuthenticationInfoService
+    private val authenticationInfoService: AuthenticationInfoService,
+    private val patchUserProfileService: PatchUserProfileService
 ) {
 
     @PostMapping
-    @Operation(summary = "Create a new user")
+    @Operation(summary = "Create an new user")
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "201",
-                description = "Success creating a user",
+                description = "Success creating an user",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(implementation = CredentialsService.ResponseModel::class)
@@ -44,12 +49,12 @@ class UserAccountController(
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "Fail creating a user - invalid input",
+                description = "Fail creating an user - invalid input",
                 content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "409",
-                description = "Fail creating a user - user already exists",
+                description = "Fail creating an user - user already exists",
                 content = [Content(schema = Schema(hidden = true))]
             ),
         ]
@@ -62,7 +67,7 @@ class UserAccountController(
     }
 
     @GetMapping("/profile")
-    @Operation(summary = "Retrieve public information of a user")
+    @Operation(summary = "Retrieve public information of an user")
     @ApiResponses(
         value = [
             ApiResponse(
@@ -95,6 +100,50 @@ class UserAccountController(
         val request = RetrieveUserProfileService.RequestModel(userId)
 
         retrieveUserProfileService.retrieveData(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+
+    @PatchMapping("/profile")
+    @Operation(summary = "Update public information of an user")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success updating user profile",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = PatchUserProfileService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail updating user profile - unauthenticated collaborator",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail updating user profile - unauthorized collaborator",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail updating user profile - nonexistent user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+        ])
+    fun patchUserPublicData(@RequestBody body: PatchUserProfileRequest): ResponseEntity<*> {
+        val presenter = RestfulPatchUserProfilePresenter()
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = PatchUserProfileService.RequestModel(
+            userId = userId,
+            name = body.name,
+            email = body.email,
+            affiliation = body.affiliation,
+            country = body.country
+        )
+
+        patchUserProfileService.patchProfile(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

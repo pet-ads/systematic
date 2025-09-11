@@ -3,9 +3,10 @@ package br.all.application.user.update
 import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.update.PatchUserProfileService.RequestModel
 import br.all.application.user.update.PatchUserProfileService.ResponseModel
+import br.all.application.user.update.PatchUserProfileService.InvalidEntry
 import br.all.domain.shared.user.Email
+import br.all.domain.shared.user.Name
 import br.all.domain.shared.user.Text
-import br.all.domain.shared.user.Username
 
 class PatchUserProfileServiceImpl(
     private val repository: UserAccountRepository
@@ -14,35 +15,57 @@ class PatchUserProfileServiceImpl(
         presenter: PatchUserProfilePresenter,
         request: RequestModel
     ) {
-        if (repository.loadCredentialsById(request.userId) == null) {
-            presenter.prepareFailView(NoSuchElementException("User with id ${request.userId} not found!"))
+        val userAccount = repository.loadFullUserAccountById(request.userId)
+        if (userAccount == null) {
+            presenter.prepareFailView(NoSuchElementException("User with id ${request.userId} doesn't exist!"))
+            return
         }
 
-        if (presenter.isDone()) return
+        val invalidEntries = mutableListOf<InvalidEntry>()
 
-//        val newUsername = Username(request.username)
-//        val newEmail = Email(request.email)
-//        val affiliation = Text(request.affiliation)
-//        val country = Text(request.country)
+        val updatedName = validateField("name", request.name, userAccount.name, invalidEntries) { Name(it).value }
+        val updatedEmail = validateField("email", request.email, userAccount.email, invalidEntries) { Email(it).email }
+        val updatedCountry = validateField("country", request.country, userAccount.country, invalidEntries) { Text(it).value }
+        val updatedAffiliation = validateField("affiliation", request.affiliation, userAccount.affiliation, invalidEntries) { Text(it).value }
 
-        // TODO(): add invalid entries to the response model array
-        // TODO(): update only the valid entries
+        val updatedUserAccount = userAccount.copy(
+            name = updatedName,
+            email = updatedEmail,
+            country = updatedCountry,
+            affiliation = updatedAffiliation
+        )
 
-        //    data class RequestModel(
-        //        val userId: UUID,
-        //        val username: String,
-        //        val email: String,
-        //        val affiliation: String,
-        //        val country: String
-        //    )
-        //
-        //    data class ResponseModel(
-        //        val userId: UUID,
-        //        val username: String,
-        //        val email: String,
-        //        val affiliation: String,
-        //        val country: String,
-        //        val invalidEntries: List<String>
-        //    )
+        val responseModel = ResponseModel(
+            userId = request.userId,
+            name = updatedName,
+            username = userAccount.username,
+            email = updatedEmail,
+            affiliation = updatedAffiliation,
+            country = updatedCountry,
+            invalidEntries = invalidEntries
+        )
+
+        repository.save(updatedUserAccount)
+        presenter.prepareSuccessView(responseModel)
+    }
+
+    private fun validateField(
+        fieldName: String,
+        newValue: String,
+        currentValue: String,
+        errors: MutableList<InvalidEntry>,
+        validationLogic: (String) -> String
+    ): String {
+        return try {
+            validationLogic(newValue)
+        } catch (e: Exception) {
+            errors.add(InvalidEntry(
+                field = fieldName,
+                entry = newValue,
+                message = e.message ?: "Invalid $fieldName format"
+            ))
+
+            currentValue
+        }
     }
 }
