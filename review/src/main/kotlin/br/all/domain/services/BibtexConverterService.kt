@@ -84,22 +84,11 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
 
         val fieldMap = parseBibtexFields(bibtexEntry)
 
-        val title = fieldMap["title"]?.trim() ?: ""
-        if (title.isBlank()) throw IllegalArgumentException("Missing or invalid field 'title'")
-
-        val yearStr = fieldMap["year"]?.trim()
-        val year = yearStr?.toIntOrNull()
-            ?: throw IllegalArgumentException("Missing or invalid field 'year': '${yearStr ?: "null"}'")
-
-        val authors = getValueFromFieldMap(fieldMap, authorTypes).trim()
-        if (authors.isBlank()) throw IllegalArgumentException("Missing or invalid field 'author/authors/editor'")
-
-        val venue = getValueFromFieldMap(fieldMap, venueTypes).trim()
-        if (venue.isBlank()) throw IllegalArgumentException("Missing or invalid field 'venue' (journal/booktitle/institution/organization/publisher/series/school/howpublished)")
-
-        val abstract = (fieldMap["abstract"] ?: "").trim()
-        if (abstract.isBlank()) throw IllegalArgumentException("Missing or invalid field 'abstract'")
-
+        val title = fieldMap["title"] ?: ""
+        val year = fieldMap["year"]?.toIntOrNull() ?: 0
+        val authors = getValueFromFieldMap(fieldMap, authorTypes)
+        val venue = getValueFromFieldMap(fieldMap, venueTypes)
+        val abstract = fieldMap["abstract"] ?: " "
         val keywords = parseKeywords(fieldMap["keywords"] ?: fieldMap["keyword"])
         val references = parseReferences(fieldMap["references"])
         val doi = fieldMap["doi"]?.let {
