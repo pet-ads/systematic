@@ -156,7 +156,7 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     }
 
     private fun extractStudyType(bibtexEntry: String): StudyType {
-        val entryTypeRegex = Regex("""^\s*(\w+)\s*\{""")
+        val entryTypeRegex = Regex("""^\s*@?\s*([A-Za-z]+)\s*\{""")
         val matchResult = entryTypeRegex.find(bibtexEntry)
         val rawType = matchResult?.groupValues?.get(1) ?: ""
         val studyTypeName = rawType.uppercase(Locale.getDefault())
@@ -168,7 +168,7 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     }
 
     private fun extractEntryKey(bibtexEntry: String): String {
-        val keyRegex = Regex("""^\s*\w+\s*\{\s*([^,}]+)\s*,""", RegexOption.DOT_MATCHES_ALL)
+        val keyRegex = Regex("""^\s*@?\s*\w+\s*\{\s*([^,}]+)\s*,""", RegexOption.DOT_MATCHES_ALL)
         val matchResult = keyRegex.find(bibtexEntry)
         return matchResult?.groupValues?.get(1)?.trim() ?: "UNKNOWN"
     }
