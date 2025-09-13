@@ -65,7 +65,8 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
                 validStudies.add(study)
             } catch (e: Exception) {
                 val entryName = extractInvalidRis(entry)
-                invalidEntries.add(entryName)
+                val reason = e.message ?: "Invalid entry"
+                invalidEntries.add("Entry '${summarizeRisEntry(entry)}': $reason")
             }
         }
         return Pair(validStudies, invalidEntries)
@@ -75,20 +76,33 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         require(ris.isNotBlank()) { "convert: RIS must not be blank." }
 
         val fieldMap = parseRisFields(ris)
-        val venue = fieldMap["JO"] ?: ""
-        val primaryTitle = getValueFromFieldMap(fieldMap, titleTypes)
-        val secondaryTitle = fieldMap["T2"] ?: ""
-        val year = fieldMap["PY"]?.toIntOrNull()
+        val venue = fieldMap["JO"]?.trim() ?: ""
+        if (venue.isBlank()) throw IllegalArgumentException("Missing or invalid field 'venue' (JO)")
+
+        val primaryTitle = getValueFromFieldMap(fieldMap, titleTypes).trim()
+        val secondaryTitle = fieldMap["T2"]?.trim() ?: ""
+        val fullTitle = ("$primaryTitle $secondaryTitle").trim()
+        if (fullTitle.isBlank()) throw IllegalArgumentException("Missing or invalid field 'title' (TI/T1 or T2)")
+
+        val year = fieldMap["PY"]?.trim()?.toIntOrNull()
             ?: fieldMap["Y1"]?.let { extractYear(it) }
-            ?: 0
-        val authors = parseAuthors(fieldMap)
+            ?: throw IllegalArgumentException("Missing or invalid field 'year' (PY/Y1)")
+
+        val authors = parseAuthors(fieldMap).trim()
+        if (authors.isBlank()) throw IllegalArgumentException("Missing or invalid field 'authors' (AU/A1)")
         val type = extractStudyType(ris)
-        val abs = fieldMap["AB"] ?: ""
+        val abs = fieldMap["AB"]?.trim() ?: ""
+        if (abs.isBlank()) throw IllegalArgumentException("Missing or invalid field 'abstract' (AB)")
         val keywords = parseKeywords(fieldMap["KW"])
         val references = parseReferences(fieldMap["CR"])
-        val doi = fieldMap["DO"]?.let { Doi("https://doi.org/$it") }
+        val doi = fieldMap["DO"]?.let {
+            val clean = it.trim()
+            if (clean.isBlank()) throw IllegalArgumentException("Invalid DOI: empty value")
+            if (!clean.startsWith("10.")) throw IllegalArgumentException("Invalid DOI '$clean'")
+            Doi("https://doi.org/$clean")
+        }
 
-        return Study(type, ("$primaryTitle $secondaryTitle").trim(), year, authors, venue, treatAbstract(abs), keywords, references, doi)
+        return Study(type, fullTitle, year, authors, venue, treatAbstract(abs), keywords, references, doi)
     }
 
     fun parseRisFields(ris: String): Map<String, String> {
@@ -232,5 +246,14 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         val risRegex = Regex("""TY\s*-\s*[\s\S]*?ER\s*-\s*""", RegexOption.MULTILINE)
         val matchResult = risRegex.find(risEntry)
         return matchResult?.value?.trim() ?: "UNKNOWN"
+    }
+
+    private fun summarizeRisEntry(risEntry: String): String {
+        val map = parseRisFields(risEntry)
+        val ti = map["TI"] ?: map["T1"] ?: map["T2"]
+        if (!ti.isNullOrBlank()) return ti.trim().take(80)
+        val tyRegex = Regex("""(?m)^TY\s*-\s*(.+)$""")
+        val ty = tyRegex.find(risEntry)?.groupValues?.get(1)?.trim()
+        return ty ?: "UNKNOWN"
     }
 }

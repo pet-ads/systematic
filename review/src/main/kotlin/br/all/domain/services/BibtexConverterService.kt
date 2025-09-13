@@ -71,8 +71,9 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
                     val study = convert(entry)
                     validStudies.add(study)
                 } catch (e: Exception) {
-                    val entryName = extractEntryName(entry)
-                    invalidEntries.add(entryName)
+                    val entryKey = extractEntryKey(entry)
+                    val reason = e.message ?: "Invalid entry"
+                    invalidEntries.add("Entry '$entryKey': $reason")
                 }
             }
         return Pair(validStudies, invalidEntries)
@@ -83,18 +84,31 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
 
         val fieldMap = parseBibtexFields(bibtexEntry)
 
-        val title = fieldMap["title"] ?: ""
-        val year = fieldMap["year"]?.toIntOrNull() ?: 0
-        val authors = getValueFromFieldMap(fieldMap, authorTypes)
-        val venue = getValueFromFieldMap(fieldMap, venueTypes)
-        val abstract = fieldMap["abstract"] ?: " "
+        val title = fieldMap["title"]?.trim() ?: ""
+        if (title.isBlank()) throw IllegalArgumentException("Missing or invalid field 'title'")
+
+        val yearStr = fieldMap["year"]?.trim()
+        val year = yearStr?.toIntOrNull()
+            ?: throw IllegalArgumentException("Missing or invalid field 'year': '${yearStr ?: "null"}'")
+
+        val authors = getValueFromFieldMap(fieldMap, authorTypes).trim()
+        if (authors.isBlank()) throw IllegalArgumentException("Missing or invalid field 'author/authors/editor'")
+
+        val venue = getValueFromFieldMap(fieldMap, venueTypes).trim()
+        if (venue.isBlank()) throw IllegalArgumentException("Missing or invalid field 'venue' (journal/booktitle/institution/organization/publisher/series/school/howpublished)")
+
+        val abstract = (fieldMap["abstract"] ?: "").trim()
+        if (abstract.isBlank()) throw IllegalArgumentException("Missing or invalid field 'abstract'")
+
         val keywords = parseKeywords(fieldMap["keywords"] ?: fieldMap["keyword"])
         val references = parseReferences(fieldMap["references"])
         val doi = fieldMap["doi"]?.let {
             val cleanDoi = it.replace(Regex("[{}]"), "").trim()
+            if (cleanDoi.isBlank()) throw IllegalArgumentException("Invalid DOI: empty value")
             val fullUrl = if (cleanDoi.startsWith("http")) {
                 cleanDoi
             } else {
+                if (!cleanDoi.startsWith("10.")) throw IllegalArgumentException("Invalid DOI '$cleanDoi'")
                 "https://doi.org/$cleanDoi"
             }
             Doi(fullUrl)
@@ -142,15 +156,20 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     }
 
     private fun extractStudyType(bibtexEntry: String): StudyType {
-        val entryTypeRegex = Regex("""\b(\w+)\{""")
+        val entryTypeRegex = Regex("""^\s*(\w+)\s*\{""")
         val matchResult = entryTypeRegex.find(bibtexEntry)
-        val studyTypeName = matchResult?.groupValues?.get(1)?.uppercase(Locale.getDefault()) ?: "UNKNOWN"
-        return StudyType.valueOf(studyTypeName)
+        val rawType = matchResult?.groupValues?.get(1) ?: ""
+        val studyTypeName = rawType.uppercase(Locale.getDefault())
+        return try {
+            StudyType.valueOf(studyTypeName)
+        } catch (e: IllegalArgumentException) {
+            throw IllegalArgumentException("Invalid or unsupported type '$rawType'")
+        }
     }
 
-     private fun extractEntryName(bibtexEntry: String): String {
-        val nameRegex = Regex("""\{(.*)}""", RegexOption.DOT_MATCHES_ALL)
-        val matchResult = nameRegex.find(bibtexEntry)
+    private fun extractEntryKey(bibtexEntry: String): String {
+        val keyRegex = Regex("""^\s*\w+\s*\{\s*([^,}]+)\s*,""", RegexOption.DOT_MATCHES_ALL)
+        val matchResult = keyRegex.find(bibtexEntry)
         return matchResult?.groupValues?.get(1)?.trim() ?: "UNKNOWN"
     }
 }
