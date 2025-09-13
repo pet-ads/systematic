@@ -109,6 +109,20 @@ class FindProtocolStageServiceImplTest {
         }
 
         @Test
+        fun `should return GENERAL_DEFINITION stage (T1) when systematic study objectives is blank`() {
+            val incompleteStudyDto = createFullSystematicStudyDto(objectives = "")
+            val protocolDto = protocolFactory.protocolDto(systematicStudy = systematicStudyId)
+
+            every { systematicStudyRepository.findById(systematicStudyId) } returns incompleteStudyDto
+            every { protocolRepository.findById(systematicStudyId) } returns protocolDto
+
+            sut.getStage(presenter, RequestModel(researcherId, systematicStudyId))
+
+            val expectedResponse = ResponseModel(researcherId, systematicStudyId, ProtocolStage.GENERAL_DEFINITION)
+            verify(exactly = 1) { presenter.prepareSuccessView(expectedResponse) }
+        }
+
+        @Test
         fun `should return RESEARCH_QUESTIONS stage (T2) when T1 is complete but no research questions exist`() {
             val protocolDto = createFullProtocolDto(researchQuestions = emptySet())
 
