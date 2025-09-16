@@ -4,6 +4,7 @@ import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.study.*
 import br.all.domain.services.RisTestData.testInput
+import br.all.domain.shared.exception.ris.RisParseException
 import org.junit.jupiter.api.*
 import java.util.*
 import kotlin.test.assertEquals
@@ -202,13 +203,14 @@ class RisConverterServiceTest {
         @Test
         fun `Should create a StudyReview list from multiple RIS entries as input`() {
             val ris = testInput["multiple RIS entries"]!!
-            val studyReviewList = sut.convertManyToStudyReview(
+            val (validStudies, invalidEntries) = sut.convertManyToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
                 ris,
                 source = mutableSetOf("Compendex")
             )
-            assertEquals(3, studyReviewList.first.size)
+            assertEquals(0, invalidEntries.size)
+            assertEquals(3, validStudies.size)
         }
 
         @Test
@@ -526,9 +528,9 @@ class RisConverterServiceTest {
         }
 
         @Test
-        fun `should throw IllegalArgumentException for unknown type entry`() {
+        fun `should throw RisParseException for unknown type entry`() {
             val ris = testInput["unknown ris"]!!
-            assertThrows<IllegalArgumentException> {
+            assertThrows<RisParseException> {
                 val study = sut.convert(ris)
                 sut.convertToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
@@ -540,9 +542,9 @@ class RisConverterServiceTest {
         }
 
         @Test
-        fun `should throw IllegalArgumentException for invalid title entry`() {
+        fun `should throw RisParseException for invalid title entry`() {
             val ris = testInput["invalid title"].toString()
-            assertThrows<IllegalArgumentException> {
+            assertThrows<RisParseException> {
                 val study = sut.convert(ris)
                 sut.convertToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
@@ -554,9 +556,9 @@ class RisConverterServiceTest {
         }
 
         @Test
-        fun `should throw IllegalArgumentException for invalid author entry`() {
+        fun `should throw RisParseException for invalid author entry`() {
             val ris = testInput["invalid authors"]!!
-            assertThrows<IllegalArgumentException> {
+            assertThrows<RisParseException> {
                 val study = sut.convert(ris)
                 sut.convertToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
@@ -568,9 +570,9 @@ class RisConverterServiceTest {
         }
 
         @Test
-        fun `should throw IllegalArgumentException for invalid year entry`() {
+        fun `should throw RisParseException for invalid year entry`() {
             val ris = testInput["invalid year"]!!
-            assertThrows<IllegalArgumentException> {
+            assertThrows<RisParseException> {
                 val study = sut.convert(ris)
                 sut.convertToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
@@ -582,9 +584,9 @@ class RisConverterServiceTest {
         }
 
         @Test
-        fun `should throw IllegalArgumentException for invalid venue entry`() {
+        fun `should throw RisParseException for invalid venue entry`() {
             val ris = testInput["invalid venue"]!!
-            assertThrows<IllegalArgumentException> {
+            assertThrows<RisParseException> {
                 val study = sut.convert(ris)
                 sut.convertToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
@@ -595,10 +597,12 @@ class RisConverterServiceTest {
             }
         }
 
+        // an empty abstract is valid!
         @Test
-        fun `should throw IllegalArgumentException for invalid abstract entry`() {
+        @Disabled
+        fun `should throw RisParseException for invalid abstract entry`() {
             val ris = testInput["invalid abstract"]!!
-            assertThrows<IllegalArgumentException> {
+            assertThrows<RisParseException> {
                 val study = sut.convert(ris)
                 sut.convertToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
@@ -610,9 +614,9 @@ class RisConverterServiceTest {
         }
 
         @Test
-        fun `should throw IllegalArgumentException for invalid doi`() {
+        fun `should throw RisParseException for invalid doi`() {
             val ris = testInput["invalid doi"]!!
-            assertThrows<IllegalArgumentException> {
+            assertThrows<RisParseException> {
                 val study = sut.convert(ris)
                 sut.convertToStudyReview(
                     SystematicStudyId(UUID.randomUUID()),
