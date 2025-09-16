@@ -164,7 +164,7 @@ object BibtexTestData {
               school  = {Stanford University},
               address = {Stanford, CA},
               year    = {1956},
-              month   = {jun}
+              month   = {jun},
               abstract = {Lorem Ipsum}
             }
         """,
@@ -176,7 +176,7 @@ object BibtexTestData {
               school  = {Massachusetts Institute of Technology},
               year    = {1996},
               address = {Cambridge, MA},
-              month   = {sep}
+              month   = {sep},
               abstract = {Lorem Ipsum}
             }
         """,
@@ -189,7 +189,7 @@ object BibtexTestData {
               year      = {2016},
               publisher = {Pearson},
               address   = {New York, NY},
-              pages     = {187--221}
+              pages     = {187--221},
               abstract  = {Lorem Ipsum}
             }
         """,
@@ -222,7 +222,7 @@ object BibtexTestData {
               author       = {{NASA}},
               howpublished = {\url{https://www.nasa.gov/nh/pluto-the-other-red-planet}},
               year         = {2015},
-              note         = {Accessed: 2018-12-06}
+              note         = {Accessed: 2018-12-06},
               abstract     = {Lorem Ipsum}
             }
         """,
