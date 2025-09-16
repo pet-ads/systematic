@@ -61,7 +61,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         val validStudies = mutableListOf<Study>()
         val invalidEntries = mutableListOf<String>()
 
-        val entryRegex = Regex("""(^TY\s*-.+?)(?=^\s*TY\s*-|\Z)""", setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
+        val entryRegex = Regex("""(^\s*TY\s*-.+?)(?=^\s*TY\s*-|\Z)""", setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
 
         entryRegex.findAll(ris).forEach { matchResult ->
             val entry = matchResult.value.trim()
@@ -190,7 +190,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
     }
 
     private fun extractTitleForError(risEntry: String): String {
-        val titleRegex = Regex("""^[T1|I]\s*-\s*(.+)$""", RegexOption.MULTILINE)
+        val titleRegex = Regex("""^(?:TI|T1)\s*-\s*(.+)$""", RegexOption.MULTILINE)
         return titleRegex.find(risEntry)?.groupValues?.get(1)?.trim() ?: "Unknown Title"
     }
 }
