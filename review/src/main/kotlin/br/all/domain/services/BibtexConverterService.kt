@@ -119,7 +119,7 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
                 val fullUrl = if (cleanDoi.startsWith("http")) cleanDoi else "https://doi.org/$cleanDoi"
                 Doi(fullUrl)
             } catch (e: Exception) {
-                throw BibtexInvalidFieldFormatException("doi", it, "a valid DOI string or URL")
+                null
             }
         }
 

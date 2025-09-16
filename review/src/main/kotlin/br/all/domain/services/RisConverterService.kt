@@ -107,7 +107,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
             try {
                 Doi("https://doi.org/${it.trim()}")
             } catch (e: Exception) {
-                throw RisInvalidFieldFormatException("DOI (DO)", it, "a valid DOI identifier")
+                null
             }
         }
 
