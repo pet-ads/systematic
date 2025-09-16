@@ -30,6 +30,7 @@ object BibtexTestData {
         "invalid year" to """
             @article{nash51,
                 title = {Non-cooperative Games},
+                author = {Nash, John},
                 journal = {Annals of Mathematics},
                 abstract = {Lorem Ipsum},
                 keywords = {keyword1, keyword2},
@@ -42,6 +43,7 @@ object BibtexTestData {
             @article{nash51,
                 title = {Non-cooperative Games},
                 year = {1951},
+                author = {Nash, John},
                 journal = {Annals of Mathematics},
                 keywords = {keyword1, keyword2},
                 references = {ref1, ref2},
@@ -53,6 +55,7 @@ object BibtexTestData {
             @article{nash51,
                 title = {Non-cooperative Games},
                 year = {1951},
+                author = {Nash, John},
                 abstract = {Lorem Ipsum},
                 keywords = {keyword1, keyword2},
                 references = {ref1, ref2},
