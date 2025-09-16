@@ -34,6 +34,7 @@ class UpdateSystematicStudyServiceImpl(
         val updated = SystematicStudy.fromDto(dto).apply {
             title = request.title ?: title
             description = request.description ?: description
+            objectives = request.objectives ?: objectives
         }.toDto()
 
         if (updated != dto) repository.saveOrUpdate(updated)

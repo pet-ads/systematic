@@ -3,10 +3,32 @@ package br.all.domain.services
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.study.*
+import br.all.domain.shared.exception.ris.RisParseException
+import br.all.domain.shared.exception.ris.RisMissingRequiredFieldException
+import br.all.domain.shared.exception.ris.RisInvalidFieldFormatException
+import br.all.domain.shared.exception.ris.RisUnknownEntryTypeException
 
 class RisConverterService(private val studyReviewIdGeneratorService: IdGeneratorService) {
 
     private val titleTypes = listOf("TI", "T1")
+    private val authorTypes = listOf("AU", "A1")
+    private val yearTypes = listOf("PY", "Y1")
+    private val venueTypes = listOf("JO", "T2", "JF", "JA")
+
+    fun convertManyToStudyReview(
+        systematicStudyId: SystematicStudyId,
+        searchSessionId: SearchSessionID,
+        ris: String,
+        source: MutableSet<String>,
+    ): Pair<List<StudyReview>, List<String>> {
+        require(ris.isNotBlank()) { "RIS input must not be blank." }
+
+        val (validStudies, invalidEntries) = convertMany(ris)
+        val studyReviews = validStudies.map { study -> convertToStudyReview(systematicStudyId, searchSessionId, study, source) }
+
+        return Pair(studyReviews, invalidEntries)
+    }
+
     fun convertToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, study: Study, source: MutableSet<String>): StudyReview {
         val studyReviewId = StudyReviewId(studyReviewIdGeneratorService.next())
 
@@ -34,203 +56,141 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         )
     }
 
-    fun convertManyToStudyReview(
-        systematicStudyId: SystematicStudyId,
-        searchSessionId: SearchSessionID,
-        ris: String,
-        source: MutableSet<String>,
-    ): Pair<List<StudyReview>, List<String>> {
-        require(ris.isNotBlank()) { "convertManyToStudyReview: RIS must not be blank." }
-
-        val (validStudies, invalidEntries) = convertMany(ris)
-        val studyReviews = validStudies.map { study -> convertToStudyReview(systematicStudyId, searchSessionId, study, source) }
-
-        return Pair(studyReviews, invalidEntries)
-    }
 
     private fun convertMany(ris: String): Pair<List<Study>, List<String>> {
         val validStudies = mutableListOf<Study>()
         val invalidEntries = mutableListOf<String>()
 
-        val regex = Regex(
-            "(?i)\\bTY\\b\\s*-.*?(?=(\\bTY\\b\\s*-|\\bER\\b\\s*-|\\z))",
-            RegexOption.DOT_MATCHES_ALL
-        )
+        val entryRegex = Regex("""(^\s*TY\s*-.+?)(?=^\s*TY\s*-|\Z)""", setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
 
-        val entries = regex.findAll(ris).map { it.value.trim() }
-
-        entries.forEach { entry ->
+        entryRegex.findAll(ris).forEach { matchResult ->
+            val entry = matchResult.value.trim()
+            val entryIdentifier = extractTitleForError(entry)
             try {
-                val study = convert(entry)
-                validStudies.add(study)
+                if (entry.isNotBlank()) {
+                    val study = convert(entry)
+                    validStudies.add(study)
+                }
+            } catch (e: RisParseException) {
+                invalidEntries.add("Entry '$entryIdentifier': ${e.message}")
             } catch (e: Exception) {
-                val entryName = extractInvalidRis(entry)
-                invalidEntries.add(entryName)
+                invalidEntries.add("Entry '$entryIdentifier': An unexpected error occurred. ${e.message}")
             }
         }
         return Pair(validStudies, invalidEntries)
     }
 
     fun convert(ris: String): Study {
-        require(ris.isNotBlank()) { "convert: RIS must not be blank." }
+        require(ris.isNotBlank()) { "RIS entry must not be blank." }
 
         val fieldMap = parseRisFields(ris)
-        val venue = fieldMap["JO"] ?: ""
+
+        val type = extractStudyType(fieldMap)
+
         val primaryTitle = getValueFromFieldMap(fieldMap, titleTypes)
+            .takeIf { it.isNotBlank() } ?: throw RisMissingRequiredFieldException("Title (TI or T1)")
         val secondaryTitle = fieldMap["T2"] ?: ""
-        val year = fieldMap["PY"]?.toIntOrNull()
-            ?: fieldMap["Y1"]?.let { extractYear(it) }
-            ?: 0
+        val title = "$primaryTitle $secondaryTitle".trim()
+
+        val year = extractYear(fieldMap)
+            ?: throw RisMissingRequiredFieldException("Year (PY or Y1)")
+
         val authors = parseAuthors(fieldMap)
-        val type = extractStudyType(ris)
-        val abs = fieldMap["AB"] ?: ""
+            .takeIf { it.isNotBlank() } ?: throw RisMissingRequiredFieldException("Author (AU or A1)")
+
+        val venue = getValueFromFieldMap(fieldMap, venueTypes)
+        val abstract = fieldMap["AB"] ?: ""
         val keywords = parseKeywords(fieldMap["KW"])
         val references = parseReferences(fieldMap["CR"])
-        val doi = fieldMap["DO"]?.let { Doi("https://doi.org/$it") }
 
-        return Study(type, ("$primaryTitle $secondaryTitle").trim(), year, authors, venue, treatAbstract(abs), keywords, references, doi)
+        val doi = fieldMap["DO"]?.let {
+            try {
+                Doi("https://doi.org/${it.trim()}")
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        return Study(type, title, year, authors, venue, abstract, keywords, references, doi)
     }
 
-    fun parseRisFields(ris: String): Map<String, String> {
-        val fieldMap = mutableMapOf<String, String>()
+    private fun parseRisFields(ris: String): Map<String, String> {
+        val multiMap = mutableMapOf<String, MutableList<String>>()
         val lines = ris.trim().lines()
+        val tagRegex = Regex("""^([A-Z0-9]{2})\s*-\s?(.*)""")
         var currentKey: String? = null
 
         for (line in lines) {
             val trimmedLine = line.trim()
-            if (trimmedLine.contains(" - ")) {
-                val keyValuePair = trimmedLine.split(" - ", limit = 2)
-                if (keyValuePair.size == 2) {
-                    currentKey = keyValuePair[0].trim()
-                    val value = keyValuePair[1].trim()
-                    if (currentKey == "AU" || currentKey == "A1") {
-                        fieldMap[currentKey] = fieldMap.getOrDefault(currentKey, "") + value + "; "
-                    } else if (currentKey == "KW"){
-                        fieldMap[currentKey] = fieldMap.getOrDefault(currentKey, "") + value + "; "
-                    } else {
-                        fieldMap[currentKey] = value
-                    }
-                }
+            if (trimmedLine.isBlank()) continue
+
+            val match = tagRegex.find(trimmedLine)
+            if (match != null) {
+                currentKey = match.groupValues[1]
+                val value = match.groupValues[2].trim()
+                multiMap.getOrPut(currentKey) { mutableListOf() }.add(value)
             } else if (currentKey != null) {
-                fieldMap[currentKey] = "${fieldMap[currentKey]} $trimmedLine".trim()
+                val values = multiMap[currentKey]
+                if (values != null && values.isNotEmpty()) {
+                    val lastIndex = values.lastIndex
+                    values[lastIndex] = values[lastIndex] + " " + trimmedLine
+                }
             }
         }
-        return fieldMap
+
+        return multiMap.mapValues { (_, valueList) ->
+            valueList.joinToString(";")
+        }
     }
 
-    fun extractStudyType(risEntry: String): StudyType {
-        val entryTypeRegex = Regex("""(?m)^TY\s*-\s*(.+)$""")
-        val matchResult = entryTypeRegex.find(risEntry)
-        val studyTypeName = translateToStudyType(matchResult?.groupValues?.get(1) ?: "")
-        return studyTypeName
+    private fun extractStudyType(fieldMap: Map<String, String>): StudyType {
+        val typeCode = fieldMap["TY"] ?: throw RisMissingRequiredFieldException("Entry Type (TY)")
+        return translateToStudyType(typeCode)
     }
 
-    private fun translateToStudyType(studyType: String): StudyType {
-        require(studyType.isNotBlank()) { "translateToStudyType: studytype must not be blank." }
-        val risMap = mapOf(
-            "ABST" to StudyType.ARTICLE,
-            "ADVS" to StudyType.MISC,
-            "AGGR" to StudyType.MISC,
-            "ANCIENT" to StudyType.MISC,
-            "ART" to StudyType.MISC,
-            "BILL" to StudyType.MISC,
-            "BLOG" to StudyType.MISC,
-            "BOOK" to StudyType.BOOK,
-            "CASE" to StudyType.MISC,
-            "CHAP" to StudyType.INBOOK,
-            "CHART" to StudyType.MISC,
-            "CLSWK" to StudyType.MISC,
-            "COMP" to StudyType.MISC,
-            "CONF" to StudyType.PROCEEDINGS,
-            "CPAPER" to StudyType.INPROCEEDINGS,
-            "CTLG" to StudyType.MISC,
-            "DATA" to StudyType.MISC,
-            "DBASE" to StudyType.MISC,
-            "DICT" to StudyType.MISC,
-            "EBOOK" to StudyType.BOOK,
-            "ECHAP" to StudyType.INBOOK,
-            "EDBOOK" to StudyType.BOOK,
-            "EJOUR" to StudyType.ARTICLE,
-            "ELEC" to StudyType.MISC,
-            "ENCYC" to StudyType.MISC,
-            "EQUA" to StudyType.MISC,
-            "FIGURE" to StudyType.MISC,
-            "GEN" to StudyType.MISC,
-            "GOVDOC" to StudyType.MISC,
-            "GRNT" to StudyType.MISC,
-            "HEAR" to StudyType.MISC,
-            "ICOMM" to StudyType.MISC,
-            "INPR" to StudyType.ARTICLE,
-            "INTV" to StudyType.MISC,
-            "JFULL" to StudyType.ARTICLE,
-            "JOUR" to StudyType.ARTICLE,
-            "LEGAL" to StudyType.MISC,
-            "MANSCPT" to StudyType.UNPUBLISHED,
-            "MAP" to StudyType.MISC,
-            "MGZN" to StudyType.ARTICLE,
-            "MPCT" to StudyType.MISC,
-            "MULTI" to StudyType.MISC,
-            "MUSIC" to StudyType.MISC,
-            "NEWS" to StudyType.ARTICLE,
-            "PAMP" to StudyType.BOOKLET,
-            "PAT" to StudyType.MISC,
-            "PCOMM" to StudyType.MISC,
-            "POD" to StudyType.MISC,
-            "PRESS" to StudyType.MISC,
-            "RPRT" to StudyType.TECHREPORT,
-            "SER" to StudyType.MISC,
-            "SLIDE" to StudyType.MISC,
-            "SOUND" to StudyType.MISC,
-            "STAND" to StudyType.MISC,
-            "STAT" to StudyType.MISC,
-            "STD" to StudyType.MISC,
-            "THES" to StudyType.MASTERSTHESIS,
-            "UNBILL" to StudyType.MISC,
-            "UNPB" to StudyType.UNPUBLISHED,
-            "UNPD" to StudyType.UNPUBLISHED,
-            "VIDEO" to StudyType.MISC
-        )
-        val st = risMap.getOrElse(studyType) { throw IllegalArgumentException() }
-        return st
+    private fun translateToStudyType(risType: String): StudyType {
+        return when (risType.trim().uppercase()) {
+            "JOUR", "EJOUR", "JFULL", "ABST", "INPR", "MGZN", "NEWS" -> StudyType.ARTICLE
+            "BOOK", "EBOOK", "EDBOOK" -> StudyType.BOOK
+            "CHAP", "ECHAP" -> StudyType.INBOOK
+            "CONF" -> StudyType.PROCEEDINGS
+            "CPAPER" -> StudyType.INPROCEEDINGS
+            "RPRT" -> StudyType.TECHREPORT
+            "THES" -> StudyType.MASTERSTHESIS
+            "PAMP" -> StudyType.BOOKLET
+            "MANSCPT", "UNPB", "UNPD" -> StudyType.UNPUBLISHED
+            "ADVS", "AGGR", "ANCIENT", "ART", "BILL", "BLOG", "CASE", "CHART", "CLSWK", "COMP", "CTLG", "DATA", "DBASE", "DICT", "ELEC", "ENCYC", "EQUA", "FIGURE", "GEN", "GOVDOC", "GRNT", "HEAR", "ICOMM", "INTV", "LEGAL", "MAP", "MPCT", "MULTI", "MUSIC", "PAT", "PCOMM", "POD", "PRESS", "SER", "SLIDE", "SOUND", "STAND", "STAT", "STD", "UNBILL", "VIDEO" -> StudyType.MISC
+            else -> throw RisUnknownEntryTypeException(risType)
+        }
     }
 
     private fun getValueFromFieldMap(fieldMap: Map<String, String>, keys: List<String>): String {
-        for (key in keys) {
-            val value = fieldMap[key]
-            if (value != null) return value
-        }
-        return ""
+        return keys.firstNotNullOfOrNull { key -> fieldMap[key] } ?: ""
     }
 
-    private fun extractYear(y1: String): Int? {
-        val yearRegex = Regex("""\b\d{4}\b""")
-        return yearRegex.find(y1)?.value?.toIntOrNull()
+    private fun extractYear(fieldMap: Map<String, String>): Int? {
+        val yearString = getValueFromFieldMap(fieldMap, yearTypes)
+        return yearString.let { Regex("""\b(\d{4})\b""").find(it)?.value?.toIntOrNull() }
     }
 
     private fun parseKeywords(keywords: String?): Set<String> {
-        return keywords?.split(";")?.map { it.trim() }?.filter { it.isNotBlank() }?.toSet()?: emptySet()
+        return keywords?.split(';')?.map { it.trim() }?.filter { it.isNotBlank() }?.toSet() ?: emptySet()
     }
 
     private fun parseReferences(references: String?): List<String> {
-        return references?.split(";")?.map { it.trim() }?.filter { it.isNotBlank() }?.toList()?: emptyList()
+        return references?.split(';')?.map { it.trim() }?.filter { it.isNotBlank() } ?: emptyList()
     }
 
     private fun parseAuthors(fieldMap: Map<String, String>): String {
-        val authorKeys = listOf("AU", "A1")
-        val authors = authorKeys.flatMap { key ->
-            fieldMap[key]?.split(";")?.map { it.trim() }?.filter { it.isNotBlank() } ?: emptyList()
-        }
-        return authors.joinToString(", ")
+        val authors = getValueFromFieldMap(fieldMap, authorTypes)
+        return authors.split(';')
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .joinToString(separator = ", ")
     }
 
-    private fun treatAbstract(abstract: String): String {
-        val AB = abstract.split("ER").first().trim()
-        return AB
-    }
-
-    private fun extractInvalidRis(risEntry: String): String {
-        val risRegex = Regex("""TY\s*-\s*[\s\S]*?ER\s*-\s*""", RegexOption.MULTILINE)
-        val matchResult = risRegex.find(risEntry)
-        return matchResult?.value?.trim() ?: "UNKNOWN"
+    private fun extractTitleForError(risEntry: String): String {
+        val titleRegex = Regex("""^(?:TI|T1)\s*-\s*(.+)$""", RegexOption.MULTILINE)
+        return titleRegex.find(risEntry)?.groupValues?.get(1)?.trim() ?: "Unknown Title"
     }
 }

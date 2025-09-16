@@ -32,7 +32,8 @@ class CreateSystematicReviewExampleService(
                 technologies, methodologies, and software engineering guidelines in the field.
             """.trimIndent(),
                 owner = ownerId,
-                collaborators = collaboratorIds
+                collaborators = collaboratorIds,
+                objectives = "These are the main objectives of this systematic review."
             )
         )
 
@@ -156,11 +157,11 @@ class CreateSystematicReviewExampleService(
             type = "PICK_MANY",
             context = QuestionContextEnum.ROB,
             options = listOf(
-                "Selection bias (e.g., non-randomized sampling)",
-                "Performance bias (e.g., lack of blinding of participants)",
-                "Detection bias (e.g., lack of blinding of outcome assessors)",
-                "Attrition bias (e.g., incomplete outcome data)",
-                "Reporting bias (e.g., selective reporting of outcomes)"
+                "Selection bias (e.g. non-randomized sampling)",
+                "Performance bias (e.g. lack of blinding of participants)",
+                "Detection bias (e.g. lack of blinding of outcome assessors)",
+                "Attrition bias (e.g. incomplete outcome data)",
+                "Reporting bias (e.g. selective reporting of outcomes)"
             )
         )
 

@@ -12,17 +12,26 @@ class SystematicStudy(
     description: String,
     owner: ResearcherId,
     collaborators: Set<ResearcherId> = emptySet(),
+    objectives: String,
 ) : Entity<UUID>(id) {
 
     private val _collaborators = collaborators.toMutableSet()
     val collaborators get() = _collaborators.toSet()
     var owner = owner
         private set
+
+    var objectives: String = objectives
+    set(value) {
+        require(value.isNotBlank()) { "Systematic study objective must not be blank." }
+        field = value
+    }
+
     var title: String = title
         set(value) {
             require(value.isNotBlank()) { "Systematic study title must not be blank." }
             field = value
         }
+
     var description = description
         set(value) {
             require(value.isNotBlank()) { "Systematic study description must not be blank." }
@@ -40,6 +49,8 @@ class SystematicStudy(
             it.addError("Systematic Study title must not be blank!")
         if (description.isBlank())
             it.addError("Systematic Study description must not be blank!")
+        if (objectives.isBlank())
+            it.addError("Systematic Study objective must not be blank!")
     }
 
     fun addCollaborator(researcherId: ResearcherId) = _collaborators.add(researcherId)
@@ -58,7 +69,7 @@ class SystematicStudy(
     }
 
     override fun toString() = "SystematicStudy(reviewId=$id, title='$title', description='$description', owner=$owner," +
-            " researchers=$_collaborators)"
+            " researchers=$_collaborators,"+" objectives=$objectives)"
 
     companion object
 }

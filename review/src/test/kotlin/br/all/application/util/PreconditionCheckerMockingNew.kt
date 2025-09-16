@@ -122,12 +122,14 @@ class PreconditionCheckerMockingNew(
         description: String = faker.lorem.words(),
         ownerId: UUID = userId,
         collaborators: Set<UUID> = emptySet(),
+        objectives: String = faker.beer.brand()
     ) = SystematicStudyDto(
         id,
         title,
         description,
         ownerId,
         mutableSetOf(ownerId).also { it.addAll(collaborators) },
+        objectives
     )
 
     private fun generateUserDto(

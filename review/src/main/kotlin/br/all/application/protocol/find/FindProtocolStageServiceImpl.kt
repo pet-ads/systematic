@@ -70,7 +70,7 @@ class FindProtocolStageServiceImpl(
         extractionQuestionsCount: Int
     ): ProtocolStage {
         return when {
-            !isT1Complete(studyDto, protocolDto) -> ProtocolStage.GENERAL_DEFINITION
+            !isT1Complete(studyDto) -> ProtocolStage.GENERAL_DEFINITION
             !isT2Complete(protocolDto) -> ProtocolStage.RESEARCH_QUESTIONS
 
             isPicocStarted(protocolDto) && !isT3Complete(protocolDto) -> ProtocolStage.PICOC
@@ -89,10 +89,9 @@ class FindProtocolStageServiceImpl(
     }
 
 
-    private fun isT1Complete(studyDto: SystematicStudyDto, protocolDto: ProtocolDto): Boolean {
-        val isStudyInfoComplete = studyDto.title.isNotBlank() && studyDto.description.isNotBlank()
-        val isProtocolGoalComplete = !protocolDto.goal.isNullOrBlank()
-        return isStudyInfoComplete && isProtocolGoalComplete
+    private fun isT1Complete(studyDto: SystematicStudyDto): Boolean {
+        val isStudyInfoComplete = studyDto.title.isNotBlank() && studyDto.description.isNotBlank() && studyDto.objectives.isNotBlank()
+        return isStudyInfoComplete
     }
 
     private fun isT2Complete(dto: ProtocolDto): Boolean {

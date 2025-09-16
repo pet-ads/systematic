@@ -30,12 +30,14 @@ class TestDataFactory {
         description: String = faker.lorem.words(),
         ownerId: UUID = researcher,
         collaborators: Set<UUID> = emptySet(),
+        objectives: String = faker.appliance.equipment()
     ) = SystematicStudyDto(
         id,
         title,
         description,
         ownerId,
         mutableSetOf(ownerId).also { it.addAll(collaborators) },
+        objectives,
     )
 
     fun protocolDto(systematicStudyId: UUID = systematicStudy) = Protocol
@@ -47,8 +49,9 @@ class TestDataFactory {
         researcherId: UUID = researcher,
         title: String = faker.book.title(),
         description: String = faker.lorem.words(),
-        collaborators: Set<UUID> = emptySet()
-    ) = CreateRequestModel(researcherId, title, description, collaborators)
+        collaborators: Set<UUID> = emptySet(),
+        objective: String = faker.appliance.equipment(),
+    ) = CreateRequestModel(researcherId, title, description, collaborators, objective)
 
     fun createResponseModel(
         researcherId: UUID = researcher,
@@ -110,7 +113,8 @@ class TestDataFactory {
         systematicStudyId: UUID = systematicStudy,
         title: String? = null,
         description: String? = null,
-    ) = UpdateRequestModel(researcherId, systematicStudyId, title, description)
+        objectives: String? = null,
+    ) = UpdateRequestModel(researcherId, systematicStudyId, title, description, objectives)
 
     fun updateResponseModel(
         researcherId: UUID = this.researcher,

@@ -63,13 +63,13 @@ class ProtocolControllerTest(
     }
 
     private fun getUrl(systematicStudy: UUID = factory.protocol) =
-        "/systematic-study/$systematicStudy/protocol"
+        "/api/v1/systematic-study/$systematicStudy/protocol"
 
     private fun putUrl(systematicStudyId: UUID = factory.protocol) =
-        "/systematic-study/$systematicStudyId/protocol"
+        "/api/v1/systematic-study/$systematicStudyId/protocol"
 
     private fun findStage(systematicStudy: UUID = factory.protocol) =
-        "/systematic-study/$systematicStudy/protocol/stage"
+        "/api/v1/systematic-study/$systematicStudy/protocol/stage"
 
     @Nested
     @DisplayName("When getting protocols")

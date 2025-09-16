@@ -16,25 +16,36 @@ class TestDataFactory {
         description: String = faker.lorem.words(),
         owner: UUID = this.researcherId,
         collaborators: MutableSet<UUID> = mutableSetOf(),
-    ) = SystematicStudyDocument(id, title, description, owner, collaborators.also { it.add(owner) }.toSet())
+        objectives: String = faker.adjective.positive(),
+    ) = SystematicStudyDocument(id, title, description, owner, collaborators.also { it.add(owner) }.toSet(), objectives)
 
     fun createValidPostRequest(
         title: String = faker.book.title(),
         description: String = faker.lorem.words(),
-        collaborators: Set<UUID> = emptySet()
-    ) = """
+        collaborators: Set<UUID> = emptySet(),
+        objectives: String = faker.animal.name(),
+    ): String {
+        val collaboratorsJson = collaborators.joinToString(
+            prefix = "[",
+            postfix = "]"
+        ) { "\"$it\"" }
+
+        return """
         {
             "title": "$title",
             "description": "$description",
-            "collaborators": $collaborators
+            "collaborators": $collaboratorsJson,
+            "objectives": "$objectives"
         }
     """.trimIndent()
+    }
 
     fun createInvalidPostRequest() = """
         {
             "title": "",
             "description": "",
             "collaborators": [],
+            "objectives": ""
         }
     """.trimIndent()
 

@@ -11,6 +11,7 @@ interface UpdateSystematicStudyService {
         val systematicStudy: UUID,
         val title: String?,
         val description: String?,
+        val objectives: String?
     )
 
     data class ResponseModel(

@@ -10,13 +10,16 @@ import br.all.domain.model.study.Study
 import br.all.domain.model.study.StudyReview
 import br.all.domain.model.study.StudyReviewId
 import br.all.domain.model.study.StudyType
+import br.all.domain.shared.exception.bibtex.BibtexParseException
+import br.all.domain.shared.exception.bibtex.BibtexMissingRequiredFieldException
+import br.all.domain.shared.exception.bibtex.BibtexInvalidFieldFormatException
+import br.all.domain.shared.exception.bibtex.BibtexUnknownEntryTypeException
 import java.util.Locale
 
 class BibtexConverterService(private val studyReviewIdGeneratorService: IdGeneratorService) {
 
     private val authorTypes = listOf("author", "authors", "editor")
-    private val venueTypes = listOf("journal", "booktitle", "institution",
-        "organization", "publisher", "series", "school", "howpublished")
+    private val venueTypes = listOf("journal", "booktitle", "institution", "organization", "publisher", "series", "school", "howpublished")
 
     fun convertManyToStudyReview(
         systematicStudyId: SystematicStudyId,
@@ -34,7 +37,6 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
 
     fun convertToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, study: Study, source: MutableSet<String>): StudyReview {
         val studyReviewId = StudyReviewId(studyReviewIdGeneratorService.next())
-
         return StudyReview(
             studyReviewId,
             systematicStudyId,
@@ -63,16 +65,18 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
         val validStudies = mutableListOf<Study>()
         val invalidEntries = mutableListOf<String>()
 
-        bibtex.splitToSequence("@")
+        bibtex.split(Regex("(?=\\s*@)"))
             .map { it.trim() }
             .filter { it.isNotBlank() }
             .forEach { entry ->
+                val entryKey = extractEntryKey(entry)
                 try {
                     val study = convert(entry)
                     validStudies.add(study)
+                } catch (e: BibtexParseException) {
+                    invalidEntries.add("Entry '$entryKey': ${e.message}")
                 } catch (e: Exception) {
-                    val entryName = extractEntryName(entry)
-                    invalidEntries.add(entryName)
+                    invalidEntries.add("Entry '$entryKey': An unexpected error occurred during parsing. Details: ${e.message}")
                 }
             }
         return Pair(validStudies, invalidEntries)
@@ -81,76 +85,90 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     fun convert(bibtexEntry: String): Study {
         require(bibtexEntry.isNotBlank()) { "BibTeX entry must not be blank." }
 
+        val type = try {
+            extractStudyType(bibtexEntry)
+        } catch (e: IllegalArgumentException) {
+            val entryTypeName = bibtexEntry.substringBefore('{').trim().removePrefix("@")
+            throw BibtexUnknownEntryTypeException(entryTypeName.ifBlank { "N/A" })
+        }
+
         val fieldMap = parseBibtexFields(bibtexEntry)
 
-        val title = fieldMap["title"] ?: ""
-        val year = fieldMap["year"]?.toIntOrNull() ?: 0
-        val authors = getValueFromFieldMap(fieldMap, authorTypes)
-        val venue = getValueFromFieldMap(fieldMap, venueTypes)
-        val abstract = fieldMap["abstract"] ?: " "
+        val title = fieldMap["title"]?.takeIf { it.isNotBlank() }
+            ?: throw BibtexMissingRequiredFieldException("title")
+
+        val yearString = fieldMap["year"]
+            ?: throw BibtexMissingRequiredFieldException("year")
+
+        val year = yearString.toIntOrNull()
+            ?: throw BibtexInvalidFieldFormatException("year", yearString, "an integer")
+
+        val authors = getValueFromFieldMap(fieldMap, authorTypes).takeIf { it.isNotBlank() }
+            ?: throw BibtexMissingRequiredFieldException(authorTypes.joinToString(" or "))
+
+        val venue = getValueFromFieldMap(fieldMap, venueTypes).takeIf { it.isNotBlank() }
+            ?: throw BibtexMissingRequiredFieldException(venueTypes.joinToString(" or "))
+
+        val abstract = fieldMap["abstract"] ?: ""
         val keywords = parseKeywords(fieldMap["keywords"] ?: fieldMap["keyword"])
         val references = parseReferences(fieldMap["references"])
+
         val doi = fieldMap["doi"]?.let {
-            val cleanDoi = it.replace(Regex("[{}]"), "").trim()
-            val fullUrl = if (cleanDoi.startsWith("http")) {
-                cleanDoi
-            } else {
-                "https://doi.org/$cleanDoi"
+            try {
+                val cleanDoi = it.replace(Regex("[{}]"), "").trim()
+                val fullUrl = if (cleanDoi.startsWith("http")) cleanDoi else "https://doi.org/$cleanDoi"
+                Doi(fullUrl)
+            } catch (e: Exception) {
+                null
             }
-            Doi(fullUrl)
         }
-        val type = extractStudyType(bibtexEntry)
 
         return Study(type, title, year, authors, venue, abstract, keywords, references, doi)
     }
 
     private fun parseBibtexFields(bibtexEntry: String): Map<String, String> {
-        val entry = bibtexEntry.replace("\n\t", " ")
-        val fields = entry.trim().split("\n").map { it.trim() }
-        val fieldMap = mutableMapOf<String, String>()
+        val content = bibtexEntry.substringAfter('{', "").substringBeforeLast('}', "")
+        if (content.isBlank()) {
+            return emptyMap()
+        }
 
-        for (field in fields) {
-            val keyValuePair = field.split("=")
-            if (keyValuePair.size == 2) {
-                val key = keyValuePair[0].trim()
-                val value = cleanStringSurroundings(keyValuePair[1])
+        val fieldMap = mutableMapOf<String, String>()
+        val fieldSplitRegex = Regex(""",\s*(?=\w+\s*=)""")
+
+        content.split(fieldSplitRegex).forEach { fieldString ->
+            val parts = fieldString.trim().split("=", limit = 2)
+            if (parts.size == 2) {
+                val key = parts[0].trim().lowercase(Locale.getDefault())
+                val value = parts[1].trim()
+                    .removeSurrounding("{", "}")
+                    .removeSurrounding("\"", "\"")
                 fieldMap[key] = value
             }
         }
         return fieldMap
     }
 
-    private fun cleanStringSurroundings(value: String): String {
-        return value.trim().removePrefix("{").removeSuffix("}")
-            .removeSuffix("},")
-    }
-
     private fun getValueFromFieldMap(fieldMap: Map<String, String>, keys: List<String>): String {
-        for (key in keys) {
-            val value = fieldMap[key]
-            if (value != null) return value
-        }
-        return ""
+        return keys.firstNotNullOfOrNull { key -> fieldMap[key] } ?: ""
     }
 
     private fun parseKeywords(keywords: String?): Set<String> {
-        return keywords?.split(",", ";")?.map { it.trim() }?.toSet() ?: emptySet()
+        return keywords?.split("[,;]".toRegex())?.map { it.trim() }?.filter { it.isNotEmpty() }?.toSet() ?: emptySet()
     }
 
     private fun parseReferences(references: String?): List<String> {
-        return references?.split(",")?.map { it.trim() } ?: emptyList()
+        return references?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList()
     }
 
     private fun extractStudyType(bibtexEntry: String): StudyType {
-        val entryTypeRegex = Regex("""\b(\w+)\{""")
+        val entryTypeRegex = Regex("""@(\w+)\s*\{""")
         val matchResult = entryTypeRegex.find(bibtexEntry)
         val studyTypeName = matchResult?.groupValues?.get(1)?.uppercase(Locale.getDefault()) ?: "UNKNOWN"
         return StudyType.valueOf(studyTypeName)
     }
 
-     private fun extractEntryName(bibtexEntry: String): String {
-        val nameRegex = Regex("""\{(.*)}""", RegexOption.DOT_MATCHES_ALL)
-        val matchResult = nameRegex.find(bibtexEntry)
-        return matchResult?.groupValues?.get(1)?.trim() ?: "UNKNOWN"
+    private fun extractEntryKey(bibtexEntry: String): String {
+        val keyRegex = Regex("""@\w+\s*\{(.*?)\s*,""", RegexOption.DOT_MATCHES_ALL)
+        return keyRegex.find(bibtexEntry)?.groupValues?.get(1)?.trim() ?: "UNKNOWN"
     }
 }
