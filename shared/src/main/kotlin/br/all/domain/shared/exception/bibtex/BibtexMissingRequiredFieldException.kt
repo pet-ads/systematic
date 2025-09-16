@@ -1,4 +1,4 @@
 package br.all.domain.shared.exception.bibtex
 
-class MissingRequiredFieldException(val fieldName: String) :
+class BibtexMissingRequiredFieldException(val fieldName: String) :
     BibtexParseException("Missing required field: '$fieldName'")

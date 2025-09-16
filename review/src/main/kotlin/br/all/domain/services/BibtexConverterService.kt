@@ -11,9 +11,9 @@ import br.all.domain.model.study.StudyReview
 import br.all.domain.model.study.StudyReviewId
 import br.all.domain.model.study.StudyType
 import br.all.domain.shared.exception.bibtex.BibtexParseException
-import br.all.domain.shared.exception.bibtex.MissingRequiredFieldException
-import br.all.domain.shared.exception.bibtex.InvalidFieldFormatException
-import br.all.domain.shared.exception.bibtex.UnknownEntryTypeException
+import br.all.domain.shared.exception.bibtex.BibtexMissingRequiredFieldException
+import br.all.domain.shared.exception.bibtex.BibtexInvalidFieldFormatException
+import br.all.domain.shared.exception.bibtex.BibtexUnknownEntryTypeException
 import java.util.Locale
 
 class BibtexConverterService(private val studyReviewIdGeneratorService: IdGeneratorService) {
@@ -89,25 +89,25 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
             extractStudyType(bibtexEntry)
         } catch (e: IllegalArgumentException) {
             val entryTypeName = bibtexEntry.substringBefore('{').trim().removePrefix("@")
-            throw UnknownEntryTypeException(entryTypeName.ifBlank { "N/A" })
+            throw BibtexUnknownEntryTypeException(entryTypeName.ifBlank { "N/A" })
         }
 
         val fieldMap = parseBibtexFields(bibtexEntry)
 
         val title = fieldMap["title"]?.takeIf { it.isNotBlank() }
-            ?: throw MissingRequiredFieldException("title")
+            ?: throw BibtexMissingRequiredFieldException("title")
 
         val yearString = fieldMap["year"]
-            ?: throw MissingRequiredFieldException("year")
+            ?: throw BibtexMissingRequiredFieldException("year")
 
         val year = yearString.toIntOrNull()
-            ?: throw InvalidFieldFormatException("year", yearString, "an integer")
+            ?: throw BibtexInvalidFieldFormatException("year", yearString, "an integer")
 
         val authors = getValueFromFieldMap(fieldMap, authorTypes).takeIf { it.isNotBlank() }
-            ?: throw MissingRequiredFieldException(authorTypes.joinToString(" or "))
+            ?: throw BibtexMissingRequiredFieldException(authorTypes.joinToString(" or "))
 
         val venue = getValueFromFieldMap(fieldMap, venueTypes).takeIf { it.isNotBlank() }
-            ?: throw MissingRequiredFieldException(venueTypes.joinToString(" or "))
+            ?: throw BibtexMissingRequiredFieldException(venueTypes.joinToString(" or "))
 
         val abstract = fieldMap["abstract"] ?: ""
         val keywords = parseKeywords(fieldMap["keywords"] ?: fieldMap["keyword"])
@@ -119,7 +119,7 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
                 val fullUrl = if (cleanDoi.startsWith("http")) cleanDoi else "https://doi.org/$cleanDoi"
                 Doi(fullUrl)
             } catch (e: Exception) {
-                throw InvalidFieldFormatException("doi", it, "a valid DOI string or URL")
+                throw BibtexInvalidFieldFormatException("doi", it, "a valid DOI string or URL")
             }
         }
 
