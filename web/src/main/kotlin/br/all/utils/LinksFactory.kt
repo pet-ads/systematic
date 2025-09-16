@@ -51,7 +51,7 @@ class LinksFactory {
     fun updateReview(systematicStudyId: UUID): Link = linkTo<SystematicStudyController> {
         updateSystematicStudy(
             systematicStudyId,
-            br.all.review.requests.PutRequest("title", "description"),
+            br.all.review.requests.PutRequest("title", "description", "objectives"),
         )
     }.withRel("update-review").withType("PUT")
 
