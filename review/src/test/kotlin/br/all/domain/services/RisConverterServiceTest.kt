@@ -4,7 +4,6 @@ import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.study.*
 import br.all.domain.services.RisTestData.testInput
-import br.all.domain.shared.exception.ris.RisParseException
 import org.junit.jupiter.api.*
 import java.util.*
 import kotlin.test.assertEquals
@@ -67,8 +66,8 @@ class RisConverterServiceTest {
                 source = mutableSetOf("Compendex")
             )
             assertEquals(
-                studyReview.title,
-                "Sampling for Scalable Visual Analytics IEEE Computer Graphics and Applications"
+                "Sampling for Scalable Visual Analytics IEEE Computer Graphics and Applications",
+                studyReview.title
             )
         }
 
@@ -83,8 +82,8 @@ class RisConverterServiceTest {
                 source = mutableSetOf("Compendex")
             )
             assertEquals(
-                studyReview.title,
-                "Sampling for Scalable Visual Analytics IEEE Computer Graphics and Applications"
+                "Sampling for Scalable Visual Analytics IEEE Computer Graphics and Applications",
+                studyReview.title
             )
         }
 
@@ -98,7 +97,7 @@ class RisConverterServiceTest {
                 study,
                 source = mutableSetOf("Compendex")
             )
-            assertEquals(studyReview.year, 2017)
+            assertEquals(2017, studyReview.year)
         }
 
         @Test
@@ -111,7 +110,7 @@ class RisConverterServiceTest {
                 study,
                 source = mutableSetOf("Compendex")
             )
-            assertEquals(studyReview.year, 2017)
+            assertEquals(2017, studyReview.year)
         }
 
         @Test
@@ -501,7 +500,7 @@ class RisConverterServiceTest {
     }
 
     @Nested
-    inner class InvalidClasses {
+    inner class LenientParsingTests {
         @Test
         fun `convertManyToStudyReview should not accept a blank ris entry as input`() {
             assertThrows<IllegalArgumentException> {
@@ -515,136 +514,52 @@ class RisConverterServiceTest {
         }
 
         @Test
-        fun `convertToStudyReview should not accept a blank ris entry as input`() {
+        fun `convert should not accept a blank ris entry as input`() {
             assertThrows<IllegalArgumentException> {
-                val study = sut.convert("")
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
+                sut.convert("")
             }
         }
 
         @Test
-        fun `should throw RisParseException for unknown type entry`() {
+        fun `should create study with UNKNOWN type for unknown type entry`() {
             val ris = testInput["unknown ris"]!!
-            assertThrows<RisParseException> {
-                val study = sut.convert(ris)
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
-            }
+            val study = sut.convert(ris)
+            assertEquals(StudyType.UNKNOWN, study.type)
         }
 
         @Test
-        fun `should throw RisParseException for invalid title entry`() {
-            val ris = testInput["invalid title"].toString()
-            assertThrows<RisParseException> {
-                val study = sut.convert(ris)
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
-            }
+        fun `should create study with default title for missing title entry`() {
+            val ris = testInput["invalid title"]!!
+            val study = sut.convert(ris)
+            assertEquals("", study.title)
         }
 
         @Test
-        fun `should throw RisParseException for invalid author entry`() {
+        fun `should create study with default authors for missing author entry`() {
             val ris = testInput["invalid authors"]!!
-            assertThrows<RisParseException> {
-                val study = sut.convert(ris)
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
-            }
+            val study = sut.convert(ris)
+            assertEquals("", study.authors)
         }
 
         @Test
-        fun `should throw RisParseException for invalid year entry`() {
+        fun `should create study with default year for missing year entry`() {
             val ris = testInput["invalid year"]!!
-            assertThrows<RisParseException> {
-                val study = sut.convert(ris)
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
-            }
+            val study = sut.convert(ris)
+            assertEquals(0, study.year)
         }
 
         @Test
-        fun `should throw RisParseException for invalid venue entry`() {
-            val ris = testInput["invalid venue"]!!
-            assertThrows<RisParseException> {
-                val study = sut.convert(ris)
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
-            }
-        }
-
-        // an empty abstract is valid!
-        @Test
-        @Disabled
-        fun `should throw RisParseException for invalid abstract entry`() {
-            val ris = testInput["invalid abstract"]!!
-            assertThrows<RisParseException> {
-                val study = sut.convert(ris)
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
-            }
-        }
-
-        // an empty doi is valid!
-        @Test
-        @Disabled
-        fun `should throw RisParseException for invalid doi`() {
-            val ris = testInput["invalid doi"]!!
-            assertThrows<RisParseException> {
-                val study = sut.convert(ris)
-                sut.convertToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
-                    study,
-                    source = mutableSetOf("Compendex")
-                )
-            }
-        }
-
-        @Test
-        fun `should return the correct number of invalid ris files`() {
+        fun `should correctly parse entries that are missing non-essential fields`() {
             val ris = testInput["three error ris"]!!
-            val studyReviewList = sut.convertManyToStudyReview(
+            val (validStudies, invalidEntries) = sut.convertManyToStudyReview(
                 SystematicStudyId(UUID.randomUUID()),
                 SearchSessionID(UUID.randomUUID()),
                 ris,
                 source = mutableSetOf("Compendex")
             )
 
-            println("Valid Study Reviews: ${studyReviewList.first}")
-            println("Invalid RIS Entries: ${studyReviewList.second}")
-
-            assertEquals(2, studyReviewList.first.size)
-
-            assertEquals(3, studyReviewList.second.size)
+            assertEquals(5, validStudies.size)
+            assertEquals(0, invalidEntries.size)
         }
     }
 }
