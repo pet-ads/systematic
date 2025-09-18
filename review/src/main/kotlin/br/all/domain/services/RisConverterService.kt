@@ -3,10 +3,8 @@ package br.all.domain.services
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.study.*
-import br.all.domain.shared.exception.ris.RisParseException
 import br.all.domain.shared.exception.ris.RisMissingRequiredFieldException
-import br.all.domain.shared.exception.ris.RisInvalidFieldFormatException
-import br.all.domain.shared.exception.ris.RisUnknownEntryTypeException
+import br.all.domain.shared.exception.ris.RisParseException
 
 class RisConverterService(private val studyReviewIdGeneratorService: IdGeneratorService) {
 
@@ -56,7 +54,6 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         )
     }
 
-
     private fun convertMany(ris: String): Pair<List<Study>, List<String>> {
         val validStudies = mutableListOf<Study>()
         val invalidEntries = mutableListOf<String>()
@@ -65,16 +62,17 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
 
         entryRegex.findAll(ris).forEach { matchResult ->
             val entry = matchResult.value.trim()
-            val entryIdentifier = extractTitleForError(entry)
             try {
                 if (entry.isNotBlank()) {
                     val study = convert(entry)
                     validStudies.add(study)
                 }
             } catch (e: RisParseException) {
-                invalidEntries.add("Entry '$entryIdentifier': ${e.message}")
+                val identifier = extractTitleForError(entry).takeIf { it != "Unknown Title" }
+                    ?: "starting with '${entry.take(40)}...'"
+                invalidEntries.add("Failed to parse entry '$identifier': ${e.message}")
             } catch (e: Exception) {
-                invalidEntries.add("Entry '$entryIdentifier': An unexpected error occurred. ${e.message}")
+                invalidEntries.add("An unexpected error occurred. Details: ${e.message}")
             }
         }
         return Pair(validStudies, invalidEntries)
@@ -88,15 +86,11 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
         val type = extractStudyType(fieldMap)
 
         val primaryTitle = getValueFromFieldMap(fieldMap, titleTypes)
-            .takeIf { it.isNotBlank() } ?: throw RisMissingRequiredFieldException("Title (TI or T1)")
         val secondaryTitle = fieldMap["T2"] ?: ""
-        val title = "$primaryTitle $secondaryTitle".trim()
+        val title = "$primaryTitle $secondaryTitle".trim().ifBlank { "" }
 
-        val year = extractYear(fieldMap)
-            ?: throw RisMissingRequiredFieldException("Year (PY or Y1)")
-
-        val authors = parseAuthors(fieldMap)
-            .takeIf { it.isNotBlank() } ?: throw RisMissingRequiredFieldException("Author (AU or A1)")
+        val year = extractYear(fieldMap) ?: 0
+        val authors = parseAuthors(fieldMap).takeIf { it.isNotBlank() } ?: ""
 
         val venue = getValueFromFieldMap(fieldMap, venueTypes)
         val abstract = fieldMap["AB"] ?: ""
@@ -105,7 +99,8 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
 
         val doi = fieldMap["DO"]?.let {
             try {
-                Doi("https://doi.org/${it.trim()}")
+                val cleanDoi = it.trim().removePrefix("https://doi.org/")
+                Doi("https://doi.org/$cleanDoi")
             } catch (e: Exception) {
                 null
             }
@@ -160,7 +155,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
             "PAMP" -> StudyType.BOOKLET
             "MANSCPT", "UNPB", "UNPD" -> StudyType.UNPUBLISHED
             "ADVS", "AGGR", "ANCIENT", "ART", "BILL", "BLOG", "CASE", "CHART", "CLSWK", "COMP", "CTLG", "DATA", "DBASE", "DICT", "ELEC", "ENCYC", "EQUA", "FIGURE", "GEN", "GOVDOC", "GRNT", "HEAR", "ICOMM", "INTV", "LEGAL", "MAP", "MPCT", "MULTI", "MUSIC", "PAT", "PCOMM", "POD", "PRESS", "SER", "SLIDE", "SOUND", "STAND", "STAT", "STD", "UNBILL", "VIDEO" -> StudyType.MISC
-            else -> throw RisUnknownEntryTypeException(risType)
+            else -> StudyType.UNKNOWN
         }
     }
 
