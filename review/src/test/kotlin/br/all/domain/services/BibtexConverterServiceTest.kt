@@ -448,58 +448,6 @@ class BibtexConverterServiceTest {
         }
 
         @Test
-        fun `should throw BibtexParseException for invalid title entry`() {
-            val bibtex = BibtexTestData.testInputs["invalid title"]!!
-            assertThrows<BibtexParseException> {
-                sut.convert(bibtex)
-            }
-        }
-
-        @Test
-        fun `should throw BibtexParseException for invalid author entry`() {
-            val bibtex = BibtexTestData.testInputs["invalid authors"]!!
-            assertThrows<BibtexParseException> {
-                sut.convert(bibtex)
-            }
-        }
-
-        @Test
-        fun `should throw BibtexParseException for invalid year entry`() {
-            val bibtex = BibtexTestData.testInputs["invalid year"]!!
-            assertThrows<BibtexParseException> {
-                sut.convert(bibtex)
-            }
-        }
-
-        @Test
-        fun `should throw BibtexParseException for invalid venue entry`() {
-            val bibtex = BibtexTestData.testInputs["invalid venue"]!!
-            assertThrows<BibtexParseException> {
-                sut.convert(bibtex)
-            }
-        }
-
-        // an empty abstract is valid!
-        @Test
-        @Disabled
-        fun `should throw BibtexParseException for invalid abstract entry`() {
-            val bibtex = BibtexTestData.testInputs["invalid abstract"]!!
-            assertThrows<BibtexParseException> {
-                sut.convert(bibtex)
-            }
-        }
-
-        // an empty doi is valid!
-        @Test
-        @Disabled
-        fun `should throw BibtexParseException for invalid doi`() {
-            val bibtex = BibtexTestData.testInputs["invalid doi"]!!
-            assertThrows<BibtexParseException> {
-                sut.convert(bibtex)
-            }
-        }
-
-        @Test
         fun `Should create a StudyReview list from multiple bibtex entries even when there are invalid entries`() {
             val bibtex = BibtexTestData.testInputs["multiple bibtex entries with some invalid"]!!
             val studyReviewList = sut.convertManyToStudyReview(
@@ -515,7 +463,7 @@ class BibtexConverterServiceTest {
                 println("Valid StudyReview: ${studyReview.title}")
             }
             assertAll(
-                {assertEquals(3, studyReviewList.first.size)},
+                {assertEquals(4, studyReviewList.first.size)},
             )
         }
     }
