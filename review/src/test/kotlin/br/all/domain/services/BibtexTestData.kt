@@ -319,7 +319,7 @@ object BibtexTestData {
 
         "multiple bibtex entries with some invalid" to """
             //invalid
-            @article{nash51,
+            {nash51,
                 title = {Non-cooperative Games},
                 abstract = {Lorem Ipsum},
                 keywords = {keyword1, keyword2},
