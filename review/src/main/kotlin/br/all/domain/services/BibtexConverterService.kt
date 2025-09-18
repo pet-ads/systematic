@@ -74,8 +74,7 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
                     val entryIdentifier = extractBibtexId(entry) ?: "starting with '${entry.take(40)}...'"
                     invalidEntries.add("Failed to parse entry '$entryIdentifier': ${e.message}")
                 } catch (e: Exception) {
-                    val entryIdentifier = extractBibtexId(entry) ?: "starting with '${entry.take(40)}...'"
-                    invalidEntries.add("An unexpected error occurred for entry '$entryIdentifier'. Details: ${e.message}")
+                    invalidEntries.add("An unexpected error occurred. Details: ${e.message}")
                 }
             }
         return Pair(validStudies, invalidEntries)
