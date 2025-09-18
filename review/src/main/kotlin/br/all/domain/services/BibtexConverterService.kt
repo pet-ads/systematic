@@ -10,10 +10,8 @@ import br.all.domain.model.study.Study
 import br.all.domain.model.study.StudyReview
 import br.all.domain.model.study.StudyReviewId
 import br.all.domain.model.study.StudyType
-import br.all.domain.shared.exception.bibtex.BibtexParseException
 import br.all.domain.shared.exception.bibtex.BibtexMissingRequiredFieldException
-import br.all.domain.shared.exception.bibtex.BibtexInvalidFieldFormatException
-import br.all.domain.shared.exception.bibtex.BibtexUnknownEntryTypeException
+import br.all.domain.shared.exception.bibtex.BibtexParseException
 import java.util.Locale
 
 class BibtexConverterService(private val studyReviewIdGeneratorService: IdGeneratorService) {
@@ -69,14 +67,15 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
             .map { it.trim() }
             .filter { it.isNotBlank() }
             .forEach { entry ->
-                val entryKey = extractEntryKey(entry)
                 try {
                     val study = convert(entry)
                     validStudies.add(study)
                 } catch (e: BibtexParseException) {
-                    invalidEntries.add("Entry '$entryKey': ${e.message}")
+                    val entryIdentifier = extractBibtexId(entry) ?: "starting with '${entry.take(40)}...'"
+                    invalidEntries.add("Failed to parse entry '$entryIdentifier': ${e.message}")
                 } catch (e: Exception) {
-                    invalidEntries.add("Entry '$entryKey': An unexpected error occurred during parsing. Details: ${e.message}")
+                    val entryIdentifier = extractBibtexId(entry) ?: "starting with '${entry.take(40)}...'"
+                    invalidEntries.add("An unexpected error occurred for entry '$entryIdentifier'. Details: ${e.message}")
                 }
             }
         return Pair(validStudies, invalidEntries)
@@ -85,29 +84,16 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     fun convert(bibtexEntry: String): Study {
         require(bibtexEntry.isNotBlank()) { "BibTeX entry must not be blank." }
 
-        val type = try {
-            extractStudyType(bibtexEntry)
-        } catch (e: IllegalArgumentException) {
-            val entryTypeName = bibtexEntry.substringBefore('{').trim().removePrefix("@")
-            throw BibtexUnknownEntryTypeException(entryTypeName.ifBlank { "N/A" })
-        }
+        val bibtexId = extractBibtexId(bibtexEntry)
+            ?: throw BibtexMissingRequiredFieldException("BibTeX ID")
 
+        val type = extractStudyType(bibtexEntry)
         val fieldMap = parseBibtexFields(bibtexEntry)
 
-        val title = fieldMap["title"]?.takeIf { it.isNotBlank() }
-            ?: throw BibtexMissingRequiredFieldException("title")
-
-        val yearString = fieldMap["year"]
-            ?: throw BibtexMissingRequiredFieldException("year")
-
-        val year = yearString.toIntOrNull()
-            ?: throw BibtexInvalidFieldFormatException("year", yearString, "an integer")
-
-        val authors = getValueFromFieldMap(fieldMap, authorTypes).takeIf { it.isNotBlank() }
-            ?: throw BibtexMissingRequiredFieldException(authorTypes.joinToString(" or "))
-
-        val venue = getValueFromFieldMap(fieldMap, venueTypes).takeIf { it.isNotBlank() }
-            ?: throw BibtexMissingRequiredFieldException(venueTypes.joinToString(" or "))
+        val title = fieldMap["title"]?.takeIf { it.isNotBlank() } ?: ""
+        val year = fieldMap["year"]?.toIntOrNull() ?: 0
+        val authors = getValueFromFieldMap(fieldMap, authorTypes).takeIf { it.isNotBlank() } ?: ""
+        val venue = getValueFromFieldMap(fieldMap, venueTypes).takeIf { it.isNotBlank() } ?: "d"
 
         val abstract = fieldMap["abstract"] ?: ""
         val keywords = parseKeywords(fieldMap["keywords"] ?: fieldMap["keyword"])
@@ -163,12 +149,13 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     private fun extractStudyType(bibtexEntry: String): StudyType {
         val entryTypeRegex = Regex("""@(\w+)\s*\{""")
         val matchResult = entryTypeRegex.find(bibtexEntry)
-        val studyTypeName = matchResult?.groupValues?.get(1)?.uppercase(Locale.getDefault()) ?: "UNKNOWN"
-        return StudyType.valueOf(studyTypeName)
+        val studyTypeName = matchResult?.groupValues?.get(1)?.uppercase(Locale.getDefault()) ?: return StudyType.UNKNOWN
+
+        return runCatching { StudyType.valueOf(studyTypeName) }.getOrDefault(StudyType.UNKNOWN)
     }
 
-    private fun extractEntryKey(bibtexEntry: String): String {
+    private fun extractBibtexId(bibtexEntry: String): String? {
         val keyRegex = Regex("""@\w+\s*\{(.*?)\s*,""", RegexOption.DOT_MATCHES_ALL)
-        return keyRegex.find(bibtexEntry)?.groupValues?.get(1)?.trim() ?: "UNKNOWN"
+        return keyRegex.find(bibtexEntry)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotBlank() }
     }
 }
