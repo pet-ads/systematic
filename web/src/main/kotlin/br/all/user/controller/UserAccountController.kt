@@ -7,6 +7,7 @@ import br.all.application.user.find.RetrieveUserProfileService
 import br.all.application.user.update.ChangeAccountPasswordService
 import br.all.application.user.update.PatchUserProfileService
 import br.all.security.service.AuthenticationInfoService
+import br.all.security.service.AuthenticationService
 import br.all.user.presenter.RestfulChangeAccountPasswordPresenter
 import br.all.user.presenter.RestfulPatchUserProfilePresenter
 import br.all.user.presenter.RestfulRegisterUserAccountPresenter
@@ -18,6 +19,8 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -37,7 +40,8 @@ class UserAccountController(
     private val retrieveUserProfileService: RetrieveUserProfileService,
     private val authenticationInfoService: AuthenticationInfoService,
     private val patchUserProfileService: PatchUserProfileService,
-    private val changeAccountPasswordService: ChangeAccountPasswordService
+    private val changeAccountPasswordService: ChangeAccountPasswordService,
+    private val authenticationService: AuthenticationService
 ) {
 
     @PostMapping
@@ -153,7 +157,7 @@ class UserAccountController(
     }
 
     @PutMapping("/change-password")
-    @Operation(summary = "Update password of an user account")
+    @Operation(summary = "Update password of an user account and logout")
     @ApiResponses(
         value = [
             ApiResponse(
@@ -180,17 +184,28 @@ class UserAccountController(
                 content = [Content(schema = Schema(hidden = true))]
             ),
         ])
-    fun putAccountPassword(@RequestBody body: ChangeAccountPasswordRequest): ResponseEntity<*> {
+    fun putAccountPassword(
+        @RequestBody body: ChangeAccountPasswordRequest,
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<*> {
         val presenter = RestfulChangeAccountPasswordPresenter()
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = ChangeAccountPasswordService.RequestModel(
+        val changePasswordRequest = ChangeAccountPasswordService.RequestModel(
             userId = userId,
             oldPassword = body.oldPassword,
             newPassword = body.newPassword,
             confirmPassword = body.confirmPassword
         )
 
-        changeAccountPasswordService.changePassword(presenter, request)
+        changeAccountPasswordService.changePassword(presenter, changePasswordRequest)
+
+        if (presenter.responseEntity?.statusCode?.isError == true) {
+            return ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+
+        authenticationService.logout(request, response)
+
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
