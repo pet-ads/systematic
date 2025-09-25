@@ -48,6 +48,14 @@ class UserAccountRepositoryImpl(
         )
     }
 
+    override fun updatePassword(id: UUID, newHashedPassword: String) {
+        val credentials = credentialsRepository.findById(id).orElse(null)
+            ?: throw NoSuchElementException("Cannot update password. Credentials for user with id $id not found!")
+
+        credentials.password = newHashedPassword
+        credentialsRepository.save(credentials)
+    }
+
     override fun loadCredentialsByUsername(username: String) =
         credentialsRepository.findByUsername(username)?.toAccountCredentialsDto()
 

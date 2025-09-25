@@ -13,4 +13,5 @@ interface UserAccountRepository {
     fun deleteById(id: UUID)
     fun loadUserProfileById(id: UUID): UserProfileDto?
     fun loadFullUserAccountById(id: UUID): UserAccountDto?
+    fun updatePassword(id: UUID, newHashedPassword: String)
 }
