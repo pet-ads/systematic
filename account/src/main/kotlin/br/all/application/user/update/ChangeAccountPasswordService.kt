@@ -3,8 +3,9 @@ package br.all.application.user.update
 import java.util.UUID
 
 interface ChangeAccountPasswordService {
-    fun changePassword()
+    fun changePassword(presenter: ChangeAccountPasswordPresenter, request: RequestModel)
 
+    // The passwords already come encrypted from the controller!
     data class RequestModel(
         val userId: UUID,
         val oldPassword: String,
