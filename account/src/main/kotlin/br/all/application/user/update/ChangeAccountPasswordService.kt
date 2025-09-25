@@ -1,5 +1,6 @@
 package br.all.application.user.update
 
+import io.swagger.v3.oas.annotations.media.Schema
 import java.util.UUID
 
 interface ChangeAccountPasswordService {
@@ -12,6 +13,7 @@ interface ChangeAccountPasswordService {
         val confirmPassword: String
     )
 
+    @Schema(name = "ChangeAccountPasswordServiceResponseModel", description = "Response model for Change Account Password Service")
     data class ResponseModel(
         val userId: UUID
     )
