@@ -13,7 +13,7 @@ interface JpaAccountCredentialsRepository : JpaRepository<AccountCredentialsEnti
      fun findByRefreshToken(refreshToken: String): AccountCredentialsEntity?
      fun existsByUsername(username: String): Boolean
 
-     @Modifying
+     @Modifying(clearAutomatically = true, flushAutomatically = true)
      @Query("update AccountCredentialsEntity e set e.refreshToken = :token where e.id = :id")
      fun updateRefreshTokenById(@Param(value = "id") id: UUID, @Param(value = "token") refreshToken: String?)
 }
