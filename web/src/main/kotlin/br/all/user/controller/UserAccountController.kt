@@ -70,8 +70,7 @@ class UserAccountController(
     )
     fun registerUser(@RequestBody request: RequestModel): ResponseEntity<*> {
         val presenter = RestfulRegisterUserAccountPresenter()
-        val encodedPasswordRequest = request.copy(password = encoder.encode(request.password))
-        registerUserAccountService.register(presenter, encodedPasswordRequest)
+        registerUserAccountService.register(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
