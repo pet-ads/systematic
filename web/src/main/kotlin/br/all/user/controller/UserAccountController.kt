@@ -200,7 +200,7 @@ class UserAccountController(
         changeAccountPasswordService.changePassword(presenter, changePasswordRequest)
 
         if (presenter.responseEntity?.statusCode?.isError == true) {
-            return ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+            return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
         }
 
         authenticationService.logout(request, response)
