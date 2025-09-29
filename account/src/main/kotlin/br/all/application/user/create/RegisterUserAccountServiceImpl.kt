@@ -5,15 +5,21 @@ import br.all.application.user.create.RegisterUserAccountService.ResponseModel
 import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.repository.toDto
 import br.all.domain.shared.exception.UniquenessViolationException
+import br.all.domain.shared.service.PasswordEncoderPort
 import br.all.domain.shared.user.Email
 import br.all.domain.shared.user.Name
 import br.all.domain.shared.user.Text
 import br.all.domain.shared.user.Username
 import br.all.domain.user.*
 
-class RegisterUserAccountServiceImpl(private val repository: UserAccountRepository) : RegisterUserAccountService {
-
-    override fun register(presenter: RegisterUserAccountPresenter, request: RequestModel) {
+class RegisterUserAccountServiceImpl(
+    private val repository: UserAccountRepository,
+    private val encoder: PasswordEncoderPort
+) : RegisterUserAccountService {
+    override fun register(
+        presenter: RegisterUserAccountPresenter,
+        request: RequestModel
+    ) {
         if (repository.existsByEmail(request.email)) {
             presenter.prepareFailView(UniquenessViolationException("The email ${request.email} is already registered."))
         }
@@ -32,7 +38,7 @@ class RegisterUserAccountServiceImpl(private val repository: UserAccountReposito
             id = userAccountId,
             name = name,
             username = username,
-            password = request.password,
+            password = encoder.encode(request.password),
             email = email,
             country = country,
             affiliation = request.affiliation,
