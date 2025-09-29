@@ -9,6 +9,7 @@ import io.mockk.verifyOrder
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import br.all.domain.shared.exception.UniquenessViolationException
+import br.all.domain.shared.service.PasswordEncoderPort
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -17,13 +18,14 @@ class RegisterUserAccountServiceImplTest {
 
     @MockK(relaxed = true) private lateinit var presenter: RegisterUserAccountPresenter
     @MockK(relaxUnitFun = true) private lateinit var userAccountRepository: UserAccountRepository
+    @MockK private lateinit var encoder: PasswordEncoderPort
 
     private lateinit var sut: RegisterUserAccountServiceImpl
     private lateinit var factory: TestDataFactory
 
     @BeforeEach
     fun setUp() {
-        sut = RegisterUserAccountServiceImpl(userAccountRepository)
+        sut = RegisterUserAccountServiceImpl(userAccountRepository, encoder)
         factory = TestDataFactory()
     }
 
@@ -37,6 +39,7 @@ class RegisterUserAccountServiceImplTest {
 
             every { userAccountRepository.existsByEmail(request.email) } returns false
             every { userAccountRepository.existsByUsername(request.username) } returns false
+            every { encoder.encode(request.password) } returns request.password
 
             sut.register(presenter, request)
 
@@ -57,6 +60,7 @@ class RegisterUserAccountServiceImplTest {
 
             every { userAccountRepository.existsByEmail(request.email) } returns true
             every { userAccountRepository.existsByUsername(request.username) } returns false
+            every { encoder.encode(request.password) } returns request.password
 
             sut.register(presenter, request)
 
@@ -72,6 +76,7 @@ class RegisterUserAccountServiceImplTest {
 
             every { userAccountRepository.existsByEmail(request.email) } returns false
             every { userAccountRepository.existsByUsername(request.username) } returns true
+            every { encoder.encode(request.password) } returns request.password
 
             sut.register(presenter, request)
 
