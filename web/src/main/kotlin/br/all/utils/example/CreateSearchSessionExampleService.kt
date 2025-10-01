@@ -67,6 +67,16 @@ class CreateSearchSessionExampleService (
             .flatMap { (key, value) -> listOf(key) + value }
             .toList()
 
+        val total = toSaveDuplicatedAnalysedReviews.size
+        val qtd = (total * 0.1).toInt().coerceAtLeast(1)
+
+        toSaveDuplicatedAnalysedReviews.forEachIndexed { index, item ->
+            when {
+                index < qtd -> item.includeInSelection()
+                index in qtd until (qtd * 2) -> item.excludeInSelection()
+            }
+        }
+
         studyReviewRepository.saveOrUpdateBatch(toSaveDuplicatedAnalysedReviews.map { it.toDto() })
 
         searchSessionRepository.create(searchSession)
