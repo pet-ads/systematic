@@ -1,6 +1,10 @@
 package br.all
 
+import br.all.application.study.repository.StudyReviewRepository
+import br.all.application.study.repository.toDto
 import br.all.domain.model.review.toSystematicStudyId
+import br.all.domain.model.study.StudyReview
+import br.all.domain.services.ReviewSimilarityService
 import br.all.utils.example.CreateQuestionExampleService
 import br.all.utils.example.CreateSystematicReviewExampleService
 import br.all.utils.example.CreateSearchSessionExampleService
@@ -23,14 +27,17 @@ class WebApplication {
         register: RegisterUserExampleService,
         create: CreateSystematicReviewExampleService,
         search: CreateSearchSessionExampleService,
-        question: CreateQuestionExampleService
+        question: CreateQuestionExampleService,
+        studyReviewRepository: StudyReviewRepository,
+        reviewSimilarityService: ReviewSimilarityService
     ) = CommandLineRunner {
         val password = encoder.encode("admin")
         val lucasUserAccount = register.registerUserAccount("buenolro", password)
         val systematicId = create.createReview(lucasUserAccount.id.value(), setOf(lucasUserAccount.id.value()))
 
+        val allScoredStudies = mutableListOf<StudyReview>()
 
-       search.convert(
+       allScoredStudies.addAll(search.extractAndScoreStudiesFromFile(
             systematicStudyId = systematicId.toSystematicStudyId(),
             userId = lucasUserAccount.id.value(),
             bibFileName = "Springer.bib",
@@ -40,9 +47,9 @@ class WebApplication {
         ab:(("Service Oriented" OR "Service-oriented") AND (Robot OR Robotic OR humanoid))
     """.trimIndent(),
             additionalInformation = "Springer search performed on 2022-09-20 using complementary substrings (example shown above). Returned 11 studies after duplicate filtering. Only English studies were considered."
-        )
+        ))
 
-        search.convert(
+        allScoredStudies.addAll(search.extractAndScoreStudiesFromFile(
             systematicStudyId = systematicId.toSystematicStudyId(),
             userId = lucasUserAccount.id.value(),
             bibFileName = "WebOfScience.bib",
@@ -56,9 +63,9 @@ class WebApplication {
                 AND (Robot OR Robotic OR humanoid))
             """.trimIndent(),
             additionalInformation = "Web of Science search performed on 2022-09-20 using both Topic and Title fields. Returned 80 studies. Only English studies were considered."
-        )
+        ))
 
-        search.convert(
+        allScoredStudies.addAll(search.extractAndScoreStudiesFromFile(
             systematicStudyId = systematicId.toSystematicStudyId(),
             userId = lucasUserAccount.id.value(),
             bibFileName = "ACM.bib",
@@ -69,9 +76,9 @@ class WebApplication {
         AND (Robot OR Robotic OR humanoid))
     """.trimIndent(),
             additionalInformation = "ACM Digital Library search was performed on 2022-09-20. Query split into two parts (abstract and title); returned 5 and 1 results respectively. Only English studies were considered.",
-        )
+        ))
 
-        search.convert(
+        allScoredStudies.addAll(search.extractAndScoreStudiesFromFile(
             systematicStudyId = systematicId.toSystematicStudyId(),
             userId = lucasUserAccount.id.value(),
             bibFileName = "Compendex.bib",
@@ -82,9 +89,9 @@ class WebApplication {
         AND (Robot OR Robotic OR humanoid)) WN KY), English only
     """.trimIndent(),
             additionalInformation = "Compendex search was performed on 2022-09-20 using the specified query applied to the keywords (WN KY) field. Only studies in English were considered.",
-        )
+        ))
 
-        search.convert(
+        allScoredStudies.addAll(search.extractAndScoreStudiesFromFile(
             systematicStudyId = systematicId.toSystematicStudyId(),
             userId = lucasUserAccount.id.value(),
             bibFileName = "IEEE.bib",
@@ -95,9 +102,9 @@ class WebApplication {
         AND ("Abstract":Robot OR "Abstract":Robotic OR "Abstract":humanoid)
     """.trimIndent(),
             additionalInformation = "IEEE Xplore search performed on 2022-09-20 using separate queries for abstract and title. The abstract query returned 72 studies and the title query returned 22 studies. Only studies in English were considered."
-        )
+        ))
 
-        search.convert(
+        allScoredStudies.addAll(search.extractAndScoreStudiesFromFile(
             systematicStudyId = systematicId.toSystematicStudyId(),
             userId = lucasUserAccount.id.value(),
             bibFileName = "science.bib",
@@ -108,9 +115,9 @@ class WebApplication {
         AND (Robot OR Robotic OR humanoid))
     """.trimIndent(),
             additionalInformation = "ScienceDirect search performed on 2022-09-20 using the TITLE-ABSTR-KEY field. Returned 4 studies. Only English studies were considered."
-        )
+        ))
 
-        search.convert(
+        allScoredStudies.addAll(search.extractAndScoreStudiesFromFile(
             systematicStudyId = systematicId.toSystematicStudyId(),
             userId = lucasUserAccount.id.value(),
             bibFileName = "scopus.bib",
@@ -121,8 +128,39 @@ class WebApplication {
         AND (robot OR robotic OR humanoid))
     """.trimIndent(),
             additionalInformation = "Scopus search performed on 2022-09-20 using the TITLE-ABS-KEY field. Returned 230 studies (duplicates filtered later). Only English studies were considered."
-        )
+        ))
 
+        studyReviewRepository.saveOrUpdateBatch(allScoredStudies.map { it.toDto() })
+
+        val duplicatedAnalysedReviews = reviewSimilarityService.findDuplicates(allScoredStudies, emptyList())
+        val duplicateStudies = duplicatedAnalysedReviews
+            .flatMap { (key, value) -> listOf(key) + value }
+            .toList()
+
+        val duplicateStudiesSet = duplicateStudies.toSet()
+        val uniqueStudies = allScoredStudies.filter { it !in duplicateStudiesSet }
+
+        applyRandomClassification(uniqueStudies)
+        applyRandomClassification(duplicateStudies)
+
+        studyReviewRepository.saveOrUpdateBatch(allScoredStudies.map { it.toDto() })
+    }
+}
+
+private fun applyRandomClassification(studies: List<StudyReview>,) {
+    if (studies.isEmpty()) {
+        return
+    }
+
+    val shuffledStudies = studies.shuffled()
+    val includeCount = (shuffledStudies.size * 0.33).toInt()
+    val excludeStopIndex = includeCount + (shuffledStudies.size * 0.33).toInt()
+
+    shuffledStudies.forEachIndexed { index, item ->
+        when {
+            index < includeCount -> item.includeInSelection()
+            index < excludeStopIndex -> item.excludeInSelection()
+        }
     }
 }
 
