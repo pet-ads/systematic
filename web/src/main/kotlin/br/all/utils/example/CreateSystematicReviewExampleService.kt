@@ -26,11 +26,7 @@ class CreateSystematicReviewExampleService(
             SystematicStudyDto(
                 id = systematicId,
                 title = "A Systematic Review on Service-Oriented Robotic Systems Development",
-                description = """
-                This systematic review, conducted in January 2012 at ICMC/USP, presents a detailed panorama on 
-                the design, implementation, and usage of service-oriented robotic systems. It identifies key 
-                technologies, methodologies, and software engineering guidelines in the field.
-            """.trimIndent(),
+                description = """This systematic review, conducted in January 2012 at ICMC/USP, presents a detailed panorama on the design, implementation, and usage of service-oriented robotic systems. It identifies key technologies, methodologies, and software engineering guidelines in the field.""".trimIndent(),
                 owner = ownerId,
                 collaborators = collaboratorIds,
                 objectives = "These are the main objectives of this systematic review."
