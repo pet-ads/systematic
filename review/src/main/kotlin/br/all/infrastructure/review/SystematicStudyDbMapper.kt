@@ -8,6 +8,7 @@ fun SystematicStudyDto.toDocument() = SystematicStudyDocument(
     description,
     owner,
     collaborators,
+    objectives
 )
 
 fun SystematicStudyDocument.toDto() = SystematicStudyDto(
@@ -16,4 +17,5 @@ fun SystematicStudyDocument.toDto() = SystematicStudyDto(
     description,
     owner,
     collaborators,
+    objectives
 )

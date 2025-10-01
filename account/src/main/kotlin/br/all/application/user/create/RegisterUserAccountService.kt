@@ -1,5 +1,6 @@
 package br.all.application.user.create
 
+import io.swagger.v3.oas.annotations.media.Schema
 import java.util.UUID
 
 interface RegisterUserAccountService {
@@ -15,6 +16,7 @@ interface RegisterUserAccountService {
         val affiliation: String,
     )
 
+    @Schema(name = "RegisterUserAccountResponseModel", description = "Response model for Register User Account Service")
     data class ResponseModel(
         val id: UUID,
         val username: String,

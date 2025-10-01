@@ -22,7 +22,7 @@ import br.all.application.protocol.find.FindProtocolService.RequestModel as Find
 import br.all.application.protocol.find.FindProtocolStageService.RequestModel as FindStageRequestModel
 
 @RestController
-@RequestMapping("/systematic-study/{systematicStudyId}/protocol")
+@RequestMapping("/api/v1/systematic-study/{systematicStudyId}/protocol")
 class ProtocolController(
     private val findProtocolService: FindProtocolService,
     private val updateProtocolService: UpdateProtocolService,

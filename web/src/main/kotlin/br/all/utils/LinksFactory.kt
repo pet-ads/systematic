@@ -33,7 +33,7 @@ class LinksFactory {
         }.withRel("update-protocol").withType("PUT")
 
     fun createReview(): Link = linkTo<SystematicStudyController> {
-        postSystematicStudy(PostRequest("title", "description", setOf()))
+        postSystematicStudy(PostRequest("title", "description", setOf(), "objectives"))
     }.withRel("create-review").withType("POST")
 
     fun findReview(systematicStudyId: UUID): Link = linkTo<SystematicStudyController> {
@@ -51,7 +51,7 @@ class LinksFactory {
     fun updateReview(systematicStudyId: UUID): Link = linkTo<SystematicStudyController> {
         updateSystematicStudy(
             systematicStudyId,
-            br.all.review.requests.PutRequest("title", "description"),
+            br.all.review.requests.PutRequest("title", "description", "objectives"),
         )
     }.withRel("update-review").withType("PUT")
 

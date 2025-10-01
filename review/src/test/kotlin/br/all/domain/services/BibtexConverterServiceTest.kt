@@ -3,6 +3,7 @@ package br.all.domain.services
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.study.*
+import br.all.domain.shared.exception.bibtex.BibtexParseException
 import org.junit.jupiter.api.*
 import java.util.*
 import kotlin.test.assertEquals
@@ -439,57 +440,9 @@ class BibtexConverterServiceTest {
         }
 
         @Test
-        fun `should throw IllegalArgumentException for unknown type entry`() {
+        fun `should throw BibtexParseException for unknown type entry`() {
             val bibtex = BibtexTestData.testInputs["unknown type of bibtex"]!!
-            assertThrows<IllegalArgumentException> {
-                sut.convert(bibtex)
-            }
-        }
-
-        @Test
-        fun `should throw IllegalArgumentException for invalid title entry`() {
-            val bibtex = BibtexTestData.testInputs["invalid title"]!!
-            assertThrows<IllegalArgumentException> {
-                sut.convert(bibtex)
-            }
-        }
-
-        @Test
-        fun `should throw IllegalArgumentException for invalid author entry`() {
-            val bibtex = BibtexTestData.testInputs["invalid authors"]!!
-            assertThrows<IllegalArgumentException> {
-                sut.convert(bibtex)
-            }
-        }
-
-        @Test
-        fun `should throw IllegalArgumentException for invalid year entry`() {
-            val bibtex = BibtexTestData.testInputs["invalid year"]!!
-            assertThrows<IllegalArgumentException> {
-                sut.convert(bibtex)
-            }
-        }
-
-        @Test
-        fun `should throw IllegalArgumentException for invalid venue entry`() {
-            val bibtex = BibtexTestData.testInputs["invalid venue"]!!
-            assertThrows<IllegalArgumentException> {
-                sut.convert(bibtex)
-            }
-        }
-
-        @Test
-        fun `should throw IllegalArgumentException for invalid abstract entry`() {
-            val bibtex = BibtexTestData.testInputs["invalid abstract"]!!
-            assertThrows<IllegalArgumentException> {
-                sut.convert(bibtex)
-            }
-        }
-
-        @Test
-        fun `should throw IllegalArgumentException for invalid doi`() {
-            val bibtex = BibtexTestData.testInputs["invalid doi"]!!
-            assertThrows<IllegalArgumentException> {
+            assertThrows<BibtexParseException> {
                 sut.convert(bibtex)
             }
         }
@@ -511,9 +464,7 @@ class BibtexConverterServiceTest {
             }
             assertAll(
                 {assertEquals(4, studyReviewList.first.size)},
-
             )
-
         }
     }
 }

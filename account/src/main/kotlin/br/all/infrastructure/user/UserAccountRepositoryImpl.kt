@@ -26,6 +26,36 @@ class UserAccountRepositoryImpl(
     override fun loadUserProfileById(id: UUID): UserProfileDto? =
         userAccountRepository.findById(id).orElse(null)?.toUserProfileDto()
 
+    override fun loadFullUserAccountById(id: UUID): UserAccountDto? {
+        val userAccount = userAccountRepository.findById(id).orElse(null) ?: return null
+        val credentials = credentialsRepository.findById(id).orElse(null) ?: return null
+        
+        return UserAccountDto(
+            id = userAccount.id,
+            name = userAccount.name,
+            username = credentials.username,
+            password = credentials.password,
+            email = userAccount.email,
+            country = userAccount.country,
+            affiliation = userAccount.affiliation,
+            createdAt = userAccount.createdAt,
+            authorities = credentials.authorities,
+            refreshToken = credentials.refreshToken,
+            isAccountNonExpired = credentials.isAccountNonExpired,
+            isAccountNonLocked = credentials.isAccountNonLocked,
+            isCredentialsNonExpired = credentials.isCredentialsNonExpired,
+            isEnabled = credentials.isEnabled
+        )
+    }
+
+    override fun updatePassword(id: UUID, newHashedPassword: String) {
+        val credentials = credentialsRepository.findById(id).orElse(null)
+            ?: throw NoSuchElementException("Cannot update password. Credentials for user with id $id not found!")
+
+        credentials.password = newHashedPassword
+        credentialsRepository.save(credentials)
+    }
+
     override fun loadCredentialsByUsername(username: String) =
         credentialsRepository.findByUsername(username)?.toAccountCredentialsDto()
 
