@@ -62,6 +62,7 @@ class FindQuestionServiceImplTest {
                 QuestionType.TEXTUAL -> factory.findOneTextualResponseModel()
                 QuestionType.NUMBERED_SCALE -> factory.findOneNumberedScaleResponseModel()
                 QuestionType.PICK_LIST -> factory.findOnePickListResponseModel()
+                QuestionType.PICK_MANY -> factory.findOnePickManyResponseModel()
                 QuestionType.LABELED_SCALE -> factory.findOneLabeledScaleResponseModel()
             }
 

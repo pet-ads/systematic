@@ -12,4 +12,6 @@ interface UserAccountRepository {
     fun existsByUsername(username: String): Boolean
     fun deleteById(id: UUID)
     fun loadUserProfileById(id: UUID): UserProfileDto?
+    fun loadFullUserAccountById(id: UUID): UserAccountDto?
+    fun updatePassword(id: UUID, newHashedPassword: String)
 }

@@ -1,6 +1,9 @@
 package br.all.domain.user
 
 import br.all.domain.shared.user.Email
+import br.all.domain.shared.user.Name
+import br.all.domain.shared.user.Text
+import br.all.domain.shared.user.Username
 import io.github.serpro69.kfaker.Faker
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
@@ -53,6 +56,8 @@ class UserAccountTest{
         Assertions.assertTrue(user.accountCredentials.isEnabled)
     }
 
+    // Although the user won't be able to change their username through the front-end,
+    // I think we should still let this test here.
     @Test
     fun `should change username in account credentials`(){
         val user = createUser()
@@ -71,6 +76,7 @@ class UserAccountTest{
 
     private fun createUser(
         id: UUID = UUID.randomUUID(),
+        name: Name = Name(faker.name.name()),
         createdAt: LocalDateTime = LocalDateTime.now(),
         email: Email = Email(faker.internet.email()),
         country: Text = Text(faker.address.countryCode()),
@@ -78,9 +84,10 @@ class UserAccountTest{
         username: Username = Username(faker.name.firstName()),
         password: String = faker.pearlJam.songs(),
         authorities: Set<Authority> = setOf(Authority.USER)
-        ) = UserAccount(
-        UserAccountId(id),
-        createdAt, email, country, affiliation, username, password, authorities
+    ) = UserAccount(
+        id = UserAccountId(id),
+        name = name,
+        createdAt = createdAt, email = email, country = country, affiliation = affiliation, username = username, password = password, authorities = authorities
     )
 
 }

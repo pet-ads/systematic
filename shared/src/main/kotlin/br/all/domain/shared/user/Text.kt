@@ -1,4 +1,4 @@
-package br.all.domain.user
+package br.all.domain.shared.user
 
 import br.all.domain.shared.ddd.Notification
 import br.all.domain.shared.ddd.ValueObject

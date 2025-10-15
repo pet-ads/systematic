@@ -33,7 +33,7 @@ class LinksFactory {
         }.withRel("update-protocol").withType("PUT")
 
     fun createReview(): Link = linkTo<SystematicStudyController> {
-        postSystematicStudy(PostRequest("title", "description", setOf()))
+        postSystematicStudy(PostRequest("title", "description", setOf(), "objectives"))
     }.withRel("create-review").withType("POST")
 
     fun findReview(systematicStudyId: UUID): Link = linkTo<SystematicStudyController> {
@@ -51,7 +51,7 @@ class LinksFactory {
     fun updateReview(systematicStudyId: UUID): Link = linkTo<SystematicStudyController> {
         updateSystematicStudy(
             systematicStudyId,
-            br.all.review.requests.PutRequest("title", "description"),
+            br.all.review.requests.PutRequest("title", "description", "objectives"),
         )
     }.withRel("update-review").withType("PUT")
 
@@ -80,6 +80,15 @@ class LinksFactory {
             )
         )
     }.withRel("create-pick-list-extraction-question").withType("POST")
+
+    fun createPickManyExtractionQuestion(systematicStudyId: UUID): Link = linkTo<ExtractionQuestionController> {
+        createPickManyQuestion(
+            systematicStudyId,
+            request = ExtractionQuestionController.PickManyRequest(
+                "code", "description", listOf("option1")
+            )
+        )
+    }.withRel("create-pick-many-extraction-question").withType("POST")
 
     fun createLabeledScaleExtractionQuestion(systematicStudyId: UUID): Link = linkTo<ExtractionQuestionController> {
         createLabeledScaleQuestion(
@@ -124,6 +133,15 @@ class LinksFactory {
             )
         )
     }.withRel("create-pick-list-rob-question").withType("POST")
+
+    fun createPickManyRobQuestion(systematicStudyId: UUID): Link = linkTo<RiskOfBiasQuestionController> {
+        createPickManyQuestion(
+            systematicStudyId,
+            request = RiskOfBiasQuestionController.PickManyRequest(
+                "code", "description", listOf("option1")
+            )
+        )
+    }.withRel("create-pick-many-rob-question").withType("POST")
 
     fun createLabeledScaleRobQuestion(systematicStudyId: UUID): Link = linkTo<RiskOfBiasQuestionController> {
         createLabeledScaleQuestion(

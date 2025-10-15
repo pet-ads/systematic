@@ -26,13 +26,10 @@ class CreateSystematicReviewExampleService(
             SystematicStudyDto(
                 id = systematicId,
                 title = "A Systematic Review on Service-Oriented Robotic Systems Development",
-                description = """
-                This systematic review, conducted in January 2012 at ICMC/USP, presents a detailed panorama on 
-                the design, implementation, and usage of service-oriented robotic systems. It identifies key 
-                technologies, methodologies, and software engineering guidelines in the field.
-            """.trimIndent(),
+                description = """This systematic review, conducted in January 2012 at ICMC/USP, presents a detailed panorama on the design, implementation, and usage of service-oriented robotic systems. It identifies key technologies, methodologies, and software engineering guidelines in the field.""".trimIndent(),
                 owner = ownerId,
-                collaborators = collaboratorIds
+                collaborators = collaboratorIds,
+                objectives = "These are the main objectives of this systematic review."
             )
         )
 
@@ -85,6 +82,22 @@ class CreateSystematicReviewExampleService(
             )
         )
 
+        val eq5 = question.createQuestion(
+            reviewId = systematicId,
+            code = "EQ5",
+            title = "Which of the following service-oriented architectures (SOAs) have been applied to robotic systems in the reviewed studies?",
+            type = "PICK_MANY",
+            context = QuestionContextEnum.EXTRACTION,
+            options = listOf(
+                "ROS (Robot Operating System)",
+                "DDS (Data Distribution Service)",
+                "REST (Representational State Transfer)",
+                "SOAP (Simple Object Access Protocol)",
+                "Corba (Common Object Request Broker Architecture)",
+                "MQTT (Message Queuing Telemetry Transport)"
+            )
+        )
+
         val rbq1 = question.createQuestion(
             reviewId = systematicId,
             code = "RBQ1",
@@ -133,6 +146,21 @@ class CreateSystematicReviewExampleService(
             lower = 1
         )
 
+        val rbq5 = question.createQuestion(
+            reviewId = systematicId,
+            code = "RBQ5",
+            title = "Select all potential sources of bias that are present in the primary study.",
+            type = "PICK_MANY",
+            context = QuestionContextEnum.ROB,
+            options = listOf(
+                "Selection bias (e.g. non-randomized sampling)",
+                "Performance bias (e.g. lack of blinding of participants)",
+                "Detection bias (e.g. lack of blinding of outcome assessors)",
+                "Attrition bias (e.g. incomplete outcome data)",
+                "Reporting bias (e.g. selective reporting of outcomes)"
+            )
+        )
+
         protocolRepository.saveOrUpdate(
             ProtocolDto(
                 id = systematicId,
@@ -175,8 +203,8 @@ class CreateSystematicReviewExampleService(
                 ),
                 dataCollectionProcess = "Data extraction will be performed using pre-defined extraction tables corresponding to each research question.",
                 analysisAndSynthesisProcess = "Data were synthesized using statistical methods and meta-analysis to draw conclusions about the research area.",
-                extractionQuestions = setOf(eq1.questionId, eq2.questionId, eq3.questionId, eq4.questionId),
-                robQuestions = setOf(rbq1.questionId, rbq2.questionId, rbq3.questionId, rbq4.questionId),
+                extractionQuestions = setOf(eq1.questionId, eq2.questionId, eq3.questionId, eq4.questionId, eq5.questionId),
+                robQuestions = setOf(rbq1.questionId, rbq2.questionId, rbq3.questionId, rbq4.questionId, rbq5.questionId),
                 picoc = PicocDto(
                     population = "Researchers and developers of robotic systems interested in employing SOA.",
                     intervention = "The development and use of service-oriented robotic systems.",

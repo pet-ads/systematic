@@ -19,14 +19,18 @@ interface FindProtocolStageService {
     )
 
     enum class ProtocolStage {
-        PROTOCOL_PART_I,
+        GENERAL_DEFINITION,
+        RESEARCH_QUESTIONS,
         PICOC,
-        PROTOCOL_PART_II,
-        PROTOCOL_PART_III,
+        ELIGIBILITY_CRITERIA,
+        INFORMATION_SOURCES_AND_SEARCH_STRATEGY,
+        SELECTION_AND_EXTRACTION,
+        RISK_OF_BIAS,
+        ANALYSIS_AND_SYNTHESIS_METHOD,
+
         IDENTIFICATION,
         SELECTION,
         EXTRACTION,
-        GRAPHICS,
-        FINALIZATION
+        GRAPHICS
     }
 }

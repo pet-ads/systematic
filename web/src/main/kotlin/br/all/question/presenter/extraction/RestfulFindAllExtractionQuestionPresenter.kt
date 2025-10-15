@@ -22,10 +22,11 @@ class RestfulFindAllExtractionQuestionPresenter(
         val selfRef = linksFactory.findAllReviewExtractionQuestions(response.systematicStudyId)
         val createQuestion = linksFactory.createTextualExtractionQuestion(response.systematicStudyId)
         val createPickList = linksFactory.createPickListExtractionQuestion(response.systematicStudyId)
+        val createPickMany = linksFactory.createPickManyExtractionQuestion(response.systematicStudyId)
         val createLabeledScale = linksFactory.createLabeledScaleExtractionQuestion(response.systematicStudyId)
         val createNumberScale = linksFactory.createNumberScaleExtractionQuestion(response.systematicStudyId)
 
-        viewModel.add(selfRef, createQuestion, createPickList, createLabeledScale, createNumberScale)
+        viewModel.add(selfRef, createQuestion, createPickList, createPickMany, createLabeledScale, createNumberScale)
         responseEntity = ResponseEntity.status(HttpStatus.OK).body(viewModel)
     }
 

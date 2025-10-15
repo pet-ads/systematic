@@ -10,6 +10,7 @@ interface CreateSystematicStudyService {
         val title : String,
         val description : String,
         val collaborators : Set<UUID>,
+        val objectives: String,
     )
 
     data class ResponseModel(

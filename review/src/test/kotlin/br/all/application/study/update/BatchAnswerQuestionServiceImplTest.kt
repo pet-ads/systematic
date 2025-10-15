@@ -108,6 +108,149 @@ class BatchAnswerQuestionServiceImplTest {
         }
 
         @Test
+        fun `should successfully answer a single pick-many question`() {
+            val reviewDto = factory.generateDto()
+
+            val pickManyQId = UUID.randomUUID()
+            val pickManyOptions = listOf("Java", "Kotlin", "Go", "Rust")
+            val pickManyQDto = factory.generateQuestionPickManyDto(pickManyQId, factory.systematicStudyId, options = pickManyOptions, questionContext = "EXTRACTION")
+            val pickManyAnswer = factory.answerDetail(questionId = pickManyQId, type = "PICK_MANY", answer = listOf("Kotlin", "Rust"))
+
+            val request = factory.batchAnswerRequest(listOf(pickManyAnswer))
+
+            preconditionCheckerMocking.makeEverythingWork()
+            every { studyReviewRepository.findById(any(), any()) } returns reviewDto
+            every { questionRepository.findById(any(), pickManyQId) } returns pickManyQDto
+
+            sut.batchAnswerQuestion(presenter, request)
+
+            verify(exactly = 1) { studyReviewRepository.saveOrUpdate(any()) }
+            verify(exactly = 1) {
+                presenter.prepareSuccessView(withArg { response ->
+                    assertEquals(1, response.succeededAnswers.size)
+                    assertTrue(response.failedAnswers.isEmpty())
+                    assertEquals(pickManyQId, response.succeededAnswers.first())
+                })
+            }
+        }
+
+        @Test
+        fun `should successfully answer three pick-many questions together`() {
+            val reviewDto = factory.generateDto()
+
+            val q1Id = UUID.randomUUID()
+            val q1Dto = factory.generateQuestionPickManyDto(q1Id, factory.systematicStudyId, options = listOf("A", "B", "C"), questionContext = "EXTRACTION")
+            val a1 = factory.answerDetail(q1Id, "PICK_MANY", listOf("A", "C"))
+
+            val q2Id = UUID.randomUUID()
+            val q2Dto = factory.generateQuestionPickManyDto(q2Id, factory.systematicStudyId, options = listOf("X", "Y"), questionContext = "EXTRACTION")
+            val a2 = factory.answerDetail(q2Id, "PICK_MANY", listOf("Y"))
+
+            val q3Id = UUID.randomUUID()
+            val q3Dto = factory.generateQuestionPickManyDto(q3Id, factory.systematicStudyId, options = listOf("1", "2", "3"), questionContext = "EXTRACTION")
+            val a3 = factory.answerDetail(q3Id, "PICK_MANY", listOf("1", "2", "3"))
+
+            val request = factory.batchAnswerRequest(listOf(a1, a2, a3))
+
+            preconditionCheckerMocking.makeEverythingWork()
+            every { studyReviewRepository.findById(any(), any()) } returns reviewDto
+            every { questionRepository.findById(any(), q1Id) } returns q1Dto
+            every { questionRepository.findById(any(), q2Id) } returns q2Dto
+            every { questionRepository.findById(any(), q3Id) } returns q3Dto
+
+            sut.batchAnswerQuestion(presenter, request)
+
+            verify(exactly = 1) {
+                presenter.prepareSuccessView(withArg { response ->
+                    assertEquals(3, response.succeededAnswers.size)
+                    assertTrue(response.failedAnswers.isEmpty())
+                    assertTrue(response.succeededAnswers.containsAll(listOf(q1Id, q2Id, q3Id)))
+                })
+            }
+        }
+
+        @Test
+        fun `should successfully answer all question types together in a single batch`() {
+            val reviewDto = factory.generateDto()
+
+            val textualQId = UUID.randomUUID()
+            val textualQDto = factory.generateQuestionTextualDto(textualQId, factory.systematicStudyId, questionContext = "EXTRACTION")
+            val textualAnswer = factory.answerDetail(textualQId, "TEXTUAL", "Comprehensive answer")
+
+            val pickListQId = UUID.randomUUID()
+            val pickListQDto = factory.generateQuestionPickListDto(pickListQId, factory.systematicStudyId, options = listOf("Yes", "No"), questionContext = "EXTRACTION")
+            val pickListAnswer = factory.answerDetail(pickListQId, "PICK_LIST", "Yes")
+
+            val pickManyQId = UUID.randomUUID()
+            val pickManyQDto = factory.generateQuestionPickManyDto(pickManyQId, factory.systematicStudyId, options = listOf("High", "Medium", "Low"), questionContext = "EXTRACTION")
+            val pickManyAnswer = factory.answerDetail(pickManyQId, "PICK_MANY", listOf("High", "Low"))
+
+            val numberedQId = UUID.randomUUID()
+            val numberedQDto = factory.generateQuestionNumberedScaleDto(numberedQId, factory.systematicStudyId, higher = 10, lower = 0, questionContext = "ROB")
+            val numberedAnswer = factory.answerDetail(numberedQId, "NUMBERED_SCALE", 7)
+
+            val labeledScaleQId = UUID.randomUUID()
+            val labelDto = BatchAnswerQuestionService.LabelDto("Critical", 5)
+            val labeledScaleQDto = factory.generateQuestionLabeledScaleDto(labeledScaleQId, factory.systematicStudyId, labelDto = labelDto, questionContext = "ROB")
+            val labeledScaleAnswer = factory.answerDetail(labeledScaleQId, "LABELED_SCALE", labelDto)
+
+            val request = factory.batchAnswerRequest(listOf(textualAnswer, pickListAnswer, pickManyAnswer, numberedAnswer, labeledScaleAnswer))
+
+            preconditionCheckerMocking.makeEverythingWork()
+            every { studyReviewRepository.findById(any(), any()) } returns reviewDto
+            every { questionRepository.findById(any(), textualQId) } returns textualQDto
+            every { questionRepository.findById(any(), pickListQId) } returns pickListQDto
+            every { questionRepository.findById(any(), pickManyQId) } returns pickManyQDto
+            every { questionRepository.findById(any(), numberedQId) } returns numberedQDto
+            every { questionRepository.findById(any(), labeledScaleQId) } returns labeledScaleQDto
+
+            sut.batchAnswerQuestion(presenter, request)
+
+            verify(exactly = 1) { studyReviewRepository.saveOrUpdate(any()) }
+            verify(exactly = 1) {
+                presenter.prepareSuccessView(withArg { response ->
+                    assertEquals(5, response.totalAnswered)
+                    assertTrue(response.failedAnswers.isEmpty())
+                    val expectedIds = listOf(textualQId, pickListQId, pickManyQId, numberedQId, labeledScaleQId)
+                    assertTrue(response.succeededAnswers.containsAll(expectedIds))
+                })
+            }
+        }
+
+        @Test
+        fun `should successfully answer pick-many and labeled-scale questions`() {
+            val reviewDto = factory.generateDto()
+
+            val pickManyQId = UUID.randomUUID()
+            val pickManyOptions = listOf("Option 1", "Option 2", "Option 3")
+            val pickManyQDto = factory.generateQuestionPickManyDto(pickManyQId, factory.systematicStudyId, options = pickManyOptions, questionContext = "EXTRACTION")
+            val pickManyAnswer = factory.answerDetail(questionId = pickManyQId, type = "PICK_MANY", answer = listOf("Option 1", "Option 3"))
+
+            val labeledScaleQId = UUID.randomUUID()
+            val labelDto = BatchAnswerQuestionService.LabelDto("Good", 3)
+            val labeledScaleQDto = factory.generateQuestionLabeledScaleDto(labeledScaleQId, factory.systematicStudyId, labelDto = labelDto, questionContext = "ROB")
+            val labeledScaleAnswer = factory.answerDetail(questionId = labeledScaleQId, type = "LABELED_SCALE", answer = labelDto)
+
+            val request = factory.batchAnswerRequest(listOf(pickManyAnswer, labeledScaleAnswer))
+
+            preconditionCheckerMocking.makeEverythingWork()
+            every { studyReviewRepository.findById(any(), any()) } returns reviewDto
+            every { questionRepository.findById(any(), pickManyQId) } returns pickManyQDto
+            every { questionRepository.findById(any(), labeledScaleQId) } returns labeledScaleQDto
+
+            sut.batchAnswerQuestion(presenter, request)
+
+            verify(exactly = 1) { studyReviewRepository.saveOrUpdate(any()) }
+            verify(exactly = 1) {
+                presenter.prepareSuccessView(withArg { response ->
+                    assertEquals(2, response.succeededAnswers.size)
+                    assertTrue(response.failedAnswers.isEmpty())
+                    assertTrue(response.succeededAnswers.containsAll(listOf(pickManyQId, labeledScaleQId)))
+                })
+            }
+        }
+
+        @Test
         fun `should handle a mix of successful and failed answers`() {
             val reviewDto = factory.generateDto()
 
@@ -179,6 +322,30 @@ class BatchAnswerQuestionServiceImplTest {
     @Nested
     @DisplayName("When failing to answer questions")
     inner class WhenFailingToAnswerQuestions {
+
+        @Test
+        fun `should create a failed answer entry for a pick-list answer not in options`() {
+            val reviewDto = factory.generateDto()
+            val questionId = UUID.randomUUID()
+            val questionDto = factory.generateQuestionPickListDto(questionId, factory.systematicStudyId, options = listOf("A", "B"), questionContext = "EXTRACTION")
+            val answerDetail = factory.answerDetail(questionId, "PICK_LIST", "C")
+            val request = factory.batchAnswerRequest(listOf(answerDetail))
+
+            preconditionCheckerMocking.makeEverythingWork()
+            every { studyReviewRepository.findById(any(), any()) } returns reviewDto
+            every { questionRepository.findById(any(), questionId) } returns questionDto
+
+            sut.batchAnswerQuestion(presenter, request)
+
+            verify(exactly = 1) {
+                presenter.prepareSuccessView(withArg { response ->
+                    assertTrue(response.succeededAnswers.isEmpty())
+                    assertEquals(1, response.failedAnswers.size)
+                    assertTrue("must be one of the valid options" in response.failedAnswers.first().reason)
+                })
+            }
+        }
+
         @Test
         fun `should create a failed answer entry for a question with conflicting types`() {
             val reviewDto = factory.generateDto()
@@ -216,7 +383,7 @@ class BatchAnswerQuestionServiceImplTest {
             every { studyReviewRepository.findById(any(), any()) } returns reviewDto
             every { questionRepository.findById(any(), questionId) } returns questionDto
 
-            sut.batchAnswerQuestion(presenter, request) // Updated call
+            sut.batchAnswerQuestion(presenter, request)
 
             verify(exactly = 1) {
                 presenter.prepareSuccessView(withArg { response ->
@@ -242,7 +409,7 @@ class BatchAnswerQuestionServiceImplTest {
             every { studyReviewRepository.findById(any(), any()) } returns reviewDto
             every { questionRepository.findById(any(), questionId) } returns questionDto
 
-            sut.batchAnswerQuestion(presenter, request) // Updated call
+            sut.batchAnswerQuestion(presenter, request)
 
             verify(exactly = 1) {
                 presenter.prepareSuccessView(withArg { response ->

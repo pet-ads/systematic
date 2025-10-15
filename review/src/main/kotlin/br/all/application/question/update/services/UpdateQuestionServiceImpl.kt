@@ -1,6 +1,8 @@
 package br.all.application.question.update.services
 
 import br.all.application.question.create.CreateQuestionService.QuestionType
+import br.all.application.question.create.CreateQuestionService.QuestionType.PICK_LIST
+import br.all.application.question.create.CreateQuestionService.QuestionType.PICK_MANY
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.repository.toDto
 import br.all.application.question.update.presenter.UpdateQuestionPresenter
@@ -31,7 +33,7 @@ class UpdateQuestionServiceImpl(
 
         val type = request.questionType
 
-        if (type == QuestionType.PICK_LIST && request.options.isNullOrEmpty()) {
+        if ((type == PICK_LIST || type == PICK_MANY) && request.options.isNullOrEmpty()) {
             presenter.prepareFailView(IllegalArgumentException("Options must not be null or empty."))
             return
         }
@@ -47,14 +49,21 @@ class UpdateQuestionServiceImpl(
         val questionId = QuestionId(request.questionId)
 
         val builder = QuestionBuilder.with(questionId, SystematicStudyId(systematicStudyId), request.code, request.description)
-        val question = when (request.questionType) {
-            QuestionType.TEXTUAL -> builder.buildTextual()
-            QuestionType.PICK_LIST -> builder.buildPickList(request.options!!)
-            QuestionType.NUMBERED_SCALE -> builder.buildNumberScale(request.lower!!, request.higher!!)
-            QuestionType.LABELED_SCALE -> builder.buildLabeledScale(request.scales!!)
+
+        try {
+            val question = when (request.questionType) {
+                QuestionType.TEXTUAL -> builder.buildTextual()
+                QuestionType.PICK_LIST -> builder.buildPickList(request.options!!)
+                QuestionType.PICK_MANY -> builder.buildPickMany(request.options!!)
+                QuestionType.NUMBERED_SCALE -> builder.buildNumberScale(request.lower!!, request.higher!!)
+                QuestionType.LABELED_SCALE -> builder.buildLabeledScale(request.scales!!)
+            }
+            questionRepository.createOrUpdate(question.toDto(type, request.questionContext))
+        } catch (e: IllegalArgumentException) {
+            presenter.prepareFailView(e)
+            return
         }
 
-        questionRepository.createOrUpdate(question.toDto(type, request.questionContext))
         presenter.prepareSuccessView(ResponseModel(userId, systematicStudyId, questionId.value))
     }
 }

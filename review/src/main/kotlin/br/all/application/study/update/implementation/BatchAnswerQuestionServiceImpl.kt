@@ -21,6 +21,7 @@ import br.all.domain.model.question.Label
 import br.all.domain.model.question.LabeledScale
 import br.all.domain.model.question.NumberScale
 import br.all.domain.model.question.PickList
+import br.all.domain.model.question.PickMany
 import br.all.domain.model.question.Question
 import br.all.domain.model.question.QuestionContextEnum
 import br.all.domain.model.question.Textual
@@ -114,6 +115,12 @@ class BatchAnswerQuestionServiceImpl(
         return when {
             questionType == "TEXTUAL" && detail.answer is String -> (question as Textual).answer(detail.answer)
             questionType == "PICK_LIST" && detail.answer is String -> (question as PickList).answer(detail.answer)
+            questionType == "PICK_MANY" && detail.answer is List<*> -> {
+                val stringList = detail.answer.map {
+                    it as? String ?: throw IllegalArgumentException("All items in the answer list for PICK_MANY must be strings.")
+                }
+                (question as PickMany).answer(stringList)
+            }
             questionType == "NUMBERED_SCALE" && detail.answer is Int -> (question as NumberScale).answer(detail.answer)
             questionType == "LABELED_SCALE" -> {
                 when (val answer = detail.answer) {

@@ -37,6 +37,7 @@ class ExtractionQuestionController(
 ) {
     data class TextualRequest(val code: String, val description: String)
     data class PickListRequest(val code: String, val description: String, val options: List<String>)
+    data class PickManyRequest(val code: String, val description: String, val options: List<String>)
     data class LabeledScaleRequest(val code: String, val description: String, val scales: Map<String, Int>)
     data class NumberScaleRequest(val code: String, val description: String, val lower: Int, val higher: Int)
     val questionContext = "EXTRACTION"
@@ -113,6 +114,42 @@ class ExtractionQuestionController(
             systematicStudyId,
             questionContext,
             PICK_LIST,
+            request.code,
+            request.description,
+            options = request.options
+        )
+    )
+
+    @PostMapping("/pick-many")
+    @Operation(summary = "Create a extraction pick-many question in the protocol")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "201", description = "Success creating a pick-many question in the protocol",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail creating a pick-many question in the protocol - invalid input",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a pick-many question in the protocol - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a pick-many question in the protocol - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+        ]
+    )
+    fun createPickManyQuestion(
+        @PathVariable systematicStudyId: UUID, @RequestBody request: PickManyRequest,
+    ): ResponseEntity<*> = createQuestion(
+        RequestModel(
+            authenticationInfoService.getAuthenticatedUserId(),
+            systematicStudyId,
+            questionContext,
+            PICK_MANY,
             request.code,
             request.description,
             options = request.options

@@ -2,11 +2,15 @@ package br.all.domain.user
 
 import br.all.domain.shared.ddd.Entity
 import br.all.domain.shared.user.Email
+import br.all.domain.shared.user.Name
+import br.all.domain.shared.user.Text
+import br.all.domain.shared.user.Username
 import java.time.LocalDateTime
 import java.util.UUID
 
 class UserAccount(
     id: UserAccountId,
+    var name: Name,
     val createdAt: LocalDateTime = LocalDateTime.now(),
     var email: Email,
     var country: Text,

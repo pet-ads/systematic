@@ -3,6 +3,9 @@ package br.all.utils.example
 import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.repository.toDto
 import br.all.domain.shared.user.Email
+import br.all.domain.shared.user.Name
+import br.all.domain.shared.user.Text
+import br.all.domain.shared.user.Username
 import br.all.domain.user.*
 import org.springframework.stereotype.Service
 import java.util.*
@@ -14,9 +17,10 @@ class RegisterUserExampleService (
     fun registerUserAccount(
         username: String,
         password: String,
-        email: String = "email@email.com",
-        country: String = "Country",
-        affiliation: String = "affiliation",
+        email: String = "lucas@gmail.com",
+        country: String = "Brazil",
+        affiliation: String = "IFSP",
+        name: String = "Lucas"
     ): UserAccount {
 
         val newUserAccount = UserAccount(
@@ -26,7 +30,8 @@ class RegisterUserExampleService (
             email = Email(email),
             country = Text(country),
             affiliation = affiliation,
-            authorities = setOf(Authority.USER)
+            authorities = setOf(Authority.USER),
+            name = Name(name),
         )
 
         repo.save(newUserAccount.toDto())

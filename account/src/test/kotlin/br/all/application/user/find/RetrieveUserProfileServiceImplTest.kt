@@ -19,7 +19,7 @@ import kotlin.NoSuchElementException
 class RetrieveUserProfileServiceImplTest {
 
     @MockK(relaxUnitFun = true)
-    private lateinit var userAccountRepository: UserAccountRepository
+    private lateinit var repository: UserAccountRepository
 
     @MockK(relaxUnitFun = true)
     private lateinit var presenter: RetrieveUserProfilePresenter
@@ -29,7 +29,7 @@ class RetrieveUserProfileServiceImplTest {
 
     @BeforeEach
     fun setUp() {
-        sut = RetrieveUserProfileServiceImpl(userAccountRepository)
+        sut = RetrieveUserProfileServiceImpl(repository)
         factory = TestDataFactory()
     }
 
@@ -39,12 +39,10 @@ class RetrieveUserProfileServiceImplTest {
 
         @Test
         fun `should retrieve user profile and prepare success view`() {
-            val userProfile = factory.userProfile()
-            val userCredentials = factory.accountCredentials().copy(id = userProfile.id)
-            val request = RetrieveUserProfileService.RequestModel(userId = userProfile.id)
+            val userAccountDto = factory.userAccountDto()
+            val request = RetrieveUserProfileService.RequestModel(userId = userAccountDto.id)
 
-            every { userAccountRepository.loadUserProfileById(request.userId) } returns userProfile
-            every { userAccountRepository.loadCredentialsById(request.userId) } returns userCredentials
+            every { repository.loadFullUserAccountById(userAccountDto.id) } returns userAccountDto
 
             val responseSlot = slot<RetrieveUserProfileService.ResponseModel>()
             every { presenter.prepareSuccessView(capture(responseSlot)) } returns Unit
@@ -55,12 +53,13 @@ class RetrieveUserProfileServiceImplTest {
             verify(exactly = 0) { presenter.prepareFailView(any()) }
 
             val capturedResponse = responseSlot.captured
-            assertEquals(userProfile.id, capturedResponse.userId)
-            assertEquals(userCredentials.username, capturedResponse.username)
-            assertEquals(userProfile.email, capturedResponse.email)
-            assertEquals(userProfile.affiliation, capturedResponse.affiliation)
-            assertEquals(userProfile.country, capturedResponse.country)
-            assertEquals(userCredentials.authorities, capturedResponse.authorities)
+            assertEquals(userAccountDto.id, capturedResponse.userId)
+            assertEquals(userAccountDto.name, capturedResponse.name)
+            assertEquals(userAccountDto.username, capturedResponse.username)
+            assertEquals(userAccountDto.email, capturedResponse.email)
+            assertEquals(userAccountDto.affiliation, capturedResponse.affiliation)
+            assertEquals(userAccountDto.country, capturedResponse.country)
+            assertEquals(userAccountDto.authorities, capturedResponse.authorities)
         }
 
         @Test
@@ -68,7 +67,7 @@ class RetrieveUserProfileServiceImplTest {
             val userId = UUID.randomUUID()
             val request = RetrieveUserProfileService.RequestModel(userId = userId)
 
-            every { userAccountRepository.loadUserProfileById(userId) } returns null
+            every { repository.loadFullUserAccountById(userId) } returns null
 
             val exceptionSlot = slot<NoSuchElementException>()
             every { presenter.prepareFailView(capture(exceptionSlot)) } returns Unit
@@ -80,26 +79,6 @@ class RetrieveUserProfileServiceImplTest {
 
             val capturedException = exceptionSlot.captured
             assertEquals("User with id $userId doesn't exist!", capturedException.message)
-        }
-
-        @Test
-        fun `should prepare fail view when user credentials are not found`() {
-            val userProfile = factory.userProfile()
-            val request = RetrieveUserProfileService.RequestModel(userId = userProfile.id)
-
-            every { userAccountRepository.loadUserProfileById(request.userId) } returns userProfile
-            every { userAccountRepository.loadCredentialsById(request.userId) } returns null
-
-            val exceptionSlot = slot<NoSuchElementException>()
-            every { presenter.prepareFailView(capture(exceptionSlot)) } returns Unit
-
-            sut.retrieveData(presenter, request)
-
-            verify(exactly = 0) { presenter.prepareSuccessView(any()) }
-            verify(exactly = 1) { presenter.prepareFailView(any()) }
-
-            val capturedException = exceptionSlot.captured
-            assertEquals("Account credentials with id ${request.userId} doesn't exist!", capturedException.message)
         }
     }
 }

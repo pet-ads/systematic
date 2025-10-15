@@ -343,7 +343,7 @@ object RisTestData {
         DO  - 10.1109/MCG.2017.6
         JO  - \url{https://www.nasa.gov/nh/pluto-the-other-red-planet}
         IS  - 1
-        Y1  - Jan.-Feb. 2017
+        Y1  - blablabla
         AB  - Lorem Ipsum
         ER  - 
         """,
@@ -370,10 +370,12 @@ object RisTestData {
         ER  - 
         """,
 
-        "invalid doi" to """TY  - JOUR
+        "invalid doi" to """TY  - VIDEO
+        TI  - Pluto: The 'Other' Red Planet
         AU  - NASA
         PY  - 2015
         KW  - KW
+        DO  - 
         JO  - \url{https://www.nasa.gov/nh/pluto-the-other-red-planet}
         IS  - 1
         Y1  - Jan.-Feb. 2017

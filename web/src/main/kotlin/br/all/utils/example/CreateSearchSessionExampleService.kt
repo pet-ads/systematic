@@ -7,6 +7,7 @@ import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.toDto
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.toSearchSessionID
+import br.all.domain.model.study.StudyReview
 import br.all.domain.services.ConverterFactoryService
 import br.all.domain.services.ReviewSimilarityService
 import br.all.domain.services.ScoreCalculatorService
@@ -27,7 +28,7 @@ class CreateSearchSessionExampleService (
     private val scoreCalculatorService: ScoreCalculatorService,
     private val reviewSimilarityService: ReviewSimilarityService
 ) {
-    fun convert(
+    fun extractAndScoreStudiesFromFile(
         systematicStudyId: SystematicStudyId,
         userId: UUID,
         bibFileName: String,
@@ -35,7 +36,7 @@ class CreateSearchSessionExampleService (
         timestamp: LocalDateTime,
         searchString: String,
         additionalInformation: String
-    ) {
+    ): List<StudyReview> {
         val search = uuidGeneratorService.next()
         val resource = ClassPathResource(bibFileName)
 
@@ -60,15 +61,6 @@ class CreateSearchSessionExampleService (
 
         val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocolDto!!.keywords)
 
-        studyReviewRepository.saveOrUpdateBatch(scoredStudyReviews.map { it.toDto() })
-
-        val duplicatedAnalysedReviews = reviewSimilarityService.findDuplicates(scoredStudyReviews, emptyList())
-        val toSaveDuplicatedAnalysedReviews = duplicatedAnalysedReviews
-            .flatMap { (key, value) -> listOf(key) + value }
-            .toList()
-
-        studyReviewRepository.saveOrUpdateBatch(toSaveDuplicatedAnalysedReviews.map { it.toDto() })
-
-        searchSessionRepository.create(searchSession)
+        return scoredStudyReviews
     }
 }

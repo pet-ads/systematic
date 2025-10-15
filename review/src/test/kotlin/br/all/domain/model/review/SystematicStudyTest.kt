@@ -17,7 +17,7 @@ class SystematicStudyTest {
     fun setUp() {
         val systematicStudyId = SystematicStudyId(UUID.randomUUID())
         val owner = ResearcherId(UUID.randomUUID())
-        sut = SystematicStudy(systematicStudyId, "Some title", "Some description", owner)
+        sut = SystematicStudy(systematicStudyId, "Some title", "Some description", owner, objectives = "Some objective")
     }
 
     @Nested
@@ -33,14 +33,14 @@ class SystematicStudyTest {
                 val owner = ResearcherId(UUID.randomUUID())
                 val collaborators = mutableSetOf(ResearcherId(UUID.randomUUID()))
 
-                assertDoesNotThrow { SystematicStudy(id, "Title", "Description", owner, collaborators) }
+                assertDoesNotThrow { SystematicStudy(id, "Title", "Description", owner, collaborators, "Objectives") }
             }
 
             @Test
             fun `should owner be a collaborator`() {
                 val id = SystematicStudyId(UUID.randomUUID())
                 val ownerId = ResearcherId(UUID.randomUUID())
-                val sut = SystematicStudy(id, "Title", "Description", ownerId, mutableSetOf())
+                val sut = SystematicStudy(id, "Title", "Description", ownerId, mutableSetOf(), "Objectives")
                 
                 assertTrue(ownerId in sut.collaborators)
             }
@@ -51,12 +51,12 @@ class SystematicStudyTest {
         @DisplayName("And providing invalid states")
         inner class AndProvidingInvalidStates {
             @ParameterizedTest(name = "[{index}]: title=\"{0}\", description=\"{1}\"")
-            @CsvSource("'',Some description", "Some title,''", "'',''")
-            fun `should not create systematic study without title or description`(title: String, description: String){
+            @CsvSource("'','Some description',''", "'Some title','',''", "'','',Some objective")
+            fun `should not create systematic study without title, description or objective`(title: String, description: String, objectives: String){
                 val id = SystematicStudyId(UUID.randomUUID())
                 val owner = ResearcherId(UUID.randomUUID())
 
-                assertThrows<IllegalArgumentException> { SystematicStudy(id, title, description, owner) }
+                assertThrows<IllegalArgumentException> { SystematicStudy(id, title, description, owner, objectives = objectives) }
             }
         }
     }

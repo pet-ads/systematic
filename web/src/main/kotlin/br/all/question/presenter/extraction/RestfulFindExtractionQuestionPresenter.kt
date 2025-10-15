@@ -34,7 +34,7 @@ class RestfulFindExtractionQuestionPresenter(
         val questionId = content.questionId
         val systematicStudyId = content.systematicStudyId
         val code = content.code
-        val description = content.code
+        val description = content.description
         val questionType = content.questionType
         val scales = content.scales
         val higher = content.higher

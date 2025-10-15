@@ -5,7 +5,7 @@ import java.util.*
 interface CreateQuestionService {
     fun create(presenter: CreateQuestionPresenter, request: RequestModel)
 
-    enum class QuestionType{TEXTUAL, PICK_LIST, NUMBERED_SCALE, LABELED_SCALE}
+    enum class QuestionType{TEXTUAL, PICK_LIST, NUMBERED_SCALE, LABELED_SCALE, PICK_MANY}
 
     data class RequestModel(
         val userId: UUID,
