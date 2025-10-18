@@ -373,7 +373,7 @@ class ExtractionQuestionController(
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "204",
+                responseCode = "200",
                 description = "Success deleting an extraction question by id and removing all its answers from Study Reviews",
                 content = [Content(
                     mediaType = "application/json",
