@@ -369,12 +369,12 @@ class ExtractionQuestionController(
     }
 
     @DeleteMapping("/{questionId}")
-    @Operation(summary = "Delete a extraction question by id")
+    @Operation(summary = "Delete a extraction question by id and remove all its answers from Study Reviews")
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "204",
-                description = "Success deleting an extraction question by id",
+                description = "Success deleting an extraction question by id and removing all its answers from Study Reviews",
                 content = [Content(
                     mediaType = "application/json",
                     schema = Schema(implementation = DeleteQuestionService.ResponseModel::class)
@@ -382,17 +382,17 @@ class ExtractionQuestionController(
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "Fail deleting an extraction question by id - not found",
+                description = "Fail deleting an extraction question by id and removing all its answers from Study Reviews - not found",
                 content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "Fail deleting an extraction question by id - unauthenticated user",
+                description = "Fail deleting an extraction question by id and removing all its answers from Study Reviews - unauthenticated user",
                 content = [Content(schema = Schema(hidden = true))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "Fail deleting an extraction question by id - unauthorized user",
+                description = "Fail deleting an extraction question by id and removing all its answers from Study Reviews - unauthorized user",
                 content = [Content(schema = Schema(hidden = true))]
             ),
         ]
