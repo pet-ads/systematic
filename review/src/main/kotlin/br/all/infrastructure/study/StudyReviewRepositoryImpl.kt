@@ -32,6 +32,14 @@ open class  StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRe
     override fun findAllBySession(reviewId: UUID, searchSessionId: UUID): List<StudyReviewDto> =
         repository.findAllById_SystematicStudyIdAndSearchSessionId(reviewId, searchSessionId).map { it.toDto() }
 
+    override fun findAllBySessionPaged(
+        reviewId: UUID,
+        searchSessionId: UUID,
+        pageable: Pageable
+    ): Page<StudyReviewDto> {
+        val documentsPage = repository.findAllById_SystematicStudyIdAndSearchSessionId(reviewId, searchSessionId, pageable)
+        return documentsPage.map { it.toDto() }
+    }
 
     override fun updateSelectionStatus(reviewId: UUID, studyId: Long, attributeName: String, newStatus: Any) {
         repository.findAndUpdateAttributeById(StudyReviewId(reviewId, studyId), attributeName, newStatus)
