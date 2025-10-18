@@ -16,10 +16,10 @@ class RestfulDeleteRoBQuestionPresenter(
 
     override fun prepareSuccessView(response: DeleteQuestionService.ResponseModel) {
         val restfulResponse = ViewModel(
-            response.userId, response.systematicStudyId, response.questionId,
+            response.userId, response.systematicStudyId, response.questionId, response.affectedStudyReviewIds
         )
 
-        responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).body(restfulResponse)
+        responseEntity = ResponseEntity.status(HttpStatus.OK).body(restfulResponse)
     }
 
     override fun prepareFailView(throwable: Throwable) = run { responseEntity = createErrorResponseFrom(throwable) }
@@ -29,6 +29,7 @@ class RestfulDeleteRoBQuestionPresenter(
     private data class ViewModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val questionId: UUID
+        val questionId: UUID,
+        val affectedStudyReviewIds: List<Long>
     ): RepresentationModel<ViewModel>()
 }
