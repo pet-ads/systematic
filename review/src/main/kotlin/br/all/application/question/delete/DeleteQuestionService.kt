@@ -17,5 +17,6 @@ interface DeleteQuestionService {
         val userId: UUID,
         val systematicStudyId: UUID,
         val questionId: UUID,
+        val affectedStudyReviewIds: List<Long>
     )
 }

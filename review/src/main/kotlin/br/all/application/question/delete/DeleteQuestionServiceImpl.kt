@@ -35,6 +35,8 @@ class DeleteQuestionServiceImpl(
             return
         }
 
+        val affectedStudyReviewIds = mutableListOf<Long>()
+
         try {
             questionRepository.deleteById(systematicStudyId, questionId.value)
 
@@ -50,6 +52,7 @@ class DeleteQuestionServiceImpl(
                     )
 
                     studyReviewRepository.saveOrUpdate(updatedReview)
+                    affectedStudyReviewIds.add(review.studyReviewId)
                 }
             }
 
@@ -58,6 +61,6 @@ class DeleteQuestionServiceImpl(
             return
         }
 
-        presenter.prepareSuccessView(DeleteQuestionService.ResponseModel(userId, systematicStudyId, question.questionId))
+        presenter.prepareSuccessView(DeleteQuestionService.ResponseModel(userId, systematicStudyId, question.questionId, affectedStudyReviewIds))
     }
 }
