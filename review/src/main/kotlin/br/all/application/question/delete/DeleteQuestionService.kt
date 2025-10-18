@@ -10,7 +10,6 @@ interface DeleteQuestionService {
         val userId: UUID,
         val systematicStudyId: UUID,
         val questionId: UUID,
-        val questionContext: String,
     )
 
     @Schema(name = "DeleteQuestionResponseModel")
