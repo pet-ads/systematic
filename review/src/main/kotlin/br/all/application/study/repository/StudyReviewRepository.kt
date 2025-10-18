@@ -11,6 +11,7 @@ interface StudyReviewRepository {
     fun findAllFromReviewPaged(reviewId: UUID, pageable: Pageable = Pageable.unpaged()): Page<StudyReviewDto>
     fun findAllBySource(reviewId: UUID, source: String): List<StudyReviewDto>
     fun findAllBySession(reviewId: UUID, searchSessionId: UUID): List<StudyReviewDto>
+    fun findAllBySessionPaged(reviewId: UUID, searchSessionId: UUID, pageable: Pageable = Pageable.unpaged()): Page<StudyReviewDto>
     fun findById(reviewId: UUID, studyId: Long) : StudyReviewDto?
     fun updateSelectionStatus(reviewId: UUID, studyId: Long, attributeName: String, newStatus: Any)
     fun saveOrUpdateBatch(dtos: List<StudyReviewDto>)

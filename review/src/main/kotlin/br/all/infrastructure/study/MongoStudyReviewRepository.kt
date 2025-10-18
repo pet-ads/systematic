@@ -21,6 +21,8 @@ interface MongoStudyReviewRepository : MongoRepository<StudyReviewDocument, Stud
 
     fun findAllById_SystematicStudyIdAndSearchSessionId(reviewID: UUID, searchSessionId: UUID): List<StudyReviewDocument>
 
+    fun findAllById_SystematicStudyIdAndSearchSessionId(reviewID: UUID, searchSessionId: UUID, pageable: Pageable): Page<StudyReviewDocument>
+
     @Update("{ '\$set' : { ?1 : ?2 } }")
     fun findAndUpdateAttributeById(id: StudyReviewId, attributeName:String, newStatus: Any)
 
