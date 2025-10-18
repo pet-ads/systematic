@@ -4,6 +4,7 @@ import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
+import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.model.question.QuestionId
 import br.all.domain.model.review.SystematicStudy
@@ -14,6 +15,7 @@ class DeleteQuestionServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val questionRepository: QuestionRepository,
     private val credentialsService: CredentialsService,
+    private val studyReviewRepository: StudyReviewRepository,
 ) : DeleteQuestionService {
     override fun delete(presenter: DeleteQuestionPresenter, request: DeleteQuestionService.RequestModel) {
         val systematicStudyId = request.systematicStudyId
@@ -35,6 +37,22 @@ class DeleteQuestionServiceImpl(
 
         try {
             questionRepository.deleteById(systematicStudyId, questionId.value)
+
+            val studyReviews = studyReviewRepository.findAllFromReview(systematicStudyId)
+            studyReviews.forEach { review ->
+                val updatedFormAnswers = review.formAnswers.filterNot { it.key == questionId.value }
+                val updatedRobAnswers = review.robAnswers.filterNot { it.key == questionId.value }
+
+                if (updatedFormAnswers != review.formAnswers || updatedRobAnswers != review.robAnswers) {
+                    val updatedReview = review.copy(
+                        formAnswers = updatedFormAnswers,
+                        robAnswers = updatedRobAnswers,
+                    )
+
+                    studyReviewRepository.saveOrUpdate(updatedReview)
+                }
+            }
+
         } catch (e: Exception) {
             presenter.prepareFailView(e)
             return
