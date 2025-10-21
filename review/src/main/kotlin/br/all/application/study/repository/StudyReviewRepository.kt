@@ -18,9 +18,8 @@ interface StudyReviewRepository {
         pageable: Pageable = Pageable.unpaged()
     ): Page<StudyReviewDto>
 
-    fun findAllBySessionPagedAndSelectionStatus(
+    fun findAllBySystematicStudyIdAndSelectionStatusPaged(
         reviewId: UUID,
-        searchSessionId: UUID,
         status: SelectionStatus,
         pageable: Pageable = Pageable.unpaged()
     ): Page<StudyReviewDto>

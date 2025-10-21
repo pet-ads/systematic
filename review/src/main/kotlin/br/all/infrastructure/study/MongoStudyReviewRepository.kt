@@ -24,9 +24,8 @@ interface MongoStudyReviewRepository : MongoRepository<StudyReviewDocument, Stud
 
     fun findAllById_SystematicStudyIdAndSearchSessionId(reviewID: UUID, searchSessionId: UUID, pageable: Pageable): Page<StudyReviewDocument>
 
-    fun findAllById_SystematicStudyIdAndSearchSessionIdAndSelectionStatus(
+    fun findAllById_SystematicStudyIdAndSelectionStatus(
         reviewID: UUID,
-        searchSessionId: UUID,
         selectionStatus: SelectionStatus,
         pageable: Pageable
     ): Page<StudyReviewDocument>

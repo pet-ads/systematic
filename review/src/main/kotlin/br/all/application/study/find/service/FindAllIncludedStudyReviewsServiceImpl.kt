@@ -48,9 +48,8 @@ class FindAllIncludedStudyReviewsServiceImpl(
             sort
         )
 
-        val studyReviewsPage = studyReviewRepository.findAllBySessionPagedAndSelectionStatus(
+        val studyReviewsPage = studyReviewRepository.findAllBySystematicStudyIdAndSelectionStatusPaged(
             request.systematicStudyId,
-            request.searchSessionId,
             SelectionStatus.INCLUDED,
             pageable
         )

@@ -42,16 +42,14 @@ open class  StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRe
         return documentsPage.map { it.toDto() }
     }
 
-    override fun findAllBySessionPagedAndSelectionStatus(
+    override fun findAllBySystematicStudyIdAndSelectionStatusPaged(
         reviewId: UUID,
-        searchSessionId: UUID,
         status: SelectionStatus,
         pageable: Pageable
     ): Page<StudyReviewDto> {
-        val documentsPage = repository.findAllById_SystematicStudyIdAndSearchSessionIdAndSelectionStatus(
+        val documentsPage = repository.findAllById_SystematicStudyIdAndSelectionStatus(
             reviewId,
-            searchSessionId,
-            status, // Pass the enum directly. Spring Data will handle it.
+            status,
             pageable
         )
         return documentsPage.map { it.toDto() }
