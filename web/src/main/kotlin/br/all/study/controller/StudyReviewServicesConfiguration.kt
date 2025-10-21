@@ -66,6 +66,16 @@ class StudyReviewServicesConfiguration {
     ) = FindAllStudyReviewsBySessionServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
+
+    @Bean
+    fun findAllIncludedStudyReviewsService(
+        systematicStudyRepository: SystematicStudyRepository,
+        studyReviewRepository: StudyReviewRepository,
+        credentialsService: CredentialsService,
+    ) = FindAllIncludedStudyReviewsServiceImpl(
+        systematicStudyRepository, studyReviewRepository, credentialsService
+    )
+
     @Bean
     fun findReviewService(
         systematicStudyRepository: SystematicStudyRepository,
