@@ -7,4 +7,5 @@ interface QuestionRepository {
     fun createOrUpdate(dto: QuestionDto)
     fun findById(systematicStudyId: UUID, id: UUID): QuestionDto?
     fun findAllBySystematicStudyId(systematicStudyId: UUID, context: QuestionContextEnum? = null): List<QuestionDto>
+    fun deleteById(systematicStudyId: UUID, id: UUID)
 }

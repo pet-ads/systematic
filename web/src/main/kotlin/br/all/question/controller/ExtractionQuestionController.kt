@@ -3,12 +3,14 @@ package br.all.question.controller
 import br.all.application.question.create.CreateQuestionService
 import br.all.application.question.create.CreateQuestionService.QuestionType.*
 import br.all.application.question.create.CreateQuestionService.RequestModel
+import br.all.application.question.delete.DeleteQuestionService
 import br.all.application.question.find.FindQuestionService
 import br.all.application.question.findAll.FindAllBySystematicStudyIdService
 import br.all.application.question.update.services.UpdateQuestionService
 import br.all.application.question.findAll.FindAllBySystematicStudyIdService.RequestModel as FindAllRequest
 import br.all.question.presenter.extraction.RestfulFindExtractionQuestionPresenter
 import br.all.question.presenter.extraction.RestfulCreateExtractionQuestionPresenter
+import br.all.question.presenter.extraction.RestfulDeleteExtractionQuestionPresenter
 import br.all.question.presenter.extraction.RestfulFindAllExtractionQuestionPresenter
 import br.all.question.presenter.extraction.RestfulUpdateExtractionQuestionPresenter
 import br.all.question.requests.PutRequest
@@ -33,6 +35,7 @@ class ExtractionQuestionController(
     val findOneService: FindQuestionService,
     val findAllService: FindAllBySystematicStudyIdService,
     val updateQuestionService: UpdateQuestionService,
+    val deleteQuestionService: DeleteQuestionService,
     val linksFactory: LinksFactory
 ) {
     data class TextualRequest(val code: String, val description: String)
@@ -362,6 +365,49 @@ class ExtractionQuestionController(
         val requestModel = request.toUpdateRequestModel(userId, systematicStudyId, questionId)
 
         updateQuestionService.update(presenter, requestModel)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @DeleteMapping("/{questionId}")
+    @Operation(summary = "Delete a extraction question by id and remove all its answers from Study Reviews")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success deleting an extraction question by id and removing all its answers from Study Reviews",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = DeleteQuestionService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail deleting an extraction question by id and removing all its answers from Study Reviews - not found",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail deleting an extraction question by id and removing all its answers from Study Reviews - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail deleting an extraction question by id and removing all its answers from Study Reviews - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+        ]
+    )
+    fun deleteQuestion(
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable questionId: UUID
+    ): ResponseEntity<*> {
+        val presenter = RestfulDeleteExtractionQuestionPresenter(linksFactory)
+        val request = DeleteQuestionService.RequestModel(
+            authenticationInfoService.getAuthenticatedUserId(),
+            systematicStudyId,
+            questionId
+        )
+        deleteQuestionService.delete(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
