@@ -225,6 +225,26 @@ class LinksFactory {
         findAllStudyReviewsBySource(systematicStudyId, source)
     }.withRel("find-all-studies-by-source").withType("GET")
 
+    fun findAllIncludedStudies(systematicStudyId: UUID, page: Int = 0, size: Int = 20, sort: String = "id,asc"): Link = linkTo<StudyReviewController> {
+        findAllStudyReviews(systematicStudyId, page, size, sort)
+    }.withRel("find-all-studies").withType("GET")
+
+    fun findAllIncludedStudiesFirstPage(systematicStudyId: UUID, size: Int = 20, sort: String = "id,asc"): Link =
+        findAllStudies(systematicStudyId, 0, size, sort).withRel("first").withType("GET")
+
+    fun findAllIncludedStudiesLastPage(systematicStudyId: UUID, totalPages: Int, size: Int = 20, sort: String = "id,asc"): Link =
+        findAllStudies(systematicStudyId, totalPages - 1, size, sort).withRel("last").withType("GET")
+
+    fun findAllIncludedStudiesNextPage(systematicStudyId: UUID, currentPage: Int, size: Int = 20, sort: String = "id,asc"): Link =
+        findAllStudies(systematicStudyId, currentPage + 1, size, sort).withRel("next").withType("GET")
+
+    fun findAllIncludedStudiesPrevPage(systematicStudyId: UUID, currentPage: Int, size: Int = 20, sort: String = "id,asc"): Link =
+        findAllStudies(systematicStudyId, currentPage - 1, size, sort).withRel("prev").withType("GET")
+
+    fun findAllIncludedStudiesBySource(systematicStudyId: UUID, source: String): Link = linkTo<StudyReviewController> {
+        findAllStudyReviewsBySource(systematicStudyId, source)
+    }.withRel("find-all-studies-by-source").withType("GET")
+
     fun findAllStudiesBySession(
         systematicStudyId: UUID,
         searchSessionId: UUID,
