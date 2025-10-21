@@ -34,6 +34,7 @@ class StudyReviewController(
     private val findAllBySourceService: FindAllStudyReviewsBySourceService,
     private val findAllBySessionService: FindAllStudyReviewsBySessionService,
     private val findAllByAuthorService: FindAllStudyReviewsByAuthorService,
+    private val findAllIncludedStudyReviewsService: FindAllIncludedStudyReviewsService,
     private val findOneService: FindStudyReviewService,
     private val updateSelectionService: UpdateStudyReviewSelectionService,
     private val updateExtractionService: UpdateStudyReviewExtractionService,
@@ -43,7 +44,6 @@ class StudyReviewController(
     private val batchAnswerQuestionService: BatchAnswerQuestionService,
     private val authenticationInfoService: AuthenticationInfoService,
     private val linksFactory: LinksFactory
-
 ) {
 
     @PostMapping("/study-review")
@@ -102,6 +102,37 @@ class StudyReviewController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindAllStudyReviewsService.RequestModel(userId, systematicStudy, page, size, sort)
         findAllService.findAllFromReview(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("/study-review/selection-included")
+    @Operation(summary = "Get all existing studies of a systematic review with included selection status")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success getting studies of a systematic review with included selection status, either found all studies or found none",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = FindAllStudyReviewsService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(responseCode = "401", description = "Fail getting all study reviews with included selection status - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "403", description = "Fail getting all study reviews with included selection status - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]),
+        ]
+    )
+    fun findAllIncludedStudyReviews(
+        @PathVariable systematicStudy: UUID,
+        @RequestParam("page", required = false, defaultValue = "0") page: Int,
+        @RequestParam("size", required = false, defaultValue = "20") size: Int,
+        @RequestParam("sort", required = false, defaultValue = "id,asc") sort: String,
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindAllIncludedStudyReviewsPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindAllIncludedStudyReviewsService.RequestModel(userId, systematicStudy, page, size, sort)
+        findAllIncludedStudyReviewsService.findAllIncluded(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
