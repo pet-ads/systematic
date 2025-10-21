@@ -12,7 +12,6 @@ interface FindAllIncludedStudyReviewsService {
     data class RequestModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val searchSessionId: UUID,
         val page: Int = 0,
         val pageSize: Int = 20,
         val sort: String = "id,asc"
@@ -22,7 +21,6 @@ interface FindAllIncludedStudyReviewsService {
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val searchSessionId: UUID,
         val studyReviews: List<StudyReviewDto>,
         val page: Int,
         val size: Int,

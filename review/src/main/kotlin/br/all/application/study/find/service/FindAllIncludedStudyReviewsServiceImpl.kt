@@ -58,7 +58,6 @@ class FindAllIncludedStudyReviewsServiceImpl(
             FindAllIncludedStudyReviewsService.ResponseModel(
                 userId = request.userId,
                 systematicStudyId = request.systematicStudyId,
-                searchSessionId = request.searchSessionId,
                 studyReviews = studyReviewsPage.content,
                 page = pageable.pageNumber,
                 size = pageable.pageSize,
