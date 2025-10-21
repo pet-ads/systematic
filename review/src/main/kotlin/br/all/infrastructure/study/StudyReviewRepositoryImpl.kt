@@ -3,6 +3,7 @@ package br.all.infrastructure.study
 import br.all.application.study.repository.AnswerDto
 import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository
+import br.all.domain.model.study.SelectionStatus
 import br.all.infrastructure.shared.toNullable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -38,6 +39,21 @@ open class  StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRe
         pageable: Pageable
     ): Page<StudyReviewDto> {
         val documentsPage = repository.findAllById_SystematicStudyIdAndSearchSessionId(reviewId, searchSessionId, pageable)
+        return documentsPage.map { it.toDto() }
+    }
+
+    override fun findAllBySessionPagedAndSelectionStatus(
+        reviewId: UUID,
+        searchSessionId: UUID,
+        status: SelectionStatus,
+        pageable: Pageable
+    ): Page<StudyReviewDto> {
+        val documentsPage = repository.findAllById_SystematicStudyIdAndSearchSessionIdAndSelectionStatus(
+            reviewId,
+            searchSessionId,
+            status, // Pass the enum directly. Spring Data will handle it.
+            pageable
+        )
         return documentsPage.map { it.toDto() }
     }
 

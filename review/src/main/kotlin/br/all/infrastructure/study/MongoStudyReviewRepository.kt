@@ -1,6 +1,7 @@
 package br.all.infrastructure.study
 
 import br.all.application.study.repository.AnswerDto
+import br.all.domain.model.study.SelectionStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.mongodb.repository.Aggregation
@@ -22,6 +23,13 @@ interface MongoStudyReviewRepository : MongoRepository<StudyReviewDocument, Stud
     fun findAllById_SystematicStudyIdAndSearchSessionId(reviewID: UUID, searchSessionId: UUID): List<StudyReviewDocument>
 
     fun findAllById_SystematicStudyIdAndSearchSessionId(reviewID: UUID, searchSessionId: UUID, pageable: Pageable): Page<StudyReviewDocument>
+
+    fun findAllById_SystematicStudyIdAndSearchSessionIdAndSelectionStatus(
+        reviewID: UUID,
+        searchSessionId: UUID,
+        selectionStatus: SelectionStatus,
+        pageable: Pageable
+    ): Page<StudyReviewDocument>
 
     @Update("{ '\$set' : { ?1 : ?2 } }")
     fun findAndUpdateAttributeById(id: StudyReviewId, attributeName:String, newStatus: Any)
