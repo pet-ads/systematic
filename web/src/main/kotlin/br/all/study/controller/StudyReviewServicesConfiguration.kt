@@ -159,4 +159,15 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository,
         credentialsService
     )
+
+    @Bean
+    fun findAllStudyReviewsByAdvancedSearchService(
+        systematicStudyRepository: SystematicStudyRepository,
+        studyReviewRepository: StudyReviewRepository,
+        credentialsService: CredentialsService
+    ) = FindAllStudyReviewsByAdvancedSearchServiceImpl(
+        systematicStudyRepository,
+        studyReviewRepository,
+        credentialsService
+    )
 }
