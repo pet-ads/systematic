@@ -28,6 +28,12 @@ interface StudyReviewRepository {
     fun updateSelectionStatus(reviewId: UUID, studyId: Long, attributeName: String, newStatus: Any)
     fun saveOrUpdateBatch(dtos: List<StudyReviewDto>)
     fun findAllQuestionAnswers(reviewId: UUID, questionId: UUID): List<AnswerDto>
+
+    fun findAllByAdvancedSearch(
+        reviewId: UUID,
+        filters: Map<String, Any?>,
+        pageable: Pageable
+    ): Page<StudyReviewDto>
 }
 
 data class AnswerDto(
