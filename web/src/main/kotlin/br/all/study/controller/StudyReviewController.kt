@@ -24,6 +24,9 @@ import br.all.application.study.find.service.FindStudyReviewService.RequestModel
 import br.all.application.study.update.interfaces.BatchAnswerQuestionService
 import br.all.study.presenter.RestfulBatchAnswerQuestionPresenter
 import br.all.study.requests.PatchBatchAnswerQuestionStudyReviewRequest
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.Parameters
+import io.swagger.v3.oas.annotations.media.ExampleObject
 
 @RestController
 @RequestMapping("/api/v1/systematic-study/{systematicStudy}")
@@ -35,6 +38,7 @@ class StudyReviewController(
     private val findAllBySessionService: FindAllStudyReviewsBySessionService,
     private val findAllByAuthorService: FindAllStudyReviewsByAuthorService,
     private val findAllIncludedStudyReviewsService: FindAllIncludedStudyReviewsService,
+    private val findAllStudyReviewsByAdvancedSearchService: FindAllStudyReviewsByAdvancedSearchService,
     private val findOneService: FindStudyReviewService,
     private val updateSelectionService: UpdateStudyReviewSelectionService,
     private val updateExtractionService: UpdateStudyReviewExtractionService,
@@ -524,6 +528,107 @@ class StudyReviewController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = patchRequest.toRequestModel(userId, systematicStudy, studyReviewId)
         removeCriteriaService.removeCriteria(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("/study-review/search")
+    @Operation(
+        summary = "Advanced search for study reviews within a systematic study",
+        description = """
+        Performs a flexible multi-criteria search across study reviews belonging to a given systematic study.
+        You can filter by fields such as id, studyReviewId, title, authors, venue, year, selectionStatus,
+        extractionStatus, score, and readingPriority. Supports pagination, sorting, and partial (case-insensitive)
+        text matches for textual fields.
+    """
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Successfully executed the advanced search for study reviews. The response may include zero or more results.",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = FindAllStudyReviewsByAdvancedSearchService.ResponseModel::class),
+                    examples = [
+                        ExampleObject(
+                            name = "ComplexSearchExample",
+                            summary = "Example of a multi-criteria advanced search",
+                            description = "This example demonstrates how to combine multiple filters and sorting options.",
+                            value = "GET /api/v1/systematic-study/7b8e22cc-4e09-4d4f-86bb-0a1f908d2f64/study-review/search?title=deep%20learning&authors=Goodfellow&venue=IEEE&year=2021&selectionStatus=INCLUDED&extractionStatus=PENDING&readingPriority=2&page=0&size=10&sort=year,desc"
+                        )
+                    ]
+                )]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized – the user must be authenticated to perform this search.",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden – the authenticated user does not have permission to access this systematic study.",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Internal server error – unexpected failure during search execution.",
+                content = [Content(schema = Schema(hidden = true))]
+            )
+        ]
+    )
+    @Parameters(
+        Parameter(name = "id", description = "Internal numeric ID of the study review", example = "15"),
+        Parameter(name = "studyReviewId", description = "External study review identifier (partial match allowed)", example = "S123"),
+        Parameter(name = "title", description = "Partial title match (case-insensitive)", example = "deep learning"),
+        Parameter(name = "authors", description = "Partial author name match (case-insensitive)", example = "Goodfellow"),
+        Parameter(name = "venue", description = "Conference or journal name match (case-insensitive)", example = "IEEE"),
+        Parameter(name = "year", description = "Exact publication year", example = "2021"),
+        Parameter(name = "selectionStatus", description = "Exact selection status filter", example = "INCLUDED"),
+        Parameter(name = "extractionStatus", description = "Exact extraction status filter", example = "PENDING"),
+        Parameter(name = "score", description = "Exact numeric score filter", example = "0.85"),
+        Parameter(name = "readingPriority", description = "Exact reading priority filter", example = "2"),
+        Parameter(name = "page", description = "Page index (0-based, default = 0)", example = "0"),
+        Parameter(name = "size", description = "Number of elements per page (default = 20)", example = "20"),
+        Parameter(name = "sort", description = "Sorting criteria in the format `<field>,<asc|desc>` (default = id,asc)", example = "year,desc")
+    )
+    fun searchStudyReviews(
+        @PathVariable systematicStudy: UUID,
+        @RequestParam(required = false) id: Long?,
+        @RequestParam(required = false) studyReviewId: String?,
+        @RequestParam(required = false) title: String?,
+        @RequestParam(required = false) authors: String?,
+        @RequestParam(required = false) venue: String?,
+        @RequestParam(required = false) year: Int?,
+        @RequestParam(required = false) selectionStatus: String?,
+        @RequestParam(required = false) extractionStatus: String?,
+        @RequestParam(required = false) score: Double?,
+        @RequestParam(required = false) readingPriority: Int?,
+        @RequestParam(required = false, defaultValue = "0") page: Int,
+        @RequestParam(required = false, defaultValue = "20") size: Int,
+        @RequestParam(required = false, defaultValue = "id,asc") sort: String,
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindAllStudyReviewsByAdvancedSearchPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+
+        val request = FindAllStudyReviewsByAdvancedSearchService.RequestModel(
+            userId = userId,
+            systematicStudyId = systematicStudy,
+            id = id,
+            studyReviewId = studyReviewId,
+            title = title,
+            authors = authors,
+            venue = venue,
+            year = year,
+            selectionStatus = selectionStatus,
+            extractionStatus = extractionStatus,
+            score = score,
+            readingPriority = readingPriority,
+            page = page,
+            pageSize = size,
+            sort = sort
+        )
+
+        findAllStudyReviewsByAdvancedSearchService.findAllByAdvancedSearch(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
