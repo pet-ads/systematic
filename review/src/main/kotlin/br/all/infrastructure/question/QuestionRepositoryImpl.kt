@@ -29,4 +29,8 @@ class QuestionRepositoryImpl(private val repository: MongoQuestionRepository) : 
 
         return filteredQuestions.map { it.toDto() }
     }
+
+    override fun deleteById(systematicStudyId: UUID, id: UUID) {
+        repository.deleteById(id)
+    }
 }

@@ -66,6 +66,16 @@ class StudyReviewServicesConfiguration {
     ) = FindAllStudyReviewsBySessionServiceImpl(
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
+
+    @Bean
+    fun findAllIncludedStudyReviewsService(
+        systematicStudyRepository: SystematicStudyRepository,
+        studyReviewRepository: StudyReviewRepository,
+        credentialsService: CredentialsService,
+    ) = FindAllIncludedStudyReviewsServiceImpl(
+        systematicStudyRepository, studyReviewRepository, credentialsService
+    )
+
     @Bean
     fun findReviewService(
         systematicStudyRepository: SystematicStudyRepository,
@@ -147,6 +157,17 @@ class StudyReviewServicesConfiguration {
     ) = RemoveCriteriaServiceImpl(
         studyReviewRepository,
         systematicStudyRepository,
+        credentialsService
+    )
+
+    @Bean
+    fun findAllStudyReviewsByAdvancedSearchService(
+        systematicStudyRepository: SystematicStudyRepository,
+        studyReviewRepository: StudyReviewRepository,
+        credentialsService: CredentialsService
+    ) = FindAllStudyReviewsByAdvancedSearchServiceImpl(
+        systematicStudyRepository,
+        studyReviewRepository,
         credentialsService
     )
 }

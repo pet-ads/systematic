@@ -1,8 +1,7 @@
 package br.all.study.presenter
 
-import br.all.application.study.find.presenter.FindAllStudyReviewsBySessionPresenter
-import br.all.application.study.find.service.FindAllStudyReviewsBySessionService
-import br.all.application.study.find.service.FindAllStudyReviewsBySourceService
+import br.all.application.study.find.presenter.FindAllIncludedStudyReviewsPresenter
+import br.all.application.study.find.service.FindAllIncludedStudyReviewsService
 import br.all.application.study.repository.StudyReviewDto
 import br.all.shared.error.createErrorResponseFrom
 import br.all.utils.LinksFactory
@@ -11,17 +10,16 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.util.*
 
-class RestfulFindAllStudyReviewsBySessionPresenter (
+class RestfulFindAllIncludedStudyReviewsPresenter (
     private val linksFactory: LinksFactory
-): FindAllStudyReviewsBySessionPresenter {
+): FindAllIncludedStudyReviewsPresenter {
 
     var responseEntity: ResponseEntity<*>? = null
 
-    override fun prepareSuccessView(response: FindAllStudyReviewsBySessionService.ResponseModel) {
+    override fun prepareSuccessView(response: FindAllIncludedStudyReviewsService.ResponseModel) {
         val (
             _,
             systematicStudyId,
-            searchSessionId,
             studyReviews,
             page,
             size,
@@ -31,7 +29,6 @@ class RestfulFindAllStudyReviewsBySessionPresenter (
 
         val restfulResponse = ViewModel(
             systematicStudyId = systematicStudyId,
-            searchSessionId = searchSessionId,
             size = studyReviews.size,
             studyReviews = studyReviews,
             page = page,
@@ -39,39 +36,34 @@ class RestfulFindAllStudyReviewsBySessionPresenter (
             totalPages = totalPages
         )
 
-        val selfRef = linksFactory.findAllStudiesBySession(
+        val selfRef = linksFactory.findAllIncludedStudies(
             systematicStudyId,
-            searchSessionId,
             page,
             size
         )
 
         if (totalPages > 0) {
-            restfulResponse.add(linksFactory.findAllStudiesBySessionFirstPage(
+            restfulResponse.add(linksFactory.findAllIncludedStudiesFirstPage(
                 systematicStudyId,
-                searchSessionId,
                 size
             ))
-            restfulResponse.add(linksFactory.findAllStudiesBySessionLastPage(
+            restfulResponse.add(linksFactory.findAllIncludedStudiesLastPage(
                 systematicStudyId,
-                searchSessionId,
                 totalPages,
                 size
             ))
 
             if (page < totalPages - 1) {
-                restfulResponse.add(linksFactory.findAllStudiesBySessionNextPage(
+                restfulResponse.add(linksFactory.findAllIncludedStudiesNextPage(
                     systematicStudyId,
-                    searchSessionId,
                     page,
                     size
                 ))
             }
 
             if (page > 0) {
-                restfulResponse.add(linksFactory.findAllStudiesBySessionPrevPage(
+                restfulResponse.add(linksFactory.findAllIncludedStudiesPrevPage(
                     systematicStudyId,
-                    searchSessionId,
                     page,
                     size
                 ))
@@ -89,7 +81,6 @@ class RestfulFindAllStudyReviewsBySessionPresenter (
 
     private data class ViewModel(
         val systematicStudyId: UUID,
-        val searchSessionId: UUID,
         val size: Int,
         val studyReviews: List<StudyReviewDto>,
         val page: Int,

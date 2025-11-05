@@ -3,18 +3,19 @@ package br.all.application.study.find.service
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
-import br.all.application.study.find.presenter.FindAllStudyReviewsBySessionPresenter
+import br.all.application.study.find.presenter.FindAllIncludedStudyReviewsPresenter
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
+import br.all.domain.model.study.SelectionStatus
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 
-class FindAllStudyReviewsBySessionServiceImpl (
+class FindAllIncludedStudyReviewsServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,
     private val credentialsService: CredentialsService,
-) : FindAllStudyReviewsBySessionService {
+) : FindAllIncludedStudyReviewsService {
 
     private fun parseSortParameter(sortParam: String): Sort {
         val parts = sortParam.split(",")
@@ -27,9 +28,9 @@ class FindAllStudyReviewsBySessionServiceImpl (
         return Sort.by(direction, property)
     }
 
-    override fun findAllBySearchSession(
-        presenter: FindAllStudyReviewsBySessionPresenter,
-        request: FindAllStudyReviewsBySessionService.RequestModel
+    override fun findAllIncluded(
+        presenter: FindAllIncludedStudyReviewsPresenter,
+        request: FindAllIncludedStudyReviewsService.RequestModel
     ) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
@@ -47,17 +48,16 @@ class FindAllStudyReviewsBySessionServiceImpl (
             sort
         )
 
-        val studyReviewsPage = studyReviewRepository.findAllBySessionPaged(
+        val studyReviewsPage = studyReviewRepository.findAllBySystematicStudyIdAndSelectionStatusPaged(
             request.systematicStudyId,
-            request.searchSessionId,
+            SelectionStatus.INCLUDED,
             pageable
         )
 
         presenter.prepareSuccessView(
-            FindAllStudyReviewsBySessionService.ResponseModel(
+            FindAllIncludedStudyReviewsService.ResponseModel(
                 userId = request.userId,
                 systematicStudyId = request.systematicStudyId,
-                searchSessionId = request.searchSessionId,
                 studyReviews = studyReviewsPage.content,
                 page = pageable.pageNumber,
                 size = pageable.pageSize,
@@ -66,4 +66,5 @@ class FindAllStudyReviewsBySessionServiceImpl (
             )
         )
     }
+
 }
