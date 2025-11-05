@@ -61,6 +61,8 @@ class CreateSearchSessionExampleService (
 
         val scoredStudyReviews = scoreCalculatorService.applyScoreToManyStudyReviews(studyReviews, protocolDto!!.keywords)
 
+        searchSessionRepository.create(searchSession)
+
         return scoredStudyReviews
     }
 }
