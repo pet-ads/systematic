@@ -30,7 +30,16 @@ class TokenService(jwtProperties: JwtProperties) {
 
     fun extractUsername(token: String): String? = getAllClaims(token).subject
 
-    fun isExpired(token: String) = getAllClaims(token).expiration.before(Date(System.currentTimeMillis()))
+    fun isExpired(token: String): Boolean =
+        try {
+            val claims = getAllClaims(token)
+            val exp = claims.expiration
+            exp.before(Date())
+        } catch (e: io.jsonwebtoken.ExpiredJwtException) {
+            true
+        } catch (e: Exception) {
+            true
+        }
 
     fun isValid(token: String, userDetails: UserDetails) =
         extractUsername(token) == userDetails.username && !isExpired(token)
