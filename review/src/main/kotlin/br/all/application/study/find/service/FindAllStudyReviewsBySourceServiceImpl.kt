@@ -14,7 +14,6 @@ import br.all.domain.model.review.SystematicStudy
 class FindAllStudyReviewsBySourceServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,
-   // private val protocolRepository: ProtocolRepository,
     private val credentialsService: CredentialsService,
 ) : FindAllStudyReviewsBySourceService {
 
@@ -26,17 +25,7 @@ class FindAllStudyReviewsBySourceServiceImpl(
 
         presenter.prepareIfFailsPreconditions(user, systematicStudy)
 
-        if(presenter.isDone()) return
-
         val searchSource = SearchSource(request.searchSource)
-
-//        val protocolDto = protocolRepository.findBySystematicStudy(systematicStudyId.value)
-//        val hasSource = protocolDto?.informationSources?.contains(searchSource.id) ?: false
-//
-//        if (!hasSource) {
-//            val message = "Protocol ID $systematicStudyId does not contain ${searchSource.id} as a search source"
-//            presenter.prepareFailView(NoSuchElementException(message))
-//        }
 
         if (presenter.isDone()) return
 
