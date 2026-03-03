@@ -34,7 +34,7 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     }
 
     fun convertToStudyReview(systematicStudyId: SystematicStudyId, searchSessionId: SearchSessionID, study: Study, source: MutableSet<String>): StudyReview {
-        val studyReviewId = StudyReviewId(studyReviewIdGeneratorService.next())
+        val studyReviewId = StudyReviewId(studyReviewIdGeneratorService.next(systematicStudyId.value()))
         return StudyReview(
             studyReviewId,
             systematicStudyId,
