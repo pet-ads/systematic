@@ -358,7 +358,7 @@ class RiskOfBiasQuestionController(
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateRoBQuestionPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val requestModel = request.toUpdateRequestModel(userId, systematicStudyId, questionId)
+        val requestModel = request.toUpdateRequestModel(userId, systematicStudyId, questionId, questionContext)
 
         updateQuestionService.update(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
