@@ -5,7 +5,7 @@ import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.study.*
 import br.all.domain.services.RisTestData.testInput
 import org.junit.jupiter.api.*
-import java.util.*
+import java.util.UUID.randomUUID
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -24,7 +24,7 @@ class RisConverterServiceTest {
     @AfterEach
     fun teardown() {
         val fake = idGeneratorService as FakeIdGeneratorService
-        fake.reset()
+        fake.reset(randomUUID())
     }
 
     @Nested
@@ -33,8 +33,8 @@ class RisConverterServiceTest {
         fun `Should create a StudyReview list from multiple ris entries`() {
             val ris = testInput["multiple RIS entries"]!!
             val studyReviewList = sut.convertManyToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 ris,
                 source = mutableSetOf("Compendex")
             )
@@ -47,8 +47,8 @@ class RisConverterServiceTest {
             val art = StudyType.valueOf("ARTICLE")
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -60,8 +60,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid RIS entrie"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -76,8 +76,8 @@ class RisConverterServiceTest {
             val ris = testInput["T1 test"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -92,8 +92,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid RIS entrie"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -105,8 +105,8 @@ class RisConverterServiceTest {
             val ris = testInput["Y1 test"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -118,8 +118,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid RIS entrie"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -131,8 +131,8 @@ class RisConverterServiceTest {
             val ris = testInput["multiple A1"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -144,8 +144,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid RIS entrie"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -157,8 +157,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid RIS entrie"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -170,8 +170,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid RIS entrie"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -186,8 +186,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid RIS entrie"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -203,8 +203,8 @@ class RisConverterServiceTest {
         fun `Should create a StudyReview list from multiple RIS entries as input`() {
             val ris = testInput["multiple RIS entries"]!!
             val (validStudies, invalidEntries) = sut.convertManyToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 ris,
                 source = mutableSetOf("Compendex")
             )
@@ -217,8 +217,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid RIS entrie"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -255,8 +255,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid inproceedings"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -288,8 +288,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid techreport"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -320,8 +320,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid book"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -350,8 +350,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid proceedings"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -383,8 +383,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid masterthesis"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -413,8 +413,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid inbook"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -443,8 +443,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid booklet"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -473,8 +473,8 @@ class RisConverterServiceTest {
             val ris = testInput["valid misc"]!!
             val study = sut.convert(ris)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -505,8 +505,8 @@ class RisConverterServiceTest {
         fun `convertManyToStudyReview should not accept a blank ris entry as input`() {
             assertThrows<IllegalArgumentException> {
                 sut.convertManyToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
+                SystematicStudyId(randomUUID()),
+                SearchSessionID(randomUUID()),
                     "",
                     source = mutableSetOf("Compendex")
                 )
@@ -552,8 +552,8 @@ class RisConverterServiceTest {
         fun `should correctly parse entries that are missing non-essential fields`() {
             val ris = testInput["three error ris"]!!
             val (validStudies, invalidEntries) = sut.convertManyToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
                 ris,
                 source = mutableSetOf("Compendex")
             )

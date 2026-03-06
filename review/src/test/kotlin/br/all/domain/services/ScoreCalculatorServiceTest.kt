@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
-import java.util.*
+import java.util.UUID.randomUUID
 import kotlin.test.assertEquals
 
 @Tag("IntegrationTest")
@@ -17,8 +17,8 @@ class ScoreCalculatorServiceTest {
     private lateinit var sut: ScoreCalculatorService
     private lateinit var bibtexConverterService: BibtexConverterService
     private lateinit var idGeneratorService: IdGeneratorService
-    private val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-    private val searchSessionId = SearchSessionID(UUID.randomUUID())
+    private val systematicStudyId = SystematicStudyId(randomUUID())
+    private val searchSessionId = SearchSessionID(randomUUID())
     private val source = mutableSetOf("Test")
 
     @BeforeEach
@@ -34,7 +34,7 @@ class ScoreCalculatorServiceTest {
     @AfterEach
     fun teardown() {
         val fake = idGeneratorService as FakeIdGeneratorService
-        fake.reset()
+        fake.reset(randomUUID())
     }
 
     @Test

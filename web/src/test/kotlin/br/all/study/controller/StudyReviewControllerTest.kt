@@ -75,11 +75,12 @@ class StudyReviewControllerTest(
     @BeforeEach
     fun setUp() {
         repository.deleteAll()
-        idService.reset()
 
         factory = TestDataFactory()
         systematicStudyId = factory.systematicStudyId
         searchSessionId = factory.searchSessionId
+
+        idService.reset(systematicStudyId)
 
         user = testHelperService.createApplicationUser()
 
@@ -218,7 +219,7 @@ class StudyReviewControllerTest(
     inner class FindTests {
         @Test
         fun `should find the study and return 200`() {
-            val studyReview = factory.reviewDocument(systematicStudyId, idService.next())
+            val studyReview = factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId))
             repository.insert(studyReview)
 
             val studyId = "/${studyReview.id.studyReviewId}"
@@ -242,7 +243,7 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should not find if user is unauthorized`(){
-            val studyReview = factory.reviewDocument(systematicStudyId, idService.next())
+            val studyReview = factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId))
             repository.insert(studyReview)
 
             testHelperService.testForUnauthorizedUser(mockMvc,
@@ -252,7 +253,7 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should not find if user is unauthenticated`(){
-            val studyReview = factory.reviewDocument(systematicStudyId, idService.next())
+            val studyReview = factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId))
             repository.insert(studyReview)
 
             testHelperService.testForUnauthenticatedUser(mockMvc,
@@ -262,9 +263,9 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should find all studies and return 200`() {
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId, "study"))
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId, "study"))
-            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), searchSessionId, "study"))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId), searchSessionId, "study"))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId), searchSessionId, "study"))
+            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(systematicStudyId), searchSessionId, "study"))
 
             mockMvc.perform(get(findUrl())
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
@@ -292,14 +293,14 @@ class StudyReviewControllerTest(
         fun `should find all studies by source and return 200`() {
             repository.insert(
                 factory.reviewDocument(
-                    systematicStudyId, idService.next(), searchSessionId, "study",
+                    systematicStudyId, idService.next(systematicStudyId), searchSessionId, "study",
                     sources = setOf("ACM")
                 )
             )
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId, "study"))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId), searchSessionId, "study"))
             repository.insert(
                 factory.reviewDocument(
-                    UUID.randomUUID(), idService.next(), searchSessionId, "study",
+                    UUID.randomUUID(), idService.next(systematicStudyId), searchSessionId, "study",
                     sources = setOf("ACM")
                 )
             )
@@ -315,9 +316,9 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should find all studies by session and return 200`() {
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId))
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), UUID.randomUUID()))
-            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), UUID.randomUUID()))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId), searchSessionId))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId), UUID.randomUUID()))
+            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(systematicStudyId), UUID.randomUUID()))
 
             mockMvc.perform(get(findBySessionUrl(searchSessionId.toString()))
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
@@ -330,9 +331,9 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should find all studies by author and return 200`() {
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), searchSessionId))
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(), UUID.randomUUID(), authors = "Test"))
-            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(), UUID.randomUUID()))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId), searchSessionId))
+            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId), UUID.randomUUID(), authors = "Test"))
+            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(systematicStudyId), UUID.randomUUID()))
 
             mockMvc.perform(get(findByAuthorUrl("Marie Curie"))
                 .with(SecurityMockMvcRequestPostProcessors.user(user))
@@ -349,7 +350,7 @@ class StudyReviewControllerTest(
     inner class UpdateStatusTests {
         @Test
         fun `should update the study selection status and return 200`() {
-            val studyId = idService.next()
+            val studyId = idService.next(systematicStudyId)
 
             val statusToBeUpdated = "INCLUDED"
             val json = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
@@ -371,7 +372,7 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should not update the study selection if the status is invalid and return 400`() {
-            val studyId = idService.next()
+            val studyId = idService.next(systematicStudyId)
 
             val statusToBeUpdated = "KILLED"
             val json = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
@@ -392,7 +393,7 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should update the study extraction status and return 200`() {
-            val studyId = idService.next()
+            val studyId = idService.next(systematicStudyId)
 
             val statusToBeUpdated = "EXCLUDED"
             val json = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
@@ -414,7 +415,7 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should not update the study extraction if the status is invalid and return 400`() {
-            val studyId = idService.next()
+            val studyId = idService.next(systematicStudyId)
 
             val statusToBeUpdated = "DISPATCHED"
             val json = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
@@ -435,7 +436,7 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should update the study reading priority and return 200`() {
-            val studyId = idService.next()
+            val studyId = idService.next(systematicStudyId)
 
             val statusToBeUpdated = "HIGH"
             val json = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
@@ -457,7 +458,7 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should not update the study reading priority if the status is invalid and return 400`() {
-            val studyId = idService.next()
+            val studyId = idService.next(systematicStudyId)
 
             val statusToBeUpdated = "NONE"
             val json = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
@@ -478,7 +479,7 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should not update if user is unauthorized`() {
-            val studyId = idService.next()
+            val studyId = idService.next(systematicStudyId)
 
             testHelperService.testForUnauthorizedUser(mockMvc,
                 patch(updateStatusStatus("reading-priority"))
@@ -502,7 +503,7 @@ class StudyReviewControllerTest(
     ) {
         @Test
         fun `should handle partial success correctly by saving answers to their respective contexts`() {
-            val studyId = idService.next()
+            val studyId = idService.next(systematicStudyId)
             val studyReview = factory.reviewDocument(systematicStudyId, studyId).copy(
                 qualityAnswers = mutableMapOf(),
                 formAnswers = mutableMapOf()
@@ -580,8 +581,8 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should mark as duplicated and return 200`() {
-            val studyToUpdateId = idService.next()
-            val studyToDuplicateId = idService.next()
+            val studyToUpdateId = idService.next(systematicStudyId)
+            val studyToDuplicateId = idService.next(systematicStudyId)
 
             val studyReviewToUpdate = factory.reviewDocument(systematicStudyId, studyToUpdateId)
             repository.insert(studyReviewToUpdate)
@@ -609,8 +610,8 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should return 404 if study to be marked as duplicated (source) is not found`() {
-            val studyToUpdateId = idService.next()
-            val studyToDuplicateId = idService.next()
+            val studyToUpdateId = idService.next(systematicStudyId)
+            val studyToDuplicateId = idService.next(systematicStudyId)
 
             val studyReviewToUpdate = factory.reviewDocument(systematicStudyId, studyToUpdateId)
             repository.insert(studyReviewToUpdate)
@@ -628,8 +629,8 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should return 404 if study to update (destination) is not found`() {
-            val studyToUpdateId = idService.next()
-            val studyToDuplicateId = idService.next()
+            val studyToUpdateId = idService.next(systematicStudyId)
+            val studyToDuplicateId = idService.next(systematicStudyId)
 
             val studyReviewToDuplicate = factory.reviewDocument(systematicStudyId, studyToDuplicateId)
             repository.insert(studyReviewToDuplicate)
@@ -647,8 +648,8 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should not update if user is unauthorized`() {
-            val studyToUpdateId = idService.next()
-            val studyToDuplicateId = idService.next()
+            val studyToUpdateId = idService.next(systematicStudyId)
+            val studyToDuplicateId = idService.next(systematicStudyId)
 
             val duplicateIds = listOf(studyToDuplicateId)
 
@@ -662,8 +663,8 @@ class StudyReviewControllerTest(
 
         @Test
         fun `should not update if user is unauthenticated`() {
-            val studyToUpdateId = idService.next()
-            val studyToDuplicateId = idService.next()
+            val studyToUpdateId = idService.next(systematicStudyId)
+            val studyToDuplicateId = idService.next(systematicStudyId)
 
             val duplicateIds = listOf(studyToDuplicateId)
 

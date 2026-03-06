@@ -7,7 +7,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
-import java.util.*
+import java.util.UUID.randomUUID
 import kotlin.test.assertEquals
 
 @Tag("IntegrationTest")
@@ -32,19 +32,19 @@ class ConverterFactoryServiceTest {
 
     @AfterEach fun teardown() {
         val fake = idGeneratorService as FakeIdGeneratorService
-        fake.reset()
+        fake.reset(randomUUID())
     }
 
     @Test fun `Should return study review successfully`() {
         val bibtex = BibtexTestData.testInputs["multiple bibtex entries"]!!
-        val studyReviewList = sut.extractReferences(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()), bibtex, mutableSetOf("example source"))
+        val studyReviewList = sut.extractReferences(SystematicStudyId(randomUUID()), SearchSessionID(randomUUID()), bibtex, mutableSetOf("example source"))
         assertEquals(7, studyReviewList.first.size)
     }
 
     @Test
     fun `Should correctly identify a ris file`(){
         val ris = risInput["multiple RIS entries"]!!
-        val studyReviewList = sut.extractReferences(SystematicStudyId(UUID.randomUUID()), SearchSessionID(UUID.randomUUID()),ris, mutableSetOf("example source"))
+        val studyReviewList = sut.extractReferences(SystematicStudyId(randomUUID()), SearchSessionID(randomUUID()),ris, mutableSetOf("example source"))
         assertEquals(3, studyReviewList.first.size)
     }
 }

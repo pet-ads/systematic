@@ -9,7 +9,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.assertAll
-import java.util.UUID
+import java.util.UUID.randomUUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -23,8 +23,8 @@ class ReviewSimilarityServiceTest {
     private lateinit var levenshteinCalculator: LevenshteinSimilarityCalculatorImpl
     private lateinit var converter: BibtexConverterService
     private lateinit var idGeneratorService: IdGeneratorService
-    private val systematicStudyId = SystematicStudyId(UUID.randomUUID())
-    private val searchSessionId = SearchSessionID(UUID.randomUUID())
+    private val systematicStudyId = SystematicStudyId(randomUUID())
+    private val searchSessionId = SearchSessionID(randomUUID())
     private val source = mutableSetOf("Test")
     private val titleThreshold = 0.8
     private val abstractThreshold = 0.8
@@ -41,7 +41,7 @@ class ReviewSimilarityServiceTest {
     @AfterEach
     fun teardown() {
         val fake = idGeneratorService as FakeIdGeneratorService
-        fake.reset()
+        fake.reset(randomUUID())
     }
 
     @Test

@@ -61,12 +61,12 @@ class CreateStudyReviewServiceImplTest {
             val request = factory.createRequestModel()
 
             preconditionCheckerMocking.makeEverythingWork()
-            every { idGenerator.next() } returns studyReviewId
+            every { idGenerator.next(factory.systematicStudyId) } returns studyReviewId
 
             sut.createFromStudy(presenter, request)
 
             verify(exactly = 1) {
-                idGenerator.next()
+                idGenerator.next(factory.systematicStudyId)
                 studyReviewRepository.saveOrUpdate(any())
                 presenter.prepareSuccessView(any())
             }

@@ -82,7 +82,7 @@ class SearchSessionControllerTest(
         protocolRepository.deleteAll()
         studyReviewRepository.deleteAll()
         testHelperService.deleteApplicationUser(user.id)
-        idService.reset()
+        idService.reset(systematicStudyId)
     }
 
     @Nested
