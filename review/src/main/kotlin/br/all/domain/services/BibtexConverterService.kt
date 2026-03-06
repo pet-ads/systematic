@@ -60,10 +60,12 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     }
 
     private fun convertMany(bibtex: String): Pair<List<Study>, List<String>> {
+        val cleanedBibtex = removeBibtexComments(bibtex)
+
         val validStudies = mutableListOf<Study>()
         val invalidEntries = mutableListOf<String>()
 
-        bibtex.split(Regex("(?=\\s*@)"))
+        cleanedBibtex.split(Regex("(?=\\s*@)"))
             .map { it.trim() }
             .filter { it.isNotBlank() }
             .forEach { entry ->
@@ -109,6 +111,20 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
         }
 
         return Study(type, title, year, authors, venue, abstract, keywords, references, doi)
+    }
+
+    private fun removeBibtexComments(bibtex: String): String {
+        return bibtex.lines()
+            .mapNotNull { line ->
+                if (line.trimStart().startsWith("%")) {
+                    null
+                } else {
+                    val commentIndex = line.indexOf('%')
+                    val cleaned = if (commentIndex >= 0) line.take(commentIndex) else line
+                    cleaned.trimEnd().takeIf { it.isNotBlank() }
+                }
+            }
+            .joinToString("\n")
     }
 
     private fun parseBibtexFields(bibtexEntry: String): Map<String, String> {
