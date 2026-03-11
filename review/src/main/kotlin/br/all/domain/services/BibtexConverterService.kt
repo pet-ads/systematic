@@ -65,7 +65,7 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
         val validStudies = mutableListOf<Study>()
         val invalidEntries = mutableListOf<String>()
 
-        cleanedBibtex.split(Regex("(?=\\s*@)"))
+        cleanedBibtex.split(Regex("(?m)(?=@\\w+\\s*\\{)"))
             .map { it.trim() }
             .filter { it.isNotBlank() }
             .forEach { entry ->
