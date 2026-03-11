@@ -30,7 +30,7 @@ class CreateStudyReviewServiceImpl(
 
         if(presenter.isDone()) return
 
-        val studyId = idGenerator.next()
+        val studyId = idGenerator.next(request.systematicStudyId)
         val studyReview = StudyReview.fromStudyRequestModel(studyId, request)
 
         studyReviewRepository.saveOrUpdate(studyReview.toDto())

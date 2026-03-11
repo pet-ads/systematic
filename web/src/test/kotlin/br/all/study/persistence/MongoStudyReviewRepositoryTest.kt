@@ -31,7 +31,7 @@ class MongoStudyReviewRepositoryTest (
         factory = TestDataFactory()
         reviewId = UUID.randomUUID()
         sessionId = UUID.randomUUID()
-        idService.reset()
+        idService.reset(reviewId)
         sut.deleteAll()
     }
 
@@ -40,14 +40,14 @@ class MongoStudyReviewRepositoryTest (
 
     @Test
     fun `Should insert a study review`(){
-        val study = factory.reviewDocument(UUID.randomUUID(), idService.next())
+        val study = factory.reviewDocument(UUID.randomUUID(), idService.next(reviewId))
         sut.insert(study)
         assertTrue(sut.findById(study.id).toNullable() != null)
     }
 
     @Test
     fun `Should update a study review`(){
-        val studyId = idService.next()
+        val studyId = idService.next(reviewId)
         val study = factory.reviewDocument(reviewId, studyId,sessionId, "study")
         sut.insert(study)
         val updatedTitle = "study review"
@@ -58,9 +58,9 @@ class MongoStudyReviewRepositoryTest (
 
     @Test
     fun `Should find all study reviews of a review`(){
-        sut.insert(factory.reviewDocument(reviewId, idService.next()))
-        sut.insert(factory.reviewDocument(reviewId, idService.next()))
-        sut.insert(factory.reviewDocument(UUID.randomUUID(), idService.next()))
+        sut.insert(factory.reviewDocument(reviewId, idService.next(reviewId)))
+        sut.insert(factory.reviewDocument(reviewId, idService.next(reviewId)))
+        sut.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(reviewId)))
         val result = sut.findAllById_SystematicStudyId(reviewId)
         assertTrue(result.size == 2)
     }
@@ -69,24 +69,24 @@ class MongoStudyReviewRepositoryTest (
     fun `Should find all study reviews in a review by search sources`(){
         val sourceToFind = "source to find"
         val sources: Set<String> = setOf(sourceToFind)
-        sut.insert(factory.reviewDocument(reviewId, idService.next()))
-        sut.insert(factory.reviewDocument(reviewId, idService.next(), sources = sources))
-        sut.insert(factory.reviewDocument(UUID.randomUUID(), idService.next()))
+        sut.insert(factory.reviewDocument(reviewId, idService.next(reviewId)))
+        sut.insert(factory.reviewDocument(reviewId, idService.next(reviewId), sources = sources))
+        sut.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(reviewId)))
         val result = sut.findAllById_SystematicStudyIdAndSearchSourcesContaining(reviewId, sourceToFind)
         assertTrue(result.size == 1)
     }
 
     @Test
     fun `Should find all study reviews in a review by search session`(){
-        sut.insert(factory.reviewDocument(reviewId, idService.next(), sessionId))
-        sut.insert(factory.reviewDocument(reviewId, idService.next(), UUID.randomUUID()))
-        sut.insert(factory.reviewDocument(UUID.randomUUID(), idService.next()))
+        sut.insert(factory.reviewDocument(reviewId, idService.next(reviewId), sessionId))
+        sut.insert(factory.reviewDocument(reviewId, idService.next(reviewId), UUID.randomUUID()))
+        sut.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(reviewId)))
         val result = sut.findAllById_SystematicStudyIdAndSearchSessionId(reviewId, sessionId)
         assertTrue(result.size == 1)
     }
 
     @Test fun `Should update study reviews selection status`(){
-        val studyId = idService.next()
+        val studyId = idService.next(reviewId)
         val studyReview = factory.reviewDocument(reviewId, studyId)
         sut.insert(studyReview)
         val newStatus = "INCLUDED"
@@ -97,7 +97,7 @@ class MongoStudyReviewRepositoryTest (
 
     @Test
     fun `Should find a study review in a review`(){
-        val studyReview = factory.reviewDocument(reviewId, idService.next(), sessionId,"study")
+        val studyReview = factory.reviewDocument(reviewId, idService.next(reviewId), sessionId,"study")
         sut.insert(studyReview)
         val result = sut.findById(studyReview.id)
         assertEquals(studyReview.id.studyReviewId, result.toNullable()?.id?.studyReviewId)
@@ -106,8 +106,8 @@ class MongoStudyReviewRepositoryTest (
 
     @Test
     fun `Should generate id sequence`(){
-        val id = idService.next()
-        val nextId = idService.next()
+        val id = idService.next(reviewId)
+        val nextId = idService.next(reviewId)
         assertEquals(id + 1, nextId)
     }
 }

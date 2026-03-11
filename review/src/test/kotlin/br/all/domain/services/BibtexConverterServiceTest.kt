@@ -5,7 +5,7 @@ import br.all.domain.model.search.SearchSessionID
 import br.all.domain.model.study.*
 import br.all.domain.shared.exception.bibtex.BibtexParseException
 import org.junit.jupiter.api.*
-import java.util.*
+import java.util.UUID.randomUUID
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -25,7 +25,7 @@ class BibtexConverterServiceTest {
     @AfterEach
     fun teardown() {
         val fake = idGeneratorService as FakeIdGeneratorService
-        fake.reset()
+        fake.reset(randomUUID())
     }
 
     @Nested
@@ -35,8 +35,8 @@ class BibtexConverterServiceTest {
         fun `Should create a StudyReview list from multiple bibtex entries as input`() {
             val bibtex = BibtexTestData.testInputs["multiple bibtex entries"]!!
             val studyReviewList = sut.convertManyToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+                SystematicStudyId(randomUUID()),
+                SearchSessionID(randomUUID()),
                 bibtex,
                 source = mutableSetOf("Compendex")
             )
@@ -48,8 +48,8 @@ class BibtexConverterServiceTest {
             val bibtex = BibtexTestData.testInputs["valid article"]!!
             val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+                SystematicStudyId(randomUUID()),
+                SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -83,8 +83,8 @@ class BibtexConverterServiceTest {
             val bibtex = BibtexTestData.testInputs["valid inproceedings"]!!
             val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+                SystematicStudyId(randomUUID()),
+                SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -115,8 +115,8 @@ class BibtexConverterServiceTest {
             val bibtex = BibtexTestData.testInputs["valid techreport"]!!
             val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+                SystematicStudyId(randomUUID()),
+                SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -147,8 +147,8 @@ class BibtexConverterServiceTest {
             val bibtex = BibtexTestData.testInputs["valid book"]!!
             val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+                SystematicStudyId(randomUUID()),
+                SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -177,8 +177,8 @@ class BibtexConverterServiceTest {
             val bibtex = BibtexTestData.testInputs["valid proceedings"]!!
             val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+                SystematicStudyId(randomUUID()),
+                SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -209,8 +209,8 @@ class BibtexConverterServiceTest {
             val bibtex = BibtexTestData.testInputs["valid phdthesis"]!!
             val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+                SystematicStudyId(randomUUID()),
+                SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -239,8 +239,8 @@ class BibtexConverterServiceTest {
             val bibtex = BibtexTestData.testInputs["valid mastersthesis"]!!
             val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+                SystematicStudyId(randomUUID()),
+                SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -269,8 +269,8 @@ class BibtexConverterServiceTest {
             val bibtex = BibtexTestData.testInputs["valid inbook"]!!
             val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+                SystematicStudyId(randomUUID()),
+                SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -301,8 +301,8 @@ class BibtexConverterServiceTest {
             val bibtex = BibtexTestData.testInputs["valid booklet"]!!
             val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+                SystematicStudyId(randomUUID()),
+                SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -331,8 +331,8 @@ class BibtexConverterServiceTest {
             val bibtex = BibtexTestData.testInputs["valid manual"]!!
             val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+                SystematicStudyId(randomUUID()),
+                SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -361,8 +361,8 @@ class BibtexConverterServiceTest {
             val bibtex = BibtexTestData.testInputs["valid misc"]!!
             val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+                SystematicStudyId(randomUUID()),
+                SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -391,8 +391,8 @@ class BibtexConverterServiceTest {
             val bibtex = BibtexTestData.testInputs["valid unpublished"]!!
             val study = sut.convert(bibtex)
             val studyReview = sut.convertToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+                SystematicStudyId(randomUUID()),
+                SearchSessionID(randomUUID()),
                 study,
                 source = mutableSetOf("Compendex")
             )
@@ -424,8 +424,8 @@ class BibtexConverterServiceTest {
         fun `convertManyToStudyReview should not accept a blank bibtex entry as input`() {
             assertThrows<IllegalArgumentException> {
                 sut.convertManyToStudyReview(
-                    SystematicStudyId(UUID.randomUUID()),
-                    SearchSessionID(UUID.randomUUID()),
+                    SystematicStudyId(randomUUID()),
+                    SearchSessionID(randomUUID()),
                     "",
                     source = mutableSetOf("Compendex")
                 )
@@ -451,8 +451,8 @@ class BibtexConverterServiceTest {
         fun `Should create a StudyReview list from multiple bibtex entries even when there are invalid entries`() {
             val bibtex = BibtexTestData.testInputs["multiple bibtex entries with some invalid"]!!
             val studyReviewList = sut.convertManyToStudyReview(
-                SystematicStudyId(UUID.randomUUID()),
-                SearchSessionID(UUID.randomUUID()),
+                SystematicStudyId(randomUUID()),
+                SearchSessionID(randomUUID()),
                 bibtex,
                 source = mutableSetOf("Compendex")
             )
