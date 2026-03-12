@@ -269,7 +269,7 @@ class SearchSessionController(
                 description = "Success updating an existing search session of a systematic study",
                 content = [Content(
                     mediaType = "application/json",
-                    schema = Schema(implementation = UpdateSearchSessionService.ResponseModel::class)
+                    schema = Schema(implementation = PatchSearchSessionService.ResponseModel::class)
                 )]
             ),
             ApiResponse(
@@ -289,7 +289,6 @@ class SearchSessionController(
             ),
         ]
     )
-    // CHANGE API RESPONSE TEXT
     @PatchMapping("/patch-search-session/{sessionId}")
     fun patchSearchSession(
         @PathVariable systematicStudyId: UUID,
