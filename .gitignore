@@ -39,3 +39,6 @@ build/
 .DS_Store
 
 .volume
+
+### EmailData ###
+application-email.yml
