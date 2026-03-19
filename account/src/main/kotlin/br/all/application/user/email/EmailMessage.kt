@@ -1,6 +1,6 @@
-package br.all.domain.shared.email.domain
+package br.all.application.user.email
 
-data class EmailMessage(
+class EmailMessage(
     val to: String,
     val subject: String,
     val body: String,

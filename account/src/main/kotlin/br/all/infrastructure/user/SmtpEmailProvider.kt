@@ -1,6 +1,7 @@
-package br.all.domain.shared.email.infrastructure
+package br.all.infrastructure.user
 
-import br.all.domain.shared.email.domain.EmailMessage
+import br.all.application.user.email.EmailMessage
+import br.all.application.user.email.EmailProvider
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 
