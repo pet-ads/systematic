@@ -3,29 +3,36 @@ package br.all.infrastructure.user
 import UserPasswordTokenEntity
 import br.all.application.user.repository.UserPasswordTokenDto
 import br.all.application.user.repository.UserPasswordTokenRepository
-import org.springframework.data.domain.Example
-import java.util.Optional
+import br.all.application.user.repository.toDto
+import br.all.application.user.repository.toEntity
+import org.springframework.stereotype.Repository
 import java.util.UUID
 
-class UserPasswordTokenRepositoryImpl(private val userPasswordTokenEntity: JpaUserAccountRepository): UserPasswordTokenRepository {
+@Repository
+class UserPasswordTokenRepositoryImpl(
+    private val jpaRepository: JpaUserPasswordTokenRepository
+) : UserPasswordTokenRepository {
+
     override fun save(dto: UserPasswordTokenDto) {
-        TODO("Not yet implemented")
+        jpaRepository.save(dto.toEntity())
     }
 
     override fun existsByEmail(email: String): Boolean {
-        TODO("Not yet implemented")
+        return jpaRepository.findByEmailAndStatus(email, TokenStatus.PENDENTE) != null
     }
 
     override fun deleteById(id: UUID) {
-        TODO("Not yet implemented")
+        jpaRepository.deleteById(id)
     }
 
     override fun findByEmail(email: String): UserPasswordTokenDto? {
-        TODO("Not yet implemented")
+        return jpaRepository
+            .findByEmailAndStatus(email, TokenStatus.PENDENTE)
+            ?.toDto()
     }
 
-    override fun update(UserPasswordTokenDto: UserPasswordTokenDto) {
-        TODO("Not yet implemented")
+    override fun update(dto: UserPasswordTokenDto) {
+        jpaRepository.save(dto.toEntity())
     }
 
 }
