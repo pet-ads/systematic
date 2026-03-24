@@ -1,4 +1,5 @@
-import br.all.infrastructure.user.TokenStatus
+package br.all.infrastructure.user
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated

@@ -4,7 +4,9 @@ import br.all.application.user.email.EmailMessage
 import br.all.application.user.email.EmailProvider
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
+import org.springframework.stereotype.Service
 
+@Service
 class SmtpEmailProvider (
     private val mailSender: JavaMailSender,
 ): EmailProvider {

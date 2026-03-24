@@ -1,6 +1,5 @@
 package br.all.infrastructure.user
 
-import UserPasswordTokenEntity
 import br.all.application.user.repository.UserPasswordTokenDto
 import br.all.application.user.repository.UserPasswordTokenRepository
 import br.all.application.user.repository.toDto
