@@ -1,33 +1,27 @@
 package br.all.application.user.usecase
 
-import br.all.application.user.email.EmailService
-import br.all.application.user.repository.UserAccountRepository
+import br.all.application.user.repository.UserAccountDto
 import br.all.application.user.repository.UserPasswordTokenDto
 import br.all.application.user.repository.UserPasswordTokenRepository
 import br.all.infrastructure.user.TokenStatus
+import org.springframework.stereotype.Service
 import java.time.LocalDateTime.now
 import java.util.UUID
 
+@Service
 class GeneratePasswordResetTokenUseCase(
-    private val userRepository: UserAccountRepository,
     private val tokenRepository: UserPasswordTokenRepository,
-    private val emailService: EmailService
 ) {
 
-    fun execute(email: String) {
-        val user = userRepository.findByEmail(email)
-            ?: return
-
-        val existingToken = tokenRepository.findByEmail(email)
+    fun execute(user: UserAccountDto): UserPasswordTokenDto {
+        val existingToken = tokenRepository.findByEmail(user.email)
 
         if (existingToken != null && existingToken.expiration.isAfter(now())) {
             val updated = existingToken.copy(
                 expiration = now().plusHours(1)
             )
 
-            tokenRepository.update(updated)
-            //emailService.send(user, existingToken.token)
-            return
+            return tokenRepository.save(updated)
         }
 
         val newToken = UUID.randomUUID().toString()
@@ -43,8 +37,6 @@ class GeneratePasswordResetTokenUseCase(
             language = user.country
         )
 
-        tokenRepository.save(token)
-
-        //emailService.send(user, newToken)
+        return tokenRepository.save(token)
     }
 }

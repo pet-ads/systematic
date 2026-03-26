@@ -12,8 +12,8 @@ class UserPasswordTokenRepositoryImpl(
     private val jpaRepository: JpaUserPasswordTokenRepository
 ) : UserPasswordTokenRepository {
 
-    override fun save(dto: UserPasswordTokenDto) {
-        jpaRepository.save(dto.toEntity())
+    override fun save(dto: UserPasswordTokenDto): UserPasswordTokenDto {
+        return jpaRepository.save(dto.toEntity()).toDto()
     }
 
     override fun existsByEmail(email: String): Boolean {
@@ -29,9 +29,4 @@ class UserPasswordTokenRepositoryImpl(
             .findByEmailAndStatus(email, TokenStatus.PENDENTE)
             ?.toDto()
     }
-
-    override fun update(dto: UserPasswordTokenDto) {
-        jpaRepository.save(dto.toEntity())
-    }
-
 }

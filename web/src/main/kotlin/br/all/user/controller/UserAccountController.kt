@@ -6,12 +6,10 @@ import br.all.application.user.create.RegisterUserAccountService.RequestModel
 import br.all.application.user.find.RetrieveUserProfileService
 import br.all.application.user.update.ChangeAccountPasswordService
 import br.all.application.user.update.PatchUserProfileService
-import br.all.application.user.update.PostPasswordRecoveryService
 import br.all.security.service.AuthenticationInfoService
 import br.all.security.service.AuthenticationService
 import br.all.user.presenter.RestfulChangeAccountPasswordPresenter
 import br.all.user.presenter.RestfulPatchUserProfilePresenter
-import br.all.user.presenter.RestfulPostPasswordRecoveryPresenter
 import br.all.user.presenter.RestfulRegisterUserAccountPresenter
 import br.all.user.presenter.RestfulRetrieveUserProfilePresenter
 import br.all.user.requests.ChangeAccountPasswordRequest
@@ -25,7 +23,6 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -38,8 +35,6 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("api/v1/user")
 class UserAccountController(
     private val registerUserAccountService: RegisterUserAccountService,
-    private val postPasswordRecoveryService: PostPasswordRecoveryService,
-    private val encoder: PasswordEncoder,
     private val retrieveUserProfileService: RetrieveUserProfileService,
     private val authenticationInfoService: AuthenticationInfoService,
     private val patchUserProfileService: PatchUserProfileService,
@@ -74,32 +69,6 @@ class UserAccountController(
     fun registerUser(@RequestBody request: RequestModel): ResponseEntity<*> {
         val presenter = RestfulRegisterUserAccountPresenter()
         registerUserAccountService.register(presenter, request)
-        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
-    }
-
-    @PostMapping("/password-recovery")
-    @Operation(summary = "Create an new password recovery token")
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "204",
-                description = "Password recovery requested",
-                content = [Content(schema = Schema(hidden = true))]
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Fail request - invalid input",
-                content = [Content(schema = Schema(hidden = true))]
-            ),
-        ]
-    )
-    fun requestRecovery(@RequestBody request: RequestModel): ResponseEntity<*> {
-        val presenter = RestfulPostPasswordRecoveryPresenter()
-        val passwordRequest = PostPasswordRecoveryService.RequestModel(
-            email = request.email,
-        )
-
-        postPasswordRecoveryService.postPasswordRecovery(presenter, passwordRequest)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 

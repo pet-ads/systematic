@@ -1,5 +1,6 @@
 package br.all.security.auth
 
+import br.all.application.user.update.PostPasswordRecoveryService
 import br.all.security.service.AuthenticationService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -17,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/api/v1/auth")
-class AuthenticationController(private val authenticationService: AuthenticationService) {
+class AuthenticationController(private val authenticationService: AuthenticationService, private val postPasswordRecoveryService: PostPasswordRecoveryService) {
 
     @PostMapping
     @Operation(summary = "Performs a authentication operation")
@@ -76,6 +78,32 @@ class AuthenticationController(private val authenticationService: Authentication
     fun logout(request: HttpServletRequest,
                response: HttpServletResponse){
         authenticationService.logout(request, response)
+    }
+
+    @PostMapping("/new-password-token")
+    @Operation(summary = "Create an new password recovery token")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "204",
+                description = "Password recovery requested",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail request - invalid input",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+        ]
+    )
+    fun requestRecovery(@RequestBody request: NewPasswordTokenRequest): ResponseEntity<*> {
+        val presenter = RestfulPostPasswordRecoveryPresenter()
+        val passwordRequest = PostPasswordRecoveryService.RequestModel(
+            email = request.email,
+        )
+
+        postPasswordRecoveryService.postPasswordRecovery(presenter, passwordRequest)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     private fun String.mapToTokenResponse() = TokenResponse(this)
