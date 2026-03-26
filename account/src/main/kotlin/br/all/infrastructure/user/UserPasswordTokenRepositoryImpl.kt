@@ -1,9 +1,8 @@
 package br.all.infrastructure.user
 
+import br.all.application.user.repository.TokenStatus
 import br.all.application.user.repository.UserPasswordTokenDto
 import br.all.application.user.repository.UserPasswordTokenRepository
-import br.all.application.user.repository.toDto
-import br.all.application.user.repository.toEntity
 import org.springframework.stereotype.Repository
 import java.util.UUID
 

@@ -1,4 +1,4 @@
-package br.all.infrastructure.user
+package br.all.application.user.repository
 
 enum class TokenStatus {
     PENDENTE,

@@ -1,6 +1,6 @@
-package br.all.application.user.repository
+package br.all.infrastructure.user
 
-import br.all.infrastructure.user.UserPasswordTokenEntity
+import br.all.application.user.repository.UserPasswordTokenDto
 
 fun UserPasswordTokenEntity.toDto() = UserPasswordTokenDto(
     id = id,

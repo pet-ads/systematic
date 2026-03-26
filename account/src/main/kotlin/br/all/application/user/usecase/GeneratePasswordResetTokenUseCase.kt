@@ -3,7 +3,7 @@ package br.all.application.user.usecase
 import br.all.application.user.repository.UserAccountDto
 import br.all.application.user.repository.UserPasswordTokenDto
 import br.all.application.user.repository.UserPasswordTokenRepository
-import br.all.infrastructure.user.TokenStatus
+import br.all.application.user.repository.TokenStatus
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime.now
 import java.util.UUID
