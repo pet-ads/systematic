@@ -9,7 +9,7 @@ import java.time.LocalDateTime.now
 import java.util.UUID
 
 @Service
-class GeneratePasswordResetTokenUseCase(
+class GeneratePasswordRecoveryTokenUseCase(
     private val tokenRepository: UserPasswordTokenRepository,
 ) {
 

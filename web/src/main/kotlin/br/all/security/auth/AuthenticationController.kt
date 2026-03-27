@@ -1,6 +1,6 @@
 package br.all.security.auth
 
-import br.all.application.user.update.PostPasswordRecoveryService
+import br.all.application.user.create.PostPasswordRecoveryTokenService
 import br.all.security.service.AuthenticationService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -19,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/api/v1/auth")
-class AuthenticationController(private val authenticationService: AuthenticationService, private val postPasswordRecoveryService: PostPasswordRecoveryService) {
+class AuthenticationController(private val authenticationService: AuthenticationService, private val postPasswordRecoveryTokenService: PostPasswordRecoveryTokenService) {
 
     @PostMapping
     @Operation(summary = "Performs a authentication operation")
@@ -97,12 +97,12 @@ class AuthenticationController(private val authenticationService: Authentication
         ]
     )
     fun requestRecovery(@RequestBody request: NewPasswordTokenRequest): ResponseEntity<*> {
-        val presenter = RestfulPostPasswordRecoveryPresenter()
-        val passwordRequest = PostPasswordRecoveryService.RequestModel(
+        val presenter = RestfulPostPasswordRecoveryTokenPresenter()
+        val passwordRequest = PostPasswordRecoveryTokenService.RequestModel(
             email = request.email,
         )
 
-        postPasswordRecoveryService.postPasswordRecovery(presenter, passwordRequest)
+        postPasswordRecoveryTokenService.postPasswordRecovery(presenter, passwordRequest)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 

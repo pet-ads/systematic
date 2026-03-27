@@ -1,9 +1,9 @@
-package br.all.application.user.update
+package br.all.application.user.create
 
 import io.swagger.v3.oas.annotations.media.Schema
 
-interface PostPasswordRecoveryService {
-    fun postPasswordRecovery(presenter: PostPasswordRecoveryPresenter, request: RequestModel)
+interface PostPasswordRecoveryTokenService {
+    fun postPasswordRecovery(presenter: PostPasswordRecoveryTokenPresenter, request: RequestModel)
 
     data class RequestModel(
         val email: String,

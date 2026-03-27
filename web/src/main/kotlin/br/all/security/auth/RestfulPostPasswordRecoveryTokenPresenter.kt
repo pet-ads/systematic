@@ -1,16 +1,16 @@
 package br.all.security.auth
 
-import br.all.application.user.update.PostPasswordRecoveryPresenter
-import br.all.application.user.update.PostPasswordRecoveryService
+import br.all.application.user.create.PostPasswordRecoveryTokenPresenter
+import br.all.application.user.create.PostPasswordRecoveryTokenService
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
-class RestfulPostPasswordRecoveryPresenter : PostPasswordRecoveryPresenter {
+class RestfulPostPasswordRecoveryTokenPresenter : PostPasswordRecoveryTokenPresenter {
 
     var responseEntity: ResponseEntity<*>? = null
 
-    override fun prepareSuccessView(response: PostPasswordRecoveryService.ResponseModel) {
+    override fun prepareSuccessView(response: PostPasswordRecoveryTokenService.ResponseModel) {
         responseEntity = ResponseEntity<Void>(HttpStatus.NO_CONTENT)
     }
 
