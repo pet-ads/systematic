@@ -1,6 +1,7 @@
 package br.all.infrastructure.user
 
 import br.all.application.user.repository.TokenStatus
+import jakarta.persistence.Column
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
@@ -21,6 +22,7 @@ class UserPasswordTokenEntity(
 
     var email: String,
 
+    @Column(unique = true, nullable = false)
     var token: String,
 
     @Enumerated(EnumType.STRING)

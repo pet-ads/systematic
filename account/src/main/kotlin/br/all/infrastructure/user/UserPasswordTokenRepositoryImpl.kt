@@ -28,4 +28,12 @@ class UserPasswordTokenRepositoryImpl(
             .findByEmailAndStatus(email, TokenStatus.PENDENTE)
             ?.toDto()
     }
+
+    override fun update(dto: UserPasswordTokenDto): UserPasswordTokenDto {
+        return jpaRepository.save(dto.toEntity()).toDto()
+    }
+
+    override fun findByToken(token: String): UserPasswordTokenDto? {
+        return jpaRepository.findByToken(token)?.toDto()
+    }
 }
