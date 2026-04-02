@@ -1,6 +1,7 @@
 package br.all.security.auth
 
 import br.all.application.user.create.PostPasswordRecoveryTokenService
+import br.all.application.user.update.ResetPasswordByTokenService
 import br.all.security.service.AuthenticationService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -19,7 +20,11 @@ import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/api/v1/auth")
-class AuthenticationController(private val authenticationService: AuthenticationService, private val postPasswordRecoveryTokenService: PostPasswordRecoveryTokenService) {
+class AuthenticationController(
+    private val authenticationService: AuthenticationService,
+    private val postPasswordRecoveryTokenService: PostPasswordRecoveryTokenService,
+    private val resetPasswordByTokenService: ResetPasswordByTokenService
+    ) {
 
     @PostMapping
     @Operation(summary = "Performs a authentication operation")
@@ -103,6 +108,33 @@ class AuthenticationController(private val authenticationService: Authentication
         )
 
         postPasswordRecoveryTokenService.postPasswordRecovery(presenter, passwordRequest)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @PostMapping("/new-password")
+    @Operation(summary = "Update a account password")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "204",
+                description = "Password recovery requested",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail request - invalid token",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+        ]
+    )
+    fun requestRecovery(@RequestBody request: NewPasswordRequest): ResponseEntity<*> {
+        val presenter = RestfulResetPasswordByTokenPresenter()
+        val passwordRequest = ResetPasswordByTokenService.RequestModel(
+            token = request.token,
+            newPassword = request.senha,
+        )
+
+        resetPasswordByTokenService.execute(presenter, passwordRequest)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
