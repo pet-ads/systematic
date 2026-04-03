@@ -5,7 +5,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
-import jakarta.persistence.Id;
+import jakarta.persistence.Id
 import jakarta.persistence.Table;
 import java.time.LocalDateTime
 
@@ -16,21 +16,16 @@ import java.util.UUID;
 class UserPasswordTokenEntity(
 
     @Id
-    var id: UUID = UUID.randomUUID(),
+    @Column(nullable = false, unique = true)
+    var token: UUID,
 
     var userId: UUID,
-
     var email: String,
-
-    @Column(unique = true, nullable = false)
-    var token: String,
 
     @Enumerated(EnumType.STRING)
     var status: TokenStatus,
 
     var createdAt: LocalDateTime,
-
     var expiration: LocalDateTime,
-
     var language: String
 )

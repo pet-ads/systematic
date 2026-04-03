@@ -5,8 +5,8 @@ import java.util.UUID
 interface UserPasswordTokenRepository {
     fun save(dto: UserPasswordTokenDto): UserPasswordTokenDto
     fun existsByEmail(email: String): Boolean
-    fun deleteById(id: UUID)
+    fun deleteByToken(id: UUID)
     fun findByEmail(email: String): UserPasswordTokenDto?
     fun update(dto: UserPasswordTokenDto): UserPasswordTokenDto
-    fun findByToken(token: String): UserPasswordTokenDto?
+    fun findByToken(token: UUID): UserPasswordTokenDto?
 }

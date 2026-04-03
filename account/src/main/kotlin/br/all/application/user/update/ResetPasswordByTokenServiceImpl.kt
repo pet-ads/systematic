@@ -14,15 +14,17 @@ class ResetPasswordByTokenServiceImpl(
 
     @Transactional
     override fun execute(presenter: ResetPasswordByTokenPresenter, requestModel: ResetPasswordByTokenService.RequestModel) {
-        val passwordToken = tokenRepository.findByToken(requestModel.token.toString())
+        val passwordToken = tokenRepository.findByToken(requestModel.token)
             ?: return presenter.prepareFailView(IllegalArgumentException("Invalid token"))
 
         if (passwordToken.status == TokenStatus.CONCLUIDO) {
             presenter.prepareFailView(IllegalArgumentException("Token already used"))
+            return
         }
 
         if (passwordToken.expiration.isBefore(LocalDateTime.now())) {
             presenter.prepareFailView(IllegalArgumentException("Expired token"))
+            return
         }
 
         if (presenter.isDone()) return

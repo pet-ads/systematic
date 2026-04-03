@@ -19,7 +19,7 @@ class UserPasswordTokenRepositoryImpl(
         return jpaRepository.findByEmailAndStatus(email, TokenStatus.PENDENTE) != null
     }
 
-    override fun deleteById(id: UUID) {
+    override fun deleteByToken(id: UUID) {
         jpaRepository.deleteById(id)
     }
 
@@ -33,7 +33,7 @@ class UserPasswordTokenRepositoryImpl(
         return jpaRepository.save(dto.toEntity()).toDto()
     }
 
-    override fun findByToken(token: String): UserPasswordTokenDto? {
-        return jpaRepository.findByToken(token)?.toDto()
+    override fun findByToken(token: UUID): UserPasswordTokenDto? {
+        return jpaRepository.findById(token).orElse(null)?.toDto()
     }
 }

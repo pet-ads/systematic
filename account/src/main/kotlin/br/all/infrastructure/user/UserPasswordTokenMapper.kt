@@ -3,10 +3,9 @@ package br.all.infrastructure.user
 import br.all.application.user.repository.UserPasswordTokenDto
 
 fun UserPasswordTokenEntity.toDto() = UserPasswordTokenDto(
-    id = id,
+    token = token,
     userId = userId,
     email = email,
-    token = token,
     status = status,
     createdAt = createdAt,
     expiration = expiration,
@@ -14,10 +13,9 @@ fun UserPasswordTokenEntity.toDto() = UserPasswordTokenDto(
 )
 
 fun UserPasswordTokenDto.toEntity() = UserPasswordTokenEntity(
-    id = id,
+    token = token,
     userId = userId,
     email = email,
-    token = token,
     status = status,
     createdAt = createdAt,
     expiration = expiration,

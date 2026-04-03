@@ -24,13 +24,12 @@ class GeneratePasswordRecoveryTokenUseCase(
             return tokenRepository.save(updated)
         }
 
-        val newToken = UUID.randomUUID().toString()
+        val newToken = UUID.randomUUID()
 
         val token = UserPasswordTokenDto(
-            id = UUID.randomUUID(),
+            token = newToken,
             userId = user.id,
             email = user.email,
-            token = newToken,
             status = TokenStatus.PENDENTE,
             createdAt = now(),
             expiration = now().plusHours(1),

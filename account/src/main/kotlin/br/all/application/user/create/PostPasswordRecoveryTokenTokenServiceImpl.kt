@@ -24,7 +24,7 @@ class PostPasswordRecoveryTokenTokenServiceImpl(
             val emailMessage = emailBuilder.buildPasswordRecovery(
                 email = userCredentials.email,
                 name = userCredentials.name,
-                token = token.id,
+                token = token.token,
                 country = userCredentials.country
             )
             emailService.send(emailMessage)

@@ -7,8 +7,11 @@ import java.util.UUID
 interface JpaUserPasswordTokenRepository :
     JpaRepository<UserPasswordTokenEntity, UUID> {
 
-    fun findByEmailAndStatus(email: String, status: TokenStatus): UserPasswordTokenEntity?
+    fun findByEmailAndStatus(
+        email: String,
+        status: TokenStatus
+    ): UserPasswordTokenEntity?
 
-    fun findByToken(token: String): UserPasswordTokenEntity?
+    fun findByToken(token: UUID): UserPasswordTokenEntity?
 
 }
