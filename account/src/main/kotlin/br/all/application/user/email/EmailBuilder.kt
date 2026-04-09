@@ -13,7 +13,7 @@ class EmailBuilder {
         country: String = "pt-BR"
     ): EmailMessage {
 
-        val link = "http://localhost:8080/reset-password?token=$token"
+        val link = "http://localhost:5173/#/reset-password?token=$token"
 
         val subject = PasswordRecoveryTemplate.subject(country)
 
