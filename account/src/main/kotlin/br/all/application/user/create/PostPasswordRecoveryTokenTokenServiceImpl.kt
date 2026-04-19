@@ -27,7 +27,7 @@ class PostPasswordRecoveryTokenTokenServiceImpl(
                 token = token.token,
                 country = userCredentials.country
             )
-            emailService.send(emailMessage)
+            emailService.sendAsync(emailMessage)
             presenter.prepareSuccessView(PostPasswordRecoveryTokenService.ResponseModel())
         }
 
