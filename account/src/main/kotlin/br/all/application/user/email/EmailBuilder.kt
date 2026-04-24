@@ -9,7 +9,7 @@ class EmailBuilder {
     fun buildConfirmAccount(
         email: String,
         id: UUID,
-        country: String = "pt-BR"
+        country: String
     ): EmailMessage {
 
         val link = "http://localhost:5173/#/confirm-account?id=$id"
