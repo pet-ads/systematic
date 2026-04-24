@@ -2,6 +2,8 @@ package br.all.application.user.create
 
 import br.all.application.user.create.RegisterUserAccountService.RequestModel
 import br.all.application.user.create.RegisterUserAccountService.ResponseModel
+import br.all.application.user.email.EmailBuilder
+import br.all.application.user.email.EmailService
 import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.repository.toDto
 import br.all.domain.shared.exception.UniquenessViolationException
@@ -11,10 +13,14 @@ import br.all.domain.shared.user.Name
 import br.all.domain.shared.user.Text
 import br.all.domain.shared.user.Username
 import br.all.domain.user.*
+import org.springframework.stereotype.Service
 
+@Service
 class RegisterUserAccountServiceImpl(
     private val repository: UserAccountRepository,
-    private val encoder: PasswordEncoderPort
+    private val encoder: PasswordEncoderPort,
+    private val emailService: EmailService,
+    private val emailBuilder: EmailBuilder
 ) : RegisterUserAccountService {
     override fun register(
         presenter: RegisterUserAccountPresenter,
@@ -46,6 +52,9 @@ class RegisterUserAccountServiceImpl(
         )
 
         repository.save(userAccount.toDto())
+
+        val emailMessage = emailBuilder.buildConfirmAccount(request.email, userAccountId.value, request.country)
+        emailService.sendAsync(emailMessage)
         val responseModel = ResponseModel(userAccountId.value, request.username, request.email)
         presenter.prepareSuccessView(responseModel)
     }

@@ -12,8 +12,6 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class UserAccountConfiguration {
 
-    @Bean
-    fun registerUser(repository: UserAccountRepository, encoder: PasswordEncoderPort) = RegisterUserAccountServiceImpl(repository, encoder)
 
     @Bean
     fun retrieveUserProfile(repository: UserAccountRepository) = RetrieveUserProfileServiceImpl(repository)

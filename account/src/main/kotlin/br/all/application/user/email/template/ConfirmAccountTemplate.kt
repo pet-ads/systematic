@@ -3,8 +3,8 @@ package br.all.application.user.email.template
 object ConfirmAccountTemplate {
 
     fun subject(country: String) = when (country) {
-        "Brazil", "Portugal" -> "Recuperação de senha"
-        else -> "Password Recovery"
+        "Brazil", "Portugal" -> "Confirme sua conta"
+        else -> "Confirm your account"
     }
 
     fun body(country: String, link: String) = when (country) {
