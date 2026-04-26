@@ -19,7 +19,7 @@ fun UserAccountDto.toUserAccountEntity(): UserAccountEntity {
     return UserAccountEntity(id, name, credentials, email, country, affiliation, createdAt)
 }
 
-fun AccountCredentialsEntity.toAccountCredentialsDto() = AccountCredentialsDto(id, username, password, authorities, refreshToken)
+fun AccountCredentialsEntity.toAccountCredentialsDto() = AccountCredentialsDto(id, username, password, authorities, refreshToken, isEnabled)
 
 fun UserAccountEntity.toUserProfileDto() = UserProfileDto(
     id = this.id,
