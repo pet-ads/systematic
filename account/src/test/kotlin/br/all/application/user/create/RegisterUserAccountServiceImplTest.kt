@@ -1,5 +1,7 @@
 package br.all.application.user.create
 
+import br.all.application.user.email.EmailBuilder
+import br.all.application.user.email.EmailService
 import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.utils.TestDataFactory
 import io.mockk.every
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import br.all.domain.shared.exception.UniquenessViolationException
 import br.all.domain.shared.service.PasswordEncoderPort
+import br.all.domain.user.FakeEmailService
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -20,12 +23,16 @@ class RegisterUserAccountServiceImplTest {
     @MockK(relaxUnitFun = true) private lateinit var userAccountRepository: UserAccountRepository
     @MockK private lateinit var encoder: PasswordEncoderPort
 
+    private lateinit var fakeEmailService: EmailService
+    private lateinit var emailBuilder: EmailBuilder
     private lateinit var sut: RegisterUserAccountServiceImpl
     private lateinit var factory: TestDataFactory
 
     @BeforeEach
     fun setUp() {
-        sut = RegisterUserAccountServiceImpl(userAccountRepository, encoder)
+        fakeEmailService = FakeEmailService
+        emailBuilder = EmailBuilder()
+        sut = RegisterUserAccountServiceImpl(userAccountRepository, encoder, fakeEmailService, emailBuilder)
         factory = TestDataFactory()
     }
 

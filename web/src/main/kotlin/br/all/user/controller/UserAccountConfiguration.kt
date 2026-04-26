@@ -1,6 +1,5 @@
 package br.all.user.controller
 
-import br.all.application.user.create.RegisterUserAccountServiceImpl
 import br.all.application.user.find.RetrieveUserProfileServiceImpl
 import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.update.ChangeAccountPasswordServiceImpl
@@ -11,7 +10,6 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class UserAccountConfiguration {
-
 
     @Bean
     fun retrieveUserProfile(repository: UserAccountRepository) = RetrieveUserProfileServiceImpl(repository)

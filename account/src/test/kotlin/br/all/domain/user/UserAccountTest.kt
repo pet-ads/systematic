@@ -53,7 +53,7 @@ class UserAccountTest{
         Assertions.assertTrue(user.accountCredentials.isCredentialsNonExpired)
         Assertions.assertTrue(user.accountCredentials.isAccountNonExpired)
         Assertions.assertTrue(user.accountCredentials.isAccountNonLocked)
-        Assertions.assertTrue(user.accountCredentials.isEnabled)
+        Assertions.assertTrue(!user.accountCredentials.isEnabled)
     }
 
     // Although the user won't be able to change their username through the front-end,
