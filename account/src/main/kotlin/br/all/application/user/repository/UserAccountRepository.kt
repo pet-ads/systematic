@@ -14,4 +14,5 @@ interface UserAccountRepository {
     fun loadUserProfileById(id: UUID): UserProfileDto?
     fun loadFullUserAccountById(id: UUID): UserAccountDto?
     fun updatePassword(id: UUID, newHashedPassword: String)
+    fun updateIsEnabled(id: UUID, enabled: Boolean)
 }

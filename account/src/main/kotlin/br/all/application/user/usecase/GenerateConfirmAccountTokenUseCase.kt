@@ -22,7 +22,7 @@ class GenerateConfirmAccountTokenUseCase (
                 userId = userId,
                 status = TokenStatus.PENDENTE,
                 createdAt = now,
-                expiration = now.plusHours(1),
+                expiration = now.plusDays(2),
             )
 
         return tokenRepository.save(token).token

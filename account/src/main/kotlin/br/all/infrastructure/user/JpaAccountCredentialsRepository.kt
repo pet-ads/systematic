@@ -16,4 +16,5 @@ interface JpaAccountCredentialsRepository : JpaRepository<AccountCredentialsEnti
      @Modifying(clearAutomatically = true, flushAutomatically = true)
      @Query("update AccountCredentialsEntity e set e.refreshToken = :token where e.id = :id")
      fun updateRefreshTokenById(@Param(value = "id") id: UUID, @Param(value = "token") refreshToken: String?)
+     fun updateIsEnabledById(@Param(value = "id") id: UUID, @Param(value = "isEnabled") isEnabled: Boolean)
 }
