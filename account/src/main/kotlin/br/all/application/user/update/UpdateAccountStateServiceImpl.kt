@@ -6,6 +6,7 @@ import br.all.application.user.repository.UserAccountRepository
 import org.springframework.stereotype.Service
 import br.all.application.user.update.UpdateAccountStateService.RequestModel
 import br.all.application.user.update.UpdateAccountStateService.ResponseModel
+import br.all.domain.shared.exception.EntityNotFoundException
 import jakarta.transaction.Transactional
 import java.time.LocalDateTime
 
@@ -33,9 +34,15 @@ class UpdateAccountStateServiceImpl (
             return
         }
 
+        val user = userAccountRepository.loadFullUserAccountById(confirmToken.userId)
+            ?: return presenter.prepareFailView(EntityNotFoundException("User does not exist"))
+
         if (presenter.isDone()) return
 
-        userAccountRepository.updateIsEnabled(confirmToken.userId, true)
+        userAccountRepository.save(
+            user.copy(
+            isEnabled = true
+        ))
 
         confirmAccountTokenRepository.update(
             confirmToken.copy(

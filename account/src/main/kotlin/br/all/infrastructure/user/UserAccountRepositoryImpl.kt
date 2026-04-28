@@ -56,10 +56,6 @@ class UserAccountRepositoryImpl(
         credentialsRepository.save(credentials)
     }
 
-    override fun updateIsEnabled(id: UUID, enabled: Boolean) {
-        credentialsRepository.updateIsEnabledById(id, enabled)
-    }
-
     override fun loadCredentialsByUsername(username: String) =
         credentialsRepository.findByUsername(username)?.toAccountCredentialsDto()
 
