@@ -33,16 +33,16 @@ class CreateSystematicStudyServiceImpl(
             presenter.prepareFailView(
                 EntityNotFoundException("User not found")
             )
-            return
         }
 
-        if (!userCredentials.isEnabled) {
-            presenter.prepareFailView(
-                AccountNotEnabledException("Please confirm your email to activate your account.")
-            )
-            return
+        userCredentials?.isEnabled?.let {
+            if (!it) {
+                presenter.prepareFailView(
+                    AccountNotEnabledException("Please confirm your email to activate your account.")
+                )
+            }
         }
-        val user = userCredentials.toUser()
+        val user = userCredentials?.toUser()
         presenter.prepareIfUnauthorized(user)
 
         if (presenter.isDone()) return
