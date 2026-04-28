@@ -1,8 +1,8 @@
 package br.all.application.user.create
 
 import br.all.application.user.email.EmailBuilder
-import br.all.application.user.email.EmailService
 import br.all.application.user.repository.UserAccountRepository
+import br.all.application.user.usecase.GenerateConfirmAccountTokenUseCase
 import br.all.application.user.utils.TestDataFactory
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -20,19 +20,18 @@ import br.all.domain.user.FakeEmailService
 class RegisterUserAccountServiceImplTest {
 
     @MockK(relaxed = true) private lateinit var presenter: RegisterUserAccountPresenter
+    @MockK(relaxed = true) private lateinit var generateConfirmAccountTokenUseCase: GenerateConfirmAccountTokenUseCase
+    @MockK(relaxed = true) private lateinit var fakeEmailService: FakeEmailService
+    @MockK(relaxed = true) private lateinit var emailBuilder: EmailBuilder
     @MockK(relaxUnitFun = true) private lateinit var userAccountRepository: UserAccountRepository
     @MockK private lateinit var encoder: PasswordEncoderPort
 
-    private lateinit var fakeEmailService: EmailService
-    private lateinit var emailBuilder: EmailBuilder
     private lateinit var sut: RegisterUserAccountServiceImpl
     private lateinit var factory: TestDataFactory
 
     @BeforeEach
     fun setUp() {
-        fakeEmailService = FakeEmailService
-        emailBuilder = EmailBuilder()
-        sut = RegisterUserAccountServiceImpl(userAccountRepository, encoder, fakeEmailService, emailBuilder)
+        sut = RegisterUserAccountServiceImpl(userAccountRepository, encoder, fakeEmailService, emailBuilder, generateConfirmAccountTokenUseCase)
         factory = TestDataFactory()
     }
 

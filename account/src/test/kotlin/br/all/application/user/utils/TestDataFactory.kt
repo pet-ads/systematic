@@ -26,7 +26,8 @@ class TestDataFactory {
         username = faker.name.firstName(),
         password = faker.pearlJam.songs(),
         authorities = setOf("USER"),
-        refreshToken = faker.lorem.words()
+        refreshToken = faker.lorem.words(),
+        isEnabled = true
     )
 
     fun userProfile() = UserProfileDto(

@@ -6,6 +6,7 @@ import br.all.application.user.email.EmailBuilder
 import br.all.application.user.email.EmailService
 import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.repository.toDto
+import br.all.application.user.usecase.GenerateConfirmAccountTokenUseCase
 import br.all.domain.shared.exception.UniquenessViolationException
 import br.all.domain.shared.service.PasswordEncoderPort
 import br.all.domain.shared.user.Email
@@ -20,7 +21,8 @@ class RegisterUserAccountServiceImpl(
     private val repository: UserAccountRepository,
     private val encoder: PasswordEncoderPort,
     private val emailService: EmailService,
-    private val emailBuilder: EmailBuilder
+    private val emailBuilder: EmailBuilder,
+    private val generateConfirmAccountTokenUseCase: GenerateConfirmAccountTokenUseCase,
 ) : RegisterUserAccountService {
     override fun register(
         presenter: RegisterUserAccountPresenter,
@@ -53,7 +55,8 @@ class RegisterUserAccountServiceImpl(
 
         repository.save(userAccount.toDto())
 
-        val emailMessage = emailBuilder.buildConfirmAccount(request.email, userAccountId.value, request.country)
+        val token = generateConfirmAccountTokenUseCase.execute(userAccountId.value)
+        val emailMessage = emailBuilder.buildConfirmAccount(request.email, token, request.country)
         emailService.sendAsync(emailMessage)
         val responseModel = ResponseModel(userAccountId.value, request.username, request.email)
         presenter.prepareSuccessView(responseModel)
