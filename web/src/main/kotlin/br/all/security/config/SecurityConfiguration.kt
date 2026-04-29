@@ -43,7 +43,7 @@ class SecurityConfiguration(
                         "/swagger-ui.html",
                         "/webjars/**"
                     ).permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/user").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/user", "/api/v1/user/confirm-account").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/user").authenticated()
                     .anyRequest().fullyAuthenticated()
 
