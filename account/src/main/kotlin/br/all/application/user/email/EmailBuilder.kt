@@ -1,6 +1,7 @@
 package br.all.application.user.email
 
 import br.all.application.user.email.template.ConfirmAccountTemplate
+import br.all.application.user.email.template.PasswordRecoveryTemplate
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -17,6 +18,28 @@ class EmailBuilder {
         val subject = ConfirmAccountTemplate.subject(country)
 
         val body = ConfirmAccountTemplate.body(country, link)
+        
+        return EmailMessage(
+            to = email,
+            subject = subject,
+            body = body,
+            isHtml = false
+        )
+    }
+        
+        
+    fun buildPasswordRecovery(
+        email: String,
+        name: String,
+        token: UUID,
+        country: String = "pt-BR"
+    ): EmailMessage {
+
+        val link = "http://localhost:5173/#/reset-password?token=$token"
+
+        val subject = PasswordRecoveryTemplate.subject(country)
+
+        val body = PasswordRecoveryTemplate.body(country, name, link)
 
         return EmailMessage(
             to = email,

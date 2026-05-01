@@ -32,12 +32,15 @@ class ChangeAccountPasswordServiceImplTest {
     @MockK(relaxUnitFun = true)
     private lateinit var presenter: ChangeAccountPasswordPresenter
 
+    @MockK(relaxUnitFun = true)
+    private lateinit var updatePasswordService: UpdatePasswordService
+
     private lateinit var sut: ChangeAccountPasswordServiceImpl
     private lateinit var factory: TestDataFactory
 
     @BeforeEach
     fun setup() {
-        sut = ChangeAccountPasswordServiceImpl(repository, encoder)
+        sut = ChangeAccountPasswordServiceImpl(repository, encoder, updatePasswordService)
         factory = TestDataFactory()
     }
 
@@ -54,16 +57,10 @@ class ChangeAccountPasswordServiceImplTest {
                 newPassword = "plainNewPassword",
                 confirmPassword = "plainNewPassword"
             )
-            val newHashedPassword = "newHashedPassword"
 
             every { repository.loadCredentialsById(userCredentials.id) } returns userCredentials
             every { encoder.matches(request.oldPassword, userCredentials.password) } returns true
             every { encoder.matches(request.newPassword, userCredentials.password) } returns false
-            every { encoder.encode(request.newPassword) } returns newHashedPassword
-
-            val userIdSlot = slot<UUID>()
-            val passwordSlot = slot<String>()
-            every { repository.updatePassword(capture(userIdSlot), capture(passwordSlot)) } returns Unit
 
             val responseSlot = slot<ChangeAccountPasswordService.ResponseModel>()
             every { presenter.prepareSuccessView(capture(responseSlot)) } returns Unit
@@ -72,10 +69,11 @@ class ChangeAccountPasswordServiceImplTest {
 
             verify(exactly = 1) { presenter.prepareSuccessView(any()) }
             verify(exactly = 0) { presenter.prepareFailView(any()) }
-            verify(exactly = 1) { repository.updatePassword(userCredentials.id, newHashedPassword) }
 
-            assertEquals(userCredentials.id, userIdSlot.captured)
-            assertEquals(newHashedPassword, passwordSlot.captured)
+            verify(exactly = 1) {
+                updatePasswordService.update(userCredentials.id, request.newPassword)
+            }
+
             assertEquals(userCredentials.id, responseSlot.captured.userId)
         }
 
@@ -84,7 +82,9 @@ class ChangeAccountPasswordServiceImplTest {
             val nonExistentUserId = UUID.randomUUID()
             val request = ChangeAccountPasswordService.RequestModel(
                 userId = nonExistentUserId,
-                oldPassword = "any", newPassword = "any", confirmPassword = "any"
+                oldPassword = "any",
+                newPassword = "any",
+                confirmPassword = "any"
             )
 
             every { repository.loadCredentialsById(nonExistentUserId) } returns null
@@ -96,10 +96,13 @@ class ChangeAccountPasswordServiceImplTest {
 
             verify(exactly = 1) { presenter.prepareFailView(any()) }
             verify(exactly = 0) { presenter.prepareSuccessView(any()) }
-            verify(exactly = 0) { repository.updatePassword(any(), any()) }
+            verify(exactly = 0) { updatePasswordService.update(any(), any()) }
 
             assertIs<NoSuchElementException>(exceptionSlot.captured)
-            assertEquals("User with id $nonExistentUserId doesn't exist!", exceptionSlot.captured.message)
+            assertEquals(
+                "User with id $nonExistentUserId doesn't exist!",
+                exceptionSlot.captured.message
+            )
         }
 
         @Test
@@ -122,6 +125,7 @@ class ChangeAccountPasswordServiceImplTest {
 
             verify(exactly = 1) { presenter.prepareFailView(any()) }
             verify(exactly = 0) { presenter.prepareSuccessView(any()) }
+            verify(exactly = 0) { updatePasswordService.update(any(), any()) }
 
             assertIs<IllegalArgumentException>(exceptionSlot.captured)
             assertEquals("Invalid old password provided!", exceptionSlot.captured.message)
@@ -147,9 +151,13 @@ class ChangeAccountPasswordServiceImplTest {
 
             verify(exactly = 1) { presenter.prepareFailView(any()) }
             verify(exactly = 0) { presenter.prepareSuccessView(any()) }
+            verify(exactly = 0) { updatePasswordService.update(any(), any()) }
 
             assertIs<IllegalArgumentException>(exceptionSlot.captured)
-            assertEquals("Confirm password does not match new password!", exceptionSlot.captured.message)
+            assertEquals(
+                "Confirm password does not match new password!",
+                exceptionSlot.captured.message
+            )
         }
 
         @Test
@@ -173,9 +181,13 @@ class ChangeAccountPasswordServiceImplTest {
 
             verify(exactly = 1) { presenter.prepareFailView(any()) }
             verify(exactly = 0) { presenter.prepareSuccessView(any()) }
+            verify(exactly = 0) { updatePasswordService.update(any(), any()) }
 
             assertIs<IllegalArgumentException>(exceptionSlot.captured)
-            assertEquals("New password cannot be the same as the old password!", exceptionSlot.captured.message)
+            assertEquals(
+                "New password cannot be the same as the old password!",
+                exceptionSlot.captured.message
+            )
         }
     }
 }

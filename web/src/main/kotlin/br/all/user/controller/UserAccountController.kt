@@ -26,7 +26,6 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -39,7 +38,6 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("api/v1/user")
 class UserAccountController(
     private val registerUserAccountService: RegisterUserAccountService,
-    private val encoder: PasswordEncoder,
     private val retrieveUserProfileService: RetrieveUserProfileService,
     private val authenticationInfoService: AuthenticationInfoService,
     private val patchUserProfileService: PatchUserProfileService,
