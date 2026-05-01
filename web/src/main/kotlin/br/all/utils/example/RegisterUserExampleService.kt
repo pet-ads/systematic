@@ -34,7 +34,7 @@ class RegisterUserExampleService (
             name = Name(name),
         )
 
-        repo.save(newUserAccount.toDto())
+        repo.save(newUserAccount.toDto().copy(isEnabled = true))
         return newUserAccount
     }
 }

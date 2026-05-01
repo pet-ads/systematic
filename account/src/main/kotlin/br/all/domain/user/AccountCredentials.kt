@@ -10,5 +10,5 @@ class AccountCredentials (
     val isAccountNonExpired : Boolean = true,
     val isAccountNonLocked : Boolean = true,
     val isCredentialsNonExpired : Boolean = true,
-    val isEnabled : Boolean = true,
+    val isEnabled : Boolean = false,
 )

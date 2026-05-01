@@ -13,6 +13,8 @@ import br.all.domain.model.protocol.Protocol
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.toSystematicStudyId
 import br.all.domain.services.UuidGeneratorService
+import br.all.domain.shared.exception.AccountNotEnabledException
+import br.all.domain.shared.exception.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -26,7 +28,21 @@ class CreateSystematicStudyServiceImpl(
     
     @Transactional
     override fun create(presenter: CreateSystematicStudyPresenter, request: RequestModel) {
-        val user = credentialsService.loadCredentials(request.userId)?.toUser()
+        val userCredentials = credentialsService.loadEnabledState(request.userId)
+        if (userCredentials == null) {
+            presenter.prepareFailView(
+                EntityNotFoundException("User not found")
+            )
+        }
+
+        userCredentials?.isEnabled?.let {
+            if (!it) {
+                presenter.prepareFailView(
+                    AccountNotEnabledException("Please confirm your email to activate your account.")
+                )
+            }
+        }
+        val user = userCredentials?.toUser()
         presenter.prepareIfUnauthorized(user)
 
         if (presenter.isDone()) return

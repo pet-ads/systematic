@@ -6,14 +6,17 @@ import br.all.application.user.create.RegisterUserAccountService.RequestModel
 import br.all.application.user.find.RetrieveUserProfileService
 import br.all.application.user.update.ChangeAccountPasswordService
 import br.all.application.user.update.PatchUserProfileService
+import br.all.application.user.update.UpdateAccountStateService
 import br.all.security.service.AuthenticationInfoService
 import br.all.security.service.AuthenticationService
 import br.all.user.presenter.RestfulChangeAccountPasswordPresenter
 import br.all.user.presenter.RestfulPatchUserProfilePresenter
 import br.all.user.presenter.RestfulRegisterUserAccountPresenter
 import br.all.user.presenter.RestfulRetrieveUserProfilePresenter
+import br.all.user.presenter.RestfulUpdateAccountStatePresenter
 import br.all.user.requests.ChangeAccountPasswordRequest
 import br.all.user.requests.PatchUserProfileRequest
+import br.all.user.requests.UpdateAccountStateRequest
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -39,7 +42,8 @@ class UserAccountController(
     private val authenticationInfoService: AuthenticationInfoService,
     private val patchUserProfileService: PatchUserProfileService,
     private val changeAccountPasswordService: ChangeAccountPasswordService,
-    private val authenticationService: AuthenticationService
+    private val authenticationService: AuthenticationService,
+    private val updateAccountStateService: UpdateAccountStateService
 ) {
 
     @PostMapping
@@ -203,6 +207,31 @@ class UserAccountController(
 
         authenticationService.logout(request, response)
 
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @PostMapping("/confirm-account")
+    @Operation(summary = "Confirm a account")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success confirm an account",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail on confirm account - invalid token",
+                content = [Content(schema = Schema(hidden = true))]
+            )
+        ]
+    )
+    fun confirmAccount(@RequestBody updateRequest: UpdateAccountStateRequest): ResponseEntity<*> {
+        val presenter = RestfulUpdateAccountStatePresenter()
+        val request = UpdateAccountStateService.RequestModel(
+            updateRequest.token,
+        )
+        updateAccountStateService.updateState(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

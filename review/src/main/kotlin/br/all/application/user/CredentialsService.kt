@@ -10,8 +10,22 @@ interface CredentialsService {
 
     fun loadCredentials(userId: UUID): ResponseModel?
 
+    fun loadEnabledState(userId: UUID): EnabledResponseModel?
+
     @Schema(name = "CredentialsServiceResponseModel")
     data class ResponseModel(val id: UUID, val username: String, val roles: Set<String>){
+        fun toUser() : Researcher {
+            val researcherId = ResearcherId(id)
+            val userRoles = roles.toMutableSet()
+                .map { if (it == "USER") "COLLABORATOR" else it }
+                .map { Role.valueOf(it) }
+                .toSet()
+
+            return Researcher(researcherId, username, userRoles)
+        }
+    }
+
+    data class EnabledResponseModel(val id: UUID, val username: String, val roles: Set<String>, val isEnabled : Boolean){
         fun toUser() : Researcher {
             val researcherId = ResearcherId(id)
             val userRoles = roles.toMutableSet()

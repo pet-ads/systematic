@@ -1,6 +1,8 @@
 package br.all.application.user.create
 
+import br.all.application.user.email.EmailBuilder
 import br.all.application.user.repository.UserAccountRepository
+import br.all.application.user.usecase.GenerateConfirmAccountTokenUseCase
 import br.all.application.user.utils.TestDataFactory
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import br.all.domain.shared.exception.UniquenessViolationException
 import br.all.domain.shared.service.PasswordEncoderPort
+import br.all.domain.user.FakeEmailService
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -17,6 +20,9 @@ import br.all.domain.shared.service.PasswordEncoderPort
 class RegisterUserAccountServiceImplTest {
 
     @MockK(relaxed = true) private lateinit var presenter: RegisterUserAccountPresenter
+    @MockK(relaxed = true) private lateinit var generateConfirmAccountTokenUseCase: GenerateConfirmAccountTokenUseCase
+    @MockK(relaxed = true) private lateinit var fakeEmailService: FakeEmailService
+    @MockK(relaxed = true) private lateinit var emailBuilder: EmailBuilder
     @MockK(relaxUnitFun = true) private lateinit var userAccountRepository: UserAccountRepository
     @MockK private lateinit var encoder: PasswordEncoderPort
 
@@ -25,7 +31,7 @@ class RegisterUserAccountServiceImplTest {
 
     @BeforeEach
     fun setUp() {
-        sut = RegisterUserAccountServiceImpl(userAccountRepository, encoder)
+        sut = RegisterUserAccountServiceImpl(userAccountRepository, encoder, fakeEmailService, emailBuilder, generateConfirmAccountTokenUseCase)
         factory = TestDataFactory()
     }
 
