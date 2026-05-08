@@ -2,6 +2,7 @@ package br.all.security.service
 
 import br.all.security.config.JwtProperties
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.security.core.userdetails.UserDetails
@@ -30,16 +31,13 @@ class TokenService(jwtProperties: JwtProperties) {
 
     fun extractUsername(token: String): String? = getAllClaims(token).subject
 
-    fun isExpired(token: String): Boolean =
-        try {
-            val claims = getAllClaims(token)
-            val exp = claims.expiration
-            exp.before(Date())
-        } catch (e: io.jsonwebtoken.ExpiredJwtException) {
-            true
-        } catch (e: Exception) {
+    fun isExpired(token: String): Boolean {
+        return try {
+            getAllClaims(token).expiration.before(Date(System.currentTimeMillis()))
+        } catch (e: ExpiredJwtException) {
             true
         }
+    }
 
     fun isValid(token: String, userDetails: UserDetails) =
         extractUsername(token) == userDetails.username && !isExpired(token)
