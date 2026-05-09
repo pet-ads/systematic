@@ -129,19 +129,11 @@ class WebApplication {
     """.trimIndent(),
             additionalInformation = "Scopus search performed on 2022-09-20 using the TITLE-ABS-KEY field. Returned 230 studies (duplicates filtered later). Only English studies were considered."
         ))
+        applyRandomClassification(allScoredStudies)
 
         studyReviewRepository.saveOrUpdateBatch(allScoredStudies.map { it.toDto() })
 
-        val duplicatedAnalysedReviews = reviewSimilarityService.findDuplicates(allScoredStudies, emptyList())
-        val duplicateStudies = duplicatedAnalysedReviews
-            .flatMap { (key, value) -> listOf(key) + value }
-            .toList()
-
-        val duplicateStudiesSet = duplicateStudies.toSet()
-        val uniqueStudies = allScoredStudies.filter { it !in duplicateStudiesSet }
-
-        applyRandomClassification(uniqueStudies)
-        applyRandomClassification(duplicateStudies)
+        reviewSimilarityService.findDuplicates(allScoredStudies, emptyList())
 
         studyReviewRepository.saveOrUpdateBatch(allScoredStudies.map { it.toDto() })
     }
