@@ -49,6 +49,7 @@ class ReviewSimilarityService(
         val normalizedText2 = normalizeText(study2.title)
 
         if (normalizedText1.isEmpty() && normalizedText2.isEmpty()) return 1.0
+        if (normalizedText1 == normalizedText2) return 1.0
         if (normalizedText1.isEmpty() || normalizedText2.isEmpty()) return 0.0
 
         return levenshteinSimilarityCalculator.similarity(normalizedText1, normalizedText2)
@@ -59,6 +60,7 @@ class ReviewSimilarityService(
         val normalizedText2 = normalizeText(study2.abstract ?: "")
 
         if (normalizedText1.isEmpty() && normalizedText2.isEmpty()) return 1.0
+        if (normalizedText1 == normalizedText2) return 1.0
         if (normalizedText1.isEmpty() || normalizedText2.isEmpty()) return 0.0
 
         return levenshteinSimilarityCalculator.similarity(normalizedText1, normalizedText2)
@@ -69,6 +71,7 @@ class ReviewSimilarityService(
         val normalizedText2 = normalizeText(study2.authors)
 
         if (normalizedText1.isEmpty() && normalizedText2.isEmpty()) return 1.0
+        if (normalizedText1 == normalizedText2) return 1.0
         if (normalizedText1.isEmpty() || normalizedText2.isEmpty()) return 0.0
 
         return levenshteinSimilarityCalculator.similarity(normalizedText1, normalizedText2)
