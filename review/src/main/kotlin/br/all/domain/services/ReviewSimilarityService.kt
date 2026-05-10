@@ -23,6 +23,12 @@ class ReviewSimilarityService(
                     val b = iterator.next()
                     if (!sameYear(a, b)) continue
 
+                    if (!areLengthsCompatibleBySize(a.title, b.title, 0.50) && !areLengthsCompatibleBySize(a.authors, b.authors, 0.50)) continue
+
+                    if( !a.abstract.isNullOrEmpty() && !b.abstract.isNullOrEmpty() ) {
+                        if (!areLengthsCompatibleBySize(a.abstract.trim(), b.abstract.trim())) continue
+                    }
+
                     if (calculateTitleSimilarity(a, b) >= titleThreshold && calculateAuthorsSimilarity(a, b) >= authorsThreshold) {
                         if (calculateAbstractSimilarity(a, b) >= abstractThreshold) {
                             duplicatesOfA.add(b)
@@ -78,10 +84,25 @@ class ReviewSimilarityService(
     }
 
     private fun basicComparingFilter(text1: String, text2: String): Double? {
-        if (text1.isEmpty() && text2.isEmpty()) return 1.0
         if (text1 == text2) return 1.0
         if (text1.isEmpty() || text2.isEmpty()) return 0.0
 
         return null
+    }
+
+    private fun areLengthsCompatibleBySize(
+        a: String,
+        b: String,
+        maxDifferencePercent: Double = 0.40
+    ): Boolean {
+        val lengthA = a.length
+        val lengthB = b.length
+
+        val bigger = maxOf(lengthA, lengthB)
+        val smaller = minOf(lengthA, lengthB)
+
+        val difference = bigger - smaller
+
+        return difference.toDouble() / bigger <= maxDifferencePercent
     }
 }
