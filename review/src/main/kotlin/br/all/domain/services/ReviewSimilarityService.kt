@@ -48,9 +48,9 @@ class ReviewSimilarityService(
         val normalizedText1 = normalizeText(study1.title)
         val normalizedText2 = normalizeText(study2.title)
 
-        if (normalizedText1.isEmpty() && normalizedText2.isEmpty()) return 1.0
-        if (normalizedText1 == normalizedText2) return 1.0
-        if (normalizedText1.isEmpty() || normalizedText2.isEmpty()) return 0.0
+        val basicCompared = basicComparingFilter(normalizedText1, normalizedText2)
+
+        if (basicCompared != null) return basicCompared
 
         return levenshteinSimilarityCalculator.similarity(normalizedText1, normalizedText2)
     }
@@ -59,9 +59,9 @@ class ReviewSimilarityService(
         val normalizedText1 = normalizeText(study1.abstract ?: "")
         val normalizedText2 = normalizeText(study2.abstract ?: "")
 
-        if (normalizedText1.isEmpty() && normalizedText2.isEmpty()) return 1.0
-        if (normalizedText1 == normalizedText2) return 1.0
-        if (normalizedText1.isEmpty() || normalizedText2.isEmpty()) return 0.0
+        val basicCompared = basicComparingFilter(normalizedText1, normalizedText2)
+
+        if (basicCompared != null) return basicCompared
 
         return levenshteinSimilarityCalculator.similarity(normalizedText1, normalizedText2)
     }
@@ -70,10 +70,18 @@ class ReviewSimilarityService(
         val normalizedText1 = normalizeText(study1.authors)
         val normalizedText2 = normalizeText(study2.authors)
 
-        if (normalizedText1.isEmpty() && normalizedText2.isEmpty()) return 1.0
-        if (normalizedText1 == normalizedText2) return 1.0
-        if (normalizedText1.isEmpty() || normalizedText2.isEmpty()) return 0.0
+        val basicCompared = basicComparingFilter(normalizedText1, normalizedText2)
+
+        if (basicCompared != null) return basicCompared
 
         return levenshteinSimilarityCalculator.similarity(normalizedText1, normalizedText2)
+    }
+
+    private fun basicComparingFilter(text1: String, text2: String): Double? {
+        if (text1.isEmpty() && text2.isEmpty()) return 1.0
+        if (text1 == text2) return 1.0
+        if (text1.isEmpty() || text2.isEmpty()) return 0.0
+
+        return null
     }
 }
