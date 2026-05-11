@@ -29,8 +29,8 @@ class ReviewSimilarityService(
                         if (!areLengthsCompatibleBySize(a.abstract.trim(), b.abstract.trim())) continue
                     }
 
-                    if (calculateTitleSimilarity(a, b) >= titleThreshold && calculateAuthorsSimilarity(a, b) >= authorsThreshold) {
-                        if (calculateAbstractSimilarity(a, b) >= abstractThreshold) {
+                    if (calculateTitleSimilarity(a, b, titleThreshold) >= titleThreshold && calculateAuthorsSimilarity(a, b, authorsThreshold) >= authorsThreshold) {
+                        if (calculateAbstractSimilarity(a, b, abstractThreshold) >= abstractThreshold) {
                             duplicatesOfA.add(b)
                             iterator.remove()
                         }
@@ -50,7 +50,7 @@ class ReviewSimilarityService(
 
     private fun sameYear(study1: StudyReview, study2: StudyReview) = study1.year == study2.year
 
-    private fun calculateTitleSimilarity(study1: StudyReview, study2: StudyReview): Double {
+    private fun calculateTitleSimilarity(study1: StudyReview, study2: StudyReview, threshold: Double): Double {
         val normalizedText1 = normalizeText(study1.title)
         val normalizedText2 = normalizeText(study2.title)
 
@@ -58,10 +58,10 @@ class ReviewSimilarityService(
 
         if (basicCompared != null) return basicCompared
 
-        return levenshteinSimilarityCalculator.similarity(normalizedText1, normalizedText2)
+        return levenshteinSimilarityCalculator.similarityPercentage(normalizedText1, normalizedText2, 1.0 - threshold)
     }
 
-    private fun calculateAbstractSimilarity(study1: StudyReview, study2: StudyReview): Double {
+    private fun calculateAbstractSimilarity(study1: StudyReview, study2: StudyReview, threshold: Double): Double {
         val normalizedText1 = normalizeText(study1.abstract ?: "")
         val normalizedText2 = normalizeText(study2.abstract ?: "")
 
@@ -69,10 +69,10 @@ class ReviewSimilarityService(
 
         if (basicCompared != null) return basicCompared
 
-        return levenshteinSimilarityCalculator.similarity(normalizedText1, normalizedText2)
+        return levenshteinSimilarityCalculator.similarityPercentage(normalizedText1, normalizedText2, 1.0 - threshold)
     }
 
-    private fun calculateAuthorsSimilarity(study1: StudyReview, study2: StudyReview): Double {
+    private fun calculateAuthorsSimilarity(study1: StudyReview, study2: StudyReview, threshold: Double): Double {
         val normalizedText1 = normalizeText(study1.authors)
         val normalizedText2 = normalizeText(study2.authors)
 
@@ -80,7 +80,7 @@ class ReviewSimilarityService(
 
         if (basicCompared != null) return basicCompared
 
-        return levenshteinSimilarityCalculator.similarity(normalizedText1, normalizedText2)
+        return levenshteinSimilarityCalculator.similarityPercentage(normalizedText1, normalizedText2, 1.0 - threshold)
     }
 
     private fun basicComparingFilter(text1: String, text2: String): Double? {
