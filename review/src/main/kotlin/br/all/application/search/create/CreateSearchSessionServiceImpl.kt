@@ -9,7 +9,6 @@ import br.all.application.search.repository.SearchSessionRepository
 import br.all.application.search.repository.fromRequestModel
 import br.all.application.search.repository.toDto
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
-import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromDto
 import br.all.application.study.repository.toDto
@@ -23,8 +22,6 @@ import br.all.domain.services.ConverterFactoryService
 import br.all.domain.services.ReviewSimilarityService
 import br.all.domain.services.ScoreCalculatorService
 import br.all.domain.services.UuidGeneratorService
-import br.all.infrastructure.study.toDocument
-import java.awt.List
 
 class CreateSearchSessionServiceImpl(
     private val searchSessionRepository: SearchSessionRepository,

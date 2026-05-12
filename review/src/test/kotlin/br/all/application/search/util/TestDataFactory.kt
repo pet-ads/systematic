@@ -9,12 +9,18 @@ import br.all.application.search.find.service.FindSearchSessionService
 import br.all.application.search.repository.SearchSessionDto
 import br.all.application.search.update.UpdateSearchSessionService
 import br.all.application.search.update.UpdateSearchSessionService.RequestModel
+import br.all.application.study.repository.StudyReviewDto
+import br.all.application.study.repository.toDto
 import br.all.domain.model.protocol.SearchSource
 import br.all.domain.shared.user.ResearcherId
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.search.SearchSession
 import br.all.domain.model.search.SearchSessionID
+import br.all.domain.model.study.StudyReview
+import br.all.domain.model.study.StudyReviewId
+import br.all.domain.model.study.StudyType
 import br.all.domain.shared.utils.paragraph
+import br.all.domain.shared.utils.year
 import io.github.serpro69.kfaker.Faker
 import java.time.LocalDateTime
 import java.util.*
@@ -274,4 +280,29 @@ class TestDataFactory {
         sessionId = sessionId,
         invalidEntries = invalidEntries
     )
+
+     fun generateStudies(
+        studyReviewId: Long = 1L,
+        systematicStudyId: UUID = UUID.randomUUID(),
+        searchSessionId: UUID = UUID.randomUUID(),
+        studyType: StudyType = StudyType.INBOOK,
+        title: String = faker.book.title(),
+        abstract: String = faker.paragraph(20),
+        year: Int = faker.year(),
+        venue: String = faker.book.publisher(),
+        authors: String = faker.book.author(),
+        searchSources: MutableSet<String> = mutableSetOf(faker.book.publisher())
+    ) = listOf<StudyReviewDto>(StudyReview(
+        StudyReviewId(studyReviewId),
+        SystematicStudyId(systematicStudyId),
+        SearchSessionID(searchSessionId),
+        studyType,
+        title,
+        year,
+        venue,
+        authors,
+        abstract,
+        searchSources = searchSources
+    ).toDto())
+
 }
