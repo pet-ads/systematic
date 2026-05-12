@@ -1,7 +1,9 @@
 package br.all.domain.services
 
+import br.all.domain.model.study.SelectionStatus
 import br.all.domain.model.study.StudyReview
 import br.all.domain.shared.utils.normalizeText
+import kotlin.collections.mutableSetOf
 
 class ReviewSimilarityService(
     private val levenshteinSimilarityCalculator: LevenshteinSimilarityCalculator,
@@ -12,30 +14,27 @@ class ReviewSimilarityService(
     fun findDuplicates(newStudies: List<StudyReview>, oldStudies: List<StudyReview>): Map<StudyReview, Set<StudyReview>> {
         val duplicatedReviewsMap = mutableMapOf<StudyReview, MutableSet<StudyReview>>()
         val remainingStudies = newStudies.toMutableList()
-        remainingStudies.addAll(oldStudies)
+
+        val oldStudies = oldStudies.toMutableList()
+        oldStudies.filter { it.selectionStatus != SelectionStatus.DUPLICATED  }
+
+        while (oldStudies.isNotEmpty()) {
+            oldStudies.removeFirst().let { a ->
+                val duplicatesOfA = mutableSetOf<StudyReview>()
+                val iterator = remainingStudies.iterator()
+
+                collectAndRemoveDuplicates(iterator, a, duplicatesOfA)
+
+                if (duplicatesOfA.isNotEmpty()) duplicatedReviewsMap[a] = duplicatesOfA
+            }
+        }
 
         while (remainingStudies.isNotEmpty()) {
             remainingStudies.removeFirst().let { a ->
                 val duplicatesOfA = mutableSetOf<StudyReview>()
                 val iterator = remainingStudies.iterator()
 
-                while (iterator.hasNext()) {
-                    val b = iterator.next()
-                    if (!sameYear(a, b)) continue
-
-                    if (!areLengthsCompatibleBySize(a.title, b.title, 0.50) && !areLengthsCompatibleBySize(a.authors, b.authors, 0.50)) continue
-
-                    if( !a.abstract.isNullOrEmpty() && !b.abstract.isNullOrEmpty() ) {
-                        if (!areLengthsCompatibleBySize(a.abstract.trim(), b.abstract.trim())) continue
-                    }
-
-                    if (calculateTitleSimilarity(a, b, titleThreshold) >= titleThreshold && calculateAuthorsSimilarity(a, b, authorsThreshold) >= authorsThreshold) {
-                        if (calculateAbstractSimilarity(a, b, abstractThreshold) >= abstractThreshold) {
-                            duplicatesOfA.add(b)
-                            iterator.remove()
-                        }
-                    }
-                }
+                collectAndRemoveDuplicates(iterator, a, duplicatesOfA)
 
                 if (duplicatesOfA.isNotEmpty()) duplicatedReviewsMap[a] = duplicatesOfA
             }
@@ -104,5 +103,25 @@ class ReviewSimilarityService(
         val difference = bigger - smaller
 
         return difference.toDouble() / bigger <= maxDifferencePercent
+    }
+
+    private fun collectAndRemoveDuplicates(iterator: MutableIterator<StudyReview>, referenceStudy: StudyReview, foundDuplicates: MutableSet<StudyReview>){
+        while (iterator.hasNext()) {
+            val b = iterator.next()
+            if (!sameYear(referenceStudy, b)) continue
+
+            if (!areLengthsCompatibleBySize(referenceStudy.title, b.title, 0.50) && !areLengthsCompatibleBySize(referenceStudy.authors, b.authors, 0.50)) continue
+
+            if( !referenceStudy.abstract.isNullOrEmpty() && !b.abstract.isNullOrEmpty() ) {
+                if (!areLengthsCompatibleBySize(referenceStudy.abstract.trim(), b.abstract.trim())) continue
+            }
+
+            if (calculateTitleSimilarity(referenceStudy, b, titleThreshold) >= titleThreshold && calculateAuthorsSimilarity(referenceStudy, b, authorsThreshold) >= authorsThreshold) {
+                if (calculateAbstractSimilarity(referenceStudy, b, abstractThreshold) >= abstractThreshold) {
+                    foundDuplicates.add(b)
+                    iterator.remove()
+                }
+            }
+        }
     }
 }
