@@ -2,8 +2,6 @@ package br.all.infrastructure.review
 
 import br.all.application.review.repository.CollaboratorTokenDto
 import br.all.application.review.repository.CollaboratorTokenRepository
-import br.all.application.review.repository.SystematicStudyDto
-import br.all.application.review.repository.SystematicStudyRepository
 import br.all.infrastructure.shared.toNullable
 import org.springframework.stereotype.Repository
 import java.util.*

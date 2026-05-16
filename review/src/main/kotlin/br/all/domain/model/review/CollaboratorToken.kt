@@ -2,9 +2,6 @@ package br.all.domain.model.review
 
 import br.all.application.user.repository.TokenStatus
 import br.all.domain.shared.ddd.Entity
-import br.all.domain.shared.user.ResearcherId
-import br.all.domain.shared.ddd.Notification
-import br.all.domain.shared.utils.exists
 import java.time.LocalDateTime
 import java.util.*
 

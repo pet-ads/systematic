@@ -1,8 +1,6 @@
 package br.all.infrastructure.review
 
 import br.all.application.user.repository.TokenStatus
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
