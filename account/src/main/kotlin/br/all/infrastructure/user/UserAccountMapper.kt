@@ -26,5 +26,6 @@ fun UserAccountEntity.toUserProfileDto() = UserProfileDto(
     name = this.name,
     email = this.email,
     country = this.country,
-    affiliation = this.affiliation
+    affiliation = this.affiliation,
+    isEnabled = this.accountCredentialsEntity.isEnabled,
 )

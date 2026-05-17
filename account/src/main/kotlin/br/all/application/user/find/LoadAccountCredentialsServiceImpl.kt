@@ -3,6 +3,7 @@ package br.all.application.user.find
 import br.all.application.user.find.LoadAccountCredentialsService.UserAuthenticationCredentials
 import br.all.application.user.find.LoadAccountCredentialsService.UserSimpleCredentials
 import br.all.application.user.find.LoadAccountCredentialsService.UserEnabledCredentials
+import br.all.application.user.find.LoadAccountCredentialsService.UserInformation
 import br.all.application.user.repository.UserAccountRepository
 import java.util.*
 import kotlin.NoSuchElementException
@@ -27,14 +28,21 @@ class LoadAccountCredentialsServiceImpl(private val repository: UserAccountRepos
         val userDto = repository.loadCredentialsById(id)
             ?: throw NoSuchElementException("User id $id not found.")
 
-        return LoadAccountCredentialsService.UserSimpleCredentials(userDto.id, userDto.username, userDto.authorities)
+        return UserSimpleCredentials(userDto.id, userDto.username, userDto.authorities)
     }
 
     override fun loadEnabledCredentialsById(id: UUID): UserEnabledCredentials {
         val userDto = repository.loadCredentialsById(id)
             ?: throw NoSuchElementException("User id $id not found.")
 
-        return LoadAccountCredentialsService.UserEnabledCredentials(userDto.id, userDto.username, userDto.authorities, userDto.isEnabled)
+        return UserEnabledCredentials(userDto.id, userDto.username, userDto.authorities, userDto.isEnabled)
+    }
+
+    override fun loadUserInformationByUsername(username: String): UserInformation {
+        val userDto = repository.loadUserProfileByUsername(username)
+            ?: throw NoSuchElementException("Username $username not found.")
+
+        return UserInformation(userDto.id, userDto.name, userDto.country, userDto.isEnabled, userDto.email)
     }
 
 }

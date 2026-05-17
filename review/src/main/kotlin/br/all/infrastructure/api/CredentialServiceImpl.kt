@@ -3,9 +3,11 @@ package br.all.infrastructure.api
 import br.all.application.user.CredentialsService
 import br.all.application.user.CredentialsService.ResponseModel
 import br.all.application.user.CredentialsService.EnabledResponseModel
+import br.all.application.user.CredentialsService.InformationResponseModel
 import br.all.application.user.find.LoadAccountCredentialsService
 import br.all.application.user.find.LoadAccountCredentialsService.UserSimpleCredentials
 import br.all.application.user.find.LoadAccountCredentialsService.UserEnabledCredentials
+import br.all.application.user.find.LoadAccountCredentialsService.UserInformation
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -19,7 +21,13 @@ class CredentialServiceImpl(private val accountCredentialsService : LoadAccountC
         return accountCredentialsService.loadEnabledCredentialsById(userId).toResponseModel()
     }
 
+    override fun loadEnabledCredentialsByUsername(username: String): InformationResponseModel? {
+        return accountCredentialsService.loadUserInformationByUsername(username).toResponseModel()
+    }
+
     private fun UserSimpleCredentials.toResponseModel() = ResponseModel(this.id, this.username, this.authorities)
 
     private fun UserEnabledCredentials.toResponseModel() = EnabledResponseModel(this.id, this.username, this.authorities, this.isEnabled)
+
+    private fun UserInformation.toResponseModel() = InformationResponseModel(this.id, this.username, this.country, this.isEnabled, this.email)
 }

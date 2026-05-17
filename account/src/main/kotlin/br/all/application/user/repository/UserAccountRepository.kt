@@ -13,6 +13,7 @@ interface UserAccountRepository {
     fun findByEmail(email: String): UserAccountDto?
     fun deleteById(id: UUID)
     fun loadUserProfileById(id: UUID): UserProfileDto?
+    fun loadUserProfileByUsername(username: String): UserProfileDto?
     fun loadFullUserAccountById(id: UUID): UserAccountDto?
     fun updatePassword(id: UUID, newHashedPassword: String)
 }

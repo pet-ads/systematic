@@ -24,6 +24,14 @@ interface LoadAccountCredentialsService {
         val isEnabled : Boolean
     )
 
+    data class UserInformation(
+        val id: UUID,
+        val username: String,
+        val country: String,
+        val isEnabled : Boolean,
+        val email: String,
+    )
+
     fun loadAuthenticationCredentialsByUsername(username: String): UserAuthenticationCredentials
 
     fun loadSimpleCredentialsByToken(refreshToken: String): UserSimpleCredentials
@@ -31,5 +39,7 @@ interface LoadAccountCredentialsService {
     fun loadSimpleCredentialsById(id: UUID): UserSimpleCredentials
 
     fun loadEnabledCredentialsById(id: UUID): UserEnabledCredentials
+
+    fun loadUserInformationByUsername(username: String): UserInformation
 
 }

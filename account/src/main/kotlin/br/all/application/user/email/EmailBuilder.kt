@@ -1,6 +1,7 @@
 package br.all.application.user.email
 
 import br.all.application.user.email.template.ConfirmAccountTemplate
+import br.all.application.user.email.template.InviteCollaboratorTemplate
 import br.all.application.user.email.template.PasswordRecoveryTemplate
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -40,6 +41,29 @@ class EmailBuilder {
         val subject = PasswordRecoveryTemplate.subject(country)
 
         val body = PasswordRecoveryTemplate.body(country, name, link)
+
+        return EmailMessage(
+            to = email,
+            subject = subject,
+            body = body,
+            isHtml = false
+        )
+    }
+
+    fun buildInviteCollaborator(
+        email: String,
+        name: String,
+        title: String,
+        inviter: String,
+        token: UUID,
+        country: String = "pt-BR"
+    ): EmailMessage {
+
+        val link = "http://localhost:5173/#/join-review?token=$token"
+
+        val subject = InviteCollaboratorTemplate.subject(country, title)
+
+        val body = InviteCollaboratorTemplate.body(country, name, inviter, title, link)
 
         return EmailMessage(
             to = email,
