@@ -8,7 +8,6 @@ import br.all.application.shared.presenter.prepareIfUnauthorized
 import br.all.application.user.email.EmailBuilder
 import br.all.application.user.email.EmailService
 import br.all.application.user.repository.TokenStatus
-import br.all.domain.shared.exception.AccountNotEnabledException
 import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.domain.shared.exception.UnauthorizedUserException
 import org.springframework.stereotype.Service
@@ -62,7 +61,7 @@ class InviteCollaboratorServiceImpl(
         userCollaboratorCredentials.isEnabled.let {
             if (!it) {
                 presenter.prepareFailView(
-                    AccountNotEnabledException("Collaborator user is not enabled")
+                    UnauthorizedUserException("Collaborator user is not enabled")
                 )
             }
         }
