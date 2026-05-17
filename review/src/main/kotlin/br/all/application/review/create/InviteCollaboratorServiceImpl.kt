@@ -58,12 +58,10 @@ class InviteCollaboratorServiceImpl(
             )
         }
 
-        userCollaboratorCredentials.isEnabled.let {
-            if (!it) {
-                presenter.prepareFailView(
-                    UnauthorizedUserException("Collaborator user is not enabled")
-                )
-            }
+        if (!userCollaboratorCredentials.isEnabled) {
+            presenter.prepareFailView(
+                UnauthorizedUserException("Collaborator user is not enabled")
+            )
         }
 
         val user = userCredentials.toUser()

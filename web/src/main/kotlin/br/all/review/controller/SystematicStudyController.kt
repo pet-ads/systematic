@@ -1,16 +1,19 @@
 package br.all.review.controller
 
 import br.all.application.review.create.CreateSystematicStudyService
+import br.all.application.review.create.InviteCollaboratorService
 import br.all.application.review.find.services.FindAllSystematicStudiesService
 import br.all.application.review.find.services.FindAllSystematicStudiesService.FindByOwnerRequest
 import br.all.application.review.find.services.FindSystematicStudyService
 import br.all.application.review.update.services.UpdateSystematicStudyService
+import br.all.review.presenter.RestfulCreateInviteCollaboratorPresenter
 import br.all.review.presenter.RestfulCreateSystematicStudyPresenter
 import br.all.review.presenter.RestfulFindAllSystematicStudiesPresenter
 import br.all.review.presenter.RestfulFindSystematicStudyPresenter
 import br.all.review.presenter.RestfulUpdateSystematicStudyPresenter
 import br.all.review.requests.PostRequest
 import br.all.review.requests.PutRequest
+import br.all.review.requests.InviteCollaboratorRequest
 import br.all.security.service.AuthenticationInfoService
 import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
@@ -32,6 +35,7 @@ class SystematicStudyController(
     private val findAllSystematicStudiesService: FindAllSystematicStudiesService,
     private val updateSystematicStudyService: UpdateSystematicStudyService,
     private val authenticationInfoService: AuthenticationInfoService,
+    private val inviteCollaboratorService: InviteCollaboratorService,
     private val linksFactory: LinksFactory
 ) {
 
@@ -201,6 +205,53 @@ class SystematicStudyController(
         val requestModel = request.toUpdateRequestModel(userId, systematicStudyId)
 
         updateSystematicStudyService.update(presenter, requestModel)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @PostMapping("/{systematicStudyId}/invite-collaborator")
+    @Operation(summary = "Create a invitation to a systematic study")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "201", description = "Success creating a invitation",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail creating a invitation - invalid data",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail creating a invitation - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a invitation - User doesnt have enough permission to perform this action",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail creating a invitation - Collaborator user is not enabled",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail creating a invitation - Collaborator not found",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail creating a invitation - User not found",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+        ]
+    )
+    fun inviteCollaboratorToSystematicStudy(@PathVariable systematicStudyId: UUID, @RequestBody request: InviteCollaboratorRequest): ResponseEntity<*> {
+        val presenter = RestfulCreateInviteCollaboratorPresenter()
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val requestModel = request.toCreateRequestModel(systematicStudyId, userId)
+
+        inviteCollaboratorService.create(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
