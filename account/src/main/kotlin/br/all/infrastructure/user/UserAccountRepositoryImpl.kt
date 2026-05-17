@@ -26,8 +26,19 @@ class UserAccountRepositoryImpl(
     override fun loadUserProfileById(id: UUID): UserProfileDto? =
         userAccountRepository.findById(id).orElse(null)?.toUserProfileDto()
 
-    override fun loadUserProfileByUsername(username: String): UserProfileDto? =
-        userAccountRepository.findByAccountCredentialsEntityUsername(username)?.toUserProfileDto()
+    override fun loadUserProfileByUsername(username: String): UserProfileDto? {
+        val credentials = credentialsRepository.findByUsername(username) ?: return null
+        val userAccount = userAccountRepository.findById(credentials.id).orElse(null) ?: return null
+
+        return UserProfileDto(
+            userAccount.id,
+            userAccount.name,
+            userAccount.email,
+            userAccount.country,
+            userAccount.affiliation,
+            credentials.isEnabled,
+        )
+    }
 
     override fun loadFullUserAccountById(id: UUID): UserAccountDto? {
         val userAccount = userAccountRepository.findById(id).orElse(null) ?: return null
