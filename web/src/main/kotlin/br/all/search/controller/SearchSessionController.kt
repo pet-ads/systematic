@@ -102,7 +102,7 @@ class SearchSessionController(
             additionalInfo = jsonData["additionalInfo"] as? String
         )
         createService.createSession(presenter, request, String(file.bytes))
-        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+        return presenter.responseEntity ?: ResponseEntity<Unit>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @GetMapping("/search-session")
@@ -136,7 +136,7 @@ class SearchSessionController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindAllRequest(userId, systematicStudyId)
         findAllService.findAllSearchSessions(presenter, request)
-        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+        return presenter.responseEntity ?: ResponseEntity<Unit>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @GetMapping("/search-session/{sessionId}")
@@ -181,7 +181,7 @@ class SearchSessionController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindSearchSessionService.RequestModel(userId, systematicStudyId, sessionId)
         findOneService.findOneSession(presenter, request)
-        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+        return presenter.responseEntity ?: ResponseEntity<Unit>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @GetMapping("/search-session-source/{source}")
@@ -216,7 +216,7 @@ class SearchSessionController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindAllSearchSessionsBySourceService.RequestModel(userId, systematicStudyId, source)
         findAllBySourceService.findAllSessionsBySource(presenter, request)
-        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+        return presenter.responseEntity ?: ResponseEntity<Unit>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @Operation(summary = "Update an existing search session of a systematic study")
@@ -258,7 +258,7 @@ class SearchSessionController(
         val requestModel = request.toUpdateRequestModel(userId, systematicStudyId, sessionId)
 
         updateService.updateSession(presenter, requestModel)
-        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+        return presenter.responseEntity ?: ResponseEntity<Unit>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @Operation(summary = "Patch existing search string of a systematic study")
@@ -269,7 +269,7 @@ class SearchSessionController(
                 description = "Success updating an existing search session of a systematic study",
                 content = [Content(
                     mediaType = "application/json",
-                    schema = Schema(implementation = UpdateSearchSessionService.ResponseModel::class)
+                    schema = Schema(implementation = PatchSearchSessionService.ResponseModel::class)
                 )]
             ),
             ApiResponse(
@@ -289,7 +289,6 @@ class SearchSessionController(
             ),
         ]
     )
-    // CHANGE API RESPONSE TEXT
     @PatchMapping("/patch-search-session/{sessionId}")
     fun patchSearchSession(
         @PathVariable systematicStudyId: UUID,
@@ -306,7 +305,7 @@ class SearchSessionController(
             request,
             String(file.bytes)
         )
-        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+        return presenter.responseEntity ?: ResponseEntity<Unit>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @DeleteMapping("/search-session/{sessionId}")
@@ -337,7 +336,7 @@ class SearchSessionController(
     fun deleteSession(
         @PathVariable systematicStudyId: UUID,
         @PathVariable sessionId: UUID
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<Unit> {
         val presenter = RestfulDeleteSearchSessionPresenter()
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = DeleteSearchSessionService.RequestModel(
@@ -348,7 +347,7 @@ class SearchSessionController(
 
         deleteService.delete(presenter, request)
 
-        return presenter.responseEntity as? ResponseEntity<Void> ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+        return presenter.responseEntity as? ResponseEntity<Unit> ?: ResponseEntity<Unit>(HttpStatus.INTERNAL_SERVER_ERROR)
 
     }
 

@@ -47,7 +47,7 @@ class CreateSearchSessionExampleService (
         )
 
         val searchSession = SearchSessionDto(
-            id = uuidGeneratorService.next(),
+            id = studyReviews[0].searchSessionId.value,
             systematicStudyId = systematicStudyId.value(),
             userId = userId,
             searchString = searchString,
