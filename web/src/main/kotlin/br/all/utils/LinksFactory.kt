@@ -426,4 +426,19 @@ class LinksFactory {
                 request
             )
         }.withRel("remove-criteria").withType("PATCH")
+
+    fun exportReview(systematicStudyId: UUID, format: String,downloadable: Boolean): Link{
+       val uri = linkTo<ReportController> {
+           exportReview(systematicStudyId,format,downloadable)
+       }.toUriComponentsBuilder()
+           .queryParam("downloadable",downloadable)
+           .build()
+           .toUri()
+
+        return Link.of(uri.toString())
+            .withRel("exportable-review")
+            .withType("GET")
+    }
+
+
 }
