@@ -10,6 +10,12 @@ class LatexDocumentBuilder : DocumentBuilder<String> {
 
     private val content = StringBuilder()
 
+    private val END_ITEMIZE = """\end{itemize}"""
+    private val BEGIN_ITEMIZE = """\begin{itemize}[leftmargin=*]"""
+    private val BEGIN_ITEMIZE_NESTED = """    \begin{itemize}"""
+    private val END_ITEMIZE_NESTED = """    \end{itemize}"""
+
+
     override fun addSystematicStudy(data: SystematicReviewExportData): DocumentBuilder<String> {
         content.appendLine("""\begin{center}""")
         content.appendLine("""{\LARGE \textbf{${escape(data.title)}}}""")
@@ -54,33 +60,33 @@ class LatexDocumentBuilder : DocumentBuilder<String> {
 
     override fun addFunnel(data: FunnelExportData): DocumentBuilder<String> {
         sectionHeader("Studies Funnel")
-        content.appendLine("""\begin{itemize}[leftmargin=*]""")
+        content.appendLine(BEGIN_ITEMIZE)
         content.appendLine("""    \item Total identified: ${data.totalIdentifiedBySource.values.sum()}""")
         content.appendLine("""    \item After duplicates removed: ${data.totalAfterDuplicatesRemovedBySource.values.sum()}""")
         content.appendLine("""    \item Screened: ${data.totalScreened}""")
 
         content.appendLine("""    \item Excluded in screening: ${data.totalExcludedInScreening}""")
         if (data.excludedByCriterion.isNotEmpty()) {
-            content.appendLine("""    \begin{itemize}""")
+            content.appendLine(BEGIN_ITEMIZE_NESTED)
             data.excludedByCriterion.forEach { (criterion, count) ->
                 content.appendLine("""        \item ${escape(criterion)}: $count""")
             }
-            content.appendLine("""    \end{itemize}""")
+            content.appendLine(END_ITEMIZE_NESTED)
         }
 
         content.appendLine("""    \item Full text assessed: ${data.totalFullTextAssessed}""")
 
         content.appendLine("""    \item Excluded in full text: ${data.totalExcludedInFullText}""")
         if (data.totalExcludedByCriterion.isNotEmpty()) {
-            content.appendLine("""    \begin{itemize}""")
+            content.appendLine(BEGIN_ITEMIZE_NESTED)
             data.totalExcludedByCriterion.forEach { (criterion, count) ->
                 content.appendLine("""        \item ${escape(criterion)}: $count""")
             }
-            content.appendLine("""    \end{itemize}""")
+            content.appendLine(END_ITEMIZE_NESTED)
         }
         content.appendLine("""    \item Included: ${data.totalIncluded}""")
 
-        content.appendLine("""\end{itemize}""")
+        content.appendLine(END_ITEMIZE)
         return this
     }
 
@@ -136,9 +142,9 @@ class LatexDocumentBuilder : DocumentBuilder<String> {
         fields.filter { it.second.isNotEmpty() }.forEach { (title, items) ->
             content.appendLine()
             content.appendLine("""\medskip\noindent\textbf{${escape(title)}}""")
-            content.appendLine("""\begin{itemize}[leftmargin=*]""")
+            content.appendLine(BEGIN_ITEMIZE)
             items.forEach { content.appendLine("""    \item ${escape(it)}""") }
-            content.appendLine("""\end{itemize}""")
+            content.appendLine(END_ITEMIZE)
         }
 
         return this
@@ -161,24 +167,24 @@ class LatexDocumentBuilder : DocumentBuilder<String> {
     private fun subsectionWithList(title: String, items: List<String>) {
         if (items.isEmpty()) return
         content.appendLine("""\subsection{${escape(title)}}""")
-        content.appendLine("""\begin{itemize}[leftmargin=*]""")
+        content.appendLine(BEGIN_ITEMIZE)
         items.forEach { content.appendLine("""    \item ${escape(it)}""") }
-        content.appendLine("""\end{itemize}""")
+        content.appendLine(END_ITEMIZE)
     }
 
     private fun sectionWithStudyList(title: String, studies: List<StudyExportData>) {
         if (studies.isEmpty()) return
         content.appendLine("""\section{${escape(title)}}""")
-        content.appendLine("""\begin{itemize}[leftmargin=*]""")
+        content.appendLine(BEGIN_ITEMIZE)
         studies.forEach { study ->
             content.appendLine("""    \item ${escape(study.title)} (${study.year})""")
             if (study.selectionCriteria.isNotEmpty()) {
-                content.appendLine("""    \begin{itemize}""")
+                content.appendLine(BEGIN_ITEMIZE_NESTED)
                 content.appendLine("""        \item ${study.selectionCriteria.joinToString(", ")}""")
-                content.appendLine("""    \end{itemize}""")
+                content.appendLine(END_ITEMIZE_NESTED)
             }
         }
-        content.appendLine("""\end{itemize}""")
+        content.appendLine(END_ITEMIZE)
     }
 
     private fun escape(text: String): String {
