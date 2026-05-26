@@ -61,6 +61,7 @@ class ReportControllerTest(
         user = testHelperService.createApplicationUser()
 
         systematicStudy = systematicStudyDataFactory.createSystematicStudyDocument(
+            owner = user.id,
             collaborators = mutableSetOf(user.id)
         )
 
@@ -126,6 +127,9 @@ class ReportControllerTest(
             "$baseReportUrl/keywords"
         else
             "$baseReportUrl/keywords?filter=$filter"
+
+    private fun exportReviewUrl(format: String, downloadable: Boolean = false) =
+        "$baseReportUrl/exportable-review/$format?downloadable=$downloadable"
 
     @Nested
     @DisplayName("When searching answers of questions")
@@ -733,6 +737,69 @@ class ReportControllerTest(
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
                 .andExpect(status().isOk)
+        }
+    }
+
+    @Nested
+    @DisplayName("When exporting review")
+    inner class WhenExportingReview {
+
+        @Nested
+        @DisplayName("And having success")
+        inner class AndHavingSuccess {
+            @Test
+            fun `should return 200 when exporting review in latex format`() {
+                val protocol = protocolDataFactory.createProtocolDocument(id = systematicStudy.id)
+                protocolRepository.save(protocol)
+
+                mockMvc.perform(
+                    get(exportReviewUrl(format = "latex"))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isOk)
+            }
+        }
+
+        @Nested
+        @DisplayName("And failing")
+        inner class AndFailing {
+            @Test
+            fun `should return 404 when format is unsupported`() {
+                val protocol = protocolDataFactory.createProtocolDocument(id = systematicStudy.id)
+                protocolRepository.save(protocol)
+
+                mockMvc.perform(
+                    get(exportReviewUrl(format = "pdf"))
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isNotFound)
+            }
+
+            @Test
+            fun `should return 404 when systematic study does not exist`() {
+                mockMvc.perform(
+                    get(
+                        "/api/v1/systematic-study/${UUID.randomUUID()}/report/exportable-review/latex?downloadable=false"
+                    ).with(SecurityMockMvcRequestPostProcessors.user(user))
+                )
+                    .andExpect(status().isNotFound)
+            }
+
+            @Test
+            fun `should not allow unauthenticated user to export review`() {
+                testHelperService.testForUnauthenticatedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(exportReviewUrl(format = "latex"))
+                )
+            }
+
+            @Test
+            fun `should not allow unauthorized user to export review`() {
+                testHelperService.testForUnauthorizedUser(
+                    mockMvc = mockMvc,
+                    requestBuilder = get(exportReviewUrl(format = "latex"))
+                )
+            }
         }
     }
 }
