@@ -5,6 +5,7 @@ import br.all.infrastructure.shared.toNullable
 import br.all.review.shared.TestDataFactory
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.*
@@ -12,8 +13,8 @@ import java.util.*
 @SpringBootTest
 @Tag("IntegrationTest")
 @Tag("RepositoryTest")
-class MongoSystematicStudyRepositoryTest(
-    @Autowired private val sut: MongoSystematicStudyRepository,
+class MongoSystematicStudyRepositoryTest @Autowired constructor(
+    private val sut: MongoSystematicStudyRepository,
 ) {
     private lateinit var testDataFactory: TestDataFactory
 

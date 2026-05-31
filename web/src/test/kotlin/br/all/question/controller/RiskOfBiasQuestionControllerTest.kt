@@ -8,8 +8,8 @@ import br.all.security.service.ApplicationUser
 import br.all.shared.TestHelperService
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
@@ -23,11 +23,11 @@ import java.util.*
 @AutoConfigureMockMvc
 @Tag("IntegrationTest")
 @Tag("ControllerTest")
-class RiskOfBiasQuestionControllerTest(
-    @Autowired val repository: MongoQuestionRepository,
-    @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
-    @Autowired val mockMvc: MockMvc,
-    @Autowired private val testHelperService: TestHelperService,
+class RiskOfBiasQuestionControllerTest @Autowired constructor(
+    val repository: MongoQuestionRepository,
+    val systematicStudyRepository: MongoSystematicStudyRepository,
+    val mockMvc: MockMvc,
+    private val testHelperService: TestHelperService,
     ) {
     private lateinit var factory: TestDataFactory
     private lateinit var systematicStudyId: UUID

@@ -9,7 +9,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.stereotype.Service
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
+import org.springframework.test.web.servlet.request.AbstractMockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDateTime
 import java.util.*
@@ -66,7 +66,7 @@ class TestHelperService(
         return applicationUser
     }
 
-    fun testForUnauthorizedUser(mockMvc: MockMvc, requestBuilder: MockHttpServletRequestBuilder) {
+    fun testForUnauthorizedUser(mockMvc: MockMvc, requestBuilder: AbstractMockHttpServletRequestBuilder<*>) {
         val unauthorizedUser = createUnauthorizedApplicationUser()
 
         val request = requestBuilder
@@ -81,7 +81,7 @@ class TestHelperService(
 
     fun testForUnauthenticatedUser(
         mockMvc: MockMvc,
-        requestBuilder: MockHttpServletRequestBuilder
+        requestBuilder: AbstractMockHttpServletRequestBuilder<*>
     ) {
         val request = requestBuilder
             .contentType(MediaType.APPLICATION_JSON)

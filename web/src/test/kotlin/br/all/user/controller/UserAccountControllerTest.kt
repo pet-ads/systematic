@@ -10,8 +10,8 @@ import jakarta.transaction.Transactional
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
@@ -28,11 +28,11 @@ import java.util.UUID
 @Tag("IntegrationTest")
 @Tag("ControllerTest")
 @DisplayName("User Account Controller Integration Tests")
-class UserAccountControllerTest(
-    @Autowired private val mockMvc: MockMvc,
-    @Autowired private val userAccountRepository: UserAccountRepository,
-    @Autowired private val testHelperService: TestHelperService,
-    @Autowired private val passwordEncoder: PasswordEncoder
+class UserAccountControllerTest @Autowired constructor(
+    private val mockMvc: MockMvc,
+    private val userAccountRepository: UserAccountRepository,
+    private val testHelperService: TestHelperService,
+    private val passwordEncoder: PasswordEncoder
 ) {
     private lateinit var factory: TestDataFactory
     private lateinit var testUser: ApplicationUser

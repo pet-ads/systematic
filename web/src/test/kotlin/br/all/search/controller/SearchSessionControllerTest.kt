@@ -15,8 +15,8 @@ import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
@@ -31,14 +31,14 @@ import java.util.*
 @AutoConfigureMockMvc
 @Tag("IntegrationTest")
 @Tag("ControllerTest")
-class SearchSessionControllerTest(
-    @Autowired val repository: MongoSearchSessionRepository,
-    @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
-    @Autowired val studyReviewRepository: MongoStudyReviewRepository,
-    @Autowired val protocolRepository: MongoProtocolRepository,
-    @Autowired val idService: StudyReviewIdGeneratorService,
-    @Autowired private val testHelperService: TestHelperService,
-    @Autowired val mockMvc: MockMvc,
+class SearchSessionControllerTest @Autowired constructor(
+    val repository: MongoSearchSessionRepository,
+    val systematicStudyRepository: MongoSystematicStudyRepository,
+    val studyReviewRepository: MongoStudyReviewRepository,
+    val protocolRepository: MongoProtocolRepository,
+    val idService: StudyReviewIdGeneratorService,
+    private val testHelperService: TestHelperService,
+    val mockMvc: MockMvc,
 ) {
 
     private lateinit var factory: TestDataFactory

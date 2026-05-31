@@ -1,13 +1,12 @@
 spring:
-  data:
-    mongodb:
-      authentication-database: admin
-      username: rootuser
-      password: rootpass  # Consider using a secure method in production!
-      port: 27017
-      database: review
-      host: localhost
-      uuid-representation: standard
+  mongodb:
+    authentication-database: admin
+    database: review
+    host: localhost
+    password: rootpass # Consider using a secure method in production!
+    port: 27017
+    username: rootuser
+    representation.uuid: standard
 
   datasource:
     url: jdbc:postgresql://localhost:5432/start
