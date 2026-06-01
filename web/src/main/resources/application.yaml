@@ -1,18 +1,18 @@
 spring:
   data:
     mongodb:
-      authentication-database: admin
-      username: rootuser
-      password: rootpass  # Consider using a secure method in production!
-      port: 27017
+      authentication-database: ${MONGO_AUTH_DB:admin}
+      username: ${MONGO_USERNAME:rootuser}
+      password: ${MONGO_PASSWORD:rootpass} # Consider using a secure method in production!
+      port: ${MONGO_PORT:27017}
       database: review
-      host: localhost
+      host: ${MONGO_HOST:localhost}
       uuid-representation: standard
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/start
-    username: start-adm
-    password: start-doing-it
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/start}
+    username: ${DB_USERNAME:start-adm}
+    password: ${DB_PASSWORD:start-doing-it}
 
   jpa:
     hibernate:
@@ -23,6 +23,6 @@ spring:
         format_sql: true
 
 jwt:
-  key: "dasdasdadadasdasdadadasdasdadadasdasdadadasdasdada"
+  key: ${JWT_KEY:dasdasdadadasdasdadadasdasdadadasdasdadadasdasdada}
   access-token-expiration: 300000
   refresh-token-expiration: 3600000
