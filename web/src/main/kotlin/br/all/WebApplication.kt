@@ -31,7 +31,7 @@ class WebApplication {
         studyReviewRepository: StudyReviewRepository,
         reviewSimilarityService: ReviewSimilarityService
     ) = CommandLineRunner {
-        val password = encoder.encode("admin")
+        val password = requireNotNull(encoder.encode("admin"))
         val lucasUserAccount = register.registerUserAccount("buenolro", password)
         val systematicId = create.createReview(lucasUserAccount.id.value(), setOf(lucasUserAccount.id.value()))
 
