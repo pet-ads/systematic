@@ -9,6 +9,7 @@ import br.all.utils.example.CreateQuestionExampleService
 import br.all.utils.example.CreateSystematicReviewExampleService
 import br.all.utils.example.CreateSearchSessionExampleService
 import br.all.utils.example.RegisterUserExampleService
+import br.all.utils.example.VerifyIfExistsUserExampleService
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -25,12 +26,15 @@ class WebApplication {
     fun run(
         encoder: PasswordEncoder,
         register: RegisterUserExampleService,
+        verifyUser: VerifyIfExistsUserExampleService,
         create: CreateSystematicReviewExampleService,
         search: CreateSearchSessionExampleService,
         question: CreateQuestionExampleService,
         studyReviewRepository: StudyReviewRepository,
         reviewSimilarityService: ReviewSimilarityService
     ) = CommandLineRunner {
+        if(verifyUser.existsUser()) return@CommandLineRunner
+
         val password = encoder.encode("admin")
         val lucasUserAccount = register.registerUserAccount("buenolro", password)
         val systematicId = create.createReview(lucasUserAccount.id.value(), setOf(lucasUserAccount.id.value()))

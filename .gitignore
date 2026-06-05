@@ -41,4 +41,4 @@ build/
 .volume
 
 ### EmailData ###
-application-email.yml
+.env
