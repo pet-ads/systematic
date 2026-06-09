@@ -1,0 +1,5 @@
+.volume
+.git
+.idea
+target
+**/target
