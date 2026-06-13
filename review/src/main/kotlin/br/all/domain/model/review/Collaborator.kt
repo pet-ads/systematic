@@ -7,11 +7,11 @@ import br.all.domain.shared.user.Role
 import java.util.*
 
 class Collaborator(
-    id: ResearcherId,
+    researcherId: ResearcherId,
     val systematicStudyId: SystematicStudyId,
     val username: String,
     val email: Email,
     val role: Role,
-) : Entity<UUID>(id){
+) : Entity<UUID>(researcherId){
     companion object
 }

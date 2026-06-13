@@ -15,7 +15,7 @@ fun Collaborator.toDto() = CollaboratorDto(
 )
 
 fun Collaborator.Companion.fromDto(dto: CollaboratorDto) = Collaborator(
-    ResearcherId(dto.id),
+    ResearcherId(dto.researcherId),
     SystematicStudyId(dto.systematicStudyId),
     dto.username,
     Email(dto.email),
