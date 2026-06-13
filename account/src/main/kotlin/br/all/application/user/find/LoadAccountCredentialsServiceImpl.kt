@@ -45,4 +45,11 @@ class LoadAccountCredentialsServiceImpl(private val repository: UserAccountRepos
         return UserInformation(userDto.id, userDto.name, userDto.country, userDto.isEnabled, userDto.email)
     }
 
+    override fun loadUserInformationById(id: UUID): UserInformation {
+        val userDto = repository.loadFullUserAccountById(id)
+            ?: throw NoSuchElementException("User not found.")
+
+        return UserInformation(userDto.id, userDto.username, userDto.country, userDto.isEnabled, userDto.email)
+    }
+
 }

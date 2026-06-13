@@ -25,6 +25,10 @@ class CredentialServiceImpl(private val accountCredentialsService : LoadAccountC
         return accountCredentialsService.loadUserInformationByUsername(username).toResponseModel()
     }
 
+    override fun loadEnabledCredentialsById(userId: UUID): InformationResponseModel? {
+        return accountCredentialsService.loadUserInformationById(userId).toResponseModel()
+    }
+
     private fun UserSimpleCredentials.toResponseModel() = ResponseModel(this.id, this.username, this.authorities)
 
     private fun UserEnabledCredentials.toResponseModel() = EnabledResponseModel(this.id, this.username, this.authorities, this.isEnabled)

@@ -42,4 +42,6 @@ interface LoadAccountCredentialsService {
 
     fun loadUserInformationByUsername(username: String): UserInformation
 
+    fun loadUserInformationById(id: UUID): UserInformation
+
 }

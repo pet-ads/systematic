@@ -14,6 +14,8 @@ interface CredentialsService {
 
     fun loadEnabledCredentialsByUsername(username: String): InformationResponseModel?
 
+    fun loadEnabledCredentialsById(userId: UUID): InformationResponseModel?
+
     @Schema(name = "CredentialsServiceResponseModel")
     data class ResponseModel(val id: UUID, val username: String, val roles: Set<String>){
         fun toUser() : Researcher {
