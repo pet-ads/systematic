@@ -9,7 +9,7 @@ class PasswordEncoderAdapter(
     private val encoder: PasswordEncoder
 ) : PasswordEncoderPort {
     override fun encode(rawPassword: String): String {
-        return encoder.encode(rawPassword)
+        return requireNotNull(encoder.encode(rawPassword))
     }
 
     override fun matches(rawPassword: String, encodedPassword: String): Boolean {

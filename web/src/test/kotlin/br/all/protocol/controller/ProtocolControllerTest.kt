@@ -9,8 +9,8 @@ import br.all.security.service.ApplicationUser
 import br.all.shared.TestHelperService
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
@@ -26,11 +26,11 @@ import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 @Tag("IntegrationTest")
 @Tag("ControllerTest")
 @DisplayName("Protocol Controller Integration Tests")
-class ProtocolControllerTest(
-    @Autowired private val protocolRepository: MongoProtocolRepository,
-    @Autowired private val systematicStudyRepository: MongoSystematicStudyRepository,
-    @Autowired private val mockMvc: MockMvc,
-    @Autowired private val testHelperService: TestHelperService
+class ProtocolControllerTest @Autowired constructor(
+    private val protocolRepository: MongoProtocolRepository,
+    private val systematicStudyRepository: MongoSystematicStudyRepository,
+    private val mockMvc: MockMvc,
+    private val testHelperService: TestHelperService
 ) {
     private lateinit var user: ApplicationUser
     private lateinit var systematicStudy: SystematicStudyDocument

@@ -17,9 +17,9 @@ import java.util.UUID
 @SpringBootTest
 @Tag("IntegrationTest")
 @Tag("RepositoryTest")
-class MongoStudyReviewRepositoryTest (
-    @Autowired private val sut: MongoStudyReviewRepository,
-    @Autowired private val idService: StudyReviewIdGeneratorService
+class MongoStudyReviewRepositoryTest  @Autowired constructor(
+    private val sut: MongoStudyReviewRepository,
+    private val idService: StudyReviewIdGeneratorService
 ) {
 
     private lateinit var factory: TestDataFactory

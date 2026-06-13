@@ -1,7 +1,7 @@
 package br.all.user.shared
 
 import br.all.application.user.repository.UserAccountDto
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import io.github.serpro69.kfaker.Faker
 import java.time.LocalDateTime
 import java.util.*

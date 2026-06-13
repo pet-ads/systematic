@@ -1,6 +1,7 @@
 package br.all.user.persistence
 
 import br.all.application.user.repository.UserAccountRepository
+import br.all.domain.shared.service.PasswordEncoderPort
 import br.all.user.shared.TestDataFactory
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.*
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.security.crypto.password.PasswordEncoder
 import java.util.*
 
 @SpringBootTest
@@ -24,7 +24,7 @@ class UserAccountRepositoryTest {
     private lateinit var sut: UserAccountRepository
 
     @Autowired
-    private lateinit var passwordEncoder: PasswordEncoder
+    private lateinit var passwordEncoder: PasswordEncoderPort
 
     private lateinit var factory: TestDataFactory
 

@@ -4,12 +4,13 @@ import br.all.security.service.TokenService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher
 import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
@@ -21,17 +22,17 @@ class JwtAuthenticationFilter(
 ) : OncePerRequestFilter() {
 
     private val matchersToSkip: List<RequestMatcher> = listOf(
-        AntPathRequestMatcher("/api/v1/user", "POST"),
-        AntPathRequestMatcher("/api/v1/auth/"),
-        AntPathRequestMatcher("/api/v1/auth/logout/"),
-        AntPathRequestMatcher("/webjars/**"),
-        AntPathRequestMatcher("/error"),
-        AntPathRequestMatcher("/swagger-ui.html"),
-        AntPathRequestMatcher("/swagger-ui/**"),
-        AntPathRequestMatcher("/swagger-resources/**"),
-        AntPathRequestMatcher("/v3/api-docs/**"),
-        AntPathRequestMatcher("/configuration/ui"),
-        AntPathRequestMatcher("/configuration/security"),
+        PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/api/v1/user"),
+        PathPatternRequestMatcher.withDefaults().matcher("/api/v1/auth/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/api/v1/auth/logout/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/webjars/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/error"),
+        PathPatternRequestMatcher.withDefaults().matcher("/swagger-ui.html"),
+        PathPatternRequestMatcher.withDefaults().matcher("/swagger-ui/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/swagger-resources/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/v3/api-docs/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/configuration/ui"),
+        PathPatternRequestMatcher.withDefaults().matcher("/configuration/security"),
     )
 
     override fun doFilterInternal(
