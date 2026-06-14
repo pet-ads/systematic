@@ -5,17 +5,15 @@ import br.all.application.review.repository.CollaboratorTokenRepository
 import br.all.application.review.repository.InviteResponse
 import br.all.application.user.repository.TokenStatus
 import br.all.domain.shared.user.Role
-import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
-@Service
-class RespondInvitationServiceImpl(
+open class RespondInvitationServiceImpl(
     private val tokenRepository: CollaboratorTokenRepository,
     private val addCollaboratorService: AddCollaboratorService
 ) : RespondInvitationService {
     @Transactional
-    override fun create(presenter: ResponseInvitationPresenter, request: RequestModel) {
+    override fun respond(presenter: ResponseInvitationPresenter, request: RequestModel) {
         val token = tokenRepository.findById(request.token)
             ?: return presenter.prepareFailView(IllegalArgumentException("Invalid token"))
 
