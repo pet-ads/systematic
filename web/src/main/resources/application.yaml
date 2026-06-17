@@ -22,6 +22,10 @@ spring:
       hibernate:
         format_sql: true
 
+  app:
+    cors-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:5174}
+    frontend-url: ${FRONTEND_URL:http://localhost:5173}
+
 jwt:
   key: ${JWT_KEY:dasdasdadadasdasdadadasdasdadadasdasdadadasdasdada}
   access-token-expiration: 300000

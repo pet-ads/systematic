@@ -2,18 +2,22 @@ package br.all.application.user.email
 
 import br.all.application.user.email.template.ConfirmAccountTemplate
 import br.all.application.user.email.template.PasswordRecoveryTemplate
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
 class EmailBuilder {
+    @Value("\${spring.app.frontend-url}")
+    private lateinit var frontendUrl: String
+
     fun buildConfirmAccount(
         email: String,
         id: UUID,
         country: String
     ): EmailMessage {
 
-        val link = "http://localhost:5173/#/confirm-account?id=$id"
+        val link = "$frontendUrl/#/confirm-account?id=$id"
 
         val subject = ConfirmAccountTemplate.subject(country)
 
@@ -35,7 +39,7 @@ class EmailBuilder {
         country: String = "pt-BR"
     ): EmailMessage {
 
-        val link = "http://localhost:5173/#/reset-password?token=$token"
+        val link = "$frontendUrl/#/reset-password?token=$token"
 
         val subject = PasswordRecoveryTemplate.subject(country)
 
