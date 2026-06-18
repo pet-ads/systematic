@@ -10,8 +10,8 @@ import br.all.application.search.update.UpdateSearchSessionService
 import br.all.search.presenter.*
 import br.all.security.service.AuthenticationInfoService
 import br.all.utils.LinksFactory
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.module.kotlin.readValue
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema

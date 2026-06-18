@@ -5,14 +5,15 @@ import br.all.infrastructure.shared.toNullable
 import br.all.protocol.shared.TestDataFactory
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
 @Tag("IntegrationTest")
 @Tag("RepositoryTest")
-class MongoProtocolRepositoryTest(
-    @Autowired private val sut: MongoProtocolRepository,
+class MongoProtocolRepositoryTest @Autowired constructor(
+    private val sut: MongoProtocolRepository,
 ) {
     private lateinit var factory: TestDataFactory
 

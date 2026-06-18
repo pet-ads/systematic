@@ -7,14 +7,13 @@ import br.all.infrastructure.question.QuestionDocument
 import br.all.infrastructure.question.toDto
 import br.all.study.utils.TestDataFactory as StudyReviewTestDataFactory
 import br.all.infrastructure.study.StudyReviewDocument
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import br.all.question.utils.TestDataFactory as QuestionFactory
 import java.util.*
 
 class TestDataFactory {
     private lateinit var factory: QuestionFactory
-    private val mapper = jacksonObjectMapper().registerKotlinModule()
+    private val mapper = jacksonObjectMapper()
 
     fun expectedJson(
         userId: UUID,

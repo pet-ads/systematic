@@ -8,7 +8,7 @@ class ApplicationUser(
     val id: UUID,
     username: String,
     password: String,
-    authorities: Set<GrantedAuthority>? = emptySet(),
+    authorities: Set<GrantedAuthority> = emptySet(),
     accountNonExpired: Boolean = true,
     accountNonLocked: Boolean = true,
     credentialsNonExpired: Boolean = true,
