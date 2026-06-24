@@ -17,7 +17,11 @@ fun UserAccountDto.toUserAccountEntity(): UserAccountEntity {
         isCredentialsNonExpired,
         isEnabled
     )
-    return UserAccountEntity(id, name, credentials, email, country, affiliation, createdAt)
+    val account =  UserAccountEntity(id, name, credentials, email, country, affiliation, createdAt)
+
+    credentials.userAccount = account
+
+    return account
 }
 
 fun AccountCredentialsEntity.toAccountCredentialsDto() = AccountCredentialsDto(id, username, password, authorities, refreshToken, isEnabled)
