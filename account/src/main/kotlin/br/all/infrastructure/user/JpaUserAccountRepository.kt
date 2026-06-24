@@ -13,8 +13,11 @@ interface JpaUserAccountRepository : JpaRepository<UserAccountEntity, UUID> {
     select u
     from UserAccountEntity u
     join u.accountCredentialsEntity c
-    where lower(u.email) like lower(concat(:prefix, '%'))
-       or lower(c.username) like lower(concat(:prefix, '%'))
+    where (
+        lower(u.email) like lower(concat(:prefix, '%'))
+        or lower(c.username) like lower(concat(:prefix, '%'))
+    )
+    and c.isEnabled = true
 """)
     fun findByUsernameOrEmailStartingWith(prefix: String, pageable: Pageable): List<UserAccountEntity>
 }

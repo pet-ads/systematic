@@ -23,7 +23,7 @@ class SearchCollaboratorCandidatesServiceImpl(
         val users = searchResearchesService.searchUsers(request.prefix)
 
         if (users.isEmpty()) {
-            presenter.prepareFailView(EntityNotFoundException("No users found with this prefix ${request.prefix}"))
+                presenter.prepareFailView(EntityNotFoundException("No eligible users found matching '\${request.prefix}'"))
             return
         }
 
