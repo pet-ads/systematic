@@ -4,6 +4,8 @@ import br.all.application.user.repository.AccountCredentialsDto
 import br.all.application.user.repository.UserAccountDto
 import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.repository.UserProfileDto
+import br.all.application.user.repository.UserSummaryDto
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -107,5 +109,10 @@ class UserAccountRepositoryImpl(
             isCredentialsNonExpired = credentials.isCredentialsNonExpired,
             isEnabled = credentials.isEnabled
         )
+    }
+
+    override fun findByUsernameOrEmailStartingWith(prefix: String, pageable: Pageable): List<UserSummaryDto> {
+        return userAccountRepository.findByUsernameOrEmailStartingWith(prefix, pageable)
+            .map { it.toUserSummaryDto()}
     }
 }
