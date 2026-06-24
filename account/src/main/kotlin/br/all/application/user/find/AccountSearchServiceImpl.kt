@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 @Service
 class AccountSearchServiceImpl(private val repository: UserAccountRepository): AccountSearchService {
     companion object {
-        private const val SEARCH_PAGE_SIZE = 20
+        private const val SEARCH_PAGE_SIZE = 50
     }
 
     override fun searchByPrefix(prefix: String): List<UserSummaryDto> {

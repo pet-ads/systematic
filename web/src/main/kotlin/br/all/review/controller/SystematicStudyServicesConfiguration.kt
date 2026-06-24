@@ -58,5 +58,6 @@ class SystematicStudyServicesConfiguration {
     @Bean
     fun searchCollaboratorCandidates(
         searchResearchesService: SearchResearchesService,
-    ) = SearchCollaboratorCandidatesServiceImpl(searchResearchesService)
+        systematicStudyRepository: SystematicStudyRepository,
+    ) = SearchCollaboratorCandidatesServiceImpl(searchResearchesService,systematicStudyRepository)
 }
