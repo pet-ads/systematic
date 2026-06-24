@@ -7,9 +7,11 @@ import br.all.application.review.create.CreateSystematicStudyServiceImpl
 import br.all.application.review.create.RespondInvitationServiceImpl
 import br.all.application.review.find.services.FindAllSystematicStudiesServiceImpl
 import br.all.application.review.find.services.FindSystematicStudyServiceImpl
+import br.all.application.review.find.services.SearchCollaboratorCandidatesServiceImpl
 import br.all.application.review.repository.CollaboratorTokenRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.update.services.UpdateSystematicStudyServiceImpl
+import br.all.application.user.SearchResearchesService
 import br.all.domain.services.UuidGeneratorService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -52,4 +54,9 @@ class SystematicStudyServicesConfiguration {
         tokenRepository: CollaboratorTokenRepository,
         addCollaboratorService: AddCollaboratorService,
     ) = RespondInvitationServiceImpl(tokenRepository, addCollaboratorService)
+
+    @Bean
+    fun searchCollaboratorCandidates(
+        searchResearchesService: SearchResearchesService,
+    ) = SearchCollaboratorCandidatesServiceImpl(searchResearchesService)
 }

@@ -1,8 +1,8 @@
 package br.all.application.review.find.services
 
 import br.all.application.review.find.presenter.SearchCollaboratorCandidatesPresenter
-import br.all.application.review.find.services.SearchCollaboratorCandidatesService.ResponseModel
 import br.all.application.review.find.services.SearchCollaboratorCandidatesService.RequestModel
+import br.all.application.review.find.services.SearchCollaboratorCandidatesService.ResponseModel
 import br.all.application.user.SearchResearchesService
 import br.all.domain.shared.exception.EntityNotFoundException
 
@@ -27,5 +27,4 @@ class SearchCollaboratorCandidatesServiceImpl(
 
         presenter.prepareSuccessView(ResponseModel(users))
     }
-
 }
