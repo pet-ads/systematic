@@ -1,23 +1,21 @@
 package br.all.application.review.find.services
 
-import br.all.application.review.find.presenter.FindAllSystematicStudyPresenter
-import br.all.application.review.repository.SystematicStudyDto
+import br.all.application.review.find.presenter.SearchCollaboratorCandidatesPresenter
+import br.all.application.user.SearchResearchesService
+import br.all.domain.shared.user.Email
 import io.swagger.v3.oas.annotations.media.Schema
 import java.util.*
 
-interface SearchResearches {
-    fun findAllByCollaborator(presenter: FindAllSystematicStudyPresenter, user: UUID)
+interface SearchCollaboratorCandidatesService {
+    fun findCandidatesWith(presenter: SearchCollaboratorCandidatesPresenter, request: RequestModel)
 
-    fun findAllByOwner(presenter: FindAllSystematicStudyPresenter, request: FindByOwnerRequest)
-
-    data class FindByOwnerRequest(
-        val userId: UUID,
-        val ownerId: UUID,
+    data class RequestModel(
+        val systematicStudyId: UUID,
+        val prefix: String,
     )
-    @Schema(name = "FindAllSystematicStudiesServiceResponseModel")
+
+    @Schema(name = "SearchCollaboratorCandidatesServiceResponseModel")
     data class ResponseModel(
-        val userId: UUID,
-        val systematicStudies: List<SystematicStudyDto>,
-        val ownerId: UUID? = null,
+        val researchers: List<SearchResearchesService.ResponseModel>,
     )
 }

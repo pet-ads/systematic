@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class SearchResearchesServiceImpl(private val accountSearchService : AccountSearchService): SearchResearchesService {
-    override fun searchUsers(prefix: String): List<ResponseModel?> {
+    override fun searchUsers(prefix: String): List<ResponseModel> {
         return accountSearchService.searchByPrefix(prefix).map { it.toResponseModel() }
     }
 
