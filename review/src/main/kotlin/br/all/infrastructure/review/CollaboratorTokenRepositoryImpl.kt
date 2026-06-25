@@ -19,6 +19,9 @@ open class CollaboratorTokenRepositoryImpl(
             .toNullable()
             ?.toDto()
 
+    override fun findAllBySystematicStudyId(systematicStudyId: UUID): List<CollaboratorTokenDto> =
+        innerRepository.findAllBySystematicStudyId(systematicStudyId)
+            .map { it.toDto() }
 
     override fun existsById(id: UUID) = innerRepository.existsById(id)
 }

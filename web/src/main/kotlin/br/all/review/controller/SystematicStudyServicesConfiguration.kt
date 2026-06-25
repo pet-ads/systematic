@@ -59,5 +59,6 @@ class SystematicStudyServicesConfiguration {
     fun searchCollaboratorCandidates(
         searchResearchesService: SearchResearchesService,
         systematicStudyRepository: SystematicStudyRepository,
-    ) = SearchCollaboratorCandidatesServiceImpl(searchResearchesService,systematicStudyRepository)
+        collaboratorTokenRepository: CollaboratorTokenRepository,
+    ) = SearchCollaboratorCandidatesServiceImpl(searchResearchesService,systematicStudyRepository, collaboratorTokenRepository)
 }
