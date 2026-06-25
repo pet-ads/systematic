@@ -9,6 +9,7 @@ import br.all.utils.example.CreateQuestionExampleService
 import br.all.utils.example.CreateSystematicReviewExampleService
 import br.all.utils.example.CreateSearchSessionExampleService
 import br.all.utils.example.RegisterUserExampleService
+import br.all.utils.example.VerifyIfExistsUserExampleService
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -25,13 +26,16 @@ class WebApplication {
     fun run(
         encoder: PasswordEncoder,
         register: RegisterUserExampleService,
+        verifyUser: VerifyIfExistsUserExampleService,
         create: CreateSystematicReviewExampleService,
         search: CreateSearchSessionExampleService,
         question: CreateQuestionExampleService,
         studyReviewRepository: StudyReviewRepository,
         reviewSimilarityService: ReviewSimilarityService
     ) = CommandLineRunner {
-        val password = encoder.encode("admin")
+        if(verifyUser.existsUser()) return@CommandLineRunner
+
+        val password = requireNotNull(encoder.encode("admin"))
         val lucasUserAccount = register.registerUserAccount("buenolro", password)
         val systematicId = create.createReview(lucasUserAccount.id.value(), setOf(lucasUserAccount.id.value()))
 
@@ -129,19 +133,11 @@ class WebApplication {
     """.trimIndent(),
             additionalInformation = "Scopus search performed on 2022-09-20 using the TITLE-ABS-KEY field. Returned 230 studies (duplicates filtered later). Only English studies were considered."
         ))
+        applyRandomClassification(allScoredStudies)
 
         studyReviewRepository.saveOrUpdateBatch(allScoredStudies.map { it.toDto() })
 
-        val duplicatedAnalysedReviews = reviewSimilarityService.findDuplicates(allScoredStudies, emptyList())
-        val duplicateStudies = duplicatedAnalysedReviews
-            .flatMap { (key, value) -> listOf(key) + value }
-            .toList()
-
-        val duplicateStudiesSet = duplicateStudies.toSet()
-        val uniqueStudies = allScoredStudies.filter { it !in duplicateStudiesSet }
-
-        applyRandomClassification(uniqueStudies)
-        applyRandomClassification(duplicateStudies)
+        reviewSimilarityService.findDuplicates(allScoredStudies, emptyList())
 
         studyReviewRepository.saveOrUpdateBatch(allScoredStudies.map { it.toDto() })
     }

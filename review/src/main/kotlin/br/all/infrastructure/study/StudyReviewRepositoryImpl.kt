@@ -116,9 +116,9 @@ open class  StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRe
         }
 
         val query = Query().addCriteria(Criteria().andOperator(*criteria.toTypedArray()))
-        query.with(pageable)
-
         val total = mongoTemplate.count(query, StudyReviewDocument::class.java)
+
+        query.with(pageable)
         val documents = mongoTemplate.find(query, StudyReviewDocument::class.java)
 
         val content = documents.map { it.toDto() }

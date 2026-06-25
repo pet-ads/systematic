@@ -38,9 +38,8 @@ class Configuration {
 
     @Bean
     fun authenticatorProvider(repository: UserAccountRepository): AuthenticationProvider =
-        DaoAuthenticationProvider().also {
+        DaoAuthenticationProvider(userDetailsService(repository)).also {
             it.setPasswordEncoder(encoder())
-            it.setUserDetailsService(userDetailsService(repository))
         }
 
     @Bean

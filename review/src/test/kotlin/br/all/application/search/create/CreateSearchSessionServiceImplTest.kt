@@ -99,9 +99,11 @@ class CreateSearchSessionServiceImplTest {
             val request = testDataFactory.createRequestModel(source = testDataFactory.source)
             val response = testDataFactory.createResponseModel()
             val protocol = testDataFactory.generateProtocol()
+            val studies = testDataFactory.generateStudies()
 
             preconditionCheckerMocking.makeEverythingWork()
             every { protocolRepository.findById(systematicStudyUuid) } returns protocol
+            every { studyReviewRepository.findAllFromReview(systematicStudyUuid) } returns studies
             every { uuidGeneratorService.next() } returns searchSessionId
             every { converterFactoryService.extractReferences(systematicStudyId, SearchSessionID(searchSessionId), any(), any()) } returns Pair(emptyList(), emptyList())
             every { scoreCalculatorService.applyScoreToManyStudyReviews(any(), any()) } returns emptyList()

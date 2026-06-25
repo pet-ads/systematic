@@ -10,8 +10,8 @@ import java.util.*
 @SpringBootTest
 @Tag("IntegrationTest")
 @Tag("RepositoryTest")
-class MongoSearchSessionRepositoryTest(
-    @Autowired private val sut: MongoSearchSessionRepository,
+class MongoSearchSessionRepositoryTest @Autowired constructor(
+    private val sut: MongoSearchSessionRepository,
 ) {
     private lateinit var testDataFactory: TestDataFactory
 

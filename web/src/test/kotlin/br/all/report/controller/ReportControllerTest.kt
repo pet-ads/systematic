@@ -16,8 +16,8 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -32,13 +32,13 @@ import br.all.protocol.shared.TestDataFactory as ProtocolTestDataFactory
 @Tag("IntegrationTest")
 @Tag("ControllerTest")
 @DisplayName("Report Controller Integration Tests")
-class ReportControllerTest(
-    @Autowired private val studyReviewRepository: MongoStudyReviewRepository,
-    @Autowired private val systematicStudyRepository: MongoSystematicStudyRepository,
-    @Autowired private val questionRepository: MongoQuestionRepository,
-    @Autowired private val protocolRepository: MongoProtocolRepository,
-    @Autowired private val mockMvc: MockMvc,
-    @Autowired private val testHelperService: TestHelperService
+class ReportControllerTest @Autowired constructor(
+    private val studyReviewRepository: MongoStudyReviewRepository,
+    private val systematicStudyRepository: MongoSystematicStudyRepository,
+    private val questionRepository: MongoQuestionRepository,
+    private val protocolRepository: MongoProtocolRepository,
+    private val mockMvc: MockMvc,
+    private val testHelperService: TestHelperService
 ) {
     private lateinit var user: ApplicationUser
     private lateinit var faker: Faker

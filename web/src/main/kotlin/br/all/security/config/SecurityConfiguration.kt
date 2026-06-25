@@ -1,5 +1,6 @@
 package br.all.security.config
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -56,11 +57,14 @@ class SecurityConfiguration(
             .exceptionHandling { it.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)) }
             .build()
 
+    @Value("\${spring.app.cors-origins}")
+    private lateinit var corsOrigins: String
+
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val config = CorsConfiguration()
 
-        config.allowedOrigins = listOf("http://localhost:5173", "http://localhost:5174")
+        config.allowedOrigins = listOf(corsOrigins)
         config.allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
         config.allowedHeaders = listOf("*")
         config.allowCredentials = true

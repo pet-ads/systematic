@@ -1,18 +1,22 @@
 spring:
-  data:
-    mongodb:
-      authentication-database: admin
-      username: rootuser
-      password: rootpass  # Consider using a secure method in production!
-      port: 27017
-      database: review
-      host: localhost
-      uuid-representation: standard
+  config:
+    import: >
+      optional:file:.env[.properties],
+      optional:file:../.env[.properties]
+
+  mongodb:
+    authentication-database: ${AUTHENTICATION_DATABASE}
+    database: review
+    host: ${MONGO_HOST}
+    password: ${MONGO_PASSWORD} # Consider using a secure method in production!
+    port: ${MONGO_PORT}
+    username: ${MONGO_USERNAME}
+    representation.uuid: standard
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/start
-    username: start-adm
-    password: start-doing-it
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     hibernate:
@@ -22,7 +26,22 @@ spring:
       hibernate:
         format_sql: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  app:
+    cors-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:5174}
+    frontend-url: ${FRONTEND_URL:http://localhost:5173}
+
 jwt:
-  key: "dasdasdadadasdasdadadasdasdadadasdasdadadasdasdada"
+  key: ${JWT_KEY}
   access-token-expiration: 300000
   refresh-token-expiration: 3600000

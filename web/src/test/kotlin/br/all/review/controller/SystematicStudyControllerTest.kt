@@ -14,8 +14,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -29,10 +29,10 @@ import java.util.*
 @AutoConfigureMockMvc
 @Tag("IntegrationTest")
 @Tag("ControllerTest")
-class SystematicStudyControllerTest(
-    @Autowired private val repository: MongoSystematicStudyRepository,
-    @Autowired private val testHelperService: TestHelperService,
-    @Autowired private val mockMvc: MockMvc,
+class SystematicStudyControllerTest @Autowired constructor(
+    private val repository: MongoSystematicStudyRepository,
+    private val testHelperService: TestHelperService,
+    private val mockMvc: MockMvc,
 ) {
     private lateinit var factory: TestDataFactory
     private lateinit var user: ApplicationUser

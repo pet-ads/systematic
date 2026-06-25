@@ -17,8 +17,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
@@ -33,12 +33,12 @@ import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 @AutoConfigureMockMvc
 @Tag("IntegrationTest")
 @Tag("ControllerTest")
-class StudyReviewControllerTest(
-    @Autowired val repository: MongoStudyReviewRepository,
-    @Autowired val systematicStudyRepository: MongoSystematicStudyRepository,
-    @Autowired private val testHelperService: TestHelperService,
-    @Autowired val idService: StudyReviewIdGeneratorService,
-    @Autowired val mockMvc: MockMvc,
+class StudyReviewControllerTest @Autowired constructor(
+    val repository: MongoStudyReviewRepository,
+    val systematicStudyRepository: MongoSystematicStudyRepository,
+    private val testHelperService: TestHelperService,
+    val idService: StudyReviewIdGeneratorService,
+    val mockMvc: MockMvc,
 ) {
 
     private lateinit var factory: TestDataFactory
@@ -498,8 +498,8 @@ class StudyReviewControllerTest(
 
     @Nested
     @DisplayName("When batch answering questions in a review")
-    inner class BatchAnswerQuestionTests(
-        @Autowired val questionRepository: MongoQuestionRepository
+    inner class BatchAnswerQuestionTests @Autowired constructor(
+        val questionRepository: MongoQuestionRepository
     ) {
         @Test
         fun `should handle partial success correctly by saving answers to their respective contexts`() {
