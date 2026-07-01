@@ -8,4 +8,5 @@ data class UserProfileDto(
     val email: String,
     val country: String,
     val affiliation: String,
+    val isEnabled: Boolean,
 )

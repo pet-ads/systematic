@@ -4,6 +4,8 @@ import br.all.application.user.repository.AccountCredentialsDto
 import br.all.application.user.repository.UserAccountDto
 import br.all.application.user.repository.UserAccountRepository
 import br.all.application.user.repository.UserProfileDto
+import br.all.application.user.repository.UserSummaryDto
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -25,6 +27,20 @@ class UserAccountRepositoryImpl(
 
     override fun loadUserProfileById(id: UUID): UserProfileDto? =
         userAccountRepository.findById(id).orElse(null)?.toUserProfileDto()
+
+    override fun loadUserProfileByUsername(username: String): UserProfileDto? {
+        val credentials = credentialsRepository.findByUsername(username) ?: return null
+        val userAccount = userAccountRepository.findById(credentials.id).orElse(null) ?: return null
+
+        return UserProfileDto(
+            userAccount.id,
+            userAccount.name,
+            userAccount.email,
+            userAccount.country,
+            userAccount.affiliation,
+            credentials.isEnabled,
+        )
+    }
 
     override fun loadFullUserAccountById(id: UUID): UserAccountDto? {
         val userAccount = userAccountRepository.findById(id).orElse(null) ?: return null
@@ -93,5 +109,10 @@ class UserAccountRepositoryImpl(
             isCredentialsNonExpired = credentials.isCredentialsNonExpired,
             isEnabled = credentials.isEnabled
         )
+    }
+
+    override fun findByUsernameOrEmailStartingWith(prefix: String, pageable: Pageable): List<UserSummaryDto> {
+        return userAccountRepository.findByUsernameOrEmailStartingWith(prefix, pageable)
+            .map { it.toUserSummaryDto()}
     }
 }

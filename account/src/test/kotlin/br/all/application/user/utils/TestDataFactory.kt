@@ -35,7 +35,8 @@ class TestDataFactory {
         email = faker.internet.email(),
         country = faker.address.countryCode(),
         affiliation = faker.leagueOfLegends.rank(),
-        name = faker.name.firstName()
+        name = faker.name.firstName(),
+        isEnabled = true
     )
 
     fun userAccountDto() = UserAccountDto(
