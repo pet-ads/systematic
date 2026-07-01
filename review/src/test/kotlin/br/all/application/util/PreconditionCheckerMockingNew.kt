@@ -27,17 +27,17 @@ class PreconditionCheckerMockingNew(
 
     fun makeEverythingWork() {
         val user = generateUserDto()
-        val userEnabled = generateUserEnabledDto()
+        val userEnabled = generateUserEnabledCredentialsDto()
         mockkStatic(GenericPresenter<*>::prepareIfFailsPreconditions)
         every { credentialsService.loadCredentials(userId) } returns user
-        every { credentialsService.loadEnabledState(userId) } returns userEnabled
+        every { credentialsService.loadEnabledCredentialsById(userId) } returns userEnabled
         every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
         every { presenter.prepareIfFailsPreconditions(any(), any()) } returns Unit
         every { presenter.isDone() } returns false
     }
 
     fun makeUserUnauthenticated() {
-        every { credentialsService.loadEnabledState(userId) } returns null
+        every { credentialsService.loadEnabledCredentialsById(userId) } returns null
         every { credentialsService.loadCredentials(userId) } returns null
         every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
         every { presenter.isDone() } returns true
@@ -45,9 +45,9 @@ class PreconditionCheckerMockingNew(
 
     fun makeUserUnauthorized() {
         val user = generateUnauthorizedUserDto()
-        val userEnabled = generateUnauthorizedUserEnabledDto()
+        val userEnabled = generateUserEnabledCredentialsDto()
         every { credentialsService.loadCredentials(userId) } returns user
-        every { credentialsService.loadEnabledState(userId) } returns userEnabled
+        every { credentialsService.loadEnabledCredentialsById(userId)  } returns userEnabled
         every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudy
         every { presenter.isDone() } returns true
     }
@@ -137,12 +137,13 @@ class PreconditionCheckerMockingNew(
         objectives
     )
 
-    private fun generateUserEnabledDto(
+    private fun generateUserEnabledCredentialsDto(
         userId: UUID = this.userId,
         userName: String = faker.name.firstName(),
-        userRoles: Set<String> = setOf("COLLABORATOR"),
-        isEnabled: Boolean = true
-    ) = CredentialsService.EnabledResponseModel(userId, userName, userRoles, isEnabled)
+        userCountry: String = faker.address.country(),
+        isEnabled: Boolean = true,
+        email: String = faker.internet.email(),
+    ) = CredentialsService.InformationResponseModel(userId, userName, userCountry, isEnabled, email)
 
 
     private fun generateUserDto(
@@ -156,13 +157,4 @@ class PreconditionCheckerMockingNew(
         userName: String = faker.name.firstName(),
         userRoles: Set<String> = emptySet()
     ) = CredentialsService.ResponseModel(userId, userName, userRoles)
-
-    private fun generateUnauthorizedUserEnabledDto(
-        userId: UUID = this.userId,
-        userName: String = faker.name.firstName(),
-        userRoles: Set<String> = emptySet(),
-        isEnabled: Boolean = true
-    ) = CredentialsService.EnabledResponseModel(userId, userName, userRoles, isEnabled)
-
-
 }

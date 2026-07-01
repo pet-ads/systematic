@@ -10,7 +10,7 @@ fun Collaborator.toDto() = CollaboratorDto(
     id.value(),
     systematicStudyId.value(),
     username,
-    email.toString(),
+    email.email,
     role.toString(),
 )
 

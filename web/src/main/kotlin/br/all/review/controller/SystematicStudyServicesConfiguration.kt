@@ -8,6 +8,7 @@ import br.all.application.review.create.RespondInvitationServiceImpl
 import br.all.application.review.find.services.FindAllSystematicStudiesServiceImpl
 import br.all.application.review.find.services.FindSystematicStudyServiceImpl
 import br.all.application.review.find.services.SearchCollaboratorCandidatesServiceImpl
+import br.all.application.review.repository.CollaboratorRepository
 import br.all.application.review.repository.CollaboratorTokenRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.update.services.UpdateSystematicStudyServiceImpl
@@ -24,11 +25,13 @@ class SystematicStudyServicesConfiguration {
         protocolRepository: ProtocolRepository,
         uuidGeneratorService: UuidGeneratorService,
         credentialsService: CredentialsService,
+        collaboratorRepository: CollaboratorRepository
     ) = CreateSystematicStudyServiceImpl(
         systematicStudyRepository,
         protocolRepository,
         uuidGeneratorService,
         credentialsService,
+        collaboratorRepository
     )
 
     @Bean
