@@ -34,7 +34,7 @@ class AddCollaboratorService(
         systematicStudy.collaborators += researcherId
         systematicStudyRepository.saveOrUpdate(systematicStudy)
 
-        val collaborator = CollaboratorDto(systematicStudyId, researcherId, user.name, user.email, role.toString())
+        val collaborator = CollaboratorDto(researcherId, systematicStudyId, user.name, user.email, role.toString())
         collaboratorRepository.saveOrUpdate(collaborator)
     }
 }
