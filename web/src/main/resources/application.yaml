@@ -20,7 +20,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop  # Not recommended for production!
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
