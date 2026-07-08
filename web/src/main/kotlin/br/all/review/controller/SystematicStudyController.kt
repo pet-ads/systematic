@@ -3,10 +3,12 @@ package br.all.review.controller
 import br.all.application.review.create.CreateSystematicStudyService
 import br.all.application.review.find.services.FindAllSystematicStudiesService
 import br.all.application.review.find.services.FindAllSystematicStudiesService.FindByOwnerRequest
+import br.all.application.review.find.services.FindSystematicStudyParticipantsService
 import br.all.application.review.find.services.FindSystematicStudyService
 import br.all.application.review.update.services.UpdateSystematicStudyService
 import br.all.review.presenter.RestfulCreateSystematicStudyPresenter
 import br.all.review.presenter.RestfulFindAllSystematicStudiesPresenter
+import br.all.review.presenter.RestfulFindSystematicStudyParticipantsPresenter
 import br.all.review.presenter.RestfulFindSystematicStudyPresenter
 import br.all.review.presenter.RestfulUpdateSystematicStudyPresenter
 import br.all.review.requests.PostRequest
@@ -32,7 +34,8 @@ class SystematicStudyController(
     private val findAllSystematicStudiesService: FindAllSystematicStudiesService,
     private val updateSystematicStudyService: UpdateSystematicStudyService,
     private val authenticationInfoService: AuthenticationInfoService,
-    private val linksFactory: LinksFactory
+    private val linksFactory: LinksFactory,
+    private val findSystematicStudyParticipantsService: FindSystematicStudyParticipantsService
 ) {
 
     @PostMapping
@@ -202,5 +205,30 @@ class SystematicStudyController(
 
         updateSystematicStudyService.update(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("/{systematicStudyId}/participants")
+    @Operation(summary = "Get all participants of a systematic study")
+    fun findParticipants(
+        @PathVariable systematicStudyId: UUID
+    ): ResponseEntity<*> {
+
+        val presenter = RestfulFindSystematicStudyParticipantsPresenter()
+
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+
+        val request =
+            FindSystematicStudyParticipantsService.RequestModel(
+                userId,
+                systematicStudyId
+            )
+
+        findSystematicStudyParticipantsService.findParticipants(
+            presenter,
+            request
+        )
+
+        return presenter.responseEntity
+            ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

@@ -4,6 +4,7 @@ import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.user.CredentialsService
 import br.all.application.review.create.CreateSystematicStudyServiceImpl
 import br.all.application.review.find.services.FindAllSystematicStudiesServiceImpl
+import br.all.application.review.find.services.FindSystematicStudyParticipantsServiceImpl
 import br.all.application.review.find.services.FindSystematicStudyServiceImpl
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.update.services.UpdateSystematicStudyServiceImpl
@@ -43,4 +44,13 @@ class SystematicStudyServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         credentialsService: CredentialsService,
     ) = UpdateSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
+
+    @Bean
+    fun findSystematicStudyParticipantsService(
+        systematicStudyRepository: SystematicStudyRepository,
+        credentialsService: CredentialsService,
+    ) = FindSystematicStudyParticipantsServiceImpl(
+        systematicStudyRepository,
+        credentialsService,
+    )
 }
