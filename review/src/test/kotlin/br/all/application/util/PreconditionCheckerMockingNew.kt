@@ -149,7 +149,7 @@ class PreconditionCheckerMockingNew(
     private fun generateUserDto(
         userId: UUID = this.userId,
         userName: String = faker.name.firstName(),
-        userRoles: Set<String> = setOf("COLLABORATOR"),
+        userRoles: Set<String> = setOf("USER"),
     ) = CredentialsService.ResponseModel(userId, userName, userRoles)
 
     private fun generateUnauthorizedUserDto(

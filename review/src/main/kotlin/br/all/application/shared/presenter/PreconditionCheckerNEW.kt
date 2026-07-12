@@ -6,7 +6,7 @@ import br.all.domain.shared.exception.UnauthorizedUserException
 import br.all.domain.shared.user.Researcher
 import br.all.domain.shared.user.Role
 import br.all.domain.shared.user.Role.ADMIN
-import br.all.domain.shared.user.Role.COLLABORATOR
+import br.all.domain.shared.user.Role.EDITOR
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.shared.presenter.GenericPresenter
 
@@ -14,7 +14,7 @@ import br.all.domain.shared.presenter.GenericPresenter
 fun GenericPresenter<*>.prepareIfFailsPreconditions(
     user: Researcher?,
     systematicStudy: SystematicStudy?,
-    allowedRoles: Set<Role> = setOf(COLLABORATOR)
+    allowedRoles: Set<Role> = setOf(EDITOR)
 ) {
     this.prepareIfUnauthorized(user, allowedRoles)
     if (this.isDone()) return
@@ -35,7 +35,7 @@ fun GenericPresenter<*>.prepareIfFailsPreconditions(
 
 fun GenericPresenter<*>.prepareIfUnauthorized(
     user: Researcher?,
-    allowedRoles: Set<Role> = setOf(COLLABORATOR)
+    allowedRoles: Set<Role> = setOf(EDITOR)
 ) {
     if (user == null) {
         prepareFailView(UnauthenticatedUserException("Current user is not authenticated."))

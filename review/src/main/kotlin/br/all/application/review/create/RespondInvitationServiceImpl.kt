@@ -36,7 +36,7 @@ open class RespondInvitationServiceImpl(
         }
 
         try {
-            addCollaboratorService.addCollaborator(token.researcherId, token.systematicStudyId, Role.COLLABORATOR)
+            addCollaboratorService.addCollaborator(token.researcherId, token.systematicStudyId, Role.EDITOR)
 
             token.status = TokenStatus.CONCLUIDO
             token.expiration = LocalDateTime.now().plusDays(1)

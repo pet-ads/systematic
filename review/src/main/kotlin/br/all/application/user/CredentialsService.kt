@@ -21,7 +21,7 @@ interface CredentialsService {
         fun toUser() : Researcher {
             val researcherId = ResearcherId(id)
             val userRoles = roles.toMutableSet()
-                .map { if (it == "USER") "COLLABORATOR" else it }
+                .map { if (it == "USER") "EDITOR" else it }
                 .map { Role.valueOf(it) }
                 .toSet()
 
@@ -33,7 +33,7 @@ interface CredentialsService {
         fun toUser() : Researcher {
             val researcherId = ResearcherId(id)
             val userRoles = roles.toMutableSet()
-                .map { if (it == "USER") "COLLABORATOR" else it }
+                .map { if (it == "USER") "EDITOR" else it }
                 .map { Role.valueOf(it) }
                 .toSet()
 

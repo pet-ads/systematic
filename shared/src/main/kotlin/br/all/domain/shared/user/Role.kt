@@ -1,7 +1,9 @@
 package br.all.domain.shared.user
 
 enum class Role {
-    COLLABORATOR,
+    VIEWER,
+    REVIEWER,
+    EDITOR,
     OWNER,
     ADMIN
 }
