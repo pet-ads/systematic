@@ -52,6 +52,7 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
             mutableSetOf(),
             mutableSetOf(),
             mutableSetOf(),
+            mutableSetOf(),
             "",
             ReadingPriority.LOW,
             SelectionStatus.UNCLASSIFIED,

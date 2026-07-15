@@ -50,7 +50,7 @@ class StudiesFunnelServiceImpl(
 
         val excludedByCriterion = allStudies
             .filter { it.selectionStatus == SelectionStatus.EXCLUDED.name }
-            .flatMap { it.criteria }
+            .flatMap { it.selectionCriteria }
             .groupingBy { it }
             .eachCount()
 
@@ -68,7 +68,7 @@ class StudiesFunnelServiceImpl(
                 it.selectionStatus == SelectionStatus.INCLUDED.name && 
                 it.extractionStatus == ExtractionStatus.EXCLUDED.name 
             }
-            .flatMap { it.criteria }
+            .flatMap { it.extractionCriteria }
             .groupingBy { it }
             .eachCount()
 

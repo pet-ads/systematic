@@ -57,7 +57,7 @@ class IncludedStudiesAnswersServiceImpl(
             systematicStudyId = request.systematicStudyId,
             studyReviewId = request.studyReviewId,
             year = studyReviewDto.year,
-            includedBy = studyReviewDto.criteria,
+            includedBy = studyReviewDto.selectionCriteria,
             extractionQuestions = extractionResponse,
             robQuestions = robResponse
         )

@@ -47,6 +47,7 @@ class RisConverterService(private val studyReviewIdGeneratorService: IdGenerator
             mutableSetOf(),
             mutableSetOf(),
             mutableSetOf(),
+            mutableSetOf(),
             "",
             ReadingPriority.LOW,
             SelectionStatus.UNCLASSIFIED,
