@@ -1,5 +1,6 @@
 package br.all.utils
 
+import br.all.domain.model.study.StudyReviewStage
 import br.all.protocol.controller.ProtocolController
 import br.all.protocol.requests.PutRequest
 import br.all.question.controller.ExtractionQuestionController
@@ -330,7 +331,8 @@ class LinksFactory {
                 systematicStudyId,
                 referenceStudyId = 11111,
                 duplicatedRequest = PatchDuplicatedStudiesRequest(
-                    duplicatedStudyIds = listOf(222222)
+                    duplicatedStudyIds = listOf(222222),
+                    stage = StudyReviewStage.SELECTION
                 )
             )
         }.withRel("mark-studies-as-duplicated").withType("PATCH")
@@ -343,11 +345,12 @@ class LinksFactory {
             )
         }.withRel("included-studies-answers").withType("GET")
 
-    fun findCriteria(systematicStudyId: UUID, type: String): Link =
+    fun findCriteria(systematicStudyId: UUID, type: String, stage: String): Link =
         linkTo<ReportController> {
             findCriteria(
                 systematicStudyId,
-                type
+                type,
+                stage
             )
         }.withRel("find-criteria").withType("GET")
 
@@ -410,11 +413,12 @@ class LinksFactory {
             )
         }.withRel("find-answer").withType("GET")
 
-    fun findStudyReviewCriteria(systematicStudyId: UUID, studyReviewId: Long): Link =
+    fun findStudyReviewCriteria(systematicStudyId: UUID, studyReviewId: Long, stage: StudyReviewStage): Link =
         linkTo<ReportController> {
             findCriteria(
                 systematicStudyId,
-                studyReviewId
+                studyReviewId,
+                stage
             )
         }.withRel("find-study-criteria").withType("GET")
 

@@ -100,8 +100,8 @@ class ReportControllerTest @Autowired constructor(
     private fun findAnswerUrl(questionId: UUID) =
         "$baseReportUrl/find-answer/$questionId"
 
-    private fun findCriteriaUrl(type: String) =
-        "$baseReportUrl/criteria/$type"
+    private fun findCriteriaUrl(type: String, stage: String) =
+        "$baseReportUrl/criteria/$type?stage=$stage"
 
     private fun findSourcesUrl(source: String) =
         "$baseReportUrl/source/$source"
@@ -118,8 +118,8 @@ class ReportControllerTest @Autowired constructor(
     private fun studiesFunnelUrl() =
         "$baseReportUrl/studies-funnel"
 
-    private fun findStudyReviewCriteria(studyReviewId: Long) =
-        "$baseReportUrl/study-review/$studyReviewId/criteria"
+    private fun findStudyReviewCriteria(id: Long, stage: String) =
+        "$baseReportUrl/study-review/$id/criteria?stage=$stage"
 
     private fun findKeywordsUrl(filter: String?) =
         if (filter.isNullOrBlank())
@@ -248,19 +248,25 @@ class ReportControllerTest @Autowired constructor(
                 val studyReview = studyReviewDataFactory.reviewDocument(
                     systematicStudyId = systematicStudy.id,
                     studyReviewId = 1111L,
-                    criteria = setOf(criteria.description, criteria2.description),
+                    selectionCriteria = setOf(
+                        criteria.description,
+                        criteria2.description
+                    ),
                 )
 
                 val studyReview2 = studyReviewDataFactory.reviewDocument(
                     systematicStudyId = systematicStudy.id,
                     studyReviewId = 2222L,
-                    criteria = setOf(criteria.description, criteria2.description),
+                    selectionCriteria = setOf(
+                        criteria.description,
+                        criteria2.description
+                    ),
                 )
 
                 protocolRepository.save(protocol)
                 studyReviewRepository.saveAll(listOf(studyReview, studyReview2))
                 mockMvc.perform(
-                    get(findCriteriaUrl(type = criteria.type))
+                    get(findCriteriaUrl(stage = "selection", type = criteria.type))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                 )
                     .andExpect(status().isOk)
@@ -566,15 +572,19 @@ class ReportControllerTest @Autowired constructor(
                     systematicStudyId = systematicStudy.id,
                     studyReviewId = 22222,
                     selectionStatus = "EXCLUDED",
-                    criteria = setOf("Criterion 1", "Criterion 2"),
-                    sources = setOf("ACM")
+                    selectionCriteria = setOf(
+                        "Criterion 1",
+                        "Criterion 2"
+                    ),
                 )
                 val excludedInExtractionStudy = studyReviewDataFactory.reviewDocument(
                     systematicStudyId = systematicStudy.id,
                     studyReviewId = 33333,
                     selectionStatus = "INCLUDED",
                     extractionStatus = "EXCLUDED",
-                    criteria = setOf("Criterion 3"),
+                    extractionCriteria = setOf(
+                        "Criterion 3"
+                    ),
                     sources = setOf("Scopus")
                 )
                 val duplicatedStudy = studyReviewDataFactory.reviewDocument(
@@ -712,7 +722,10 @@ class ReportControllerTest @Autowired constructor(
 
 
             val studyReview = studyReviewDataFactory.reviewDocument(
-                criteria = setOf("criteria 1", "criteria 2"),
+                selectionCriteria = setOf(
+                    "criteria 1",
+                    "criteria 2"
+                ),
                 systematicStudyId = systematicStudyId,
                 studyReviewId = studyReviewId,
             )
@@ -729,7 +742,7 @@ class ReportControllerTest @Autowired constructor(
             protocolRepository.save(protocol)
 
             mockMvc.perform(
-                get(findStudyReviewCriteria(studyReviewId = studyReviewId))
+                get(findStudyReviewCriteria(id = studyReviewId, stage = "selection"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
                 .andExpect(status().isOk)

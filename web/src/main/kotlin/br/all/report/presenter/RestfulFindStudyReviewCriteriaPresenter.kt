@@ -20,7 +20,7 @@ class RestfulFindStudyReviewCriteriaPresenter(
             response.inclusionCriteria
         )
 
-        val selfRef = linksFactory.findStudyReviewCriteria(response.systematicStudyId, response.studyReviewId)
+        val selfRef = linksFactory.findStudyReviewCriteria(response.systematicStudyId, response.studyReviewId, response.stage)
 
         restfulResponse.add(selfRef)
         responseEntity = status(HttpStatus.OK).body(restfulResponse)

@@ -9,6 +9,7 @@ import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
+import br.all.domain.model.study.StudyReviewStage
 
 class FindCriteriaServiceImpl(
     private val protocolRepository: ProtocolRepository,
@@ -32,12 +33,15 @@ class FindCriteriaServiceImpl(
 
         val studyReviewList = studyReviewRepository.findAllFromReview(request.systematicStudyId)
 
-        val result: Map<CriterionDto, List<Long>> = criteriaSet.associateWith { criteria ->
+        val result = criteriaSet.associateWith { criterion ->
             studyReviewList.filter { review ->
-                criteria.description in review.criteria
-            }.map { review ->
-                review.studyReviewId
-            }
+                val criteria = if (request.stage == StudyReviewStage.SELECTION)
+                    review.selectionCriteria
+                else
+                    review.extractionCriteria
+
+                criterion.description in criteria
+            }.map { it.studyReviewId }
         }
 
         val filteredCriteria = FindCriteriaService.FoundStudies(
@@ -47,6 +51,7 @@ class FindCriteriaServiceImpl(
         val response = FindCriteriaService.ResponseModel(
             userId = request.userId,
             systematicStudyId = request.systematicStudyId,
+            stage = request.stage,
             criteria = filteredCriteria,
         )
 

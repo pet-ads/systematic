@@ -2,6 +2,7 @@ package br.all.application.report.find.service
 
 import br.all.application.protocol.repository.CriterionDto
 import br.all.application.report.find.presenter.FindCriteriaPresenter
+import br.all.domain.model.study.StudyReviewStage
 import java.util.*
 
 interface FindCriteriaService {
@@ -11,12 +12,14 @@ interface FindCriteriaService {
         val userId: UUID,
         val systematicStudyId: UUID,
         val type: String,
+        val stage: StudyReviewStage
     )
 
     data class ResponseModel(
         val userId: UUID,
         val systematicStudyId: UUID,
-        val criteria: FoundStudies
+        val stage: StudyReviewStage,
+        val criteria: FoundStudies,
     )
 
     data class FoundStudies(

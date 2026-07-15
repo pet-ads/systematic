@@ -27,7 +27,7 @@ class RestfulFindCriteriaPresenter(
 
         val type = response.criteria.included.keys.first().type
 
-        val selfRef = linksFactory.findCriteria(response.systematicStudyId, type)
+        val selfRef = linksFactory.findCriteria(response.systematicStudyId, type, response.stage.name)
         val findProtocol = linksFactory.findProtocol(response.systematicStudyId)
 
         restfulResponse.add(selfRef, findProtocol)
