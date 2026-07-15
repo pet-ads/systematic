@@ -38,21 +38,21 @@ class RemoveCriteriaServiceImpl(
 
         val studyReview = StudyReview.fromDto(studyReviewDto)
 
-        val inclusionCriteria: List<String> = studyReview.criteria
-            .filter  { it.type == Criterion.CriterionType.INCLUSION }
-            .map     { it.description }
+        val inclusionCriteria: List<String> = studyReview.selectionCriteria
+            .filter { it.type == Criterion.CriterionType.INCLUSION }
+            .map { it.description }
 
-        val exclusionCriteria: List<String> = studyReview.criteria
-            .filter  { it.type == Criterion.CriterionType.EXCLUSION }
-            .map     { it.description }
+        val exclusionCriteria: List<String> = studyReview.selectionCriteria
+            .filter { it.type == Criterion.CriterionType.EXCLUSION }
+            .map { it.description }
 
         request.criteria
             .filter { it.isNotBlank() }
             .forEach { criterionString ->
-                studyReview.criteria
+                studyReview.selectionCriteria
                     .filter { it.description == criterionString }
                     .forEach { matching ->
-                        studyReview.removeCriterion(matching)
+                        studyReview.removeSelectionCriterion(matching)
                     }
             }
 

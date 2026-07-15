@@ -12,6 +12,7 @@ import br.all.application.study.update.interfaces.MarkAsDuplicatedService
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.study.StudyReview
+import br.all.domain.model.study.StudyReviewStage
 
 class MarkAsDuplicatedServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
@@ -47,7 +48,13 @@ class MarkAsDuplicatedServiceImpl(
             StudyReview.fromDto(dupDto)
         }
 
-        referenceStudyReview.markAsDuplicated(duplicates)
+        when (request.stage) {
+            StudyReviewStage.SELECTION ->
+                referenceStudyReview.markAsDuplicatedInSelection(duplicates)
+
+            StudyReviewStage.EXTRACTION ->
+                referenceStudyReview.markAsDuplicatedInExtraction(duplicates)
+        }
 
         duplicates.forEach { duplicate ->
             studyReviewRepository.saveOrUpdate(duplicate.toDto())

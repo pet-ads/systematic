@@ -66,7 +66,7 @@ class UpdateStudyReviewExtractionService(
                 } else {
                     Criterion.toInclude(trimmed)
                 }
-                studyReview.addCriterion(criterion)
+                studyReview.addExtractionCriterion(criterion)
             }
 
             studyReviewRepository.saveOrUpdate(studyReview.toDto())

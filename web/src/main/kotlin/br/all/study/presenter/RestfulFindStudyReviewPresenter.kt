@@ -44,7 +44,8 @@ class RestfulFindStudyReviewPresenter(
         val references = content.references
         val doi = content.doi
         val searchSources = content.searchSources
-        val criteria = content.criteria
+        val selectionCriteria = content.selectionCriteria
+        val extractionCriteria = content.extractionCriteria
         val formAnswers = content.formAnswers
         val qualityAnswers = content.robAnswers
         val comments = content.comments
