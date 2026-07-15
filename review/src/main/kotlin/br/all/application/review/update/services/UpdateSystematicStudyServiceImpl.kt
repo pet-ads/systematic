@@ -6,11 +6,9 @@ import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter
 import br.all.application.review.update.services.UpdateSystematicStudyService.RequestModel
 import br.all.application.review.update.services.UpdateSystematicStudyService.ResponseModel
 import br.all.application.shared.service.AuthorizationService
-import br.all.application.user.CredentialsService
 
 class UpdateSystematicStudyServiceImpl(
     private val repository: SystematicStudyRepository,
-    private val credentialsService: CredentialsService,
     private val authorizationService: AuthorizationService,
 ) : UpdateSystematicStudyService {
     override fun update(presenter: UpdateSystematicStudyPresenter, request: RequestModel) {

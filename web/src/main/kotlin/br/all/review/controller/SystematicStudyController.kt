@@ -7,6 +7,7 @@ import br.all.application.review.find.services.FindAllSystematicStudiesService
 import br.all.application.review.find.services.FindAllSystematicStudiesService.FindByOwnerRequest
 import br.all.application.review.find.services.FindSystematicStudyService
 import br.all.application.review.find.services.SearchCollaboratorCandidatesService
+import br.all.application.review.update.services.UpdateResearcherRoleService
 import br.all.application.review.update.services.UpdateSystematicStudyService
 import br.all.review.presenter.RestfulCreateInviteCollaboratorPresenter
 import br.all.review.presenter.RestfulCreateSystematicStudyPresenter
@@ -14,12 +15,14 @@ import br.all.review.presenter.RestfulFindAllSystematicStudiesPresenter
 import br.all.review.presenter.RestfulFindSystematicStudyPresenter
 import br.all.review.presenter.RestfulRespondInvitationPresenter
 import br.all.review.presenter.RestfulSearchCollaboratorCandidatesPresenter
+import br.all.review.presenter.RestfulUpdateResearcherPresenter
 import br.all.review.presenter.RestfulUpdateSystematicStudyPresenter
 import br.all.review.requests.PostRequest
 import br.all.review.requests.PutRequest
 import br.all.review.requests.InviteCollaboratorRequest
 import br.all.review.requests.RespondInvitationRequest
 import br.all.review.requests.SearchCandidatesRequest
+import br.all.review.requests.UpdateRoleRequest
 import br.all.security.service.AuthenticationInfoService
 import br.all.utils.LinksFactory
 import io.swagger.v3.oas.annotations.Operation
@@ -40,6 +43,7 @@ class SystematicStudyController(
     private val findSystematicStudyServiceImpl: FindSystematicStudyService,
     private val findAllSystematicStudiesService: FindAllSystematicStudiesService,
     private val updateSystematicStudyService: UpdateSystematicStudyService,
+    private val updateResearcherRoleService: UpdateResearcherRoleService,
     private val authenticationInfoService: AuthenticationInfoService,
     private val inviteCollaboratorService: InviteCollaboratorService,
     private val respondInvitationService: RespondInvitationService,
@@ -317,6 +321,41 @@ class SystematicStudyController(
         val requestModel = request.toCreateRequestModel(systematicStudyId)
 
         searchCollaboratorCandidatesService.findCandidatesWith(presenter, requestModel)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @PutMapping("/{systematicStudyId}/collaborator")
+    @Operation(summary = "Update an existing collaborator role")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Success updating an existing collaborator role",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail updating an existing collaborator role - invalid systematic study",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail updating an existing collaborator role - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail updating an existing collaborator role - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(responseCode = "404", description = "Fail updating an existing collaborator role - not found",
+                content = [Content(schema = Schema(hidden = true))]),
+        ]
+    )
+    fun updateResearcherRole(@PathVariable systematicStudyId: UUID,
+                              @RequestBody request: UpdateRoleRequest): ResponseEntity<*> {
+        val presenter = RestfulUpdateResearcherPresenter()
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val requestModel = request.toUpdateRequestModel(userId, systematicStudyId, request.researcherId, request.role)
+
+        updateResearcherRoleService.update(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

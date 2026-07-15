@@ -52,7 +52,6 @@ class UpdateSystematicStudyServiceImplTest {
 
         sut = UpdateSystematicStudyServiceImpl(
             repository,
-            credentialsService,
             authorizationService
         )
 

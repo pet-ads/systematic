@@ -11,6 +11,7 @@ import br.all.application.review.find.services.SearchCollaboratorCandidatesServi
 import br.all.application.review.repository.CollaboratorRepository
 import br.all.application.review.repository.CollaboratorTokenRepository
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.review.update.services.UpdateResearcherRoleServiceImpl
 import br.all.application.review.update.services.UpdateSystematicStudyServiceImpl
 import br.all.application.shared.service.AuthorizationService
 import br.all.application.user.SearchResearchesService
@@ -50,9 +51,8 @@ class SystematicStudyServicesConfiguration {
     @Bean
     fun updateSystematicStudyService(
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: CredentialsService,
         authorizationService: AuthorizationService,
-    ) = UpdateSystematicStudyServiceImpl(systematicStudyRepository, credentialsService, authorizationService)
+    ) = UpdateSystematicStudyServiceImpl(systematicStudyRepository, authorizationService)
 
     @Bean
     fun respondInvitationService(
@@ -66,4 +66,10 @@ class SystematicStudyServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         collaboratorTokenRepository: CollaboratorTokenRepository,
     ) = SearchCollaboratorCandidatesServiceImpl(searchResearchesService,systematicStudyRepository, collaboratorTokenRepository)
+
+    @Bean
+    fun updateResearcherRoleService(
+        collaboratorRepository: CollaboratorRepository,
+        authorizationService: AuthorizationService,
+    ) = UpdateResearcherRoleServiceImpl(collaboratorRepository, authorizationService)
 }
