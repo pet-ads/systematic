@@ -1,5 +1,7 @@
 package br.all.report.controller
 
+import br.all.application.report.find.service.ExportProtocolService
+import br.all.application.report.export.service.ExportReviewService
 import br.all.application.report.find.service.*
 import br.all.report.presenter.*
 import br.all.security.service.AuthenticationInfoService
@@ -33,7 +35,8 @@ class ReportController(
     private val findAnswerService: FindAnswerServiceImpl,
     private val studiesFunnelService: StudiesFunnelService,
     private val authenticationInfoService: AuthenticationInfoService,
-    private val linksFactory: LinksFactory
+    private val exportReviewService: ExportReviewService,
+    private val linksFactory: LinksFactory,
 ) {
 
     @GetMapping("{studyReviewId}/included-studies-answers")
@@ -380,4 +383,49 @@ class ReportController(
         findStudyReviewCriteriaService.findCriteria(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
+
+
+    @GetMapping("exportable-review/{format}")
+    @Operation(summary = "Export Review")
+    @ApiResponses(
+        value =[
+            ApiResponse(responseCode = "200", description = "Success exporting formatted review",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = RestfulExportReviewPresenter::class)
+                    )
+                ]),
+
+            ApiResponse(responseCode = "401", description = "Unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "403", description = "Unauthorized user",
+                content = [Content(schema = Schema(hidden = true))])
+
+
+
+        ]
+    )
+    fun exportReview(
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable format: String,
+        @RequestParam downloadable: Boolean
+    ): ResponseEntity<*>{
+        val presenter = if (downloadable) {
+            DownloadableReviewPresenter()
+        } else {
+            RestfulExportReviewPresenter(linksFactory)
+        }
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = ExportReviewService.RequestModel(userId,systematicStudyId,format.lowercase())
+        exportReviewService.exportReview(presenter,request)
+        val responseEntity = when (presenter) {
+            is DownloadableReviewPresenter -> presenter.responseEntity
+            is RestfulExportReviewPresenter -> presenter.responseEntity
+            else -> null
+        }
+        return responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
 }
+
+

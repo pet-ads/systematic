@@ -3,9 +3,12 @@ package br.all.report.controller
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.report.find.service.*
+import br.all.application.report.find.service.ExportProtocolServiceImpl
+import br.all.application.report.export.service.ExportReviewServiceImpl
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
+import br.all.infrastructure.report.export.LatexReviewExporter
 import br.all.domain.services.CsvFormatterService
 import br.all.domain.services.FormatterFactoryService
 import br.all.domain.services.LatexFormatterService
@@ -28,6 +31,31 @@ class ReportControllerConfiguration {
         csvFormatterService,
         latexFormatterService
     )
+
+
+    @Bean
+    fun latexReviewExporter() = LatexReviewExporter()
+
+
+    @Bean
+    fun exportReviewService(
+        credentialsService: CredentialsService,
+        protocolRepository: ProtocolRepository,
+        systematicStudyRepository: SystematicStudyRepository,
+        studyReviewRepository: StudyReviewRepository,
+        questionRepository: QuestionRepository,
+        latexReviewExporter: LatexReviewExporter
+    ) = ExportReviewServiceImpl(
+        credentialsService,
+        systematicStudyRepository,
+        protocolRepository,
+        studyReviewRepository,
+        questionRepository,
+        mapOf(latexReviewExporter.format to latexReviewExporter)
+    )
+
+
+
 
     @Bean
     fun includedStudiesAnswersService(
