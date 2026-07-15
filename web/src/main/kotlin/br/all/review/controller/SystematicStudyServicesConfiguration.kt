@@ -12,6 +12,7 @@ import br.all.application.review.repository.CollaboratorRepository
 import br.all.application.review.repository.CollaboratorTokenRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.update.services.UpdateSystematicStudyServiceImpl
+import br.all.application.shared.service.AuthorizationService
 import br.all.application.user.SearchResearchesService
 import br.all.domain.services.UuidGeneratorService
 import org.springframework.context.annotation.Bean
@@ -50,7 +51,8 @@ class SystematicStudyServicesConfiguration {
     fun updateSystematicStudyService(
         systematicStudyRepository: SystematicStudyRepository,
         credentialsService: CredentialsService,
-    ) = UpdateSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
+        authorizationService: AuthorizationService,
+    ) = UpdateSystematicStudyServiceImpl(systematicStudyRepository, credentialsService, authorizationService)
 
     @Bean
     fun respondInvitationService(

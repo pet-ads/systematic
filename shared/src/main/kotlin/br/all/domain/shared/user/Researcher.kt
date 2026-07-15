@@ -6,5 +6,5 @@ import java.util.UUID
 class Researcher (
     id: ResearcherId,
     val username: String,
-    val roles: Set<Role>
+    val roles: MutableSet<Role>
 ) : Entity<UUID>(id)

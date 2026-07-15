@@ -20,10 +20,10 @@ interface CredentialsService {
     data class ResponseModel(val id: UUID, val username: String, val roles: Set<String>){
         fun toUser() : Researcher {
             val researcherId = ResearcherId(id)
-            val userRoles = roles.toMutableSet()
+            val userRoles = roles
                 .map { if (it == "USER") "EDITOR" else it }
                 .map { Role.valueOf(it) }
-                .toSet()
+                .toMutableSet()
 
             return Researcher(researcherId, username, userRoles)
         }
@@ -32,10 +32,10 @@ interface CredentialsService {
     data class EnabledResponseModel(val id: UUID, val username: String, val roles: Set<String>, val isEnabled : Boolean){
         fun toUser() : Researcher {
             val researcherId = ResearcherId(id)
-            val userRoles = roles.toMutableSet()
+            val userRoles = roles
                 .map { if (it == "USER") "EDITOR" else it }
                 .map { Role.valueOf(it) }
-                .toSet()
+                .toMutableSet()
 
             return Researcher(researcherId, username, userRoles)
         }

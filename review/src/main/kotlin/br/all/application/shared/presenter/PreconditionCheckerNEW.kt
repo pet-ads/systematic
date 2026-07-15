@@ -10,7 +10,6 @@ import br.all.domain.shared.user.Role.EDITOR
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.shared.presenter.GenericPresenter
 
-
 fun GenericPresenter<*>.prepareIfFailsPreconditions(
     user: Researcher?,
     systematicStudy: SystematicStudy?,
@@ -26,10 +25,8 @@ fun GenericPresenter<*>.prepareIfFailsPreconditions(
         return
     }
 
-    if (allowedRoles.contains(ADMIN) && existingUser.roles.contains(ADMIN)) return
-
     if (!systematicStudy.collaborators.contains(existingUser.id))
-        this.prepareFailView(UnauthorizedUserException("User of id $existingUser can not perform this action."))
+        this.prepareFailView(UnauthorizedUserException("User of id ${existingUser.id} can not perform this action."))
 }
 
 
@@ -41,6 +38,11 @@ fun GenericPresenter<*>.prepareIfUnauthorized(
         prepareFailView(UnauthenticatedUserException("Current user is not authenticated."))
         return
     }
+
+    if (ADMIN in user.roles) {
+        return
+    }
+
     if (hasAnyOfRequiredRoles(user, allowedRoles)) {
         val message = "Authenticated user ${user.id} has none of required roles: ${allowedRoles.joinToString()}"
         prepareFailView(UnauthorizedUserException(message))

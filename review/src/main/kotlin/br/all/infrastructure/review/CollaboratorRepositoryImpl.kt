@@ -24,4 +24,10 @@ class CollaboratorRepositoryImpl(
 
     override fun existsByResearcherIdAndSystematicStudyId(id: UUID, systematicStudyId: UUID) =
         innerRepository.existsByResearcherIdAndSystematicStudyId(id, systematicStudyId)
+
+    override fun findByResearcherIdAndSystematicStudyId(
+        id: UUID,
+        systematicStudyId: UUID
+    ) =  innerRepository.findByResearcherIdAndSystematicStudyId(id, systematicStudyId)?.toDto()
+
 }
