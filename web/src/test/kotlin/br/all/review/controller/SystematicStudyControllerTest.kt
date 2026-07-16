@@ -121,13 +121,6 @@ class SystematicStudyControllerTest @Autowired constructor(
         }
 
         @Test
-        fun `should not create study when user is unauthorized`(){
-            testHelperService.testForUnauthorizedUser(mockMvc,
-                post(postUrl()).content(factory.createValidPostRequest())
-            )
-        }
-
-        @Test
         fun `should not create study when user is unauthenticated`(){
             testHelperService.testForUnauthenticatedUser(mockMvc,
                 post(postUrl()).content(factory.createValidPostRequest()),

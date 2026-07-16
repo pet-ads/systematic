@@ -1,10 +1,10 @@
 package br.all.application.review.create
 
 import br.all.application.protocol.repository.ProtocolRepository
+import br.all.application.review.repository.CollaboratorRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.TestDataFactory
 import br.all.domain.shared.exception.UnauthenticatedUserException
-import br.all.domain.shared.exception.UnauthorizedUserException
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.services.UuidGeneratorService
@@ -23,6 +23,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 class CreateSystematicStudyServiceImplTest {
     @MockK(relaxUnitFun = true)
     private lateinit var systematicStudyRepository: SystematicStudyRepository
+    @MockK(relaxUnitFun = true)
+    private lateinit var collaboratorRepository: CollaboratorRepository
     @MockK(relaxUnitFun = true)
     private lateinit var protocolRepository: ProtocolRepository
     @MockK
@@ -88,19 +90,6 @@ class CreateSystematicStudyServiceImplTest {
 
             verifyOrder {
                 presenter.prepareFailView(any<UnauthenticatedUserException>())
-                presenter.isDone()
-            }
-        }
-
-        @Test
-        fun `should not the researcher be allowed to create a study when unauthorized`() {
-            val request = factory.createRequestModel()
-
-            preconditionCheckerMocking.makeUserUnauthorized()
-            sut.create(presenter, request)
-
-            verifyOrder {
-                presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()
             }
         }

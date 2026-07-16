@@ -8,9 +8,12 @@ import br.all.application.review.create.RespondInvitationServiceImpl
 import br.all.application.review.find.services.FindAllSystematicStudiesServiceImpl
 import br.all.application.review.find.services.FindSystematicStudyServiceImpl
 import br.all.application.review.find.services.SearchCollaboratorCandidatesServiceImpl
+import br.all.application.review.repository.CollaboratorRepository
 import br.all.application.review.repository.CollaboratorTokenRepository
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.review.update.services.UpdateResearcherRoleServiceImpl
 import br.all.application.review.update.services.UpdateSystematicStudyServiceImpl
+import br.all.application.shared.service.AuthorizationService
 import br.all.application.user.SearchResearchesService
 import br.all.domain.services.UuidGeneratorService
 import org.springframework.context.annotation.Bean
@@ -24,11 +27,13 @@ class SystematicStudyServicesConfiguration {
         protocolRepository: ProtocolRepository,
         uuidGeneratorService: UuidGeneratorService,
         credentialsService: CredentialsService,
+        collaboratorRepository: CollaboratorRepository
     ) = CreateSystematicStudyServiceImpl(
         systematicStudyRepository,
         protocolRepository,
         uuidGeneratorService,
         credentialsService,
+        collaboratorRepository
     )
 
     @Bean
@@ -46,8 +51,8 @@ class SystematicStudyServicesConfiguration {
     @Bean
     fun updateSystematicStudyService(
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: CredentialsService,
-    ) = UpdateSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
+        authorizationService: AuthorizationService,
+    ) = UpdateSystematicStudyServiceImpl(systematicStudyRepository, authorizationService)
 
     @Bean
     fun respondInvitationService(
@@ -61,4 +66,10 @@ class SystematicStudyServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         collaboratorTokenRepository: CollaboratorTokenRepository,
     ) = SearchCollaboratorCandidatesServiceImpl(searchResearchesService,systematicStudyRepository, collaboratorTokenRepository)
+
+    @Bean
+    fun updateResearcherRoleService(
+        collaboratorRepository: CollaboratorRepository,
+        authorizationService: AuthorizationService,
+    ) = UpdateResearcherRoleServiceImpl(collaboratorRepository, authorizationService)
 }

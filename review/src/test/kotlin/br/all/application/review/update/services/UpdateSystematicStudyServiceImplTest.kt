@@ -1,16 +1,18 @@
 package br.all.application.review.update.services
 
+import br.all.application.review.repository.CollaboratorRepository
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter
 import br.all.application.review.util.TestDataFactory
+import br.all.application.shared.service.AuthorizationService
 import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.domain.shared.exception.UnauthenticatedUserException
 import br.all.domain.shared.exception.UnauthorizedUserException
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
+import io.mockk.MockKAnnotations
 import io.mockk.every
-import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
@@ -24,11 +26,14 @@ import org.junit.jupiter.api.extension.ExtendWith
 class UpdateSystematicStudyServiceImplTest {
     @MockK(relaxUnitFun = true)
     private lateinit var repository: SystematicStudyRepository
+    @MockK(relaxUnitFun = true)
+    private lateinit var collaboratorRepository: CollaboratorRepository
     @MockK
     private lateinit var credentialsService: CredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: UpdateSystematicStudyPresenter
-    @InjectMockKs
+
+    lateinit var authorizationService: AuthorizationService
     private lateinit var sut: UpdateSystematicStudyServiceImpl
 
     private lateinit var factory: TestDataFactory
@@ -36,6 +41,20 @@ class UpdateSystematicStudyServiceImplTest {
 
     @BeforeEach
     fun setUp() {
+
+        MockKAnnotations.init(this)
+
+        authorizationService = AuthorizationService(
+            credentialsService,
+            repository,
+            collaboratorRepository
+        )
+
+        sut = UpdateSystematicStudyServiceImpl(
+            repository,
+            authorizationService
+        )
+
         factory = TestDataFactory()
         preconditionCheckerMocking = PreconditionCheckerMockingNew(
             presenter,
@@ -43,6 +62,7 @@ class UpdateSystematicStudyServiceImplTest {
             repository,
             factory.researcher,
             factory.systematicStudy,
+            collaboratorRepository
         )
     }
 
@@ -51,7 +71,7 @@ class UpdateSystematicStudyServiceImplTest {
     @DisplayName("When the systematic study is updated")
     inner class WhenTheSystematicStudyIsUpdated {
         @BeforeEach
-        fun setUp() = run { preconditionCheckerMocking.makeEverythingWork() }
+        fun setUp() = run { preconditionCheckerMocking.makeEverythingWorkWithAuthorization() }
 
         @Test
         fun `should only the title be updated`() {
@@ -112,7 +132,7 @@ class UpdateSystematicStudyServiceImplTest {
             val request = factory.updateRequestModel()
             val response = factory.updateResponseModel()
 
-            preconditionCheckerMocking.makeEverythingWork()
+            preconditionCheckerMocking.makeEverythingWorkWithAuthorization()
             every { repository.findById(factory.systematicStudy) } returns dto
 
             sut.update(presenter, request)
@@ -150,7 +170,7 @@ class UpdateSystematicStudyServiceImplTest {
         fun `should prepare fail view if the researcher is unauthorized`() {
             val request = factory.updateRequestModel()
 
-            preconditionCheckerMocking.makeUserUnauthorized()
+            preconditionCheckerMocking.makeUserUnauthorizedWithAuthorization()
             sut.update(presenter, request)
 
             verifyOrder {

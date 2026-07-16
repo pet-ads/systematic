@@ -5,4 +5,6 @@ import java.util.*
 
 interface MongoCollaboratorRepository: MongoRepository<CollaboratorDocument, UUID>{
     fun existsByResearcherIdAndSystematicStudyId(researcherId: UUID, systematicStudyId: UUID): Boolean
+
+    fun findByResearcherIdAndSystematicStudyId(researcherId: UUID, systematicStudyId: UUID): CollaboratorDocument?
 }

@@ -10,4 +10,6 @@ interface CollaboratorRepository {
     fun existsById(id: UUID) : Boolean
 
     fun existsByResearcherIdAndSystematicStudyId(id: UUID, systematicStudyId: UUID): Boolean
+
+    fun findByResearcherIdAndSystematicStudyId(id: UUID, systematicStudyId: UUID): CollaboratorDto?
 }

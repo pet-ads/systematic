@@ -4,6 +4,7 @@ import br.all.application.review.repository.CollaboratorDto
 
 
 fun CollaboratorDto.toDocument() = CollaboratorDocument(
+    CollaboratorDocument.buildId(researcherId,systematicStudyId),
     researcherId,
     systematicStudyId,
     username,
