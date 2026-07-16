@@ -422,11 +422,12 @@ class LinksFactory {
             )
         }.withRel("find-study-criteria").withType("GET")
 
-    fun removeStudyReviewCriteria(systematicStudyId: UUID, studyReviewId: Long, request: RemoveCriteriaRequest): Link =
+    fun removeStudyReviewCriteria(systematicStudyId: UUID, studyReviewId: Long, stage: StudyReviewStage ,request: RemoveCriteriaRequest): Link =
         linkTo<StudyReviewController> {
             removeCriterion(
                 systematicStudyId,
                 studyReviewId,
+                stage,
                 request
             )
         }.withRel("remove-criteria").withType("PATCH")

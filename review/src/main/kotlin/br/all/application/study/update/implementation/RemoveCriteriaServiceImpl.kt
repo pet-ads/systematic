@@ -13,6 +13,7 @@ import br.all.application.user.CredentialsService
 import br.all.domain.model.protocol.Criterion
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.study.StudyReview
+import br.all.domain.model.study.StudyReviewStage
 
 class RemoveCriteriaServiceImpl(
     private val studyReviewRepository: StudyReviewRepository,
@@ -38,22 +39,37 @@ class RemoveCriteriaServiceImpl(
 
         val studyReview = StudyReview.fromDto(studyReviewDto)
 
-        val inclusionCriteria: List<String> = studyReview.selectionCriteria
+        val criteria = when (request.stage) {
+            StudyReviewStage.SELECTION -> studyReview.selectionCriteria
+            StudyReviewStage.EXTRACTION -> studyReview.extractionCriteria
+        }
+
+        val inclusionCriteria = criteria
             .filter { it.type == Criterion.CriterionType.INCLUSION }
             .map { it.description }
 
-        val exclusionCriteria: List<String> = studyReview.selectionCriteria
+        val exclusionCriteria = criteria
             .filter { it.type == Criterion.CriterionType.EXCLUSION }
             .map { it.description }
 
         request.criteria
             .filter { it.isNotBlank() }
             .forEach { criterionString ->
-                studyReview.selectionCriteria
-                    .filter { it.description == criterionString }
-                    .forEach { matching ->
-                        studyReview.removeSelectionCriterion(matching)
+
+                when (request.stage) {
+
+                    StudyReviewStage.SELECTION -> {
+                        studyReview.selectionCriteria
+                            .filter { it.description == criterionString }
+                            .forEach(studyReview::removeSelectionCriterion)
                     }
+
+                    StudyReviewStage.EXTRACTION -> {
+                        studyReview.extractionCriteria
+                            .filter { it.description == criterionString }
+                            .forEach(studyReview::removeExtractionCriterion)
+                    }
+                }
             }
 
         studyReviewRepository.saveOrUpdate(studyReview.toDto())
@@ -62,6 +78,7 @@ class RemoveCriteriaServiceImpl(
             RemoveCriteriaService.ResponseModel(
                 request.systematicStudyId,
                 request.studyId,
+                request.stage,
                 inclusionCriteria,
                 exclusionCriteria,
             )

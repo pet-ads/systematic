@@ -25,8 +25,10 @@ class RestfulRemoveCriteriaPresenter(
                 (
                 response.systematicStudyId,
                 response.studyId,
+                response.stage,
                 RemoveCriteriaRequest(
-                    criteria = listOf(it)
+                    criteria = listOf(it),
+                    stage = response.stage,
                     )
                 )
             )
@@ -37,8 +39,10 @@ class RestfulRemoveCriteriaPresenter(
                 (
                 response.systematicStudyId,
                 response.studyId,
+                response.stage,
                 RemoveCriteriaRequest(
-                    criteria = listOf(it)
+                    criteria = listOf(it),
+                    stage = response.stage,
                     )
                 )
             )
