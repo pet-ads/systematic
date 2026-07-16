@@ -74,11 +74,18 @@ class StudyReview(
     fun removeSelectionCriterion(criterion: Criterion) =
         _selectionCriteria.remove(criterion)
 
+
     fun addExtractionCriterion(criterion: Criterion) =
         _extractionCriteria.add(criterion)
 
-    fun removeExtractionCriterion(criterion: Criterion) =
+    fun removeExtractionCriterion(criterion: Criterion) {
         _extractionCriteria.remove(criterion)
+        if (_selectionCriteria.isEmpty()) {
+            selectionStatus = SelectionStatus.UNCLASSIFIED
+            extractionStatus = ExtractionStatus.UNCLASSIFIED
+            _extractionCriteria.clear()
+        }
+    }
 
     fun answerQualityQuestionOf( answer: Answer<*>) = _qualityAnswers.add(answer)
 
@@ -100,6 +107,10 @@ class StudyReview(
     private fun shouldNotConsiderForExtraction() =
         extractionStatus == ExtractionStatus.INCLUDED || extractionStatus == ExtractionStatus.UNCLASSIFIED
 
+    private fun clearExtractionCriteria() {
+        _extractionCriteria.clear()
+    }
+
     fun includeInExtraction() {
         if (selectionStatus == SelectionStatus.EXCLUDED)
             throw IllegalStateException("A study excluded in selection can not be included in extraction.")
@@ -111,6 +122,7 @@ class StudyReview(
     fun excludeInExtraction() {
         if (selectionStatus == SelectionStatus.UNCLASSIFIED)
             selectionStatus = SelectionStatus.EXCLUDED
+        clearExtractionCriteria()
         extractionStatus = ExtractionStatus.EXCLUDED
     }
 
@@ -136,6 +148,7 @@ class StudyReview(
         mergeDuplicateInformation(duplicates)
 
         duplicates.forEach { duplicate ->
+            duplicate.clearExtractionCriteria()
             duplicate.selectionStatus = SelectionStatus.DUPLICATED
             duplicate.extractionStatus = ExtractionStatus.DUPLICATED
         }
