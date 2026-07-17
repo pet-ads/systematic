@@ -523,7 +523,6 @@ class StudyReviewController(
     fun removeCriterion(
         @PathVariable systematicStudy: UUID,
         @PathVariable studyReviewId: Long,
-        @RequestParam stage: StudyReviewStage,
         @RequestBody patchRequest: RemoveCriteriaRequest
     ): ResponseEntity<*> {
 
@@ -534,7 +533,7 @@ class StudyReviewController(
             userId,
             systematicStudy,
             studyReviewId,
-            stage
+            patchRequest.stage
         )
 
         removeCriteriaService.removeCriteria(presenter, request)
