@@ -180,7 +180,7 @@ class LinksFactory {
             systematicStudyId,
             sessionId,
             SearchSessionController.PutRequest("searchString",
-                "additionalInfo", "source")
+                "additionalInfo", "source", null)
         )
     }.withRel("update-session").withType("PUT")
 
