@@ -34,4 +34,8 @@ class CollaboratorRepositoryImpl(
         innerRepository.delete(dto.toDocument())
     }
 
+    override fun deleteByResearcherIdAndSystematicStudyId(id: UUID, systematicStudyId: UUID) {
+        innerRepository.deleteByResearcherIdAndSystematicStudyId(id, systematicStudyId)
+    }
+
 }

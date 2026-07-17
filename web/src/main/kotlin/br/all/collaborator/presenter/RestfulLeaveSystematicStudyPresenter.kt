@@ -1,13 +1,13 @@
 package br.all.collaborator.presenter
 
-import br.all.application.collaborator.remove.RemoveCollaboratorPresenter
-import br.all.application.collaborator.remove.RemoveCollaboratorService.ResponseModel
+import br.all.application.collaborator.leave.LeaveSystematicStudyPresenter
+import br.all.application.collaborator.leave.LeaveSystematicStudyService.ResponseModel
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.status
 
-class RestfulRemoveCollaboratorPresenter : RemoveCollaboratorPresenter {
+class RestfulLeaveSystematicStudyPresenter : LeaveSystematicStudyPresenter {
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {

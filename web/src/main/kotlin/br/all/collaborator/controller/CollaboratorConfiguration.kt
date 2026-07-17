@@ -1,5 +1,6 @@
 package br.all.collaborator.controller
 
+import br.all.application.collaborator.leave.LeaveSystematicStudyServiceImpl
 import br.all.application.collaborator.remove.RemoveCollaboratorServiceImpl
 import br.all.application.review.repository.CollaboratorRepository
 import br.all.application.review.repository.SystematicStudyRepository
@@ -15,6 +16,18 @@ class CollaboratorConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         authorizationService: AuthorizationService,
     ) = RemoveCollaboratorServiceImpl(
+        collaboratorRepository,
+        systematicStudyRepository,
+        authorizationService,
+    )
+
+
+    @Bean
+    fun leaveSystematicStudyService(
+        collaboratorRepository: CollaboratorRepository,
+        systematicStudyRepository: SystematicStudyRepository,
+        authorizationService: AuthorizationService,
+    ) = LeaveSystematicStudyServiceImpl(
         collaboratorRepository,
         systematicStudyRepository,
         authorizationService,

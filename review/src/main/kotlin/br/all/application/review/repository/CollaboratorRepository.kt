@@ -14,4 +14,6 @@ interface CollaboratorRepository {
     fun findByResearcherIdAndSystematicStudyId(id: UUID, systematicStudyId: UUID): CollaboratorDto?
 
     fun delete(dto: CollaboratorDto)
+
+    fun deleteByResearcherIdAndSystematicStudyId(id: UUID, systematicStudyId: UUID)
 }

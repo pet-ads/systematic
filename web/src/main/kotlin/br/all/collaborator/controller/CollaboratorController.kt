@@ -1,6 +1,8 @@
 package br.all.collaborator.controller
 
+import br.all.application.collaborator.leave.LeaveSystematicStudyService
 import br.all.application.collaborator.remove.RemoveCollaboratorService
+import br.all.collaborator.presenter.RestfulLeaveSystematicStudyPresenter
 import br.all.collaborator.presenter.RestfulRemoveCollaboratorPresenter
 import br.all.security.service.AuthenticationInfoService
 import io.swagger.v3.oas.annotations.Operation
@@ -18,6 +20,7 @@ import java.util.*
 class CollaboratorController(
     private val authenticationInfoService: AuthenticationInfoService,
     private val removeCollaboratorService: RemoveCollaboratorService,
+    private val leaveSystematicStudyService: LeaveSystematicStudyService,
 ) {
 
     @DeleteMapping("/{systematicStudyId}/collaborator/{researcherId}")
@@ -65,6 +68,46 @@ class CollaboratorController(
         removeCollaboratorService.remove(presenter, request)
 
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
 
+
+    @DeleteMapping("/{systematicStudyId}/collaborator/me")
+    @Operation(summary = "Leave from an existing systematic study")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "204",
+                description = "Successfully leaving from systematic study"
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail to leave from systematic study - invalid systematic study",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail to leave from systematic study - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail to leave from systematic study - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            )
+        ]
+    )
+    fun leaveSystematicStudy(
+        @PathVariable systematicStudyId: UUID
+    ): ResponseEntity<*> {
+        val presenter = RestfulLeaveSystematicStudyPresenter()
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = LeaveSystematicStudyService.RequestModel(
+            userId = userId,
+            systematicStudyId = systematicStudyId
+        )
+
+        leaveSystematicStudyService.leave(presenter, request)
+
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

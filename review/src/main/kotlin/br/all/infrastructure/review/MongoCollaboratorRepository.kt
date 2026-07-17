@@ -7,4 +7,6 @@ interface MongoCollaboratorRepository: MongoRepository<CollaboratorDocument, UUI
     fun existsByResearcherIdAndSystematicStudyId(researcherId: UUID, systematicStudyId: UUID): Boolean
 
     fun findByResearcherIdAndSystematicStudyId(researcherId: UUID, systematicStudyId: UUID): CollaboratorDocument?
+
+    fun deleteByResearcherIdAndSystematicStudyId(researcherId: UUID, systematicStudyId: UUID)
 }
