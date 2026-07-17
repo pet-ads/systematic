@@ -71,21 +71,20 @@ class StudyReview(
     fun addSelectionCriterion(criterion: Criterion) =
         _selectionCriteria.add(criterion)
 
-    fun removeSelectionCriterion(criterion: Criterion) =
+    fun removeSelectionCriterion(criterion: Criterion) {
         _selectionCriteria.remove(criterion)
-
+        if (_selectionCriteria.isEmpty()) {
+            selectionStatus = SelectionStatus.UNCLASSIFIED
+            extractionStatus = ExtractionStatus.UNCLASSIFIED
+            clearExtractionCriteria()
+        }
+    }
 
     fun addExtractionCriterion(criterion: Criterion) =
         _extractionCriteria.add(criterion)
 
-    fun removeExtractionCriterion(criterion: Criterion) {
+    fun removeExtractionCriterion(criterion: Criterion) =
         _extractionCriteria.remove(criterion)
-        if (_selectionCriteria.isEmpty()) {
-            selectionStatus = SelectionStatus.UNCLASSIFIED
-            extractionStatus = ExtractionStatus.UNCLASSIFIED
-            _extractionCriteria.clear()
-        }
-    }
 
     fun answerQualityQuestionOf( answer: Answer<*>) = _qualityAnswers.add(answer)
 
@@ -102,6 +101,8 @@ class StudyReview(
         if(extractionStatus != ExtractionStatus.UNCLASSIFIED)
             throw IllegalStateException("A study classified in extraction can not be declassified in selection.")
         selectionStatus = SelectionStatus.UNCLASSIFIED
+        extractionStatus = ExtractionStatus.UNCLASSIFIED
+        clearExtractionCriteria()
     }
 
     private fun shouldNotConsiderForExtraction() =
