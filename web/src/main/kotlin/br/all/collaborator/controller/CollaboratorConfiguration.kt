@@ -2,6 +2,7 @@ package br.all.collaborator.controller
 
 import br.all.application.collaborator.leave.LeaveSystematicStudyServiceImpl
 import br.all.application.collaborator.remove.RemoveCollaboratorServiceImpl
+import br.all.application.collaborator.update.PassOwnershipServiceImpl
 import br.all.application.review.repository.CollaboratorRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.service.AuthorizationService
@@ -21,13 +22,23 @@ class CollaboratorConfiguration {
         authorizationService,
     )
 
-
     @Bean
     fun leaveSystematicStudyService(
         collaboratorRepository: CollaboratorRepository,
         systematicStudyRepository: SystematicStudyRepository,
         authorizationService: AuthorizationService,
     ) = LeaveSystematicStudyServiceImpl(
+        collaboratorRepository,
+        systematicStudyRepository,
+        authorizationService,
+    )
+
+    @Bean
+    fun passOwnershipService(
+        collaboratorRepository: CollaboratorRepository,
+        systematicStudyRepository: SystematicStudyRepository,
+        authorizationService: AuthorizationService,
+    ) = PassOwnershipServiceImpl(
         collaboratorRepository,
         systematicStudyRepository,
         authorizationService,
