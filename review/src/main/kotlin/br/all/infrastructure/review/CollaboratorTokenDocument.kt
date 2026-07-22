@@ -1,6 +1,7 @@
 package br.all.infrastructure.review
 
 import br.all.application.user.repository.TokenStatus
+import br.all.domain.shared.user.Username
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
@@ -12,6 +13,8 @@ data class CollaboratorTokenDocument(
 
     var systematicStudyId: UUID,
     var researcherId: UUID,
+    var email: String,
+    var username: String,
     var status: TokenStatus,
     var createdAt: LocalDateTime,
     var expiration: LocalDateTime,
