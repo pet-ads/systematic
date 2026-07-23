@@ -1,6 +1,7 @@
 package br.all.application.review.find.services
 
 import br.all.application.review.find.presenter.FindSystematicStudyPresenter
+import br.all.application.review.repository.CollaboratorRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.TestDataFactory
 import br.all.domain.shared.exception.EntityNotFoundException
@@ -23,6 +24,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 class FindSystematicStudyServiceImplTest {
     @MockK
     private lateinit var repository: SystematicStudyRepository
+    @MockK
+    private lateinit var collaboratorRepository: CollaboratorRepository
     @MockK
     private lateinit var credentialsService: CredentialsService
     @MockK(relaxed = true)
@@ -57,6 +60,7 @@ class FindSystematicStudyServiceImplTest {
 
             preconditionCheckerMocking.makeEverythingWork()
             every { repository.findById(systematicStudy) } returns response.content
+            every { collaboratorRepository.findByResearcherIdAndSystematicStudyId(request.userId,systematicStudy) } returns factory.collaboratorDto()
 
             sut.findById(presenter, request)
             verify { presenter.prepareSuccessView(response) }
