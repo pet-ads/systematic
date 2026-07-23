@@ -4,17 +4,12 @@ import br.all.application.review.find.presenter.FindSystematicStudyPresenter
 import br.all.application.review.find.services.FindSystematicStudyService.ResponseModel
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.domain.shared.user.Role
-import br.all.review.controller.SystematicStudyController
-import br.all.review.requests.PostRequest
-import br.all.review.requests.PutRequest
 import br.all.shared.error.createErrorResponseFrom
 import br.all.utils.LinksFactory
 import org.springframework.hateoas.RepresentationModel
-import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
-import java.util.*
 
 @Component
 class RestfulFindSystematicStudyPresenter(

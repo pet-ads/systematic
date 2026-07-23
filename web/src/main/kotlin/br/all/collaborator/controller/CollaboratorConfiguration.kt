@@ -1,6 +1,7 @@
 package br.all.collaborator.controller
 
 import br.all.application.collaborator.find.FindAllCollaboratorsServiceImpl
+import br.all.application.collaborator.find.FindCollaboratorRoleServiceImpl
 import br.all.application.collaborator.leave.LeaveSystematicStudyServiceImpl
 import br.all.application.collaborator.remove.RemoveCollaboratorServiceImpl
 import br.all.application.collaborator.update.PassOwnershipServiceImpl
@@ -54,6 +55,13 @@ class CollaboratorConfiguration {
     ) = FindAllCollaboratorsServiceImpl(
         collaboratorTokenRepository,
         collaboratorRepository,
+        authorizationService,
+    )
+
+    @Bean
+    fun findCollaboratorRole(
+        authorizationService: AuthorizationService,
+    ) = FindCollaboratorRoleServiceImpl(
         authorizationService,
     )
 }

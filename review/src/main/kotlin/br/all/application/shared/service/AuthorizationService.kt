@@ -21,7 +21,8 @@ class AuthorizationService(
 
     data class AuthorizationContext(
         val researcher: Researcher,
-        val systematicStudy: SystematicStudy
+        val systematicStudy: SystematicStudy,
+        val role: Role,
     )
 
     fun authorize(
@@ -34,18 +35,24 @@ class AuthorizationService(
         val researcher = credentialsService.loadCredentials(researcherId)?.toUser()
         val systematicStudyDto = systematicStudyRepository.findById(systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+        var role: Role? = null
 
-        if (researcher != null &&
-            systematicStudy != null &&
-            !researcher.roles.contains(Role.ADMIN))
-        {
-            val collaborator = collaboratorRepository.findByResearcherIdAndSystematicStudyId(
-                researcherId,
-                systematicStudyId
-            )
+        if (researcher != null && systematicStudy != null) {
+            if (researcher.roles.contains(Role.ADMIN)) {
+                role = Role.ADMIN
+            } else {
+                val collaborator = collaboratorRepository.findByResearcherIdAndSystematicStudyId(
+                    researcherId,
+                    systematicStudyId
+                )
 
-            if (collaborator != null) {
-                researcher.roles += Role.valueOf(collaborator.role)
+                collaborator?.let {
+                    role = Role.valueOf(it.role)
+                }
+
+                researcher.roles.clear()
+
+                if (role != null) researcher.roles.add(role)
             }
         }
 
@@ -61,7 +68,8 @@ class AuthorizationService(
 
         return AuthorizationContext(
             researcher = researcher!!,
-            systematicStudy = systematicStudy!!
+            systematicStudy = systematicStudy!!,
+            role = role!!
         )
     }
 }

@@ -1,10 +1,12 @@
 package br.all.collaborator.controller
 
 import br.all.application.collaborator.find.FindAllCollaboratorsService
+import br.all.application.collaborator.find.FindCollaboratorRoleService
 import br.all.application.collaborator.leave.LeaveSystematicStudyService
 import br.all.application.collaborator.remove.RemoveCollaboratorService
 import br.all.application.collaborator.update.PassOwnershipService
 import br.all.collaborator.presenter.RestfulFindAllCollaboratorsPresenter
+import br.all.collaborator.presenter.RestfulFindCollaboratorRolePresenter
 import br.all.collaborator.presenter.RestfulLeaveSystematicStudyPresenter
 import br.all.collaborator.presenter.RestfulPassOwnershipPresenter
 import br.all.collaborator.presenter.RestfulRemoveCollaboratorPresenter
@@ -28,6 +30,7 @@ class CollaboratorController(
     private val leaveSystematicStudyService: LeaveSystematicStudyService,
     private val passOwnershipService: PassOwnershipService,
     private val findAllCollaboratorsService: FindAllCollaboratorsService,
+    private val findCollaboratorRoleService: FindCollaboratorRoleService,
 ) {
     @GetMapping("/{systematicStudyId}/collaborators")
     @Operation(summary = "Find all collaborators of a systematic study")
@@ -64,6 +67,44 @@ class CollaboratorController(
             systematicStudyId = systematicStudyId
         )
         findAllCollaboratorsService.findAll(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("/{systematicStudyId}/collaborator/me/role")
+    @Operation(summary = "Find the authenticated user's role in a systematic study")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Successfully found role"
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail to find role - invalid systematic study",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail to find role - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail to find role - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            )
+        ]
+    )
+    fun findCollaboratorRole(
+        @PathVariable systematicStudyId: UUID
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindCollaboratorRolePresenter()
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindCollaboratorRoleService.Request(
+            userId = userId,
+            systematicStudyId = systematicStudyId
+        )
+        findCollaboratorRoleService.findRole(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
