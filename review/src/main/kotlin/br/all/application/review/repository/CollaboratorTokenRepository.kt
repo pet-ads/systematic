@@ -10,4 +10,6 @@ interface CollaboratorTokenRepository {
     fun findAllBySystematicStudyId(systematicStudyId: UUID) : List<CollaboratorTokenDto>
 
     fun existsById(id: UUID) : Boolean
+
+    fun deleteById(id: UUID)
 }

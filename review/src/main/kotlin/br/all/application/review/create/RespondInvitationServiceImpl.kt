@@ -38,9 +38,7 @@ open class RespondInvitationServiceImpl(
         try {
             addCollaboratorService.addCollaborator(token.researcherId, token.systematicStudyId, Role.VIEWER)
 
-            token.status = TokenStatus.CONCLUIDO
-            token.expiration = LocalDateTime.now().plusDays(1)
-            tokenRepository.saveOrUpdate(token)
+            tokenRepository.deleteById(token.id)
 
             return presenter.prepareSuccessView(RespondInvitationService.ResponseModel())
         } catch (e: Exception) {

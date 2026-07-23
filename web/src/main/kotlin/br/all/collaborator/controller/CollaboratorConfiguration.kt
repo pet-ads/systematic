@@ -1,9 +1,11 @@
 package br.all.collaborator.controller
 
+import br.all.application.collaborator.find.FindAllCollaboratorsServiceImpl
 import br.all.application.collaborator.leave.LeaveSystematicStudyServiceImpl
 import br.all.application.collaborator.remove.RemoveCollaboratorServiceImpl
 import br.all.application.collaborator.update.PassOwnershipServiceImpl
 import br.all.application.review.repository.CollaboratorRepository
+import br.all.application.review.repository.CollaboratorTokenRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.service.AuthorizationService
 import org.springframework.context.annotation.Bean
@@ -41,6 +43,17 @@ class CollaboratorConfiguration {
     ) = PassOwnershipServiceImpl(
         collaboratorRepository,
         systematicStudyRepository,
+        authorizationService,
+    )
+
+    @Bean
+    fun findAllCollaborators(
+        collaboratorTokenRepository: CollaboratorTokenRepository,
+        collaboratorRepository: CollaboratorRepository,
+        authorizationService: AuthorizationService,
+    ) = FindAllCollaboratorsServiceImpl(
+        collaboratorTokenRepository,
+        collaboratorRepository,
         authorizationService,
     )
 }
