@@ -39,8 +39,9 @@ class SystematicStudyServicesConfiguration {
     @Bean
     fun findOneSystematicStudyService(
         systematicStudyRepository: SystematicStudyRepository,
+        collaboratorRepository: CollaboratorRepository,
         credentialsService: CredentialsService,
-    ) = FindSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
+    ) = FindSystematicStudyServiceImpl(systematicStudyRepository, collaboratorRepository, credentialsService)
 
     @Bean
     fun findAllSystematicStudiesService(

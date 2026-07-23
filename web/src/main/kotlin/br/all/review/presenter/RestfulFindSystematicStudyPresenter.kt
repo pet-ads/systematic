@@ -3,6 +3,7 @@ package br.all.review.presenter
 import br.all.application.review.find.presenter.FindSystematicStudyPresenter
 import br.all.application.review.find.services.FindSystematicStudyService.ResponseModel
 import br.all.application.review.repository.SystematicStudyDto
+import br.all.domain.shared.user.Role
 import br.all.review.controller.SystematicStudyController
 import br.all.review.requests.PostRequest
 import br.all.review.requests.PutRequest
@@ -22,7 +23,7 @@ class RestfulFindSystematicStudyPresenter(
     var responseEntity: ResponseEntity<*>? = null
 
     override fun prepareSuccessView(response: ResponseModel) {
-        val restfulResponse = ViewModel(response.content)
+        val restfulResponse = ViewModel(response.content, response.role)
 
         val self = linksFactory.findReview(response.systematicStudyId)
 
@@ -38,5 +39,5 @@ class RestfulFindSystematicStudyPresenter(
 
     override fun isDone() = responseEntity != null
 
-    private data class ViewModel(val content: SystematicStudyDto) : RepresentationModel<ViewModel>()
+    private data class ViewModel(val content: SystematicStudyDto, val role: Role) : RepresentationModel<ViewModel>()
 }
