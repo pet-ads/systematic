@@ -146,6 +146,7 @@ class UpdateSystematicStudyServiceImplTest {
             val request = factory.updateRequestModel()
 
             preconditionCheckerMocking.makeSystematicStudyNonexistent()
+            every { presenter.isDone() } returns true
             sut.update(presenter, request)
 
             verifyOrder {

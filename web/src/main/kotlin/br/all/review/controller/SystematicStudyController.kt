@@ -7,6 +7,7 @@ import br.all.application.review.find.services.FindAllSystematicStudiesService
 import br.all.application.review.find.services.FindAllSystematicStudiesService.FindByOwnerRequest
 import br.all.application.review.find.services.FindSystematicStudyService
 import br.all.application.review.find.services.SearchCollaboratorCandidatesService
+import br.all.application.review.find.services.SearchCollaboratorCandidatesService.RequestModel
 import br.all.application.review.update.services.UpdateResearcherRoleService
 import br.all.application.review.update.services.UpdateSystematicStudyService
 import br.all.review.presenter.RestfulCreateInviteCollaboratorPresenter
@@ -21,7 +22,6 @@ import br.all.review.requests.PostRequest
 import br.all.review.requests.PutRequest
 import br.all.review.requests.InviteCollaboratorRequest
 import br.all.review.requests.RespondInvitationRequest
-import br.all.review.requests.SearchCandidatesRequest
 import br.all.review.requests.UpdateRoleRequest
 import br.all.security.service.AuthenticationInfoService
 import br.all.utils.LinksFactory
@@ -316,9 +316,12 @@ class SystematicStudyController(
             ),
         ]
     )
-    fun searchCollaboratorCandidates(@PathVariable systematicStudyId: UUID, @RequestBody request: SearchCandidatesRequest): ResponseEntity<*> {
+    fun searchCollaboratorCandidates(
+        @PathVariable systematicStudyId: UUID,
+        @RequestParam prefix: String
+    ): ResponseEntity<*> {
         val presenter = RestfulSearchCollaboratorCandidatesPresenter()
-        val requestModel = request.toCreateRequestModel(systematicStudyId)
+        val requestModel = RequestModel(systematicStudyId, prefix)
 
         searchCollaboratorCandidatesService.findCandidatesWith(presenter, requestModel)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)

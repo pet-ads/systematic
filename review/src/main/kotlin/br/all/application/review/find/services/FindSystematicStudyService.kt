@@ -2,6 +2,7 @@ package br.all.application.review.find.services
 
 import br.all.application.review.find.presenter.FindSystematicStudyPresenter
 import br.all.application.review.repository.SystematicStudyDto
+import br.all.domain.shared.user.Role
 import io.swagger.v3.oas.annotations.media.Schema
 import java.util.*
 
@@ -17,5 +18,6 @@ interface FindSystematicStudyService {
         val userId: UUID,
         val systematicStudyId: UUID,
         val content: SystematicStudyDto,
+        val role: Role
     )
 }

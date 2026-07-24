@@ -6,6 +6,7 @@ import br.all.application.review.repository.fromDto
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.domain.shared.presenter.GenericPresenter
 import br.all.domain.shared.user.Researcher
 import br.all.domain.shared.user.Role
@@ -21,7 +22,8 @@ class AuthorizationService(
 
     data class AuthorizationContext(
         val researcher: Researcher,
-        val systematicStudy: SystematicStudy
+        val systematicStudy: SystematicStudy,
+        val role: Role,
     )
 
     fun authorize(
@@ -34,18 +36,31 @@ class AuthorizationService(
         val researcher = credentialsService.loadCredentials(researcherId)?.toUser()
         val systematicStudyDto = systematicStudyRepository.findById(systematicStudyId)
         val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+        var role: Role? = null
 
-        if (researcher != null &&
-            systematicStudy != null &&
-            !researcher.roles.contains(Role.ADMIN))
-        {
-            val collaborator = collaboratorRepository.findByResearcherIdAndSystematicStudyId(
-                researcherId,
-                systematicStudyId
-            )
 
-            if (collaborator != null) {
-                researcher.roles += Role.valueOf(collaborator.role)
+        if (systematicStudy == null) {
+            presenter.prepareFailView(EntityNotFoundException("Review does not exists."))
+            return null
+        }
+
+        if (researcher != null) {
+            if (researcher.roles.contains(Role.ADMIN)) {
+                role = Role.ADMIN
+            } else {
+                val collaborator = collaboratorRepository.findByResearcherIdAndSystematicStudyId(
+                    researcherId,
+                    systematicStudyId
+                )
+
+
+                collaborator?.let {
+                    role = Role.valueOf(it.role)
+                }
+
+                researcher.roles.clear()
+
+                if (role != null) researcher.roles.add(role)
             }
         }
 
@@ -61,7 +76,8 @@ class AuthorizationService(
 
         return AuthorizationContext(
             researcher = researcher!!,
-            systematicStudy = systematicStudy!!
+            systematicStudy = systematicStudy,
+            role = role!!
         )
     }
 }

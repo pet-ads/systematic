@@ -18,6 +18,9 @@ class CollaboratorRepositoryImpl(
         .toNullable()
         ?.toDto()
 
+    override fun findAll(systematicStudyId: UUID): List<CollaboratorDto> =
+        innerRepository.findAllBySystematicStudyId(systematicStudyId).map { it.toDto() }
+
 
     override fun existsById(id: UUID) = innerRepository.existsById(id)
 
@@ -29,5 +32,13 @@ class CollaboratorRepositoryImpl(
         id: UUID,
         systematicStudyId: UUID
     ) =  innerRepository.findByResearcherIdAndSystematicStudyId(id, systematicStudyId)?.toDto()
+
+    override fun delete(dto: CollaboratorDto) {
+        innerRepository.delete(dto.toDocument())
+    }
+
+    override fun deleteByResearcherIdAndSystematicStudyId(id: UUID, systematicStudyId: UUID) {
+        innerRepository.deleteByResearcherIdAndSystematicStudyId(id, systematicStudyId)
+    }
 
 }

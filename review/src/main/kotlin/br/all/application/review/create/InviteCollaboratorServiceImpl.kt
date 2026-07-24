@@ -69,7 +69,7 @@ class InviteCollaboratorServiceImpl(
 
         if (presenter.isDone()) return
 
-        val token = generateCollaboratorTokenService.generateCollaboratorToken(systematicStudy.id, userCollaboratorCredentials.id)
+        val token = generateCollaboratorTokenService.generateCollaboratorToken(systematicStudy.id, userCollaboratorCredentials.id, userCollaboratorCredentials.email, request.usernameCollaborator)
         val emailMessage = emailBuilder.buildInviteCollaborator(
             email = userCollaboratorCredentials.email,
             name = userCollaboratorCredentials.name,

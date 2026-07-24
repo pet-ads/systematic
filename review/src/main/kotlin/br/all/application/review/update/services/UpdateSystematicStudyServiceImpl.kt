@@ -6,6 +6,7 @@ import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter
 import br.all.application.review.update.services.UpdateSystematicStudyService.RequestModel
 import br.all.application.review.update.services.UpdateSystematicStudyService.ResponseModel
 import br.all.application.shared.service.AuthorizationService
+import br.all.domain.shared.user.Role
 
 class UpdateSystematicStudyServiceImpl(
     private val repository: SystematicStudyRepository,
@@ -15,7 +16,8 @@ class UpdateSystematicStudyServiceImpl(
         val context = authorizationService.authorize(
             presenter,
             request.userId,
-            request.systematicStudy
+            request.systematicStudy,
+            setOf(Role.OWNER)
         )
 
         if (presenter.isDone()){

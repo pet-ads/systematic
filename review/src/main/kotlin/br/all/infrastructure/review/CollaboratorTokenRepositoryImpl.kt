@@ -24,4 +24,8 @@ open class CollaboratorTokenRepositoryImpl(
             .map { it.toDto() }
 
     override fun existsById(id: UUID) = innerRepository.existsById(id)
+
+    override fun deleteById(id: UUID) {
+        innerRepository.deleteById(id)
+    }
 }
