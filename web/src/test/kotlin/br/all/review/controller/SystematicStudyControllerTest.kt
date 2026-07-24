@@ -1,6 +1,7 @@
 package br.all.review.controller
 
 import br.all.infrastructure.protocol.MongoProtocolRepository
+import br.all.infrastructure.review.MongoCollaboratorRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.review.SystematicStudyDocument
 import br.all.infrastructure.shared.toNullable
@@ -31,6 +32,7 @@ import java.util.*
 @Tag("ControllerTest")
 class SystematicStudyControllerTest @Autowired constructor(
     private val repository: MongoSystematicStudyRepository,
+    private val collaboratorRepository: MongoCollaboratorRepository,
     private val testHelperService: TestHelperService,
     private val mockMvc: MockMvc,
 ) {
@@ -138,6 +140,8 @@ class SystematicStudyControllerTest @Autowired constructor(
             @Test
             fun `should get a systematic study and return 200 status code`() {
                 repository.save(factory.createSystematicStudyDocument(owner = user.id))
+                val collaboratorDocument = factory.createCollaboratorDocument(user, factory.systematicStudyId)
+                collaboratorRepository.save(collaboratorDocument)
                 mockMvc.perform(
                     get(getOneUrl())
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
@@ -420,6 +424,8 @@ class SystematicStudyControllerTest @Autowired constructor(
                         owner = user.id
                     )
                 repository.save(original)
+                val collaboratorDocument = factory.createCollaboratorDocument(user, factory.systematicStudyId)
+                collaboratorRepository.save(collaboratorDocument)
 
                 val request = factory.createValidPutRequest(title, description)
                 mockMvc.perform(put(putUrl())
@@ -443,6 +449,8 @@ class SystematicStudyControllerTest @Autowired constructor(
             fun `should nothing be updated if nothing is provided`() {
                 val document = factory.createSystematicStudyDocument(owner = user.id)
                 repository.save(document)
+                val collaboratorDocument = factory.createCollaboratorDocument(user, factory.systematicStudyId)
+                collaboratorRepository.save(collaboratorDocument)
 
                 val request = "{}"
                 mockMvc.perform(put(putUrl())
@@ -460,6 +468,8 @@ class SystematicStudyControllerTest @Autowired constructor(
             @Test
             fun `should not update a systematic study if it does not exist and return 404`() {
                 val request = factory.createValidPutRequest("New title", "New description")
+                val collaboratorDocument = factory.createCollaboratorDocument(user, factory.systematicStudyId)
+                collaboratorRepository.save(collaboratorDocument)
                 mockMvc.perform(put(putUrl())
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON).content(request)
@@ -469,6 +479,7 @@ class SystematicStudyControllerTest @Autowired constructor(
 
             @Test
             fun `should not update if user is unauthorized`(){
+                repository.save(factory.createSystematicStudyDocument(owner = user.id))
                 testHelperService.testForUnauthorizedUser(mockMvc,
                     put(
                        putUrl()).content(factory.createValidPutRequest("New title", "New description"))

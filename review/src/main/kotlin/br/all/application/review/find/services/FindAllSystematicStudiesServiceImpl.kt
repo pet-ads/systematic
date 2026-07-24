@@ -6,6 +6,7 @@ import br.all.application.review.find.services.FindAllSystematicStudiesService.R
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.shared.presenter.prepareIfUnauthorized
 import br.all.application.user.CredentialsService
+import br.all.domain.shared.exception.UnauthenticatedUserException
 import java.util.*
 
 class FindAllSystematicStudiesServiceImpl(
@@ -37,6 +38,12 @@ class FindAllSystematicStudiesServiceImpl(
         userId: UUID,
     ) = presenter.run {
         val user = credentialsService.loadCredentials(userId)?.toUser()
+
+        if (user == null) {
+            prepareFailView(UnauthenticatedUserException("Current user is not authenticated."))
+            return presenter.isDone()
+        }
+
         presenter.prepareIfUnauthorized(user)
         presenter.isDone()
     }
