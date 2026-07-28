@@ -1,7 +1,7 @@
 package br.all.application.collaborator.find
 
-import br.all.application.review.repository.CollaboratorDto
-import br.all.application.review.repository.CollaboratorTokenDto
+import br.all.application.collaborator.repository.CollaboratorDto
+import br.all.application.collaborator.repository.CollaboratorTokenDto
 import br.all.application.user.repository.TokenStatus
 import br.all.domain.shared.user.Role
 import java.util.*

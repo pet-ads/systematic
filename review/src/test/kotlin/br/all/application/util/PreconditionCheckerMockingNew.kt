@@ -1,8 +1,8 @@
 package br.all.application.util
 
 import br.all.application.question.repository.QuestionRepository
-import br.all.application.review.repository.CollaboratorDto
-import br.all.application.review.repository.CollaboratorRepository
+import br.all.application.collaborator.repository.CollaboratorDto
+import br.all.application.collaborator.repository.CollaboratorRepository
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.domain.shared.exception.EntityNotFoundException

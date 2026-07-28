@@ -1,6 +1,6 @@
 package br.all.application.collaborator.update
 
-import br.all.application.review.repository.CollaboratorRepository
+import br.all.application.collaborator.repository.CollaboratorRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.toDto
 import br.all.application.shared.service.AuthorizationService

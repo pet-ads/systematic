@@ -1,7 +1,7 @@
 package br.all.review.controller
 
 import br.all.infrastructure.protocol.MongoProtocolRepository
-import br.all.infrastructure.review.MongoCollaboratorRepository
+import br.all.infrastructure.collaborator.MongoCollaboratorRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.review.SystematicStudyDocument
 import br.all.infrastructure.shared.toNullable

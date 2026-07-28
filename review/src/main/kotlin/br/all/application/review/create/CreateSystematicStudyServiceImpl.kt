@@ -5,12 +5,13 @@ import br.all.application.protocol.repository.toDto
 import br.all.application.user.CredentialsService
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel
 import br.all.application.review.create.CreateSystematicStudyService.ResponseModel
-import br.all.application.review.repository.CollaboratorRepository
+import br.all.application.collaborator.repository.CollaboratorRepository
+import br.all.application.collaborator.repository.toDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
 import br.all.domain.model.protocol.Protocol
-import br.all.domain.model.review.Collaborator
+import br.all.domain.model.collaborator.Collaborator
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.review.toSystematicStudyId

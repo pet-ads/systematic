@@ -1,6 +1,6 @@
 package br.all.application.review.update.services
 
-import br.all.application.review.repository.CollaboratorRepository
+import br.all.application.collaborator.repository.CollaboratorRepository
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.update.presenter.UpdateSystematicStudyPresenter

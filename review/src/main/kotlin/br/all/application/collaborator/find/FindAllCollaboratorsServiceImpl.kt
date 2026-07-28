@@ -1,7 +1,7 @@
 package br.all.application.collaborator.find
 
-import br.all.application.review.repository.CollaboratorRepository
-import br.all.application.review.repository.CollaboratorTokenRepository
+import br.all.application.collaborator.repository.CollaboratorRepository
+import br.all.application.collaborator.repository.CollaboratorTokenRepository
 import br.all.application.shared.service.AuthorizationService
 import br.all.domain.shared.user.Role
 

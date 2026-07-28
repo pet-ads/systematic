@@ -1,7 +1,7 @@
 package br.all.application.review.create
 
 import br.all.application.protocol.repository.ProtocolRepository
-import br.all.application.review.repository.CollaboratorRepository
+import br.all.application.collaborator.repository.CollaboratorRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.TestDataFactory
 import br.all.domain.shared.exception.UnauthenticatedUserException
