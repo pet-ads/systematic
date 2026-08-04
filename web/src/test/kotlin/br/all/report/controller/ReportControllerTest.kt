@@ -742,7 +742,7 @@ class ReportControllerTest @Autowired constructor(
             protocolRepository.save(protocol)
 
             mockMvc.perform(
-                get(findStudyReviewCriteria(id = studyReviewId, stage = "selection"))
+                get(findStudyReviewCriteria(id = studyReviewId, stage = "SELECTION"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
             )
                 .andExpect(status().isOk)

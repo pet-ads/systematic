@@ -109,7 +109,8 @@ class TestDataFactory {
     fun validMarkAsDuplicateRequest(duplicateStudyIds: List<Long>) =
         """
             {
-                "duplicatedStudyIds": $duplicateStudyIds
+                "duplicatedStudyIds": $duplicateStudyIds,
+                "stage": "SELECTION"
             }
         """
 
