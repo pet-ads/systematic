@@ -98,8 +98,8 @@ class StudyReview(
     }
 
     fun declassifyInSelection() {
-        if(extractionStatus != ExtractionStatus.UNCLASSIFIED)
-            throw IllegalStateException("A study classified in extraction can not be declassified in selection.")
+        ensureCanChangeSelectionStatus()
+
         selectionStatus = SelectionStatus.UNCLASSIFIED
         extractionStatus = ExtractionStatus.UNCLASSIFIED
         clearExtractionCriteria()
@@ -110,6 +110,14 @@ class StudyReview(
 
     private fun clearExtractionCriteria() {
         _extractionCriteria.clear()
+    }
+
+    private fun ensureCanChangeSelectionStatus() {
+        if (extractionStatus != ExtractionStatus.UNCLASSIFIED) {
+            throw IllegalStateException(
+                "A study classified in extraction can not change its selection status."
+            )
+        }
     }
 
     fun includeInExtraction() {
@@ -149,6 +157,8 @@ class StudyReview(
         mergeDuplicateInformation(duplicates)
 
         duplicates.forEach { duplicate ->
+            duplicate.ensureCanChangeSelectionStatus()
+
             duplicate.clearExtractionCriteria()
             duplicate.selectionStatus = SelectionStatus.DUPLICATED
             duplicate.extractionStatus = ExtractionStatus.DUPLICATED
