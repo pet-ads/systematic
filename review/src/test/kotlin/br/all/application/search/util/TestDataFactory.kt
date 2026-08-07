@@ -214,8 +214,9 @@ class TestDataFactory {
         session: UUID = searchSessionId,
         searchString: String = "SearchString",
         additionalInfo: String = "",
-        source: String = "SearchSource"
-    ) = RequestModel(userId, systematicStudy, session, searchString, additionalInfo, source)
+        source: String = "SearchSource",
+        timestamp: LocalDateTime? = null,
+    ) = RequestModel(userId, systematicStudy, session, searchString, additionalInfo, source, timestamp)
 
     fun updateResponseModel(
         userId: UUID = this.userId,
