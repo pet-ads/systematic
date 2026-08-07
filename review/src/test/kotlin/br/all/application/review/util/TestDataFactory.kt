@@ -2,7 +2,7 @@ package br.all.application.review.util
 
 import br.all.application.protocol.repository.toDto
 import br.all.application.review.find.services.FindAllSystematicStudiesService.FindByOwnerRequest
-import br.all.application.review.repository.CollaboratorDto
+import br.all.application.collaborator.repository.CollaboratorDto
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto

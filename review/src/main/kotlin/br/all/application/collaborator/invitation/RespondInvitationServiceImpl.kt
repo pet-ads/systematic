@@ -1,0 +1,48 @@
+package br.all.application.collaborator.invitation
+
+import br.all.application.collaborator.repository.CollaboratorTokenRepository
+import br.all.application.collaborator.repository.InviteResponse
+import br.all.application.user.repository.TokenStatus
+import br.all.domain.shared.user.Role
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
+
+open class RespondInvitationServiceImpl(
+    private val tokenRepository: CollaboratorTokenRepository,
+    private val addCollaboratorService: AddCollaboratorService
+) : RespondInvitationService {
+    @Transactional
+    override fun respond(presenter: ResponseInvitationPresenter, request: RespondInvitationService.RequestModel) {
+        val token = tokenRepository.findById(request.token)
+            ?: return presenter.prepareFailView(IllegalArgumentException("Invalid token"))
+
+        if (token.status == TokenStatus.CONCLUIDO) {
+            presenter.prepareFailView(IllegalArgumentException("Token already used"))
+            return
+        }
+
+        if (token.expiration.isBefore(LocalDateTime.now())) {
+            presenter.prepareFailView(IllegalArgumentException("Expired token"))
+            return
+        }
+
+        if (request.inviteResponse == InviteResponse.REJECTED) {
+            token.status = TokenStatus.REJEITADO
+            token.expiration = LocalDateTime.now().plusDays(7)
+            tokenRepository.saveOrUpdate(token)
+
+            return presenter.prepareSuccessView(RespondInvitationService.ResponseModel())
+        }
+
+        try {
+            addCollaboratorService.addCollaborator(token.researcherId, token.systematicStudyId, Role.VIEWER)
+
+            tokenRepository.deleteById(token.id)
+
+            return presenter.prepareSuccessView(RespondInvitationService.ResponseModel())
+        } catch (e: Exception) {
+            presenter.prepareFailView(e)
+        }
+
+    }
+}
