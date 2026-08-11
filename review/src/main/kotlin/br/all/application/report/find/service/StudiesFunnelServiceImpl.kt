@@ -9,15 +9,16 @@ import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
-import br.all.domain.model.study.ExtractionStatus
-import br.all.domain.model.study.SelectionStatus
 
 class StudiesFunnelServiceImpl(
     private val credentialsService: CredentialsService,
     private val studyReviewRepository: StudyReviewRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
-): StudiesFunnelService {
-    override fun studiesFunnel(presenter: StudiesFunnelPresenter, request: StudiesFunnelService.RequestModel) {
+) : StudiesFunnelService {
+    override fun studiesFunnel(
+        presenter: StudiesFunnelPresenter,
+        request: StudiesFunnelService.RequestModel
+    ) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
         val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
@@ -39,23 +40,18 @@ class StudiesFunnelServiceImpl(
     ): StudiesFunnelService.ResponseModel {
         val funnelData = FunnelCalculator.calculate(allStudies)
 
-        val totalIncluded = allStudies.count { 
-            it.selectionStatus == SelectionStatus.INCLUDED.name && 
-            it.extractionStatus == ExtractionStatus.INCLUDED.name 
-        }
-
         return StudiesFunnelService.ResponseModel(
             userId = request.userId,
             systematicStudyId = request.systematicStudyId,
-            totalIdentifiedBySource = totalIdentifiedBySource,
-            totalAfterDuplicatesRemovedBySource = totalAfterDuplicatesRemovedBySource,
-            totalScreened = totalScreened,
-            totalExcludedInScreening = totalExcludedInScreening,
-            excludedByCriterion = excludedByCriterion,
-            totalFullTextAssessed = totalFullTextAssessed,
-            totalExcludedInFullText = totalExcludedInFullText,
-            totalExcludedByCriterion = totalExcludedByCriterion,
-            totalIncluded = totalIncluded
+            totalIdentifiedBySource = funnelData.totalIdentifiedBySource,
+            totalAfterDuplicatesRemovedBySource = funnelData.totalAfterDuplicatesRemovedBySource,
+            totalScreened = funnelData.totalScreened,
+            totalExcludedInScreening = funnelData.totalExcludedInScreening,
+            excludedByCriterion = funnelData.excludedByCriterion,
+            totalFullTextAssessed = funnelData.totalFullTextAssessed,
+            totalExcludedInFullText = funnelData.totalExcludedInFullText,
+            totalExcludedByCriterion = funnelData.totalExcludedByCriterion,
+            totalIncluded = funnelData.totalIncluded
         )
     }
 }

@@ -142,7 +142,7 @@ class ExportReviewServiceImpl(
         venue = venue,
         doi = doi,
         keywords = keywords,
-        selectionCriteria = criteria,
+        selectionCriteria = selectionCriteria,
         extractionAnswers = extractionQuestions.map {
             QuestionAnswerExportData(it.description, formAnswers[it.questionId])
         },
