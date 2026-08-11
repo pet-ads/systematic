@@ -2,6 +2,7 @@ package br.all.application.review.util
 
 import br.all.application.protocol.repository.toDto
 import br.all.application.review.find.services.FindAllSystematicStudiesService.FindByOwnerRequest
+import br.all.application.collaborator.repository.CollaboratorDto
 import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
@@ -9,6 +10,7 @@ import br.all.application.review.update.services.UpdateSystematicStudyService.Re
 import br.all.domain.model.protocol.Protocol
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.toSystematicStudyId
+import br.all.domain.shared.user.Role
 import io.github.serpro69.kfaker.Faker
 import java.util.*
 import br.all.application.review.create.CreateSystematicStudyService.RequestModel as CreateRequestModel
@@ -45,6 +47,8 @@ class TestDataFactory {
         .build()
         .toDto()
 
+    fun collaboratorDto() = CollaboratorDto(researcher, systematicStudy, faker.clashOfClans.troops(), faker.internet.domain(), "OWNER")
+
     fun createRequestModel(
         researcherId: UUID = researcher,
         title: String = faker.book.title(),
@@ -72,7 +76,7 @@ class TestDataFactory {
         researcherId: UUID = this.researcher,
         systematicStudyId: UUID = this.systematicStudy,
         dto: SystematicStudyDto = generateDto(),
-    ) = FindOneResponseModel(researcherId, systematicStudyId, dto)
+    ) = FindOneResponseModel(researcherId, systematicStudyId, dto, Role.OWNER)
 
     fun findByOwnerRequest(
         researcherId: UUID = researcher,

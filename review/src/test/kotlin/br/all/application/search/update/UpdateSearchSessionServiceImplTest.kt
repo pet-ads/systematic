@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.time.LocalDateTime
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -103,6 +104,37 @@ class UpdateSearchSessionServiceImplTest {
 
             every { searchSessionRepository.existsById(factory.searchSessionId) } returns true
             every { searchSessionRepository.findById(factory.searchSessionId) } returns dto
+            sut.updateSession(presenter, request)
+
+            verify {
+                searchSessionRepository.saveOrUpdate(updatedDto)
+                presenter.prepareSuccessView(response)
+            }
+        }
+
+        @Test
+        fun `should only the timestamp be updated`() {
+            val oldTimestamp = LocalDateTime.of(2025, 1, 1, 10, 0)
+            val newTimestamp = LocalDateTime.of(2026, 7, 17, 15, 0)
+
+            val dto = factory.generateDto(
+                id = factory.searchSessionId,
+                timeStamp = oldTimestamp
+            )
+
+            val updatedDto = dto.copy(
+                timestamp = newTimestamp
+            )
+
+            val request = factory.updateRequestModel(
+                timestamp = newTimestamp
+            )
+
+            val response = factory.updateResponseModel()
+
+            every { searchSessionRepository.existsById(factory.searchSessionId) } returns true
+            every { searchSessionRepository.findById(factory.searchSessionId) } returns dto
+
             sut.updateSession(presenter, request)
 
             verify {

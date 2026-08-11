@@ -1,6 +1,8 @@
 package br.all.review.shared
 
+import br.all.infrastructure.collaborator.CollaboratorDocument
 import br.all.infrastructure.review.SystematicStudyDocument
+import br.all.security.service.ApplicationUser
 import io.github.serpro69.kfaker.Faker
 import java.util.*
 
@@ -18,6 +20,18 @@ class TestDataFactory {
         collaborators: MutableSet<UUID> = mutableSetOf(),
         objectives: String = faker.adjective.positive(),
     ) = SystematicStudyDocument(id, title, description, owner, collaborators.also { it.add(owner) }.toSet(), objectives)
+
+    fun createCollaboratorDocument(
+        user: ApplicationUser,
+        systematicStudyId: UUID = this.systematicStudyId,
+    ) = CollaboratorDocument(
+        CollaboratorDocument.buildId(user.id, systematicStudyId),
+        user.id,
+        systematicStudyId,
+        user.username,
+        faker.internet.domain(),
+        "OWNER"
+    )
 
     fun createValidPostRequest(
         title: String = faker.book.title(),

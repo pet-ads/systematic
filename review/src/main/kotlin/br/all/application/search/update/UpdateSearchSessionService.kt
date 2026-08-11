@@ -13,7 +13,8 @@ interface UpdateSearchSessionService {
         val sessionId: UUID,
         val searchString: String?,
         val additionalInfo: String?,
-        val source: String?
+        val source: String?,
+        val timestamp: LocalDateTime?
     )
 
     @Schema(name = "UpdateSearchSessionServiceResponseModel")

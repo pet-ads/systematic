@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.time.LocalDateTime
 import java.util.*
 import br.all.application.search.create.CreateSearchSessionService.RequestModel as CreateRequest
 import br.all.application.search.find.service.FindAllSearchSessionsService.RequestModel as FindAllRequest
@@ -44,11 +45,12 @@ class SearchSessionController(
     data class PutRequest(
         val searchString: String?,
         val additionalInfo: String?,
-        val source: String?
+        val source: String?,
+        val timestamp: LocalDateTime?,
     ) {
         fun toUpdateRequestModel(userId: UUID, systematicStudyId: UUID, sessionId: UUID) =
             UpdateSearchSessionService.RequestModel(
-                userId, systematicStudyId, sessionId, searchString, additionalInfo, source
+                userId, systematicStudyId, sessionId, searchString, additionalInfo, source, timestamp
             )
     }
 

@@ -39,6 +39,7 @@ class UpdateSearchSessionServiceImpl (
                 searchString = request.searchString ?: searchString
                 additionalInfo = request.additionalInfo ?: additionalInfo
                 source = request.source?.toSearchSource() ?: source
+                timestamp = request.timestamp ?: timestamp
             }.toDto()
 
             if (updated != dto) searchSessionRepository.saveOrUpdate(updated)

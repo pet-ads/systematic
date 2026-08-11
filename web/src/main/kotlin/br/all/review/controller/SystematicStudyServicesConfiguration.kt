@@ -1,17 +1,14 @@
 package br.all.review.controller
 
 import br.all.application.protocol.repository.ProtocolRepository
-import br.all.application.review.create.AddCollaboratorService
 import br.all.application.user.CredentialsService
 import br.all.application.review.create.CreateSystematicStudyServiceImpl
-import br.all.application.review.create.RespondInvitationServiceImpl
 import br.all.application.review.find.services.FindAllSystematicStudiesServiceImpl
 import br.all.application.review.find.services.FindSystematicStudyServiceImpl
-import br.all.application.review.find.services.SearchCollaboratorCandidatesServiceImpl
-import br.all.application.review.repository.CollaboratorTokenRepository
+import br.all.application.collaborator.repository.CollaboratorRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.update.services.UpdateSystematicStudyServiceImpl
-import br.all.application.user.SearchResearchesService
+import br.all.application.shared.service.AuthorizationService
 import br.all.domain.services.UuidGeneratorService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -24,18 +21,21 @@ class SystematicStudyServicesConfiguration {
         protocolRepository: ProtocolRepository,
         uuidGeneratorService: UuidGeneratorService,
         credentialsService: CredentialsService,
+        collaboratorRepository: CollaboratorRepository
     ) = CreateSystematicStudyServiceImpl(
         systematicStudyRepository,
         protocolRepository,
         uuidGeneratorService,
         credentialsService,
+        collaboratorRepository
     )
 
     @Bean
     fun findOneSystematicStudyService(
         systematicStudyRepository: SystematicStudyRepository,
+        collaboratorRepository: CollaboratorRepository,
         credentialsService: CredentialsService,
-    ) = FindSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
+    ) = FindSystematicStudyServiceImpl(systematicStudyRepository, collaboratorRepository, credentialsService)
 
     @Bean
     fun findAllSystematicStudiesService(
@@ -46,19 +46,6 @@ class SystematicStudyServicesConfiguration {
     @Bean
     fun updateSystematicStudyService(
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: CredentialsService,
-    ) = UpdateSystematicStudyServiceImpl(systematicStudyRepository, credentialsService)
-
-    @Bean
-    fun respondInvitationService(
-        tokenRepository: CollaboratorTokenRepository,
-        addCollaboratorService: AddCollaboratorService,
-    ) = RespondInvitationServiceImpl(tokenRepository, addCollaboratorService)
-
-    @Bean
-    fun searchCollaboratorCandidates(
-        searchResearchesService: SearchResearchesService,
-        systematicStudyRepository: SystematicStudyRepository,
-        collaboratorTokenRepository: CollaboratorTokenRepository,
-    ) = SearchCollaboratorCandidatesServiceImpl(searchResearchesService,systematicStudyRepository, collaboratorTokenRepository)
+        authorizationService: AuthorizationService,
+    ) = UpdateSystematicStudyServiceImpl(systematicStudyRepository, authorizationService)
 }

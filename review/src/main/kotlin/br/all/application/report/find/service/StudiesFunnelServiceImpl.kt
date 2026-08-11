@@ -3,6 +3,7 @@ package br.all.application.report.find.service
 import br.all.application.report.find.presenter.StudiesFunnelPresenter
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
+import br.all.application.shared.presenter.FunnelCalculator
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository
@@ -32,45 +33,11 @@ class StudiesFunnelServiceImpl(
         presenter.prepareSuccessView(response)
     }
 
-    private fun createResponse(allStudies: List<StudyReviewDto>, request: StudiesFunnelService.RequestModel): StudiesFunnelService.ResponseModel {
-        val totalIdentifiedBySource = allStudies
-            .flatMap { it.searchSources }
-            .groupingBy { it }
-            .eachCount()
-
-        val nonDuplicatedStudies = allStudies.filter { it.selectionStatus != SelectionStatus.DUPLICATED.name }
-        val totalAfterDuplicatesRemovedBySource = nonDuplicatedStudies
-            .flatMap { it.searchSources }
-            .groupingBy { it }
-            .eachCount()
-
-        val totalScreened = allStudies.size
-
-        val totalExcludedInScreening = allStudies.count { it.selectionStatus == SelectionStatus.EXCLUDED.name }
-
-        val excludedByCriterion = allStudies
-            .filter { it.selectionStatus == SelectionStatus.EXCLUDED.name }
-            .flatMap { it.selectionCriteria }
-            .groupingBy { it }
-            .eachCount()
-
-        val totalFullTextAssessed = allStudies.count { 
-            it.selectionStatus == SelectionStatus.INCLUDED.name 
-        }
-
-        val totalExcludedInFullText = allStudies.count { 
-            it.selectionStatus == SelectionStatus.INCLUDED.name && 
-            it.extractionStatus == ExtractionStatus.EXCLUDED.name 
-        }
-
-        val totalExcludedByCriterion = allStudies
-            .filter { 
-                it.selectionStatus == SelectionStatus.INCLUDED.name && 
-                it.extractionStatus == ExtractionStatus.EXCLUDED.name 
-            }
-            .flatMap { it.extractionCriteria }
-            .groupingBy { it }
-            .eachCount()
+    private fun createResponse(
+        allStudies: List<StudyReviewDto>,
+        request: StudiesFunnelService.RequestModel
+    ): StudiesFunnelService.ResponseModel {
+        val funnelData = FunnelCalculator.calculate(allStudies)
 
         val totalIncluded = allStudies.count { 
             it.selectionStatus == SelectionStatus.INCLUDED.name && 
