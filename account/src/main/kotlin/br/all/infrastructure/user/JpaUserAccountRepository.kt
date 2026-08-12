@@ -14,8 +14,8 @@ interface JpaUserAccountRepository : JpaRepository<UserAccountEntity, UUID> {
     from UserAccountEntity u
     join u.accountCredentialsEntity c
     where (
-        lower(u.email) like lower(concat(:prefix, '%'))
-        or lower(c.username) like lower(concat(:prefix, '%'))
+        lower(u.email) like concat(:prefix, '%')
+        or lower(c.username) like concat(:prefix, '%')
     )
     and c.isEnabled = true
 """)
