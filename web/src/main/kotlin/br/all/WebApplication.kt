@@ -1,5 +1,7 @@
 package br.all
 
+import br.all.application.collaborator.repository.CollaboratorDto
+import br.all.application.collaborator.repository.CollaboratorRepository
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.toDto
 import br.all.domain.model.review.toSystematicStudyId
@@ -31,6 +33,7 @@ class WebApplication {
         search: CreateSearchSessionExampleService,
         question: CreateQuestionExampleService,
         studyReviewRepository: StudyReviewRepository,
+        collaboratorRepository: CollaboratorRepository,
         reviewSimilarityService: ReviewSimilarityService
     ) = CommandLineRunner {
         if(verifyUser.existsUser()) return@CommandLineRunner
@@ -38,6 +41,14 @@ class WebApplication {
         val password = requireNotNull(encoder.encode("admin"))
         val lucasUserAccount = register.registerUserAccount("buenolro", password)
         val systematicId = create.createReview(lucasUserAccount.id.value(), setOf(lucasUserAccount.id.value()))
+
+        collaboratorRepository.saveOrUpdate(CollaboratorDto(
+            lucasUserAccount.id.value(),
+            systematicId,
+            "buenolro",
+            lucasUserAccount.email.email,
+            "OWNER"
+        ))
 
         val allScoredStudies = mutableListOf<StudyReview>()
 
