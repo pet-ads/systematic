@@ -11,7 +11,7 @@ interface SearchCollaboratorCandidatesService {
         val prefix: String,
     )
 
-    data class ResponseModel(
+    data class SearchResponseModel(
         val researchers: List<UserSummaryDto>
     )
 }

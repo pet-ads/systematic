@@ -41,6 +41,6 @@ class SearchCollaboratorCandidatesServiceImpl(
             it.id !in invitedResearchers.map { it.researcherId }
         }
 
-        presenter.prepareSuccessView(SearchCollaboratorCandidatesService.ResponseModel(filteredResearchers))
+        presenter.prepareSuccessView(SearchCollaboratorCandidatesService.SearchResponseModel(filteredResearchers))
     }
 }

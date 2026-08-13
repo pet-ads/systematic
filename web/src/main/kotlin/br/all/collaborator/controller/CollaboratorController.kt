@@ -1,7 +1,9 @@
 package br.all.collaborator.controller
 
 import br.all.application.collaborator.find.FindAllCollaboratorsService
+import br.all.application.collaborator.find.FindAllCollaboratorsService.FindAllCollaboratorsResponseModel
 import br.all.application.collaborator.find.FindCollaboratorRoleService
+import br.all.application.collaborator.find.FindCollaboratorRoleService.ResponseModel
 import br.all.application.collaborator.find.SearchCollaboratorCandidatesService
 import br.all.application.collaborator.find.SearchCollaboratorCandidatesService.RequestModel
 import br.all.application.collaborator.invitation.InviteCollaboratorService
@@ -54,7 +56,11 @@ class CollaboratorController(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Successfully found collaborators"
+                description = "Successfully found collaborators",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = FindAllCollaboratorsResponseModel::class)
+                )]
             ),
             ApiResponse(
                 responseCode = "400",
@@ -92,7 +98,11 @@ class CollaboratorController(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Successfully found role"
+                description = "Successfully found role",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = ResponseModel::class)
+                )]
             ),
             ApiResponse(
                 responseCode = "400",
@@ -339,7 +349,7 @@ class CollaboratorController(
                 responseCode = "200", description = "Success searching researchers",
                 content = [Content(
                     mediaType = "application/json",
-                    schema = Schema(implementation = SearchCollaboratorCandidatesService.ResponseModel::class)
+                    schema = Schema(implementation = SearchCollaboratorCandidatesService.SearchResponseModel::class)
                 )]
             ),
             ApiResponse(

@@ -21,6 +21,6 @@ class FindAllCollaboratorsServiceImpl(
 
         val invited = collaboratorTokenRepository.findAllBySystematicStudyId(request.systematicStudyId).map { it.toInvitedCollaboratorDto() }
 
-        presenter.prepareSuccessView(FindAllCollaboratorsService.ResponseModel(invited, collaborators))
+        presenter.prepareSuccessView(FindAllCollaboratorsService.FindAllCollaboratorsResponseModel(invited, collaborators))
     }
 }
