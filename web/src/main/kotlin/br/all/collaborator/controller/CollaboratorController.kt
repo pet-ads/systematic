@@ -9,6 +9,7 @@ import br.all.application.collaborator.find.SearchCollaboratorCandidatesService.
 import br.all.application.collaborator.invitation.InviteCollaboratorService
 import br.all.application.collaborator.invitation.RespondInvitationService
 import br.all.application.collaborator.leave.LeaveSystematicStudyService
+import br.all.application.collaborator.remove.RemoveCollaboratorInviteService
 import br.all.application.collaborator.remove.RemoveCollaboratorService
 import br.all.application.collaborator.update.PassOwnershipService
 import br.all.application.collaborator.update.UpdateResearcherRoleService
@@ -17,6 +18,7 @@ import br.all.collaborator.presenter.RestfulFindAllCollaboratorsPresenter
 import br.all.collaborator.presenter.RestfulFindCollaboratorRolePresenter
 import br.all.collaborator.presenter.RestfulLeaveSystematicStudyPresenter
 import br.all.collaborator.presenter.RestfulPassOwnershipPresenter
+import br.all.collaborator.presenter.RestfulRemoveCollaboratorInvitePresenter
 import br.all.collaborator.presenter.RestfulRemoveCollaboratorPresenter
 import br.all.collaborator.presenter.RestfulRespondInvitationPresenter
 import br.all.collaborator.presenter.RestfulSearchCollaboratorCandidatesPresenter
@@ -41,6 +43,7 @@ import java.util.*
 class CollaboratorController(
     private val authenticationInfoService: AuthenticationInfoService,
     private val removeCollaboratorService: RemoveCollaboratorService,
+    private val removeCollaboratorInviteService: RemoveCollaboratorInviteService,
     private val leaveSystematicStudyService: LeaveSystematicStudyService,
     private val passOwnershipService: PassOwnershipService,
     private val findAllCollaboratorsService: FindAllCollaboratorsService,
@@ -177,6 +180,48 @@ class CollaboratorController(
         )
 
         removeCollaboratorService.remove(presenter, request)
+
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @DeleteMapping("/{systematicStudyId}/collaborator-invite/{researcherId}")
+    @Operation(summary = "Remove an existing invite to a collaborator")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "204",
+                description = "Successfully removed invite to a collaborator",
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail to remove invite - invalid systematic study",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail to remove invite - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail to remove invite - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]
+            )
+        ]
+    )
+    fun removeCollaboratorInvite(
+        @PathVariable systematicStudyId: UUID,
+        @PathVariable researcherId: UUID,
+    ): ResponseEntity<*> {
+        val presenter = RestfulRemoveCollaboratorInvitePresenter()
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = RemoveCollaboratorInviteService.RequestModel(
+            userId,
+            systematicStudyId,
+            researcherId
+        )
+
+        removeCollaboratorInviteService.remove(presenter, request)
 
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }

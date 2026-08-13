@@ -6,6 +6,8 @@ import br.all.application.collaborator.find.SearchCollaboratorCandidatesServiceI
 import br.all.application.collaborator.invitation.AddCollaboratorService
 import br.all.application.collaborator.invitation.RespondInvitationServiceImpl
 import br.all.application.collaborator.leave.LeaveSystematicStudyServiceImpl
+import br.all.application.collaborator.remove.RemoveCollaboratorInviteService
+import br.all.application.collaborator.remove.RemoveCollaboratorInviteServiceImpl
 import br.all.application.collaborator.remove.RemoveCollaboratorServiceImpl
 import br.all.application.collaborator.update.PassOwnershipServiceImpl
 import br.all.application.collaborator.repository.CollaboratorRepository
@@ -27,6 +29,15 @@ class CollaboratorConfiguration {
     ) = RemoveCollaboratorServiceImpl(
         collaboratorRepository,
         systematicStudyRepository,
+        authorizationService,
+    )
+
+    @Bean
+    fun removeCollaboratorInviteService(
+        collaboratorTokenRepository: CollaboratorTokenRepository,
+        authorizationService: AuthorizationService,
+    ) = RemoveCollaboratorInviteServiceImpl(
+        collaboratorTokenRepository,
         authorizationService,
     )
 
