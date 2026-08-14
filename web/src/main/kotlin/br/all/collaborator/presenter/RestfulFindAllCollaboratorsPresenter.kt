@@ -3,7 +3,7 @@ package br.all.collaborator.presenter
 import br.all.application.collaborator.find.FindAllCollaboratorsPresenter
 import br.all.application.collaborator.find.FindAllCollaboratorsService.InvitedCollaboratorDto
 import br.all.application.collaborator.find.FindAllCollaboratorsService.CollaboratorOnReviewDto
-import br.all.application.collaborator.find.FindAllCollaboratorsService.ResponseModel
+import br.all.application.collaborator.find.FindAllCollaboratorsService.FindAllCollaboratorsResponseModel
 import br.all.shared.error.createErrorResponseFrom
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.http.HttpStatus
@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity.status
 class RestfulFindAllCollaboratorsPresenter : FindAllCollaboratorsPresenter {
     var responseEntity: ResponseEntity<*>? = null
 
-    override fun prepareSuccessView(response: ResponseModel) {
+    override fun prepareSuccessView(response: FindAllCollaboratorsResponseModel) {
         val viewModel = ViewModel(
             response.invited,
             response.collaborators,

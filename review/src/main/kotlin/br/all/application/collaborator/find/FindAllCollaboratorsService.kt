@@ -14,7 +14,7 @@ interface FindAllCollaboratorsService {
         val systematicStudyId: UUID,
     )
 
-    data class ResponseModel(
+    data class FindAllCollaboratorsResponseModel(
         val invited: List<InvitedCollaboratorDto>,
         val collaborators: List<CollaboratorOnReviewDto>,
     )

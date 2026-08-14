@@ -7,4 +7,6 @@ interface MongoCollaboratorTokenRepository: MongoRepository<CollaboratorTokenDoc
     fun findAllBySystematicStudyId(
         systematicStudyId: UUID
     ): List<CollaboratorTokenDocument>
+
+    fun findBySystematicStudyIdAndResearcherId(systematicStudyId: UUID, researcherId: UUID): CollaboratorTokenDocument?
 }

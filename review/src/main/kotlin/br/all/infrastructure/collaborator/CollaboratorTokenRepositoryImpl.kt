@@ -23,6 +23,12 @@ open class CollaboratorTokenRepositoryImpl(
         innerRepository.findAllBySystematicStudyId(systematicStudyId)
             .map { it.toDto() }
 
+    override fun findBySystematicStudyIdAndResearcherId(
+        systematicStudyId: UUID,
+        researcherId: UUID
+    ): CollaboratorTokenDto? =
+        innerRepository.findBySystematicStudyIdAndResearcherId(systematicStudyId, researcherId)?.toDto()
+
     override fun existsById(id: UUID) = innerRepository.existsById(id)
 
     override fun deleteById(id: UUID) {
