@@ -144,11 +144,11 @@ class WebApplication {
     """.trimIndent(),
             additionalInformation = "Scopus search performed on 2022-09-20 using the TITLE-ABS-KEY field. Returned 230 studies (duplicates filtered later). Only English studies were considered."
         ))
-        applyRandomClassification(allScoredStudies)
+        reviewSimilarityService.findDuplicates(allScoredStudies, emptyList())
 
         studyReviewRepository.saveOrUpdateBatch(allScoredStudies.map { it.toDto() })
 
-        reviewSimilarityService.findDuplicates(allScoredStudies, emptyList())
+        applyRandomClassification(allScoredStudies)
 
         studyReviewRepository.saveOrUpdateBatch(allScoredStudies.map { it.toDto() })
     }

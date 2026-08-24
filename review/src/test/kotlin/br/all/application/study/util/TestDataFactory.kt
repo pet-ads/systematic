@@ -8,6 +8,7 @@ import br.all.application.study.find.service.FindStudyReviewService
 import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.update.interfaces.*
 import br.all.domain.model.question.QuestionContextEnum
+import br.all.domain.model.study.StudyReviewStage
 import br.all.domain.model.study.StudyType
 import br.all.domain.shared.utils.paragraph
 import br.all.domain.shared.utils.paragraphList
@@ -39,7 +40,8 @@ class TestDataFactory {
         references: List<String> = faker.paragraphList(4, 5),
         doi: String? = null,
         sources: Set<String> = faker.wordsList(minSize = 1, maxSize = 5).toSet(),
-        criteria: Set<String> = setOf("Criteria A", "Criteria B"),
+        selectionCriteria: Set<String> = setOf("Selection Criteria A", "Selection Criteria B"),
+        extractionCriteria: Set<String> = setOf("Extraction Criteria A", "Extraction Criteria B"),
         formAnswers: Map<UUID, String> = mapOf(Pair(UUID.randomUUID(), "Form")),
         robAnswers: Map<UUID, String> = mapOf(Pair(UUID.randomUUID(), "Form")),
         comments: String = faker.paragraph(15),
@@ -50,9 +52,8 @@ class TestDataFactory {
     ): StudyReviewDto {
         return StudyReviewDto(
             studyReviewId, systematicStudyId, searchSessionId, type, title, year,
-            authors, venue, abstract, keywords, references, doi, sources,
-            criteria, formAnswers, robAnswers, comments, readingPriority,
-            extractionStatus, selectionStatus, score
+            authors, venue, abstract, keywords, references, doi, sources, selectionCriteria,
+            extractionCriteria, formAnswers, robAnswers, comments, readingPriority, extractionStatus, selectionStatus, score
         )
     }
 
@@ -130,8 +131,9 @@ class TestDataFactory {
 
     fun markAsDuplicatedRequestModel(
         keptStudyReviewId: Long,
-        duplicateIds: List<Long>
-    ) = MarkAsDuplicatedService.RequestModel(researcherId, systematicStudyId, keptStudyReviewId, duplicateIds)
+        duplicateIds: List<Long>,
+        stage: StudyReviewStage = StudyReviewStage.SELECTION
+    ) = MarkAsDuplicatedService.RequestModel(researcherId, systematicStudyId, keptStudyReviewId, duplicateIds, stage)
 
     fun generateQuestionTextualDto(
         questionId: UUID,

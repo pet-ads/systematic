@@ -9,6 +9,7 @@ import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
+import br.all.domain.model.study.StudyReviewStage
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -24,6 +25,7 @@ import kotlin.test.Test
 import br.all.application.study.util.TestDataFactory as StudyReviewFactory
 import br.all.application.report.util.TestDataFactory as CriteriaFactory
 import br.all.application.protocol.util.TestDataFactory as ProtocolDtoFactory
+
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -48,6 +50,7 @@ class FindCriteriaServiceImplTest {
     @InjectMockKs
     private lateinit var sut: FindCriteriaServiceImpl
 
+
     private lateinit var precondition: PreconditionCheckerMockingNew
     private lateinit var studyFactory: StudyReviewFactory
     private lateinit var criteriaFactory: CriteriaFactory
@@ -55,6 +58,7 @@ class FindCriteriaServiceImplTest {
 
     private lateinit var researcherId: UUID
     private lateinit var systematicStudyId: UUID
+
 
     @BeforeEach
     fun setup() {
@@ -72,121 +76,256 @@ class FindCriteriaServiceImplTest {
             researcherId,
             systematicStudyId
         )
+
         precondition.makeEverythingWork()
     }
+
 
     @Nested
     @DisplayName("When successfully finding criteria")
     inner class SuccessfullyFindingCriteria {
+
+
         @Test
-        fun `should return criteria with associated studies`() {
-            val criteriaType = "INCLUSION"
+        fun `should return selection criteria with associated studies`() {
 
             val inclusionCriterion1 = criteriaFactory.criteriaDto(
                 description = "criterion1",
                 type = "INCLUSION"
             )
+
             val inclusionCriterion2 = criteriaFactory.criteriaDto(
                 description = "criterion2",
                 type = "INCLUSION"
             )
-            val exclusionCriterion1 = criteriaFactory.criteriaDto(
+
+            val exclusionCriterion = criteriaFactory.criteriaDto(
                 description = "exclusion1",
                 type = "EXCLUSION"
             )
 
+
             val protocolDto = protocolDtoFactory.protocolDto(
                 systematicStudy = systematicStudyId,
-                eligibilityCriteria = setOf(inclusionCriterion1, inclusionCriterion2, exclusionCriterion1)
+                eligibilityCriteria = setOf(
+                    inclusionCriterion1,
+                    inclusionCriterion2,
+                    exclusionCriterion
+                )
             )
+
 
             val studyReview1 = studyFactory.generateDto(
                 systematicStudyId = systematicStudyId,
-                criteria = setOf("criterion1")
-            )
-            val studyReview2 = studyFactory.generateDto(
-                systematicStudyId = systematicStudyId,
-                criteria = setOf("criterion1", "criterion2")
-            )
-            val studyReview3 = studyFactory.generateDto(
-                systematicStudyId = systematicStudyId,
-                criteria = setOf("exclusion1")
+                selectionCriteria = setOf("criterion1")
             )
 
-            every { protocolRepository.findById(systematicStudyId) } returns protocolDto
-            every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns listOf(studyReview1, studyReview2, studyReview3)
+            val studyReview2 = studyFactory.generateDto(
+                systematicStudyId = systematicStudyId,
+                selectionCriteria = setOf("criterion1", "criterion2")
+            )
+
+            val studyReview3 = studyFactory.generateDto(
+                systematicStudyId = systematicStudyId,
+                selectionCriteria = setOf("exclusion1")
+            )
+
+
+            every {
+                protocolRepository.findById(systematicStudyId)
+            } returns protocolDto
+
+            every {
+                studyReviewRepository.findAllFromReview(systematicStudyId)
+            } returns listOf(
+                studyReview1,
+                studyReview2,
+                studyReview3
+            )
+
 
             val request = FindCriteriaService.RequestModel(
                 userId = researcherId,
                 systematicStudyId = systematicStudyId,
-                type = criteriaType
+                type = "INCLUSION",
+                stage = StudyReviewStage.SELECTION
             )
+
 
             sut.findCriteria(presenter, request)
 
+
             val expectedCriteriaMap: Map<CriterionDto, List<Long>> = mapOf(
-                inclusionCriterion1 to listOf(studyReview1.studyReviewId, studyReview2.studyReviewId),
-                inclusionCriterion2 to listOf(studyReview2.studyReviewId)
+                inclusionCriterion1 to listOf(
+                    studyReview1.studyReviewId,
+                    studyReview2.studyReviewId
+                ),
+                inclusionCriterion2 to listOf(
+                    studyReview2.studyReviewId
+                )
             )
 
-            val filteredCriteria = FindCriteriaService.FoundStudies(
-                included = expectedCriteriaMap
-            )
 
             val expectedResponse = FindCriteriaService.ResponseModel(
                 userId = researcherId,
                 systematicStudyId = systematicStudyId,
-                criteria = filteredCriteria
+                stage = StudyReviewStage.SELECTION,
+                criteria = FindCriteriaService.FoundStudies(
+                    included = expectedCriteriaMap,
+                )
             )
+
 
             verify(exactly = 1) {
                 presenter.prepareSuccessView(expectedResponse)
             }
         }
 
-        @Test
-        fun `should return empty results when no criteria match the type`() {
-            val criteriaType = "INCLUSION"
 
-            val exclusionCriterion1 = criteriaFactory.criteriaDto(
-                description = "exclusion1",
+
+        @Test
+        fun `should return extraction criteria with associated studies`() {
+
+            val extractionCriterion = criteriaFactory.criteriaDto(
+                description = "extraction1",
                 type = "EXCLUSION"
             )
-            val exclusionCriterion2 = criteriaFactory.criteriaDto(
-                description = "exclusion2",
-                type = "EXCLUSION"
-            )
+
 
             val protocolDto = protocolDtoFactory.protocolDto(
                 systematicStudy = systematicStudyId,
-                eligibilityCriteria = setOf(exclusionCriterion1, exclusionCriterion2)
+                eligibilityCriteria = setOf(extractionCriterion)
             )
 
-            val studyReview = studyFactory.generateDto(
+
+            val studyReview1 = studyFactory.generateDto(
                 systematicStudyId = systematicStudyId,
-                criteria = setOf("exclusion1", "exclusion2")
+                selectionCriteria = setOf("criterion1"),
+                extractionCriteria = setOf("extraction1")
             )
 
-            every { protocolRepository.findById(systematicStudyId) } returns protocolDto
-            every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns listOf(studyReview)
+
+            val studyReview2 = studyFactory.generateDto(
+                systematicStudyId = systematicStudyId,
+                selectionCriteria = setOf("criterion2"),
+                extractionCriteria = setOf("extraction1")
+            )
+
+
+            every {
+                protocolRepository.findById(systematicStudyId)
+            } returns protocolDto
+
+
+            every {
+                studyReviewRepository.findAllFromReview(systematicStudyId)
+            } returns listOf(
+                studyReview1,
+                studyReview2
+            )
+
 
             val request = FindCriteriaService.RequestModel(
                 userId = researcherId,
                 systematicStudyId = systematicStudyId,
-                type = criteriaType
+                type = "EXCLUSION",
+                stage = StudyReviewStage.EXTRACTION
             )
+
 
             sut.findCriteria(presenter, request)
 
-            val filteredCriteria = FindCriteriaService.FoundStudies(
-                included = emptyMap()
+
+            val expectedCriteriaMap: Map<CriterionDto, List<Long>> = mapOf(
+                extractionCriterion to listOf(
+                    studyReview1.studyReviewId,
+                    studyReview2.studyReviewId
+                )
             )
+
 
             val expectedResponse = FindCriteriaService.ResponseModel(
                 userId = researcherId,
                 systematicStudyId = systematicStudyId,
-                criteria = filteredCriteria
+                stage = StudyReviewStage.EXTRACTION,
+                criteria = FindCriteriaService.FoundStudies(
+                    included = expectedCriteriaMap
+                )
             )
+
+
+            verify(exactly = 1) {
+                presenter.prepareSuccessView(expectedResponse)
+            }
+        }
+
+
+
+        @Test
+        fun `should not return extraction criteria when searching selection criteria`() {
+
+            val selectionCriterion = criteriaFactory.criteriaDto(
+                description = "selectionCriterion",
+                type = "EXCLUSION"
+            )
+
+            val extractionCriterion = criteriaFactory.criteriaDto(
+                description = "extractionCriterion",
+                type = "EXCLUSION"
+            )
+
+
+            val protocolDto = protocolDtoFactory.protocolDto(
+                systematicStudy = systematicStudyId,
+                eligibilityCriteria = setOf(
+                    selectionCriterion,
+                    extractionCriterion
+                )
+            )
+
+
+            val studyReview = studyFactory.generateDto(
+                systematicStudyId = systematicStudyId,
+                selectionCriteria = setOf("selectionCriterion"),
+                extractionCriteria = setOf("extractionCriterion")
+            )
+
+
+            every {
+                protocolRepository.findById(systematicStudyId)
+            } returns protocolDto
+
+
+            every {
+                studyReviewRepository.findAllFromReview(systematicStudyId)
+            } returns listOf(studyReview)
+
+
+            val request = FindCriteriaService.RequestModel(
+                userId = researcherId,
+                systematicStudyId = systematicStudyId,
+                type = "EXCLUSION",
+                stage = StudyReviewStage.SELECTION
+            )
+
+
+            sut.findCriteria(presenter, request)
+
+
+            val expectedResponse = FindCriteriaService.ResponseModel(
+                userId = researcherId,
+                systematicStudyId = systematicStudyId,
+                stage = StudyReviewStage.SELECTION,
+                criteria = FindCriteriaService.FoundStudies(
+                    included = mapOf(
+                        selectionCriterion to listOf(
+                            studyReview.studyReviewId
+                        ),
+                        extractionCriterion to emptyList()
+                    )
+                )
+            )
+
 
             verify(exactly = 1) {
                 presenter.prepareSuccessView(expectedResponse)
@@ -194,82 +333,107 @@ class FindCriteriaServiceImplTest {
         }
     }
 
+
+
     @Nested
     @DisplayName("When failing to find criteria")
     inner class FailingFindingCriteria {
-        @Test
-        fun `should handle case when protocol is not found`() {
-            val criteriaType = "INCLUSION"
 
-            every { protocolRepository.findById(systematicStudyId) } returns null
-            every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns emptyList()
+
+        @Test
+        fun `should return empty results when protocol is not found`() {
+
+            every {
+                protocolRepository.findById(systematicStudyId)
+            } returns null
+
+
+            every {
+                studyReviewRepository.findAllFromReview(systematicStudyId)
+            } returns emptyList()
+
 
             val request = FindCriteriaService.RequestModel(
                 userId = researcherId,
                 systematicStudyId = systematicStudyId,
-                type = criteriaType
+                type = "INCLUSION",
+                stage = StudyReviewStage.SELECTION
             )
+
 
             sut.findCriteria(presenter, request)
 
-            val filteredCriteria = FindCriteriaService.FoundStudies(
-                included = emptyMap()
-            )
 
             val expectedResponse = FindCriteriaService.ResponseModel(
                 userId = researcherId,
                 systematicStudyId = systematicStudyId,
-                criteria = filteredCriteria
+                stage = StudyReviewStage.SELECTION,
+                criteria = FindCriteriaService.FoundStudies(
+                    included = emptyMap()
+                )
             )
+
 
             verify(exactly = 1) {
                 presenter.prepareSuccessView(expectedResponse)
             }
         }
 
+
+
         @Test
-        fun `should return criteria with no studies when criteria descriptions don't match`() {
-            val criteriaType = "INCLUSION"
+        fun `should return criteria with no studies when descriptions do not match`() {
 
             val inclusionCriterion = criteriaFactory.criteriaDto(
                 description = "criterion1",
                 type = "INCLUSION"
             )
 
+
             val protocolDto = protocolDtoFactory.protocolDto(
                 systematicStudy = systematicStudyId,
                 eligibilityCriteria = setOf(inclusionCriterion)
             )
 
+
             val studyReview = studyFactory.generateDto(
                 systematicStudyId = systematicStudyId,
-                criteria = setOf("different_criterion")
+                selectionCriteria = setOf("differentCriterion")
             )
 
-            every { protocolRepository.findById(systematicStudyId) } returns protocolDto
-            every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns listOf(studyReview)
+
+            every {
+                protocolRepository.findById(systematicStudyId)
+            } returns protocolDto
+
+
+            every {
+                studyReviewRepository.findAllFromReview(systematicStudyId)
+            } returns listOf(studyReview)
+
 
             val request = FindCriteriaService.RequestModel(
                 userId = researcherId,
                 systematicStudyId = systematicStudyId,
-                type = criteriaType
+                type = "INCLUSION",
+                stage = StudyReviewStage.SELECTION
             )
+
 
             sut.findCriteria(presenter, request)
 
-            val expectedCriteriaMap: Map<CriterionDto, List<Long>> = mapOf(
-                inclusionCriterion to emptyList()
-            )
-
-            val filteredCriteria = FindCriteriaService.FoundStudies(
-                included = expectedCriteriaMap
-            )
 
             val expectedResponse = FindCriteriaService.ResponseModel(
                 userId = researcherId,
                 systematicStudyId = systematicStudyId,
-                criteria = filteredCriteria
+                stage = StudyReviewStage.SELECTION,
+                criteria = FindCriteriaService.FoundStudies(
+                    included = mapOf(
+                        inclusionCriterion to emptyList()
+                    )
+                )
             )
+
 
             verify(exactly = 1) {
                 presenter.prepareSuccessView(expectedResponse)

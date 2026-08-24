@@ -19,7 +19,8 @@ class StudyReview(
     keywords: Set<String> = mutableSetOf(),
     searchSources: MutableSet<String>,
     references: List<String> = mutableListOf(),
-    criteria: MutableSet<Criterion> = mutableSetOf(),
+    selectionCriteria: MutableSet<Criterion> = mutableSetOf(),
+    extractionCriteria: MutableSet<Criterion> = mutableSetOf(),
     formAnswers: MutableSet<Answer<*>> = mutableSetOf(),
     robAnswers: MutableSet<Answer<*>> = mutableSetOf(),
     var comments: String = "",
@@ -40,8 +41,14 @@ class StudyReview(
     private val _references = references
     val references get() = _references.toList()
 
-    private val _criteria = criteria
-    val criteria get() = _criteria.toSet()
+    private val _selectionCriteria = selectionCriteria
+    private val _extractionCriteria = extractionCriteria
+
+    val selectionCriteria
+        get() = _selectionCriteria.toSet()
+
+    val extractionCriteria
+        get() = _extractionCriteria.toSet()
 
     private val _formAnswers = formAnswers
     val formAnswers get() = _formAnswers.toSet()
@@ -61,9 +68,23 @@ class StudyReview(
 
     companion object{}
 
-    fun addCriterion(criterion: Criterion) = _criteria.add(criterion)
+    fun addSelectionCriterion(criterion: Criterion) =
+        _selectionCriteria.add(criterion)
 
-    fun removeCriterion(criterion: Criterion) = _criteria.remove(criterion)
+    fun removeSelectionCriterion(criterion: Criterion) {
+        _selectionCriteria.remove(criterion)
+        if (_selectionCriteria.isEmpty()) {
+            selectionStatus = SelectionStatus.UNCLASSIFIED
+            extractionStatus = ExtractionStatus.UNCLASSIFIED
+            clearExtractionCriteria()
+        }
+    }
+
+    fun addExtractionCriterion(criterion: Criterion) =
+        _extractionCriteria.add(criterion)
+
+    fun removeExtractionCriterion(criterion: Criterion) =
+        _extractionCriteria.remove(criterion)
 
     fun answerQualityQuestionOf( answer: Answer<*>) = _qualityAnswers.add(answer)
 
@@ -77,13 +98,27 @@ class StudyReview(
     }
 
     fun declassifyInSelection() {
-        if(extractionStatus != ExtractionStatus.UNCLASSIFIED)
-            throw IllegalStateException("A study classified in extraction can not be declassified in selection.")
+        ensureCanChangeSelectionStatus()
+
         selectionStatus = SelectionStatus.UNCLASSIFIED
+        extractionStatus = ExtractionStatus.UNCLASSIFIED
+        clearExtractionCriteria()
     }
 
     private fun shouldNotConsiderForExtraction() =
         extractionStatus == ExtractionStatus.INCLUDED || extractionStatus == ExtractionStatus.UNCLASSIFIED
+
+    private fun clearExtractionCriteria() {
+        _extractionCriteria.clear()
+    }
+
+    private fun ensureCanChangeSelectionStatus() {
+        if (extractionStatus != ExtractionStatus.UNCLASSIFIED) {
+            throw IllegalStateException(
+                "A study classified in extraction can not change its selection status."
+            )
+        }
+    }
 
     fun includeInExtraction() {
         if (selectionStatus == SelectionStatus.EXCLUDED)
@@ -96,6 +131,7 @@ class StudyReview(
     fun excludeInExtraction() {
         if (selectionStatus == SelectionStatus.UNCLASSIFIED)
             selectionStatus = SelectionStatus.EXCLUDED
+        clearExtractionCriteria()
         extractionStatus = ExtractionStatus.EXCLUDED
     }
 
@@ -112,22 +148,35 @@ class StudyReview(
         _searchSources.addAll(unionSources)
     }
 
-    private fun markDuplicatesAsDuplicated(duplicates: List<StudyReview>) {
+    private fun mergeDuplicateInformation(duplicates: List<StudyReview>) {
+        val unionSources = mergeSearchSources(duplicates)
+        applyMergedSearchSources(unionSources)
+    }
+
+    fun markAsDuplicatedInSelection(duplicates: List<StudyReview>) {
+        mergeDuplicateInformation(duplicates)
+
         duplicates.forEach { duplicate ->
+            duplicate.ensureCanChangeSelectionStatus()
+
+            duplicate.clearExtractionCriteria()
             duplicate.selectionStatus = SelectionStatus.DUPLICATED
             duplicate.extractionStatus = ExtractionStatus.DUPLICATED
         }
     }
 
-    fun markAsDuplicated(duplicates: List<StudyReview>) {
-        val unionSources = mergeSearchSources(duplicates)
-        applyMergedSearchSources(unionSources)
-        markDuplicatesAsDuplicated(duplicates)
+    fun markAsDuplicatedInExtraction(duplicates: List<StudyReview>) {
+        mergeDuplicateInformation(duplicates)
+
+        duplicates.forEach { duplicate ->
+            duplicate.extractionStatus = ExtractionStatus.DUPLICATED
+        }
     }
 
 
     override fun toString(): String {
-        return "StudyReview(reviewId=$systematicStudyId, searchSources=$searchSources, criteria=$criteria, " +
+        return "StudyReview(reviewId=$systematicStudyId, searchSources=$searchSources, " +
+                "selectionCriteria=$selectionCriteria, extractionCriteria=$extractionCriteria, " +
                 "formAnswers=$formAnswers, qualityAnswers=$robAnswers, comments='$comments', " +
                 "readingPriority=$readingPriority, extractionStatus=$extractionStatus, " +
                 "selectionStatus=$selectionStatus, study=$study)"

@@ -3,6 +3,7 @@ package br.all.report.controller
 import br.all.application.report.find.service.ExportProtocolService
 import br.all.application.report.export.service.ExportReviewService
 import br.all.application.report.find.service.*
+import br.all.domain.model.study.StudyReviewStage
 import br.all.report.presenter.*
 import br.all.security.service.AuthenticationInfoService
 import br.all.report.presenter.RestfulFindStudyReviewCriteriaPresenter
@@ -95,10 +96,11 @@ class ReportController(
     fun findCriteria(
         @PathVariable systematicStudyId: UUID,
         @PathVariable type: String,
+        @RequestParam stage: String,
     ): ResponseEntity<*> {
         val presenter = RestfulFindCriteriaPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = FindCriteriaService.RequestModel(userId, systematicStudyId, type.uppercase())
+        val request = FindCriteriaService.RequestModel(userId, systematicStudyId, type.uppercase(), StudyReviewStage.valueOf(stage.uppercase()))
         findCriteriaService.findCriteria(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -375,11 +377,12 @@ class ReportController(
     )
     fun findCriteria(
         @PathVariable systematicStudyId: UUID,
-        @PathVariable studyReview: Long
+        @PathVariable studyReview: Long,
+        @RequestParam stage: StudyReviewStage
     ): ResponseEntity<*> {
         val presenter = RestfulFindStudyReviewCriteriaPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = FindStudyReviewCriteriaService.RequestModel(userId, systematicStudyId, studyReview)
+        val request = FindStudyReviewCriteriaService.RequestModel(userId, systematicStudyId, studyReview, stage)
         findStudyReviewCriteriaService.findCriteria(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }

@@ -22,6 +22,7 @@ import java.util.*
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService.RequestModel as FindAllBySourceRequest
 import br.all.application.study.find.service.FindStudyReviewService.RequestModel as FindOneRequest
 import br.all.application.study.update.interfaces.BatchAnswerQuestionService
+import br.all.domain.model.study.StudyReviewStage
 import br.all.study.presenter.RestfulBatchAnswerQuestionPresenter
 import br.all.study.requests.PatchBatchAnswerQuestionStudyReviewRequest
 import io.swagger.v3.oas.annotations.Parameter
@@ -524,9 +525,17 @@ class StudyReviewController(
         @PathVariable studyReviewId: Long,
         @RequestBody patchRequest: RemoveCriteriaRequest
     ): ResponseEntity<*> {
+
         val presenter = RestfulRemoveCriteriaPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = patchRequest.toRequestModel(userId, systematicStudy, studyReviewId)
+
+        val request = patchRequest.toRequestModel(
+            userId,
+            systematicStudy,
+            studyReviewId,
+            patchRequest.stage
+        )
+
         removeCriteriaService.removeCriteria(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }

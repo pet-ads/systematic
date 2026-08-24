@@ -109,7 +109,8 @@ class TestDataFactory {
     fun validMarkAsDuplicateRequest(duplicateStudyIds: List<Long>) =
         """
             {
-                "duplicatedStudyIds": $duplicateStudyIds
+                "duplicatedStudyIds": $duplicateStudyIds,
+                "stage": "SELECTION"
             }
         """
 
@@ -127,7 +128,8 @@ class TestDataFactory {
         references: List<String> = faker.paragraphList(4, 5),
         doi: String? = null,
         sources: Set<String> = faker.wordsList(minSize = 1, maxSize = 5).toSet(),
-        criteria: Set<String> = setOf("Criteria A"),
+        selectionCriteria: Set<String> = setOf("Criteria A"),
+        extractionCriteria: Set<String> = emptySet(),
         formAnswers: Map<UUID, String> = mapOf(Pair(UUID.randomUUID(), "Form")),
         robAnswers: Map<UUID, String> = mapOf(Pair(UUID.randomUUID(), "Form")),
         comments: String = faker.paragraph(15),
@@ -140,7 +142,7 @@ class TestDataFactory {
         return StudyReviewDocument(
             studyId, searchSessionId, type, title, year,
             authors, venue, abstract, keywords, references, doi, sources,
-            criteria, formAnswers, robAnswers, comments, readingPriority,
+            selectionCriteria, extractionCriteria, formAnswers, robAnswers, comments, readingPriority,
             extractionStatus, selectionStatus, score
         )
     }

@@ -21,7 +21,8 @@ fun StudyReview.toDto() = StudyReviewDto(
     references,
     doi?.toString(),
     searchSources,
-    criteria.map { it.description }.toSet(),
+    selectionCriteria.map { it.description }.toSet(),
+    extractionCriteria.map { it.description }.toSet(),
     formAnswers.associate { it.questionId to it.value.toString() },
     robAnswers.associate { it.questionId to it.value.toString() },
     comments,
@@ -46,7 +47,13 @@ fun StudyReview.Companion.fromDto(dto: StudyReviewDto) = StudyReview(
     dto.keywords.toMutableSet(),
     dto.searchSources.toMutableSet(),
     dto.references.toMutableList(),
-    dto.criteria.map { Criterion.toInclude(it) }.toMutableSet(),
+    dto.selectionCriteria
+        .map { Criterion.toInclude(it) }
+        .toMutableSet(),
+
+    dto.extractionCriteria
+        .map { Criterion.toInclude(it) }
+        .toMutableSet(),
     dto.formAnswers.map { (questionId, answer) -> Answer(questionId, answer) }.toMutableSet(),
     dto.robAnswers.map { (questionId, answer) -> Answer(questionId, answer) }.toMutableSet(),
     dto.comments,

@@ -10,6 +10,7 @@ import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
+import br.all.domain.model.study.StudyReviewStage
 
 class FindStudyReviewCriteriaServiceImpl(
     private val systematicStudyRepository: SystematicStudyRepository,
@@ -34,13 +35,14 @@ class FindStudyReviewCriteriaServiceImpl(
 
         val studyReview = studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId)!!
 
-        val inclusionCriteria = getCriteriaByType(criteriaSet, studyReview, "INCLUSION")
-        val exclusionCriteria = getCriteriaByType(criteriaSet, studyReview, "EXCLUSION")
+        val inclusionCriteria = getCriteriaByType(criteriaSet, studyReview, "INCLUSION", request.stage)
+        val exclusionCriteria = getCriteriaByType(criteriaSet, studyReview, "EXCLUSION", request.stage)
 
         val response = FindStudyReviewCriteriaService.ResponseModel(
             userId = request.userId,
             systematicStudyId = request.systematicStudyId,
             studyReviewId = request.studyReviewId,
+            stage = request.stage,
             inclusionCriteria = inclusionCriteria,
             exclusionCriteria = exclusionCriteria,
         )
@@ -51,10 +53,18 @@ class FindStudyReviewCriteriaServiceImpl(
     private fun getCriteriaByType(
         criteriaSet: Collection<CriterionDto>,
         studyReview: StudyReviewDto,
-        type: String
+        type: String,
+        stage: StudyReviewStage
     ): Set<String> {
+
+        val criteria = when (stage) {
+            StudyReviewStage.SELECTION -> studyReview.selectionCriteria
+            StudyReviewStage.EXTRACTION -> studyReview.extractionCriteria
+        }
+
         return criteriaSet
-            .filter { it.type == type && it.description in studyReview.criteria }
-            .map { it.description }.toSet()
+            .filter { it.type == type && it.description in criteria }
+            .map { it.description }
+            .toSet()
     }
 }

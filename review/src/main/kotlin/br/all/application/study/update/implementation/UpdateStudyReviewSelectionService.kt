@@ -64,7 +64,7 @@ class UpdateStudyReviewSelectionService(
                 } else {
                     Criterion.toInclude(trimmed)
                 }
-                studyReview.addCriterion(criterion)
+                studyReview.addSelectionCriterion(criterion)
             }
 
 

@@ -90,7 +90,7 @@ class TestDataFactory {
             systematicStudyId = studyReviewDto.systematicStudyId,
             studyReviewId = studyReviewDto.studyReviewId,
             year = studyReviewDto.year,
-            includedBy = studyReviewDto.criteria,
+            includedBy = studyReviewDto.selectionCriteria,
             extractionQuestions = extractionAnswers.toList(),
             robQuestions = robAnswers.toList()
         )
