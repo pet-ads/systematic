@@ -28,7 +28,7 @@ class StudyReview(
     selectionStatus: SelectionStatus = SelectionStatus.UNCLASSIFIED,
     extractionStatus: ExtractionStatus = ExtractionStatus.UNCLASSIFIED,
     var score: Int = 0,
-    val originalStudyId: StudyReviewId? = null,
+    originalStudyId: StudyReviewId? = null,
 ) : Entity<Long>(studyId) {
 
     private val study: Study
@@ -60,6 +60,12 @@ class StudyReview(
     var selectionStatus: SelectionStatus = selectionStatus
         private set
     var extractionStatus: ExtractionStatus = extractionStatus
+        private set
+
+    var originalStudyId: StudyReviewId? = null
+        private set
+
+    var studyId: StudyReviewId = studyId
         private set
 
     init {
@@ -161,6 +167,7 @@ class StudyReview(
             duplicate.ensureCanChangeSelectionStatus()
 
             duplicate.clearExtractionCriteria()
+            duplicate.markAsDuplicateOf(studyId)
             duplicate.selectionStatus = SelectionStatus.DUPLICATED
             duplicate.extractionStatus = ExtractionStatus.DUPLICATED
         }
@@ -170,10 +177,14 @@ class StudyReview(
         mergeDuplicateInformation(duplicates)
 
         duplicates.forEach { duplicate ->
+            duplicate.markAsDuplicateOf(studyId)
             duplicate.extractionStatus = ExtractionStatus.DUPLICATED
         }
     }
 
+    private fun markAsDuplicateOf(original: StudyReviewId) {
+        originalStudyId = original
+    }
 
     override fun toString(): String {
         return "StudyReview(reviewId=$systematicStudyId, searchSources=$searchSources, " +
