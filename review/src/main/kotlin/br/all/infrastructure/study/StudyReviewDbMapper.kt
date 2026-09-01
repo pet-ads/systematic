@@ -24,7 +24,8 @@ fun StudyReviewDocument.toDto() = StudyReviewDto(
     readingPriority,
     extractionStatus,
     selectionStatus,
-    score
+    score,
+    originalStudyId,
 )
 
 fun StudyReviewDto.toDocument() = StudyReviewDocument(
@@ -48,5 +49,6 @@ fun StudyReviewDto.toDocument() = StudyReviewDocument(
     readingPriority,
     extractionStatus,
     selectionStatus,
-    score
+    score,
+    originalStudyId,
 )

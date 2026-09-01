@@ -24,6 +24,7 @@ data class StudyReviewDto(
     val readingPriority: String,
     val extractionStatus: String,
     val selectionStatus: String,
-    val score: Int
+    val score: Int,
+    val originalStudyId: Long? = null,
 )
 
