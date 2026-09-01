@@ -110,6 +110,7 @@ class StudyReview(
         selectionStatus = SelectionStatus.UNCLASSIFIED
         extractionStatus = ExtractionStatus.UNCLASSIFIED
         clearExtractionCriteria()
+        removeDuplicateReference()
     }
 
     private fun shouldNotConsiderForExtraction() =
@@ -142,7 +143,10 @@ class StudyReview(
         extractionStatus = ExtractionStatus.EXCLUDED
     }
 
-    fun declassifyInExtraction() = apply { extractionStatus = ExtractionStatus.UNCLASSIFIED }
+    fun declassifyInExtraction() = apply {
+        extractionStatus = ExtractionStatus.UNCLASSIFIED
+        removeDuplicateReference()
+    }
 
     private fun mergeSearchSources(duplicates: List<StudyReview>): MutableSet<String> {
         val unionSources = _searchSources.toMutableSet()
@@ -184,6 +188,10 @@ class StudyReview(
 
     private fun markAsDuplicateOf(original: StudyReviewId) {
         originalStudyId = original
+    }
+
+    private fun removeDuplicateReference() {
+        originalStudyId = null
     }
 
     override fun toString(): String {
