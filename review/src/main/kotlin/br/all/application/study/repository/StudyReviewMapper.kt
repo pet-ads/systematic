@@ -30,7 +30,8 @@ fun StudyReview.toDto() = StudyReviewDto(
     extractionStatus.toString(),
     selectionStatus.toString(),
     score,
-    originalStudyId?.value()
+    originalStudyId?.value(),
+    duplicateStudyIds.map { it.value() }.toSet()
 )
 
 
@@ -63,6 +64,9 @@ fun StudyReview.Companion.fromDto(dto: StudyReviewDto) = StudyReview(
     ExtractionStatus.valueOf(dto.extractionStatus),
     dto.score,
     dto.originalStudyId?.let { StudyReviewId(it) },
+    dto.duplicateStudyIds
+        .map { StudyReviewId(it) }
+        .toSet()
 )
 
 
@@ -77,10 +81,11 @@ fun StudyReview.Companion.fromStudyRequestModel(studyId: Long, request: RequestM
     request.venue,
     request.abstract,
     keywords = request.keywords,
-    searchSources = mutableSetOf(request.source)
+    searchSources = mutableSetOf(request.source),
+    duplicateStudyIds = setOf()
 )
 
-fun StudyReview.Companion.fromStudyUpdateRequestModel(studyId: Long, request: UpdateStudyReviewService.RequestModel) = StudyReview(
+fun StudyReview.Companion.fromStudyUpdateRequestModel(studyId: Long, request: UpdateStudyReviewService.RequestModel, duplicateStudyIds: Set<Long>) = StudyReview(
     StudyReviewId(studyId),
     SystematicStudyId(request.systematicStudyId),
     SearchSessionID(request.searchSessionId),
@@ -91,5 +96,6 @@ fun StudyReview.Companion.fromStudyUpdateRequestModel(studyId: Long, request: Up
     request.venue,
     request.abstract,
     keywords = request.keywords,
-    searchSources = mutableSetOf(request.source)
+    searchSources = mutableSetOf(request.source),
+    duplicateStudyIds = duplicateStudyIds.map { StudyReviewId(it) }.toSet()
 )

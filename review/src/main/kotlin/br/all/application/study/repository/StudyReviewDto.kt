@@ -1,5 +1,6 @@
 package br.all.application.study.repository
 
+import br.all.domain.model.study.StudyReviewId
 import java.util.*
 
 data class StudyReviewDto(
@@ -26,5 +27,6 @@ data class StudyReviewDto(
     val selectionStatus: String,
     val score: Int,
     val originalStudyId: Long? = null,
+    val duplicateStudyIds: Set<Long>
 )
 

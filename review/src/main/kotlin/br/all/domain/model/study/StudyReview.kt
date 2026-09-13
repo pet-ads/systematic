@@ -29,6 +29,7 @@ class StudyReview(
     extractionStatus: ExtractionStatus = ExtractionStatus.UNCLASSIFIED,
     var score: Int = 0,
     originalStudyId: StudyReviewId? = null,
+    duplicateStudyIds: Set<StudyReviewId> = setOf()
 ) : Entity<Long>(studyId) {
 
     private val study: Study
@@ -62,8 +63,12 @@ class StudyReview(
     var extractionStatus: ExtractionStatus = extractionStatus
         private set
 
-    var originalStudyId: StudyReviewId? = null
+    var originalStudyId: StudyReviewId? = originalStudyId
         private set
+
+    private val _duplicateStudyIds = duplicateStudyIds.toMutableSet()
+    val duplicateStudyIds: Set<StudyReviewId>
+        get() = _duplicateStudyIds.toSet()
 
     var studyId: StudyReviewId = studyId
         private set
@@ -170,10 +175,16 @@ class StudyReview(
         duplicates.forEach { duplicate ->
             duplicate.ensureCanChangeSelectionStatus()
 
+            if(duplicate.duplicateStudyIds.isNotEmpty())(
+                throw IllegalStateException("A study with copies can't be marked as duplicate.")
+            )
+
             duplicate.clearExtractionCriteria()
             duplicate.markAsDuplicateOf(studyId)
             duplicate.selectionStatus = SelectionStatus.DUPLICATED
             duplicate.extractionStatus = ExtractionStatus.DUPLICATED
+
+            _duplicateStudyIds.add(duplicate.studyId)
         }
     }
 
@@ -181,9 +192,22 @@ class StudyReview(
         mergeDuplicateInformation(duplicates)
 
         duplicates.forEach { duplicate ->
+            if(duplicate.duplicateStudyIds.isNotEmpty())(
+                throw IllegalStateException("A study with copies can't be marked as duplicate.")
+            )
+
             duplicate.markAsDuplicateOf(studyId)
             duplicate.extractionStatus = ExtractionStatus.DUPLICATED
+            _duplicateStudyIds.add(duplicate.studyId)
         }
+    }
+
+    fun removeDuplicate(studyReview: StudyReview) {
+        if(!duplicateStudyIds.contains(studyReview.studyId)) {
+            throw IllegalStateException("This study review is not duplicate of this study.")
+        }
+
+        _duplicateStudyIds.remove(studyReview.studyId)
     }
 
     private fun markAsDuplicateOf(original: StudyReviewId) {

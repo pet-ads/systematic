@@ -29,6 +29,7 @@ data class StudyReviewDocument (
     val selectionStatus: String,
     val score: Int,
     val originalStudyId: Long?,
+    val duplicateStudyIds: Set<StudyReviewId>,
 ){
     companion object{
         @Transient
