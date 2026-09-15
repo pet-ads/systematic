@@ -72,7 +72,7 @@ class PatchSearchSessionServiceImpl (
             val duplicatedAnalysedReviews = reviewSimilarityService.findDuplicates(scoredNewStudyReviews, scoredExistingStudyReviews)
 
             val toSaveDuplicatedAnalysedReviews = duplicatedAnalysedReviews
-                .flatMap { (_, value) -> value }
+                .flatMap { (key, value) -> listOf(key) + value }
                 .toList()
 
             val studies = studyReviews.size

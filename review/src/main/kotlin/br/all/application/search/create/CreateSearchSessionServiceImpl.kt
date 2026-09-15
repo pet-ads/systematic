@@ -89,7 +89,7 @@ class CreateSearchSessionServiceImpl(
 
         val duplicatedAnalysedReviews = reviewSimilarityService.findDuplicates(scoredStudyReviews, oldStudies)
         val toSaveDuplicatedAnalysedReviews = duplicatedAnalysedReviews
-            .flatMap { (_, value) -> value }
+            .flatMap { (key, value) -> listOf(key) + value }
             .toList()
 
         studyReviewRepository.saveOrUpdateBatch(toSaveDuplicatedAnalysedReviews.map { it.toDto() })
