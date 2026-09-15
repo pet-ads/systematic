@@ -14,8 +14,11 @@ import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.application.user.CredentialsService
 import br.all.domain.model.protocol.Criterion
 import br.all.domain.model.review.SystematicStudy
+import br.all.domain.model.study.SelectionStatus
 import br.all.domain.model.study.StudyReview
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 class UpdateStudyReviewSelectionService(
     private val systematicStudyRepository: SystematicStudyRepository,
     private val studyReviewRepository: StudyReviewRepository,
@@ -48,7 +51,10 @@ class UpdateStudyReviewSelectionService(
 
             val studyReview = StudyReview.fromDto(studyReviewDto)
             when(newStatus){
-                "UNCLASSIFIED" -> studyReview.declassifyInSelection()
+                "UNCLASSIFIED" -> {
+                    removeDuplicateRelationship(studyReview)
+                    studyReview.declassifyInSelection()
+                }
                 "INCLUDED" -> studyReview.includeInSelection()
                 "EXCLUDED" -> studyReview.excludeInSelection()
                 else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
@@ -72,5 +78,26 @@ class UpdateStudyReviewSelectionService(
         }
 
         presenter.prepareSuccessView(ResponseModel(request.userId, request.systematicStudyId, request.studyReviewId))
+    }
+
+    private fun removeDuplicateRelationship(
+        studyReview: StudyReview
+    ) {
+        val originalStudyId = studyReview.originalStudyId ?: return
+
+        if(studyReview.selectionStatus != SelectionStatus.DUPLICATED) return
+
+        val originalStudyDto = studyReviewRepository.findById(
+            studyReview.systematicStudyId.value(),
+            originalStudyId.value()
+        ) ?: throw EntityNotFoundException(
+            "Original study review of id ${originalStudyId.value()} not found."
+        )
+
+        val originalStudy = StudyReview.fromDto(originalStudyDto)
+
+        originalStudy.removeDuplicate(studyReview)
+
+        studyReviewRepository.saveOrUpdate(originalStudy.toDto())
     }
 }
