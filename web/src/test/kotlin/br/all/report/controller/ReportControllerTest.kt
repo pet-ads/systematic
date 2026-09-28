@@ -765,7 +765,7 @@ class ReportControllerTest @Autowired constructor(
                     post(exportReviewUrl(format = "latex"))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                         .contentType("application/json")
-                        .content("{}")
+                        .content("""{"conduction":{},"exportItems":[]}""")
                 )
                     .andExpect(status().isOk)
             }
@@ -783,7 +783,7 @@ class ReportControllerTest @Autowired constructor(
                     post(exportReviewUrl(format = "pdf"))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                         .contentType("application/json")
-                        .content("{}")
+                        .content("""{"conduction":{},"exportItems":[]}""")
                 )
                     .andExpect(status().isNotFound)
             }
@@ -794,7 +794,7 @@ class ReportControllerTest @Autowired constructor(
                     post("/api/v1/systematic-study/${UUID.randomUUID()}/report/exportable-review/latex?downloadable=false")
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                         .contentType("application/json")
-                        .content("{}")
+                        .content("""{"conduction":{},"exportItems":[]}""")
                 )
                     .andExpect(status().isNotFound)
             }
@@ -805,7 +805,7 @@ class ReportControllerTest @Autowired constructor(
                     mockMvc = mockMvc,
                     requestBuilder = post(exportReviewUrl(format = "latex"))
                         .contentType("application/json")
-                        .content("{}")
+                        .content("""{"conduction":{},"exportItems":[]}""")
                 )
             }
 
@@ -815,7 +815,7 @@ class ReportControllerTest @Autowired constructor(
                     mockMvc = mockMvc,
                     requestBuilder = post(exportReviewUrl(format = "latex"))
                         .contentType("application/json")
-                        .content("{}")
+                        .content("""{"conduction":{},"exportItems":[]}""")
                 )
             }
         }
