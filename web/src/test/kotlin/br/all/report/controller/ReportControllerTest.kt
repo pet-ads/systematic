@@ -26,7 +26,6 @@ import java.util.*
 import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 import br.all.study.utils.TestDataFactory as StudyReviewTestDataFactory
 import br.all.protocol.shared.TestDataFactory as ProtocolTestDataFactory
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -767,7 +766,7 @@ class ReportControllerTest @Autowired constructor(
                 protocolRepository.save(protocol)
 
                 mockMvc.perform(
-                    post(exportReviewUrl(format = "latex"))
+                    get(exportReviewUrl(format = "latex"))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                 )
                     .andExpect(status().isOk)
@@ -783,7 +782,7 @@ class ReportControllerTest @Autowired constructor(
                 protocolRepository.save(protocol)
 
                 mockMvc.perform(
-                    post(exportReviewUrl(format = "pdf"))  // Changed from get() to post()
+                    get(exportReviewUrl(format = "pdf"))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
                 )
                     .andExpect(status().isNotFound)
@@ -792,8 +791,9 @@ class ReportControllerTest @Autowired constructor(
             @Test
             fun `should return 404 when systematic study does not exist`() {
                 mockMvc.perform(
-                    post("/api/v1/systematic-study/${UUID.randomUUID()}/report/exportable-review/latex?downloadable=false")
-                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    get(
+                        "/api/v1/systematic-study/${UUID.randomUUID()}/report/exportable-review/latex?downloadable=false"
+                    ).with(SecurityMockMvcRequestPostProcessors.user(user))
                 )
                     .andExpect(status().isNotFound)
             }
