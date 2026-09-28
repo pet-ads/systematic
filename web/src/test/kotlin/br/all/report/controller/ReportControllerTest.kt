@@ -26,6 +26,7 @@ import java.util.*
 import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 import br.all.study.utils.TestDataFactory as StudyReviewTestDataFactory
 import br.all.protocol.shared.TestDataFactory as ProtocolTestDataFactory
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -291,8 +292,8 @@ class ReportControllerTest @Autowired constructor(
                     id = systematicStudy.id,
                     informationSources = setOf("Scopus")
                 )
-                val studyReviews = (1111L..1115L).map {
-                        id -> studyReviewDataFactory.reviewDocument(
+                val studyReviews = (1111L..1115L).map { id ->
+                    studyReviewDataFactory.reviewDocument(
                         systematicStudyId = systematicStudy.id,
                         studyReviewId = id,
                         selectionStatus = faker.random.randomValue(listOf("INCLUDED", "EXCLUDED", "DUPLICATED")),
@@ -322,13 +323,13 @@ class ReportControllerTest @Autowired constructor(
                     id = systematicStudy.id,
                     informationSources = setOf("Scopus")
                 )
-                val studyReviews = (1111L..1115L).map {
-                        id -> studyReviewDataFactory.reviewDocument(
-                    systematicStudyId = systematicStudy.id,
-                    studyReviewId = id,
-                    selectionStatus = faker.random.randomValue(listOf("INCLUDED", "EXCLUDED", "DUPLICATED")),
-                    sources = setOf("Scopus"),
-                )
+                val studyReviews = (1111L..1115L).map { id ->
+                    studyReviewDataFactory.reviewDocument(
+                        systematicStudyId = systematicStudy.id,
+                        studyReviewId = id,
+                        selectionStatus = faker.random.randomValue(listOf("INCLUDED", "EXCLUDED", "DUPLICATED")),
+                        sources = setOf("Scopus"),
+                    )
                 }
 
                 protocolRepository.save(protocol)
@@ -718,12 +719,8 @@ class ReportControllerTest @Autowired constructor(
         @Test
         fun `should return 200 and find correctly the criteria`() {
             val systematicStudyId = systematicStudy.id
-            // o intelli j tava reclamando que o valor do id era sempre o mesmo
-            // então é por isso que tem esse negócio ai, qualquer coisa só
-            // coloca val studyReviewId = 1000L
             val seed = System.currentTimeMillis()
             val studyReviewId = (seed * 31) % Long.MAX_VALUE
-
 
             val studyReview = studyReviewDataFactory.reviewDocument(
                 selectionCriteria = setOf(
@@ -736,7 +733,6 @@ class ReportControllerTest @Autowired constructor(
             studyReviewRepository.save(studyReview)
 
             val criteria1 = protocolDataFactory.createCriteria("INCLUSION", "criteria 1")
-
             val criteria2 = protocolDataFactory.createCriteria("EXCLUSION", "criteria 2")
 
             val protocol = protocolDataFactory.createProtocolDocument(
@@ -766,8 +762,10 @@ class ReportControllerTest @Autowired constructor(
                 protocolRepository.save(protocol)
 
                 mockMvc.perform(
-                    get(exportReviewUrl(format = "latex"))
+                    post(exportReviewUrl(format = "latex"))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
+                        .contentType("application/json")
+                        .content("{}")
                 )
                     .andExpect(status().isOk)
             }
@@ -782,8 +780,10 @@ class ReportControllerTest @Autowired constructor(
                 protocolRepository.save(protocol)
 
                 mockMvc.perform(
-                    get(exportReviewUrl(format = "pdf"))
+                    post(exportReviewUrl(format = "pdf"))
                         .with(SecurityMockMvcRequestPostProcessors.user(user))
+                        .contentType("application/json")
+                        .content("{}")
                 )
                     .andExpect(status().isNotFound)
             }
@@ -791,9 +791,10 @@ class ReportControllerTest @Autowired constructor(
             @Test
             fun `should return 404 when systematic study does not exist`() {
                 mockMvc.perform(
-                    get(
-                        "/api/v1/systematic-study/${UUID.randomUUID()}/report/exportable-review/latex?downloadable=false"
-                    ).with(SecurityMockMvcRequestPostProcessors.user(user))
+                    post("/api/v1/systematic-study/${UUID.randomUUID()}/report/exportable-review/latex?downloadable=false")
+                        .with(SecurityMockMvcRequestPostProcessors.user(user))
+                        .contentType("application/json")
+                        .content("{}")
                 )
                     .andExpect(status().isNotFound)
             }
@@ -802,7 +803,9 @@ class ReportControllerTest @Autowired constructor(
             fun `should not allow unauthenticated user to export review`() {
                 testHelperService.testForUnauthenticatedUser(
                     mockMvc = mockMvc,
-                    requestBuilder = get(exportReviewUrl(format = "latex"))
+                    requestBuilder = post(exportReviewUrl(format = "latex"))
+                        .contentType("application/json")
+                        .content("{}")
                 )
             }
 
@@ -810,7 +813,9 @@ class ReportControllerTest @Autowired constructor(
             fun `should not allow unauthorized user to export review`() {
                 testHelperService.testForUnauthorizedUser(
                     mockMvc = mockMvc,
-                    requestBuilder = get(exportReviewUrl(format = "latex"))
+                    requestBuilder = post(exportReviewUrl(format = "latex"))
+                        .contentType("application/json")
+                        .content("{}")
                 )
             }
         }
