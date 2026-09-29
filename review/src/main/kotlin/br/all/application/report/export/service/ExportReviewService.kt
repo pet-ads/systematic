@@ -10,6 +10,8 @@ interface ExportReviewService {
         val userId: UUID,
         val systematicStudyId: UUID,
         val format: String,
+        val conduction: ConductionExportConfig = ConductionExportConfig(),
+        val exportItems: List<ExportItemConfig> = emptyList(),
     )
 
     data class ResponseModel(

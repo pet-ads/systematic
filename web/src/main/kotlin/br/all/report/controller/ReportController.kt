@@ -1,5 +1,7 @@
 package br.all.report.controller
 
+import br.all.application.report.export.service.ConductionExportConfig
+import br.all.application.report.export.service.ExportItemConfig
 import br.all.application.report.find.service.ExportProtocolService
 import br.all.application.report.export.service.ExportReviewService
 import br.all.application.report.find.service.*
@@ -17,6 +19,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -388,40 +392,33 @@ class ReportController(
     }
 
 
-    @GetMapping("exportable-review/{format}")
+    data class ExportReviewRequest(
+        val conduction: ConductionExportConfig,
+        val exportItems: List<ExportItemConfig>,
+    )
+
+    @PostMapping("exportable-review/{format}")
     @Operation(summary = "Export Review")
     @ApiResponses(
-        value =[
+        value = [
             ApiResponse(responseCode = "200", description = "Success exporting formatted review",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = RestfulExportReviewPresenter::class)
-                    )
-                ]),
-
-            ApiResponse(responseCode = "401", description = "Unauthenticated user",
-                content = [Content(schema = Schema(hidden = true))]),
-            ApiResponse(responseCode = "403", description = "Unauthorized user",
-                content = [Content(schema = Schema(hidden = true))])
-
-
-
+                content = [Content(mediaType = "application/json", schema = Schema(implementation = RestfulExportReviewPresenter::class))]),
+            ApiResponse(responseCode = "401", description = "Unauthenticated user", content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "403", description = "Unauthorized user", content = [Content(schema = Schema(hidden = true))])
         ]
     )
     fun exportReview(
         @PathVariable systematicStudyId: UUID,
         @PathVariable format: String,
-        @RequestParam downloadable: Boolean
-    ): ResponseEntity<*>{
-        val presenter = if (downloadable) {
-            DownloadableReviewPresenter()
-        } else {
-            RestfulExportReviewPresenter(linksFactory)
-        }
+        @RequestParam downloadable: Boolean,
+        @RequestBody body: ExportReviewRequest,
+    ): ResponseEntity<*> {
+        val presenter = if (downloadable) DownloadableReviewPresenter() else RestfulExportReviewPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = ExportReviewService.RequestModel(userId,systematicStudyId,format.lowercase())
-        exportReviewService.exportReview(presenter,request)
+        val request = ExportReviewService.RequestModel(
+            userId, systematicStudyId, format.lowercase(), body.conduction, body.exportItems
+        )
+        exportReviewService.exportReview(presenter, request)
         val responseEntity = when (presenter) {
             is DownloadableReviewPresenter -> presenter.responseEntity
             is RestfulExportReviewPresenter -> presenter.responseEntity
