@@ -19,6 +19,16 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     private val authorTypes = listOf("author", "authors", "editor")
     private val venueTypes = listOf("journal", "booktitle", "institution", "organization", "publisher", "series", "school", "howpublished")
 
+    private val ignoredEntryTypes = setOf("comment", "string", "preamble")
+
+    private val entryStartRegex = Regex("""(?m)^[ \t]*@\s*(\w+)\s*\{""")
+
+    private val entryTypeRegex = Regex("""@\s*(\w+)\s*\{""")
+    private val entryKeyRegex = Regex("""@\s*\w+\s*\{([^,]*),""")
+    private val yearRegex = Regex("""\d{4}""")
+
+    private data class RawEntry(val text: String, val closed: Boolean)
+
     fun convertManyToStudyReview(
         systematicStudyId: SystematicStudyId,
         searchSessionId: SearchSessionID,
@@ -61,39 +71,40 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     }
 
     private fun convertMany(bibtex: String): Pair<List<Study>, List<String>> {
-        val cleanedBibtex = removeBibtexComments(bibtex)
-
         val validStudies = mutableListOf<Study>()
         val invalidEntries = mutableListOf<String>()
 
-        cleanedBibtex.split(Regex("(?m)(?=@\\w+\\s*\\{)"))
-            .map { it.trim() }
-            .filter { it.isNotBlank() }
-            .forEach { entry ->
-                try {
-                    val study = convert(entry)
-                    validStudies.add(study)
-                } catch (e: BibtexParseException) {
-                    val entryIdentifier = extractBibtexId(entry) ?: "starting with '${entry.take(40)}...'"
-                    invalidEntries.add("Failed to parse entry '$entryIdentifier': ${e.message}")
-                } catch (e: Exception) {
-                    invalidEntries.add("An unexpected error occurred. Details: ${e.message}")
-                }
+        splitEntries(bibtex.replace("\r", "")).forEach { raw ->
+            val entryIdentifier = extractBibtexId(raw.text) ?: "starting with '${raw.text.take(40)}...'"
+
+            if (!raw.closed) {
+                invalidEntries.add("Failed to parse entry '$entryIdentifier': missing closing brace '}'.")
+                return@forEach
             }
+
+            try {
+                validStudies.add(convert(raw.text))
+            } catch (e: BibtexParseException) {
+                invalidEntries.add("Failed to parse entry '$entryIdentifier': ${e.message}")
+            } catch (e: Exception) {
+                invalidEntries.add("An unexpected error occurred. Details: ${e.message}")
+            }
+        }
         return Pair(validStudies, invalidEntries)
     }
 
     fun convert(bibtexEntry: String): Study {
         require(bibtexEntry.isNotBlank()) { "BibTeX entry must not be blank." }
 
-        val bibtexId = extractBibtexId(bibtexEntry)
-            ?: throw BibtexMissingRequiredFieldException("BibTeX ID")
+        val entry = bibtexEntry.replace("\r", "").trim()
 
-        val type = extractStudyType(bibtexEntry)
-        val fieldMap = parseBibtexFields(bibtexEntry)
+        extractBibtexId(entry) ?: throw BibtexMissingRequiredFieldException("BibTeX ID")
+
+        val type = extractStudyType(entry)
+        val fieldMap = parseBibtexFields(entry)
 
         val title = fieldMap["title"]?.takeIf { it.isNotBlank() } ?: ""
-        val year = fieldMap["year"]?.toIntOrNull() ?: 0
+        val year = fieldMap["year"]?.let { yearRegex.find(it)?.value?.toIntOrNull() } ?: 0
         val authors = getValueFromFieldMap(fieldMap, authorTypes).takeIf { it.isNotBlank() } ?: ""
         val venue = getValueFromFieldMap(fieldMap, venueTypes).takeIf { it.isNotBlank() } ?: "d"
 
@@ -114,48 +125,118 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
         return Study(type, title, year, authors, venue, abstract, keywords, references, doi)
     }
 
-    private fun removeBibtexComments(bibtex: String): String {
-        return bibtex.lines()
-            .mapNotNull { line ->
-                if (line.trimStart().startsWith("%")) {
-                    null
-                } else {
-                    val commentIndex = line.indexOf('%')
-                    val cleaned = if (commentIndex >= 0) line.take(commentIndex) else line
-                    cleaned.trimEnd().takeIf { it.isNotBlank() }
+    private fun splitEntries(bibtex: String): List<RawEntry> {
+        val entries = mutableListOf<RawEntry>()
+        var pos = 0
+
+        while (pos < bibtex.length) {
+            val match = entryStartRegex.find(bibtex, pos) ?: break
+            val start = match.range.first + match.value.indexOf('@')
+            val openBrace = match.range.last
+
+            var depth = 0
+            var end = -1
+            var i = openBrace
+            while (i < bibtex.length) {
+                when (bibtex[i]) {
+                    '{' -> depth++
+                    '}' -> {
+                        depth--
+                        if (depth == 0) {
+                            end = i
+                            break
+                        }
+                    }
                 }
+                i++
             }
-            .joinToString("\n")
+
+            val type = match.groupValues[1].lowercase(Locale.ROOT)
+
+            if (end == -1) {
+                if (type !in ignoredEntryTypes) entries.add(RawEntry(bibtex.substring(start), closed = false))
+                break
+            }
+
+            if (type !in ignoredEntryTypes) entries.add(RawEntry(bibtex.substring(start, end + 1), closed = true))
+            pos = end + 1
+        }
+        return entries
     }
 
     private fun parseBibtexFields(bibtexEntry: String): Map<String, String> {
-        val content = bibtexEntry.substringAfter('{', "").substringBeforeLast('}', "")
-        if (content.isBlank()) {
-            return emptyMap()
-        }
+        val openBrace = bibtexEntry.indexOf('{')
+        if (openBrace == -1) return emptyMap()
+
+        val firstComma = bibtexEntry.indexOf(',', openBrace)
+        if (firstComma == -1) return emptyMap()
+
+        val closeBrace = bibtexEntry.lastIndexOf('}')
+        val body = bibtexEntry.substring(firstComma + 1, if (closeBrace > firstComma) closeBrace else bibtexEntry.length)
 
         val fieldMap = mutableMapOf<String, String>()
-        val fieldSplitRegex = Regex(""",\s*(?=\w+\s*=)""")
+        var i = 0
 
-        content.split(fieldSplitRegex).forEach { fieldString ->
-            val parts = fieldString.trim().split("=", limit = 2)
-            if (parts.size == 2) {
-                val key = parts[0].trim().lowercase(Locale.getDefault())
-                val value = parts[1].trim()
-                    .removeSurrounding("{", "}")
-                    .removeSurrounding("\"", "\"")
-                fieldMap[key] = value
+        while (i < body.length) {
+            val eq = body.indexOf('=', i)
+            if (eq == -1) break
+
+            val key = body.substring(i, eq).trim().trim(',').trim().lowercase(Locale.ROOT)
+
+            var j = eq + 1
+            while (j < body.length && body[j].isWhitespace()) j++
+
+            val value: String
+            when {
+                j < body.length && body[j] == '{' -> {
+                    var depth = 0
+                    var k = j
+                    while (k < body.length) {
+                        if (body[k] == '{') depth++
+                        else if (body[k] == '}') {
+                            depth--
+                            if (depth == 0) break
+                        }
+                        k++
+                    }
+                    value = body.substring(j + 1, minOf(k, body.length))
+                    i = k + 1
+                }
+                j < body.length && body[j] == '"' -> {
+                    val k = body.indexOf('"', j + 1).let { if (it == -1) body.length else it }
+                    value = body.substring(j + 1, k)
+                    i = k + 1
+                }
+                else -> {
+                    val k = body.indexOf(',', j).let { if (it == -1) body.length else it }
+                    value = body.substring(j, k)
+                    i = k + 1
+                }
+            }
+
+            if (key.isNotEmpty() && key.none { it.isWhitespace() }) {
+                fieldMap[key] = decodeHtmlEntities(value.trim())
             }
         }
         return fieldMap
     }
+
+    private fun decodeHtmlEntities(value: String): String =
+        value
+            .replace("&lt;", "<")
+            .replace("&gt;", ">")
+            .replace("&quot;", "\"")
+            .replace("&#39;", "'")
+            .replace("&amp;", "&")
 
     private fun getValueFromFieldMap(fieldMap: Map<String, String>, keys: List<String>): String {
         return keys.firstNotNullOfOrNull { key -> fieldMap[key] } ?: ""
     }
 
     private fun parseKeywords(keywords: String?): Set<String> {
-        return keywords?.split("[,;]".toRegex())?.map { it.trim() }?.filter { it.isNotEmpty() }?.toSet() ?: emptySet()
+        if (keywords == null) return emptySet()
+        val separator = if (keywords.contains(';')) ";" else ","
+        return keywords.split(separator).map { it.trim() }.filter { it.isNotEmpty() }.toSet()
     }
 
     private fun parseReferences(references: String?): List<String> {
@@ -163,15 +244,13 @@ class BibtexConverterService(private val studyReviewIdGeneratorService: IdGenera
     }
 
     private fun extractStudyType(bibtexEntry: String): StudyType {
-        val entryTypeRegex = Regex("""@(\w+)\s*\{""")
-        val matchResult = entryTypeRegex.find(bibtexEntry)
-        val studyTypeName = matchResult?.groupValues?.get(1)?.uppercase(Locale.getDefault()) ?: return StudyType.UNKNOWN
+        val studyTypeName = entryTypeRegex.find(bibtexEntry)?.groupValues?.get(1)?.uppercase(Locale.ROOT)
+            ?: return StudyType.UNKNOWN
 
         return runCatching { StudyType.valueOf(studyTypeName) }.getOrDefault(StudyType.UNKNOWN)
     }
 
     private fun extractBibtexId(bibtexEntry: String): String? {
-        val keyRegex = Regex("""@\w+\s*\{(.*?)\s*,""", RegexOption.DOT_MATCHES_ALL)
-        return keyRegex.find(bibtexEntry)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotBlank() }
+        return entryKeyRegex.find(bibtexEntry)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotBlank() }
     }
 }

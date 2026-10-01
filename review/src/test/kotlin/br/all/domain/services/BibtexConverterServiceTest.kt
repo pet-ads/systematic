@@ -479,4 +479,292 @@ class BibtexConverterServiceTest {
             )
         }
     }
+
+    @Nested
+    inner class RobustParsing {
+
+        private fun convertMany(bibtex: String) = sut.convertManyToStudyReview(
+            SystematicStudyId(randomUUID()),
+            SearchSessionID(randomUUID()),
+            bibtex,
+            source = mutableSetOf("Cochrane")
+        )
+
+        private val cochraneExport = """
+            Record #1 of 3
+            @article{Huey25,
+            author = {Huey, SL, Mehta, NH, and Mehta, S},
+            title = {Precision nutrition-based interventions for the management of obesity},
+            journal = {Cochrane Database of Systematic Reviews},
+            number = {1},
+            year = {2025},
+            publisher = {John Wiley &amp; Sons, Ltd},
+            ISSN = {1465-1858},
+            abstract = {Abstract - Background Meta-analysis (RR 0.8, 95% CI 0.6 to 1.0; I2 = 45%, N = 33,513, 11 trials) showed benefit.},
+            DOI = {10.1002/14651858.CD015877},
+            keywords = {*Pediatric Obesity [diet therapy, therapy]; Child, Preschool; Humans},
+            URL = {http://dx.doi.org/10.1002/14651858.CD015877}
+            }
+
+
+            Record #2 of 3
+            @article{Alfirevic06,
+            author = {Alfirevic, Z, Devane, D, and Gyte, GML},
+            title = {Continuous cardiotocography (CTG) as a form of electronic fetal monitoring},
+            journal = {Cochrane Database of Systematic Reviews},
+            number = {3},
+            year = {2006},
+            publisher = {John Wiley &amp; Sons, Ltd},
+            abstract = {Abstract - Background CTG records changes in the fetal heart rate.},
+            DOI = {10.1002/14651858.CD006066.pub3},
+            keywords = {*Labor, Obstetric; Cardiotocography [*methods]; Female},
+            URL = {http://dx.doi.org/10.1002/14651858.CD006066.pub3}
+            }
+
+
+            Record #3 of 3
+            @article{Alkhawaja15,
+            author = {Alkhawaja, S, and Martin, C},
+            title = {Antenatal corticosteroids for fetal lung maturation},
+            journal = {Cochrane Database of Systematic Reviews},
+            year = {2015},
+            abstract = {Abstract - Rationale Lorem ipsum.},
+            DOI = {10.1002/14651858.CD000001}
+            }
+        """.trimIndent()
+
+        @Test
+        fun `should ignore text between entries such as Cochrane Record headers`() {
+            val (studies, invalid) = convertMany(cochraneExport)
+
+            assertAll(
+                { assertEquals(3, studies.size) },
+                { assertTrue(invalid.isEmpty(), "Unexpected invalid entries: $invalid") },
+                { assertEquals("Precision nutrition-based interventions for the management of obesity", studies[0].title) },
+                { assertEquals(2006, studies[1].year) },
+                { assertEquals("Antenatal corticosteroids for fetal lung maturation", studies[2].title) }
+            )
+        }
+
+        @Test
+        fun `should parse Cochrane export with Windows line endings`() {
+            val (studies, invalid) = convertMany(cochraneExport.replace("\n", "\r\n"))
+
+            assertAll(
+                { assertEquals(3, studies.size) },
+                { assertTrue(invalid.isEmpty(), "Unexpected invalid entries: $invalid") },
+                { assertEquals("https://doi.org/10.1002/14651858.CD015877", studies[0].doi?.value) }
+            )
+        }
+
+        @Test
+        fun `should not split abstract that contains commas followed by equals signs`() {
+            val (studies, _) = convertMany(cochraneExport)
+
+            assertEquals(
+                "Abstract - Background Meta-analysis (RR 0.8, 95% CI 0.6 to 1.0; I2 = 45%, N = 33,513, 11 trials) showed benefit.",
+                studies[0].abstract
+            )
+        }
+
+        @Test
+        fun `should keep fields that come after an abstract containing a percent sign`() {
+            val (studies, _) = convertMany(cochraneExport)
+
+            assertAll(
+                { assertEquals("https://doi.org/10.1002/14651858.CD015877", studies[0].doi?.value) },
+                { assertTrue(studies[0].keywords.isNotEmpty()) }
+            )
+        }
+
+        @Test
+        fun `should decode html entities in field values`() {
+            val bibtex = """
+                @book{Real01,
+                author = {Doe, John},
+                title = {A real study &amp; its follow-up},
+                publisher = {John Wiley &amp; Sons, Ltd},
+                year = {2020},
+                abstract = {Lorem ipsum.}
+                }
+            """.trimIndent()
+
+            val (studies, _) = convertMany(bibtex)
+
+            assertAll(
+                { assertEquals("John Wiley & Sons, Ltd", studies[0].venue) },
+                { assertEquals("A real study & its follow-up", studies[0].title) }
+            )
+        }
+
+        @Test
+        fun `should keep commas inside keywords when they are separated by semicolons`() {
+            val (studies, _) = convertMany(cochraneExport)
+
+            assertEquals(
+                setOf("*Pediatric Obesity [diet therapy, therapy]", "Child, Preschool", "Humans"),
+                studies[0].keywords
+            )
+        }
+
+        @Test
+        fun `should keep authors as exported by Cochrane`() {
+            val (studies, _) = convertMany(cochraneExport)
+
+            assertEquals("Huey, SL, Mehta, NH, and Mehta, S", studies[0].authors)
+        }
+
+        @Test
+        fun `should ignore full line percent comments and commented out entries`() {
+            val bibtex = """
+                % exported by some tool
+                % @article{Ghost00,
+                @article{Real01,
+                author = {Doe, John},
+                title = {A real study},
+                journal = {Journal of Tests},
+                year = {2020},
+                abstract = {Lorem ipsum.}
+                }
+                % another comment
+                @book{Real02,
+                author = {Roe, Jane},
+                title = {Another real study},
+                publisher = {Publisher},
+                year = {2021},
+                abstract = {Lorem ipsum.}
+                }
+            """.trimIndent()
+
+            val (studies, invalid) = convertMany(bibtex)
+
+            assertAll(
+                { assertEquals(2, studies.size) },
+                { assertTrue(invalid.isEmpty(), "Unexpected invalid entries: $invalid") }
+            )
+        }
+
+        @Test
+        fun `should ignore comment string and preamble entries`() {
+            val bibtex = """
+                @comment{jabref-meta: databaseType:bibtex;}
+                @string{jt = {Journal of Tests}}
+                @preamble{"\newcommand{\noopsort}[1]{}"}
+                @article{Real01,
+                author = {Doe, John},
+                title = {A real study},
+                journal = {Journal of Tests},
+                year = {2020},
+                abstract = {Lorem ipsum.}
+                }
+            """.trimIndent()
+
+            val (studies, invalid) = convertMany(bibtex)
+
+            assertAll(
+                { assertEquals(1, studies.size) },
+                { assertTrue(invalid.isEmpty(), "Unexpected invalid entries: $invalid") }
+            )
+        }
+
+        @Test
+        fun `should not treat at sign inside abstract as a new entry`() {
+            val bibtex = """
+                @article{Real01,
+                author = {Doe, John},
+                title = {A real study},
+                journal = {Journal of Tests},
+                year = {2020},
+                abstract = {Contact john@example.com for details.
+                @article{NotAnEntry, this is just text}
+                End of abstract.}
+                }
+            """.trimIndent()
+
+            val (studies, invalid) = convertMany(bibtex)
+
+            assertAll(
+                { assertEquals(1, studies.size) },
+                { assertTrue(invalid.isEmpty(), "Unexpected invalid entries: $invalid") },
+                { assertTrue(studies[0].abstract?.contains("End of abstract.") == true) }
+            )
+        }
+
+        @Test
+        fun `should parse values delimited by quotes and numbers without delimiters`() {
+            val bibtex = """
+                @article{Real01,
+                author = "Doe, John",
+                title = "A real study",
+                journal = {Journal of Tests},
+                year = 2020,
+                abstract = {Lorem ipsum.}
+                }
+            """.trimIndent()
+
+            val (studies, invalid) = convertMany(bibtex)
+
+            assertAll(
+                { assertEquals(1, studies.size) },
+                { assertTrue(invalid.isEmpty(), "Unexpected invalid entries: $invalid") },
+                { assertEquals("Doe, John", studies[0].authors) },
+                { assertEquals("A real study", studies[0].title) },
+                { assertEquals(2020, studies[0].year) }
+            )
+        }
+
+        @Test
+        fun `should preserve nested braces in values`() {
+            val bibtex = """
+                @article{Real01,
+                author = {Doe, John},
+                title = {{Using SOA} in {Critical-Embedded} Systems},
+                journal = {Journal of Tests},
+                year = {2020},
+                abstract = {Lorem ipsum.}
+                }
+            """.trimIndent()
+
+            val (studies, _) = convertMany(bibtex)
+
+            assertEquals("{Using SOA} in {Critical-Embedded} Systems", studies[0].title)
+        }
+
+        @Test
+        fun `should report an unclosed last entry as invalid and keep the valid ones`() {
+            val bibtex = """
+                @article{Real01,
+                author = {Doe, John},
+                title = {A real study},
+                journal = {Journal of Tests},
+                year = {2020},
+                abstract = {Lorem ipsum.}
+                }
+
+                @article{Broken02,
+                author = {Roe, Jane},
+                title = {A broken study},
+                year = {2021},
+                abstract = {Never closed
+            """.trimIndent()
+
+            val (studies, invalid) = convertMany(bibtex)
+
+            assertAll(
+                { assertEquals(1, studies.size) },
+                { assertEquals(1, invalid.size) },
+                { assertTrue(invalid.first().contains("Broken02")) }
+            )
+        }
+
+        @Test
+        fun `should return no studies and no errors when the text has no bibtex entries`() {
+            val (studies, invalid) = convertMany("Record #1 of 1\nsome text without entries")
+
+            assertAll(
+                { assertTrue(studies.isEmpty()) },
+                { assertTrue(invalid.isEmpty()) }
+            )
+        }
+    }
 }
