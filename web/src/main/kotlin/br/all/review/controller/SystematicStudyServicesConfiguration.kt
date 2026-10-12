@@ -8,6 +8,7 @@ import br.all.application.review.find.services.FindSystematicStudyServiceImpl
 import br.all.application.collaborator.repository.CollaboratorRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.update.services.UpdateSystematicStudyServiceImpl
+import br.all.application.reviewmode.repository.ReviewModeRepository
 import br.all.application.shared.service.AuthorizationService
 import br.all.domain.services.UuidGeneratorService
 import org.springframework.context.annotation.Bean
@@ -21,13 +22,15 @@ class SystematicStudyServicesConfiguration {
         protocolRepository: ProtocolRepository,
         uuidGeneratorService: UuidGeneratorService,
         credentialsService: CredentialsService,
-        collaboratorRepository: CollaboratorRepository
+        collaboratorRepository: CollaboratorRepository,
+        reviewModeRepository: ReviewModeRepository
     ) = CreateSystematicStudyServiceImpl(
         systematicStudyRepository,
         protocolRepository,
         uuidGeneratorService,
         credentialsService,
-        collaboratorRepository
+        collaboratorRepository,
+        reviewModeRepository
     )
 
     @Bean

@@ -10,11 +10,14 @@ import br.all.application.collaborator.repository.toDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
+import br.all.application.reviewmode.repository.ReviewModeRepository
+import br.all.application.reviewmode.repository.toDto
 import br.all.domain.model.protocol.Protocol
 import br.all.domain.model.collaborator.Collaborator
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.review.toSystematicStudyId
+import br.all.domain.model.reviewmode.SystematicStudyReviewMode
 import br.all.domain.services.UuidGeneratorService
 import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.domain.shared.exception.UnauthenticatedUserException
@@ -32,6 +35,7 @@ class CreateSystematicStudyServiceImpl(
     private val uuidGeneratorService: UuidGeneratorService,
     private val credentialsService: CredentialsService,
     private val collaboratorRepository: CollaboratorRepository,
+    private val reviewModeRepository: ReviewModeRepository,
 ) : CreateSystematicStudyService {
     
     @Transactional
@@ -72,6 +76,8 @@ class CreateSystematicStudyServiceImpl(
 
         val protocol = Protocol.write(generatedId.toSystematicStudyId(), emptySet()).build()
         protocolRepository.saveOrUpdate(protocol.toDto())
+        val reviewMode = SystematicStudyReviewMode(generatedId.toSystematicStudyId())
+        reviewModeRepository.saveOrUpdate(reviewMode.toDto())
 
         presenter.prepareSuccessView(ResponseModel(userCredentials.id, generatedId))
     }
