@@ -7,9 +7,11 @@ import br.all.application.review.repository.SystematicStudyDto
 import br.all.application.review.repository.fromRequestModel
 import br.all.application.review.repository.toDto
 import br.all.application.review.update.services.UpdateSystematicStudyService.ResponseModel
+import br.all.application.reviewmode.repository.toDto
 import br.all.domain.model.protocol.Protocol
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.review.toSystematicStudyId
+import br.all.domain.model.reviewmode.SystematicStudyReviewMode
 import br.all.domain.shared.user.Role
 import io.github.serpro69.kfaker.Faker
 import java.util.*
@@ -45,6 +47,10 @@ class TestDataFactory {
     fun protocolDto(systematicStudyId: UUID = systematicStudy) = Protocol
         .write(systematicStudyId.toSystematicStudyId(), emptySet())
         .build()
+        .toDto()
+
+    fun reviewModeDto(systematicStudyId: UUID = systematicStudy) =
+        SystematicStudyReviewMode(systematicStudyId.toSystematicStudyId())
         .toDto()
 
     fun collaboratorDto() = CollaboratorDto(researcher, systematicStudy, faker.clashOfClans.troops(), faker.internet.domain(), "OWNER")

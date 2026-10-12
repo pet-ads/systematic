@@ -4,6 +4,7 @@ import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.collaborator.repository.CollaboratorRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.util.TestDataFactory
+import br.all.application.reviewmode.repository.ReviewModeRepository
 import br.all.domain.shared.exception.UnauthenticatedUserException
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
@@ -27,6 +28,8 @@ class CreateSystematicStudyServiceImplTest {
     private lateinit var collaboratorRepository: CollaboratorRepository
     @MockK(relaxUnitFun = true)
     private lateinit var protocolRepository: ProtocolRepository
+    @MockK(relaxUnitFun = true)
+    private lateinit var reviewModeRepository: ReviewModeRepository
     @MockK
     private lateinit var uuidGeneratorService: UuidGeneratorService
     @MockK
@@ -62,6 +65,7 @@ class CreateSystematicStudyServiceImplTest {
             val response = factory.createResponseModel()
             val dto = factory.dtoFromCreateRequest(request)
             val protocolDto = factory.protocolDto()
+            val reviewModeDto = factory.reviewModeDto()
 
             preconditionCheckerMocking.makeEverythingWork()
             every { uuidGeneratorService.next() } returns systematicStudy
@@ -72,6 +76,7 @@ class CreateSystematicStudyServiceImplTest {
                 uuidGeneratorService.next()
                 systematicStudyRepository.saveOrUpdate(dto)
                 protocolRepository.saveOrUpdate(protocolDto)
+                reviewModeRepository.saveOrUpdate(reviewModeDto)
                 presenter.prepareSuccessView(response)
             }
         }
