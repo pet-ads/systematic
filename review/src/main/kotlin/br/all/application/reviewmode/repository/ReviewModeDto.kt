@@ -2,14 +2,12 @@ package br.all.application.reviewmode.repository
 
 import java.util.UUID
 
-sealed class ReviewModeDto(
-    open val systematicStudyId: UUID
+sealed interface ReviewModeStageDto
+data object SplitDto : ReviewModeStageDto
+data object ReplicationDto : ReviewModeStageDto
+
+data class ReviewModeDto(
+    val systematicStudyId: UUID,
+    val selection: ReviewModeStageDto? = null,
+    val extraction: ReviewModeStageDto? = null
 )
-
-data class SplitDto(
-    override val systematicStudyId: UUID
-) : ReviewModeDto(systematicStudyId)
-
-data class ReplicationDto(
-    override val systematicStudyId: UUID
-) : ReviewModeDto(systematicStudyId)

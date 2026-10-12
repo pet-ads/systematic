@@ -6,16 +6,16 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.util.UUID
 
 @Document("review_mode")
-sealed class ReviewModeDocument(
-    @Id open val id: UUID
+data class ReviewModeDocument(
+    @Id val id: UUID,
+    val selection: ReviewModeStageDocument? = null,
+    val extraction: ReviewModeStageDocument? = null
 )
 
+sealed class ReviewModeStageDocument
+
 @TypeAlias("SPLIT")
-data class SplitDocument(
-    @Id override val id: UUID,
-) : ReviewModeDocument(id)
+class SplitDocument : ReviewModeStageDocument()
 
 @TypeAlias("REPLICATION")
-data class ReplicationDocument(
-    @Id override val id: UUID,
-) : ReviewModeDocument(id)
+class ReplicationDocument : ReviewModeStageDocument()

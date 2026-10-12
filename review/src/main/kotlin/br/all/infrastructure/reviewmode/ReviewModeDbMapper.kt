@@ -2,14 +2,28 @@ package br.all.infrastructure.reviewmode
 
 import br.all.application.reviewmode.repository.ReplicationDto
 import br.all.application.reviewmode.repository.ReviewModeDto
+import br.all.application.reviewmode.repository.ReviewModeStageDto
 import br.all.application.reviewmode.repository.SplitDto
 
-fun ReviewModeDto.toDocument(): ReviewModeDocument = when (this) {
-    is SplitDto -> SplitDocument(id = systematicStudyId)
-    is ReplicationDto -> ReplicationDocument(id = systematicStudyId)
+fun ReviewModeDto.toDocument() = ReviewModeDocument(
+    id = systematicStudyId,
+    selection = selection?.toDocument(),
+    extraction = extraction?.toDocument()
+)
+
+fun ReviewModeDocument.toDto() = ReviewModeDto(
+    systematicStudyId = id,
+    selection = selection?.toDto(),
+    extraction = extraction?.toDto()
+)
+
+private fun ReviewModeStageDto.toDocument(): ReviewModeStageDocument = when (this) {
+    is SplitDto -> SplitDocument()
+    is ReplicationDto -> ReplicationDocument()
 }
 
-fun ReviewModeDocument.toDto(): ReviewModeDto = when (this) {
-    is SplitDocument -> SplitDto(systematicStudyId = id)
-    is ReplicationDocument -> ReplicationDto(systematicStudyId = id)
+private fun ReviewModeStageDocument.toDto(): ReviewModeStageDto = when (this) {
+    is SplitDocument -> SplitDto
+    is ReplicationDocument -> ReplicationDto
+    else -> error("Unknown ReviewModeStageDocument type: ${this::class}")
 }
