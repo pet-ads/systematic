@@ -3,11 +3,12 @@ package br.all.application.reviewmode.define
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.reviewmode.define.DefineReviewModeService.ModeType
 import br.all.application.reviewmode.define.DefineReviewModeService.RequestModel
-import br.all.application.reviewmode.repository.ReviewModeRepository
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.model.study.StudyReviewStage
 import br.all.domain.shared.exception.EntityNotFoundException
+import br.all.domain.shared.exception.UnauthenticatedUserException
+import br.all.domain.shared.exception.UnauthorizedUserException
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -66,6 +67,42 @@ class DefineReviewModeServiceImplTest {
 
             verifyOrder {
                 presenter.prepareFailView(any<EntityNotFoundException>())
+                presenter.isDone()
+            }
+        }
+
+        @Test
+        fun `should not allow unauthenticated users to define review mode`() {
+            val request = RequestModel(
+                userId = researcherId,
+                systematicStudyId = systematicStudyId,
+                stage = StudyReviewStage.SELECTION,
+                mode = ModeType.SPLIT
+            )
+
+            preconditionCheckerMocking.makeUserUnauthenticated()
+            sut.define(presenter, request)
+
+            verifyOrder {
+                presenter.prepareFailView(any<UnauthenticatedUserException>())
+                presenter.isDone()
+            }
+        }
+
+        @Test
+        fun `should not allow unauthorized users to define review mode`() {
+            val request = RequestModel(
+                userId = researcherId,
+                systematicStudyId = systematicStudyId,
+                stage = StudyReviewStage.SELECTION,
+                mode = ModeType.SPLIT
+            )
+
+            preconditionCheckerMocking.makeUserUnauthorized()
+            sut.define(presenter, request)
+
+            verifyOrder {
+                presenter.prepareFailView(any<UnauthorizedUserException>())
                 presenter.isDone()
             }
         }
