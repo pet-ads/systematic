@@ -1,0 +1,27 @@
+package br.all.domain.model.reviewmode
+
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
+
+@Tag("UnitTest")
+class SplitTest {
+
+    @Nested
+    @DisplayName("When creating a new Split")
+    inner class WhenCreatingANewSplit {
+        @Nested
+        @Tag("InvalidClasses")
+        @DisplayName("And providing invalid states")
+        inner class AndProvidingInvalidStates {
+            @ParameterizedTest(name = "[{index}]: reviewPerStudy = {0}")
+            @ValueSource(ints = [0, -1])
+            fun `should not create split with review per study not greater than zero`(reviewPerStudy: Int) {
+                assertThrows<IllegalArgumentException> { Split(reviewPerStudy) }
+            }
+        }
+    }
+}
