@@ -3,6 +3,7 @@ package br.all.domain.model.reviewmode
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.study.StudyReviewStage
 import br.all.domain.shared.ddd.Entity
+import br.all.domain.shared.user.ResearcherId
 import java.util.UUID
 
 class SystematicStudyReviewMode(
@@ -23,4 +24,10 @@ class SystematicStudyReviewMode(
             StudyReviewStage.EXTRACTION -> this.extraction = mode
         }
     }
+
+    fun defineMode(stage: StudyReviewStage, mainReviewer: ResearcherId) =
+        defineMode(stage, Replication(mainReviewer))
+
+    fun defineMode(stage: StudyReviewStage, reviewPerStudy: Int) =
+        defineMode(stage, Split(reviewPerStudy))
 }
