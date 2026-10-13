@@ -18,12 +18,11 @@ fun ReviewModeDocument.toDto() = ReviewModeDto(
 )
 
 private fun ReviewModeStageDto.toDocument(): ReviewModeStageDocument = when (this) {
-    is SplitDto -> SplitDocument()
-    is ReplicationDto -> ReplicationDocument()
+    is SplitDto -> SplitDocument(reviewPerStudy)
+    is ReplicationDto -> ReplicationDocument(mainReviewer)
 }
 
 private fun ReviewModeStageDocument.toDto(): ReviewModeStageDto = when (this) {
-    is SplitDocument -> SplitDto
-    is ReplicationDocument -> ReplicationDto
-    else -> error("Unknown ReviewModeStageDocument type: ${this::class}")
+    is SplitDocument -> SplitDto(reviewPerStudy)
+    is ReplicationDocument -> ReplicationDto(mainReviewer)
 }

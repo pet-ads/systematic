@@ -3,8 +3,8 @@ package br.all.application.reviewmode.repository
 import java.util.UUID
 
 sealed interface ReviewModeStageDto
-data object SplitDto : ReviewModeStageDto
-data object ReplicationDto : ReviewModeStageDto
+data class SplitDto(val reviewPerStudy: Int) : ReviewModeStageDto
+data class ReplicationDto(val mainReviewer: UUID) : ReviewModeStageDto
 
 data class ReviewModeDto(
     val systematicStudyId: UUID,
