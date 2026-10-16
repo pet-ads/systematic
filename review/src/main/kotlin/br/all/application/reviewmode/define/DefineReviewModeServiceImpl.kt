@@ -6,6 +6,7 @@ import br.all.application.reviewmode.define.DefineReviewModeService.RequestModel
 import br.all.application.reviewmode.define.DefineReviewModeService.ResponseModel
 import br.all.application.reviewmode.repository.ReviewModeRepository
 import br.all.application.reviewmode.repository.toDomain
+import br.all.application.reviewmode.repository.toDto
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
 import br.all.application.user.CredentialsService
 import br.all.domain.model.review.SystematicStudy
@@ -30,6 +31,7 @@ class DefineReviewModeServiceImpl(
         val reviewMode = reviewModeDto?.toDomain()
 
         reviewMode?.defineMode(request.stage, request.toReviewMode())
+        reviewMode?.let { reviewModeRepository.saveOrUpdate(it.toDto()) }
 
         presenter.prepareSuccessView(
             ResponseModel(request.userId, request.systematicStudyId, request.stage)
