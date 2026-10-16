@@ -19,12 +19,12 @@ fun ReviewModeDto.toDomain() = SystematicStudyReviewMode(
     extraction = extraction?.toDomain()
 )
 
-private fun ReviewMode.toDto(): ReviewModeStageDto = when (this) {
+fun ReviewMode.toDto(): ReviewModeStageDto = when (this) {
     is Split -> SplitDto(reviewPerStudy)
     is Replication -> ReplicationDto(mainReviewer.value())
 }
 
-private fun ReviewModeStageDto.toDomain(): ReviewMode = when (this) {
+fun ReviewModeStageDto.toDomain(): ReviewMode = when (this) {
     is SplitDto -> Split(reviewPerStudy)
     is ReplicationDto -> Replication(ResearcherId(mainReviewer))
 }

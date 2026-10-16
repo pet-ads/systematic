@@ -7,6 +7,7 @@ import br.all.application.reviewmode.define.DefineReviewModeService.ReplicationR
 import br.all.application.reviewmode.define.DefineReviewModeService.ResponseModel
 import br.all.application.reviewmode.repository.ReviewModeDto
 import br.all.application.reviewmode.repository.ReviewModeRepository
+import br.all.application.reviewmode.repository.toDto
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.model.study.StudyReviewStage
@@ -60,6 +61,16 @@ class DefineReviewModeServiceImplTest {
         replication = ReplicationRequest(researcherId)
     )
 
+    private val SplitReviewModeDto: ReviewModeDto = ReviewModeDto(
+        systematicStudyId,
+        selection =  splitRequest.toReviewMode().toDto()
+    )
+
+    private val ReplicationReviewModeDto: ReviewModeDto = ReviewModeDto(
+        systematicStudyId,
+        extraction =  replicationRequest.toReviewMode().toDto()
+    )
+
     @BeforeEach
     fun setUp() {
         preconditionCheckerMocking = PreconditionCheckerMockingNew(
@@ -105,6 +116,20 @@ class DefineReviewModeServiceImplTest {
             sut.define(presenter, splitRequest)
 
             verify(exactly = 1) { reviewModeRepository.findById(systematicStudyId) }
+        }
+
+        @Test
+        fun `should save the review mode with the replication mode defined on the given stage`() {
+            sut.define(presenter, replicationRequest)
+
+            verify(exactly = 1) { reviewModeRepository.saveOrUpdate(ReplicationReviewModeDto) }
+        }
+
+        @Test
+        fun `should save the review mode with the split mode defined on the given stage`() {
+            sut.define(presenter, splitRequest)
+
+            verify(exactly = 1) { reviewModeRepository.saveOrUpdate(SplitReviewModeDto) }
         }
     }
 
