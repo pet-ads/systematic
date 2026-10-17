@@ -1,6 +1,7 @@
 package br.all.application.reviewmode.repository
 
 import java.util.UUID
+import br.all.domain.model.study.StudyReviewStage
 
 interface ReviewerStudyRepository {
     fun saveOrUpdate(dto: ReviewerStudyDto)
@@ -9,6 +10,7 @@ interface ReviewerStudyRepository {
         systematicStudyId: UUID,
         researcherId: UUID,
         studyId: Long,
+        stage: StudyReviewStage,
     ): ReviewerStudyDto?
 
     fun findAllByReviewer(
@@ -20,5 +22,6 @@ interface ReviewerStudyRepository {
         systematicStudyId: UUID,
         researcherId: UUID,
         studyId: Long,
+        stage: StudyReviewStage,
     ): Boolean
 }

@@ -12,6 +12,7 @@ fun ReviewerStudy.toDto() = ReviewerStudyDto(
     studyId = studyId.studyReviewId,
     systematicStudyId = systematicStudyId.value(),
     researcherId = researcherId.value,
+    stage = stage,
     studyReview = studyReview.toDto(),
 )
 
@@ -19,5 +20,6 @@ fun ReviewerStudyDto.toDomain() = ReviewerStudy(
     studyId = StudyReviewId(systematicStudyId, studyId),
     systematicStudyId = SystematicStudyId(systematicStudyId),
     researcherId = ResearcherId(researcherId),
+    stage = stage,
     studyReview = StudyReview.fromDto(studyReview),
 )

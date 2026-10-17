@@ -1,6 +1,7 @@
 package br.all.infrastructure.reviewmode
 
 import br.all.infrastructure.study.StudyReviewDocument
+import br.all.domain.model.study.StudyReviewStage
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.io.Serializable
@@ -16,4 +17,5 @@ data class ReviewerStudyDocumentId(
     val systematicStudyId: UUID,
     val researcherId: UUID,
     val studyId: Long,
+    val stage: StudyReviewStage,
 ) : Serializable

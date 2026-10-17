@@ -9,6 +9,7 @@ fun ReviewerStudyDto.toDocument() = ReviewerStudyDocument(
         systematicStudyId = systematicStudyId,
         researcherId = researcherId,
         studyId = studyId,
+        stage = stage,
     ),
     studyReview = studyReview.toDocument(),
 )
@@ -17,5 +18,6 @@ fun ReviewerStudyDocument.toDto() = ReviewerStudyDto(
     studyId = id.studyId,
     systematicStudyId = id.systematicStudyId,
     researcherId = id.researcherId,
+    stage = id.stage,
     studyReview = studyReview.toDto(),
 )

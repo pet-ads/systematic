@@ -3,6 +3,7 @@ package br.all.infrastructure.reviewmode
 import br.all.application.reviewmode.repository.ReviewerStudyDto
 import br.all.application.reviewmode.repository.ReviewerStudyRepository
 import br.all.infrastructure.shared.toNullable
+import br.all.domain.model.study.StudyReviewStage
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
@@ -19,8 +20,9 @@ open class ReviewerStudyRepositoryImpl(
         systematicStudyId: UUID,
         researcherId: UUID,
         studyId: Long,
+        stage: StudyReviewStage,
     ): ReviewerStudyDto? =
-        innerRepository.findById(ReviewerStudyDocumentId(systematicStudyId, researcherId, studyId))
+        innerRepository.findById(ReviewerStudyDocumentId(systematicStudyId, researcherId, studyId, stage))
             .toNullable()
             ?.toDto()
 
@@ -35,6 +37,7 @@ open class ReviewerStudyRepositoryImpl(
         systematicStudyId: UUID,
         researcherId: UUID,
         studyId: Long,
+        stage: StudyReviewStage,
     ): Boolean =
-        innerRepository.existsById(ReviewerStudyDocumentId(systematicStudyId, researcherId, studyId))
+        innerRepository.existsById(ReviewerStudyDocumentId(systematicStudyId, researcherId, studyId, stage))
 }
