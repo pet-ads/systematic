@@ -7,6 +7,8 @@ data class StudyExportData(
     val year: Int,
     val venue: String,
     val doi: String?,
+    val type: String,
+    val bases: Set<String>,
     val keywords: Set<String>,
     val selectionCriteria: Set<String>,
     val extractionAnswers: List<QuestionAnswerExportData>,

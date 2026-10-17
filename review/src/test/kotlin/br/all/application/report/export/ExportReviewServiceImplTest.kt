@@ -1,10 +1,12 @@
 package br.all.application.report.export
 
+import br.all.application.protocol.repository.CriterionDto
 import br.all.application.protocol.repository.ProtocolRepository
 import br.all.application.protocol.util.TestDataFactory as ProtocolTestDataFactory
 import br.all.application.study.util.TestDataFactory as StudyTestDataFactory
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.report.export.presenter.ExportReviewPresenter
+import br.all.application.report.export.service.ConductionExportConfig
 import br.all.application.report.export.service.ExportReviewService
 import br.all.application.report.export.service.ExportReviewServiceImpl
 import br.all.application.review.repository.SystematicStudyRepository
@@ -28,6 +30,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.UUID
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @Tag("UnitTest")
 @Tag("ServiceTest")
@@ -118,7 +121,7 @@ class ExportReviewServiceImplTest {
         }
 
         @Test
-        fun `should return empty study lists when there are no studies`() {
+        fun `should return empty conduction sections and export items when there are no studies`() {
             val protocolDto = protocolFactory.protocolDto()
             val slot = slot<ReviewExportData>()
 
@@ -131,14 +134,17 @@ class ExportReviewServiceImplTest {
             sut.exportReview(presenter, request)
 
             val reviewData = slot.captured
-            assertEquals(0, reviewData.studiesExcludedInScreening.size)
-            assertEquals(0, reviewData.studiesIncludedInScreening.size)
-            assertEquals(0, reviewData.studiesExcludedInFullText.size)
-            assertEquals(0, reviewData.includedStudies.size)
+            assertEquals(0, reviewData.conduction.consolidatedExtraction?.size)
+            assertEquals("StudiesFunnel.png", reviewData.conduction.funnelImageFileName)
+            assertEquals(null, reviewData.conduction.includedInFirstSelection)
+            assertEquals(null, reviewData.conduction.excludedInFirstSelection)
+            assertEquals(null, reviewData.conduction.includedInSecondSelection)
+            assertEquals(null, reviewData.conduction.excludedInSecondSelection)
+            assertTrue(reviewData.exportItems.isEmpty())
         }
 
         @Test
-        fun `should correctly separate studies by stage`() {
+        fun `should include only fully included studies in the consolidated table`() {
             val protocolDto = protocolFactory.protocolDto()
             val slot = slot<ReviewExportData>()
 
@@ -169,34 +175,78 @@ class ExportReviewServiceImplTest {
             val request = ExportReviewService.RequestModel(researcherId, systematicStudyId, "latex")
             sut.exportReview(presenter, request)
 
-            val reviewData = slot.captured
-            assertEquals(1, reviewData.studiesExcludedInScreening.size)
-            assertEquals(3, reviewData.studiesIncludedInScreening.size)
-            assertEquals(1, reviewData.studiesExcludedInFullText.size)
-            assertEquals(1, reviewData.includedStudies.size)
+            val consolidated = slot.captured.conduction.consolidatedExtraction
+            assertEquals(1, consolidated?.size)
+            assertEquals(4L, consolidated?.first()?.id)
         }
 
         @Test
-        fun `should calculate funnel from all studies`() {
-            val protocolDto = protocolFactory.protocolDto()
+        fun `should group studies by criterion when conduction flags are enabled`() {
+            val exclusionCriterion = CriterionDto("Study not peer-reviewed", "EXCLUSION")
+            val inclusionCriterion = CriterionDto("Study addresses RQ1", "INCLUSION")
+
+            val protocolDto = protocolFactory.protocolDto(
+                eligibilityCriteria = setOf(exclusionCriterion, inclusionCriterion)
+            )
             val slot = slot<ReviewExportData>()
 
-            val studies = listOf(
-                studyFactory.generateDto(systematicStudyId = systematicStudyId, studyReviewId = 1L,
-                    selectionStatus = "EXCLUDED", extractionStatus = "UNCLASSIFIED"),
-                studyFactory.generateDto(systematicStudyId = systematicStudyId, studyReviewId = 2L,
-                    selectionStatus = "INCLUDED", extractionStatus = "INCLUDED"),
+            val excludedStudy = studyFactory.generateDto(
+                systematicStudyId = systematicStudyId, studyReviewId = 1L,
+                selectionStatus = "EXCLUDED", extractionStatus = "UNCLASSIFIED",
+                selectionCriteria = setOf(exclusionCriterion.description),
+            )
+            val anotherExcludedStudy = studyFactory.generateDto(
+                systematicStudyId = systematicStudyId, studyReviewId = 2L,
+                selectionStatus = "EXCLUDED", extractionStatus = "UNCLASSIFIED",
+                selectionCriteria = setOf(exclusionCriterion.description),
+            )
+            val includedStudy = studyFactory.generateDto(
+                systematicStudyId = systematicStudyId, studyReviewId = 3L,
+                selectionStatus = "INCLUDED", extractionStatus = "UNCLASSIFIED",
             )
 
             precondition.makeEverythingWork()
             every { protocolRepository.findById(systematicStudyId) } returns protocolDto
-            every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns studies
+            every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns listOf(
+                excludedStudy, anotherExcludedStudy, includedStudy
+            )
             every { reviewExporter.export(capture(slot)) } returns "content"
 
-            val request = ExportReviewService.RequestModel(researcherId, systematicStudyId, "latex")
+            val request = ExportReviewService.RequestModel(
+                researcherId, systematicStudyId, "latex",
+                conduction = ConductionExportConfig(
+                    excludedInFirstSelection = true,
+                    consolidatedExtraction = false,
+                    funnel = false,
+                )
+            )
             sut.exportReview(presenter, request)
 
-            assertEquals(1, slot.captured.funnel.totalIncluded)
+            val rows = slot.captured.conduction.excludedInFirstSelection
+            assertEquals(1, rows?.size) // só o critério de EXCLUSION entra nessa tabela
+            val row = rows?.first()
+            assertEquals(exclusionCriterion.description, row?.criterion)
+            assertEquals(listOf(1L, 2L), row?.studyIds)
+            assertEquals(2, row?.count)
+        }
+
+        @Test
+        fun `should not compute funnel filename when funnel flag is disabled`() {
+            val protocolDto = protocolFactory.protocolDto()
+            val slot = slot<ReviewExportData>()
+
+            precondition.makeEverythingWork()
+            every { protocolRepository.findById(systematicStudyId) } returns protocolDto
+            every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns emptyList()
+            every { reviewExporter.export(capture(slot)) } returns "content"
+
+            val request = ExportReviewService.RequestModel(
+                researcherId, systematicStudyId, "latex",
+                conduction = ConductionExportConfig(funnel = false, consolidatedExtraction = false)
+            )
+            sut.exportReview(presenter, request)
+
+            assertEquals(null, slot.captured.conduction.funnelImageFileName)
         }
     }
 

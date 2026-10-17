@@ -1,5 +1,6 @@
 package br.all.utils
 
+import br.all.application.report.export.service.ConductionExportConfig
 import br.all.domain.model.study.StudyReviewStage
 import br.all.protocol.controller.ProtocolController
 import br.all.protocol.requests.PutRequest
@@ -431,17 +432,20 @@ class LinksFactory {
             )
         }.withRel("remove-criteria").withType("PATCH")
 
-    fun exportReview(systematicStudyId: UUID, format: String,downloadable: Boolean): Link{
-       val uri = linkTo<ReportController> {
-           exportReview(systematicStudyId,format,downloadable)
-       }.toUriComponentsBuilder()
-           .queryParam("downloadable",downloadable)
-           .build()
-           .toUri()
+    fun exportReview(systematicStudyId: UUID, format: String, downloadable: Boolean): Link {
+        val uri = linkTo<ReportController> {
+            exportReview(
+                systematicStudyId, format, downloadable,
+                ReportController.ExportReviewRequest(ConductionExportConfig(), emptyList())
+            )
+        }.toUriComponentsBuilder()
+            .queryParam("downloadable", downloadable)
+            .build()
+            .toUri()
 
         return Link.of(uri.toString())
             .withRel("exportable-review")
-            .withType("GET")
+            .withType("POST")
     }
 
 
