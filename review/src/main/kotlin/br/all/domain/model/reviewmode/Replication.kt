@@ -10,6 +10,10 @@ class Replication(
     val reviewers: Set<ResearcherId> = setOf(mainReviewer) + secondaryReviewers.keys
 
     init {
+        require(secondaryReviewers.values.all { it in 0.0..100.0 }) {
+            "Each secondary percentage must be between 0 and 100"
+        }
+
         if (noStudySharedBySecondaries) {
             require(secondaryReviewers.values.sum() <= 100.0) {
                 "Secondary percentages cannot exceed 100 when studies are not shared"
