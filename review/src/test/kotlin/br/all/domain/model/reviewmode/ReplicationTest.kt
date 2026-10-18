@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -71,9 +73,10 @@ class ReplicationTest {
                 }
             }
 
-            @Test
-            fun `should not allow a reviewer percentage above 100`() {
-                val secondaries = mapOf(ResearcherId(UUID.randomUUID()) to 100.1)
+            @ParameterizedTest(name = "[{index}]: percentage = {0}")
+            @ValueSource(doubles = [-0.1, 100.1])
+            fun `should not allow a reviewer percentage outside 0 to 100`(percentage: Double) {
+                val secondaries = mapOf(ResearcherId(UUID.randomUUID()) to percentage)
 
                 assertThrows<IllegalArgumentException> {
                     Replication(mainReviewer, secondaries, noStudySharedBySecondaries = false)
