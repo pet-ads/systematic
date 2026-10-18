@@ -14,4 +14,12 @@ class Split(
             "Review per study must be between 1 and the number of reviewers"
         }
     }
+
+    fun split(
+        availableStudies: List<Long>,
+        reviewerStudies: Map<ResearcherId, Set<Long>>,
+    ): Map<ResearcherId, Set<Long>> {
+        require(availableStudies.isNotEmpty()) { "There must be at least one available study to split" }
+        return emptyMap()
+    }
 }
