@@ -13,6 +13,7 @@ data class ReviewModeDocument(
     val extraction: ReviewModeStageDocument? = null
 )
 
+@TypeAlias("REVIEW_MODE_STAGE")
 sealed class ReviewModeStageDocument
 
 @Persistent

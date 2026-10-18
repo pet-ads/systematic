@@ -22,7 +22,10 @@ class FindReviewModeServiceImpl(
         }
 
         presenter.prepareSuccessView(
-            FindReviewModeService.ResponseModel(request.systematicStudyId, reviewMode.selection, reviewMode.extraction)
+            FindReviewModeService.ResponseModel(request.systematicStudyId,
+                reviewMode.selection?.toStageResponse(),
+                reviewMode.extraction?.toStageResponse(),
+            )
         )
     }
 }
