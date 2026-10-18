@@ -12,15 +12,11 @@ import br.all.application.shared.service.AuthorizationService
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.model.study.StudyReviewStage
-import br.all.domain.shared.exception.EntityNotFoundException
-import br.all.domain.shared.exception.UnauthenticatedUserException
-import br.all.domain.shared.exception.UnauthorizedUserException
 import br.all.domain.shared.user.Role
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.verifyOrder
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
