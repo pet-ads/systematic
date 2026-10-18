@@ -1,7 +1,7 @@
 package br.all.domain.model.reviewmode
 
 import br.all.domain.shared.user.ResearcherId
-import br.all.infrastructure.study.StudyReviewId
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
@@ -99,6 +99,21 @@ class SplitTest {
                 assertThrows<IllegalArgumentException> {
                     split.split(listOf(fullyAssigned), studies)
                 }
+            }
+        }
+
+        @Nested
+        @Tag("ValidClasses")
+        @DisplayName("And providing valid states")
+        inner class AndProvidingValidStates{
+            @Test
+            fun `should give a single study to one reviewer when review per study is one`() {
+                val split = Split(reviewers, reviewPerStudy = 1)
+                val study = 1L
+
+                val result = split.split(listOf(study), emptyMap())
+
+                assertEquals(1, result.values.count { study in it })
             }
         }
     }
