@@ -9,6 +9,9 @@ class Split(
     constructor(reviewPerStudy: Int) : this(emptyList(), reviewPerStudy)
 
     init {
-        require(reviewPerStudy > 0) { "Review per study must be greater than zero" }
+        require(reviewers.isNotEmpty()) { "Split needs at least one reviewer" }
+        require(reviewPerStudy in 1..reviewers.size) {
+            "Review per study must be between 1 and the number of reviewers"
+        }
     }
 }
