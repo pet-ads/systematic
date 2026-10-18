@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.util.UUID
 import kotlin.test.Test
@@ -27,6 +28,18 @@ class ReplicationTest {
                 val sut = Replication(mainReviewer)
 
                 assertTrue(mainReviewer in sut.reviewers)
+            }
+
+            @Test
+            fun `should allow secondary percentages summing exactly 100 when studies are not shared`() {
+                val secondaries = mapOf(
+                    ResearcherId(UUID.randomUUID()) to 60.0,
+                    ResearcherId(UUID.randomUUID()) to 40.0,
+                )
+
+                assertDoesNotThrow {
+                    Replication(mainReviewer, secondaries, noStudySharedBySecondaries = true)
+                }
             }
         }
 
