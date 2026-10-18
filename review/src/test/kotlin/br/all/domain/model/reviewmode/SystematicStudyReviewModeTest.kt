@@ -45,10 +45,15 @@ class SystematicStudyReviewModeTest {
 
             @Test
             fun `should define split on extraction when providing review per study`() {
-                sut.defineMode(StudyReviewStage.EXTRACTION, 2)
+                val reviewers = List(3) { ResearcherId(UUID.randomUUID()) }
+
+                sut.defineMode(StudyReviewStage.EXTRACTION,
+                    SystematicStudyReviewMode.SplitParams(reviewers, reviewPerStudy = 2)
+                )
 
                 assertAll(
                     { assertTrue(sut.extraction is Split) },
+                    { assertEquals(reviewers, (sut.extraction as Split).reviewers) },
                     { assertEquals(2, (sut.extraction as Split).reviewPerStudy) },
                     { assertNull(sut.selection) }
                 )

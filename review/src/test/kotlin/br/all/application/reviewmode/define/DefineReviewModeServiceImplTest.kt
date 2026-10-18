@@ -51,7 +51,7 @@ class DefineReviewModeServiceImplTest {
         userId = researcherId,
         systematicStudyId = systematicStudyId,
         stage = StudyReviewStage.SELECTION,
-        split = SplitRequest(reviewPerStudy = 2)
+        split = SplitRequest(reviewers = listOf(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()), reviewPerStudy = 2)
     )
 
     private val replicationRequest = RequestModel(
@@ -61,12 +61,12 @@ class DefineReviewModeServiceImplTest {
         replication = ReplicationRequest(researcherId)
     )
 
-    private val SplitReviewModeDto: ReviewModeDto = ReviewModeDto(
+    private val splitReviewModeDto: ReviewModeDto = ReviewModeDto(
         systematicStudyId,
         selection =  splitRequest.toReviewMode().toDto()
     )
 
-    private val ReplicationReviewModeDto: ReviewModeDto = ReviewModeDto(
+    private val replicationReviewModeDto: ReviewModeDto = ReviewModeDto(
         systematicStudyId,
         extraction =  replicationRequest.toReviewMode().toDto()
     )
@@ -122,14 +122,14 @@ class DefineReviewModeServiceImplTest {
         fun `should save the review mode with the replication mode defined on the given stage`() {
             sut.define(presenter, replicationRequest)
 
-            verify(exactly = 1) { reviewModeRepository.saveOrUpdate(ReplicationReviewModeDto) }
+            verify(exactly = 1) { reviewModeRepository.saveOrUpdate(replicationReviewModeDto) }
         }
 
         @Test
         fun `should save the review mode with the split mode defined on the given stage`() {
             sut.define(presenter, splitRequest)
 
-            verify(exactly = 1) { reviewModeRepository.saveOrUpdate(SplitReviewModeDto) }
+            verify(exactly = 1) { reviewModeRepository.saveOrUpdate(splitReviewModeDto) }
         }
     }
 

@@ -18,6 +18,11 @@ class SystematicStudyReviewMode(
     var extraction: ReviewMode? = extraction
         private set
 
+    data class SplitParams(
+        val reviewers: List<ResearcherId>,
+        val reviewPerStudy: Int,
+    )
+
     fun defineMode(stage: StudyReviewStage, mode: ReviewMode) {
         when (stage) {
             StudyReviewStage.SELECTION -> this.selection = mode
@@ -28,6 +33,6 @@ class SystematicStudyReviewMode(
     fun defineMode(stage: StudyReviewStage, mainReviewer: ResearcherId) =
         defineMode(stage, Replication(mainReviewer))
 
-    fun defineMode(stage: StudyReviewStage, reviewPerStudy: Int) =
-        defineMode(stage, Split(reviewPerStudy))
+    fun defineMode(stage: StudyReviewStage, params: SplitParams) =
+        defineMode(stage, Split(params.reviewers, params.reviewPerStudy))
 }
