@@ -70,6 +70,15 @@ class ReplicationTest {
                     Replication(mainReviewer, secondaries, noStudySharedBySecondaries = true)
                 }
             }
+
+            @Test
+            fun `should not allow a reviewer percentage above 100`() {
+                val secondaries = mapOf(ResearcherId(UUID.randomUUID()) to 100.1)
+
+                assertThrows<IllegalArgumentException> {
+                    Replication(mainReviewer, secondaries, noStudySharedBySecondaries = false)
+                }
+            }
         }
 
     }
