@@ -155,6 +155,22 @@ class SplitTest {
                     assertEquals(2, result.values.count { study in it })
                 }
             }
+
+            @Test
+            fun `should give fewer new studies to reviewers who already have more studies`() {
+                val trio = List(3) { ResearcherId(UUID.randomUUID()) }
+                val split = Split(trio, reviewPerStudy = 1)
+                val reviewerStudies = mapOf(trio[0] to (100L..104L).toSet())
+                val studies = (1L..6L).toList()
+
+                val result = split.split(studies, reviewerStudies)
+
+                assertAll(
+                    { assertEquals(0, result.getValue(trio[0]).size) },
+                    { assertEquals(3, result.getValue(trio[1]).size) },
+                    { assertEquals(3, result.getValue(trio[2]).size) }
+                )
+            }
         }
     }
 }
