@@ -23,7 +23,10 @@ class Split(
         require(reviewerStudies.keys.all { it in reviewers }) {
             "Reviewer studies can only contain researchers configured in the split"
         }
-        
+        require(availableStudies.none { study -> reviewerStudies.values.count { study in it } >= reviewPerStudy }) {
+            "Available studies cannot already be assigned to the maximum number of reviewers"
+        }
+
         return emptyMap()
     }
 }
