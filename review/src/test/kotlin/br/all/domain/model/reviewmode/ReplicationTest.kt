@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.assertThrows
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -28,5 +29,23 @@ class ReplicationTest {
                 assertTrue(mainReviewer in sut.reviewers)
             }
         }
+
+        @Nested
+        @Tag("InvalidClasses")
+        @DisplayName("And providing invalid states")
+        inner class AndProvidingInvalidStates {
+            @Test
+            fun `should not allow secondary percentages above 100 when studies are not shared`() {
+                val secondaries = mapOf(
+                    ResearcherId(UUID.randomUUID()) to 50.1,
+                    ResearcherId(UUID.randomUUID()) to 50.0,
+                )
+
+                assertThrows<IllegalArgumentException> {
+                    Replication(mainReviewer, secondaries, noStudySharedBySecondaries = true)
+                }
+            }
+        }
+
     }
 }
