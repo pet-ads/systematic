@@ -1,14 +1,23 @@
 package br.all.domain.model.reviewmode
 
+import br.all.domain.shared.user.ResearcherId
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import java.util.UUID
+import kotlin.test.Test
 
 @Tag("UnitTest")
 class SplitTest {
+
+    private val reviewers = listOf(
+        ResearcherId(UUID.randomUUID()),
+        ResearcherId(UUID.randomUUID()),
+    )
 
     @Nested
     @DisplayName("When creating a new Split")
@@ -21,6 +30,26 @@ class SplitTest {
             @ValueSource(ints = [0, -1])
             fun `should not create split with review per study not greater than zero`(reviewPerStudy: Int) {
                 assertThrows<IllegalArgumentException> { Split(reviewPerStudy) }
+            }
+
+            @Test
+            fun `should not create split with review per study greater than number of reviewers`() {
+                assertThrows<IllegalArgumentException> { Split(reviewers, reviewPerStudy = 3) }
+            }
+
+            @Test
+            fun `should not create split without reviewers`() {
+                assertThrows<IllegalArgumentException> { Split(emptyList(), reviewPerStudy = 1) }
+            }
+        }
+
+        @Nested
+        @Tag("ValidClasses")
+        @DisplayName("And being succeed")
+        inner class AndBeingSucceed {
+            @Test
+            fun `should allow review per study equal to number of reviewers`() {
+                assertDoesNotThrow { Split(reviewers, reviewPerStudy = reviewers.size) }
             }
         }
     }
