@@ -1,34 +1,30 @@
 package br.all.application.reviewmode.define
 
-import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.review.repository.fromDto
 import br.all.application.reviewmode.define.DefineReviewModeService.RequestModel
 import br.all.application.reviewmode.define.DefineReviewModeService.ResponseModel
 import br.all.application.reviewmode.repository.ReviewModeRepository
 import br.all.application.reviewmode.repository.toDomain
 import br.all.application.reviewmode.repository.toDto
-import br.all.application.shared.presenter.prepareIfFailsPreconditions
-import br.all.application.user.CredentialsService
-import br.all.domain.model.review.SystematicStudy
+import br.all.application.shared.service.AuthorizationService
+import br.all.domain.shared.user.Role
 import org.springframework.stereotype.Service
 
 @Service
 class DefineReviewModeServiceImpl(
-    private val systematicStudyRepository: SystematicStudyRepository,
     private val reviewModeRepository: ReviewModeRepository,
-    private val credentialsService: CredentialsService,
+    private val authorizationService: AuthorizationService
 ) : DefineReviewModeService {
 
     override fun define(presenter: DefineReviewModePresenter, request: RequestModel) {
-        val user = credentialsService.loadCredentials(request.userId)?.toUser()
-        val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
-        val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+        if (authorizationService.authorize(
+                presenter,
+                request.userId,
+                request.systematicStudyId,
+                setOf(Role.OWNER)
+            ) == null
+        ) return
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy)
-        if (presenter.isDone()) return
-
-        val reviewModeDto = reviewModeRepository.findById(request.systematicStudyId)
-        val reviewMode = reviewModeDto?.toDomain()
+        val reviewMode = reviewModeRepository.findById(request.systematicStudyId)?.toDomain()
 
         reviewMode?.defineMode(request.stage, request.toReviewMode())
         reviewMode?.let { reviewModeRepository.saveOrUpdate(it.toDto()) }

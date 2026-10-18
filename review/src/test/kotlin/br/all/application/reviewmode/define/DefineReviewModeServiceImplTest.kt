@@ -8,12 +8,14 @@ import br.all.application.reviewmode.define.DefineReviewModeService.ResponseMode
 import br.all.application.reviewmode.repository.ReviewModeDto
 import br.all.application.reviewmode.repository.ReviewModeRepository
 import br.all.application.reviewmode.repository.toDto
+import br.all.application.shared.service.AuthorizationService
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.model.study.StudyReviewStage
 import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.domain.shared.exception.UnauthenticatedUserException
 import br.all.domain.shared.exception.UnauthorizedUserException
+import br.all.domain.shared.user.Role
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -40,6 +42,10 @@ class DefineReviewModeServiceImplTest {
     private lateinit var credentialsService: CredentialsService
     @MockK(relaxed = true)
     private lateinit var presenter: DefineReviewModePresenter
+    @MockK
+    private lateinit var authorizationService: AuthorizationService
+    @MockK
+    private lateinit var authorizationContext: AuthorizationService.AuthorizationContext
     @InjectMockKs
     private lateinit var sut: DefineReviewModeServiceImpl
 
@@ -88,9 +94,10 @@ class DefineReviewModeServiceImplTest {
     inner class WhenDefiningAReviewMode {
         @BeforeEach
         fun setUp() {
-            val reviewModeDto = ReviewModeDto(systematicStudyId)
-            preconditionCheckerMocking.makeEverythingWork()
-            every { reviewModeRepository.findById(systematicStudyId) } returns reviewModeDto
+            every {
+                authorizationService.authorize(presenter, researcherId, systematicStudyId, setOf(Role.OWNER))
+            } returns authorizationContext
+            every { reviewModeRepository.findById(systematicStudyId) } returns ReviewModeDto(systematicStudyId)
         }
 
         @Test
@@ -138,36 +145,16 @@ class DefineReviewModeServiceImplTest {
     @DisplayName("When preconditions fail")
     inner class WhenPreconditionsFail {
         @Test
-        fun `should prepare fail view when the systematic study does not exist`() {
-            preconditionCheckerMocking.makeSystematicStudyNonexistent()
+        fun `should not save the review mode when preconditions fail`() {
+            every {
+                authorizationService.authorize(presenter, researcherId, systematicStudyId, setOf(Role.OWNER))
+            } returns null
+
             sut.define(presenter, splitRequest)
 
-            verifyOrder {
-                presenter.prepareFailView(any<EntityNotFoundException>())
-                presenter.isDone()
-            }
-        }
-
-        @Test
-        fun `should not allow unauthenticated users to define review mode`() {
-            preconditionCheckerMocking.makeUserUnauthenticated()
-            sut.define(presenter, replicationRequest)
-
-            verifyOrder {
-                presenter.prepareFailView(any<UnauthenticatedUserException>())
-                presenter.isDone()
-            }
-        }
-
-        @Test
-        fun `should not allow unauthorized users to define review mode`() {
-            preconditionCheckerMocking.makeUserUnauthorized()
-            sut.define(presenter, splitRequest)
-
-            verifyOrder {
-                presenter.prepareFailView(any<UnauthorizedUserException>())
-                presenter.isDone()
-            }
+            verify(exactly = 0) { reviewModeRepository.findById(any()) }
+            verify(exactly = 0) { reviewModeRepository.saveOrUpdate(any()) }
+            verify(exactly = 0) { presenter.prepareSuccessView(any<ResponseModel>()) }
         }
     }
 }
