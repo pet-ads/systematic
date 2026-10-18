@@ -27,6 +27,17 @@ class Split(
             "Available studies cannot already be assigned to the maximum number of reviewers"
         }
 
-        return emptyMap()
+        val load = reviewers.associateWith { reviewerStudies[it]?.size ?: 0 }.toMutableMap()
+        val result = reviewers.associateWith { mutableSetOf<Long>() }
+
+        availableStudies.forEach { study ->
+            reviewers.sortedBy { load.getValue(it) }
+                .take(reviewPerStudy)
+                .forEach { reviewer ->
+                    result.getValue(reviewer).add(study)
+                    load[reviewer] = load.getValue(reviewer) + 1
+                }
+        }
+        return result
     }
 }
