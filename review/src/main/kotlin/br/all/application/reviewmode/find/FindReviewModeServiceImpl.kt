@@ -17,7 +17,9 @@ class FindReviewModeServiceImpl(
             presenter, request.userId, request.systematicStudyId, Role.entries.toSet()
         ) ?: return
 
-        val reviewMode = reviewModeRepository.findById(request.systematicStudyId)?.toDomain() ?: return
+        val reviewMode = checkNotNull(reviewModeRepository.findById(request.systematicStudyId)?.toDomain()) {
+            "Review mode of systematic study ${request.systematicStudyId} should exist"
+        }
 
         presenter.prepareSuccessView(
             FindReviewModeService.ResponseModel(request.systematicStudyId, reviewMode.selection, reviewMode.extraction)
