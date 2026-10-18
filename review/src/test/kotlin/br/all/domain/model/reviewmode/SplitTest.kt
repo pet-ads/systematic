@@ -1,6 +1,7 @@
 package br.all.domain.model.reviewmode
 
 import br.all.domain.shared.user.ResearcherId
+import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.DisplayName
@@ -126,6 +127,21 @@ class SplitTest {
                 val result = split.split(listOf(study), reviewerStudies)
 
                 assertFalse(study in result.getValue(reviewers[0]))
+            }
+
+            @Test
+            fun `should give a study only to the missing reviewers when some already have it`() {
+                val trio = List(3) { ResearcherId(UUID.randomUUID()) }
+                val split = Split(trio, reviewPerStudy = 2)
+                val study = 1L
+                val reviewerStudies = mapOf(trio[0] to setOf(study))
+
+                val result = split.split(listOf(study), reviewerStudies)
+
+                assertAll(
+                    { assertFalse(study in result.getValue(trio[0])) },
+                    { assertEquals(1, trio.drop(1).count { study in result.getValue(it) }) }
+                )
             }
         }
     }
