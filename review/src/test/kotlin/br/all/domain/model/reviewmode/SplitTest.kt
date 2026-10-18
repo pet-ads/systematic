@@ -75,6 +75,17 @@ class SplitTest {
                     split.split(emptyList(), reviewerStudies)
                 }
             }
+
+            @Test
+            fun `should not split when reviewer studies contain a researcher not configured in the split`() {
+                val split = Split(reviewers, reviewPerStudy = 1)
+                val notConfigured = ResearcherId(UUID.randomUUID())
+                val studies = mapOf(notConfigured to setOf(1L))
+
+                assertThrows<IllegalArgumentException> {
+                    split.split(listOf(2L), studies)
+                }
+            }
         }
     }
 }
