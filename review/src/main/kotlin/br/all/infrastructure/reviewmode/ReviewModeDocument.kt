@@ -1,6 +1,7 @@
 package br.all.infrastructure.reviewmode
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.Persistent
 import org.springframework.data.annotation.TypeAlias
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.UUID
@@ -14,12 +15,14 @@ data class ReviewModeDocument(
 
 sealed class ReviewModeStageDocument
 
+@Persistent
 @TypeAlias("SPLIT")
 data class SplitDocument(
     val reviewers: List<UUID> = emptyList(),
     val reviewPerStudy: Int,
 ) : ReviewModeStageDocument()
 
+@Persistent
 @TypeAlias("REPLICATION")
 data class ReplicationDocument(
     val mainReviewer: UUID,
