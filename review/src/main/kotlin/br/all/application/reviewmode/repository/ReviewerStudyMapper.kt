@@ -9,7 +9,7 @@ import br.all.domain.shared.user.ResearcherId
 import br.all.infrastructure.study.StudyReviewId
 
 fun ReviewerStudy.toDto() = ReviewerStudyDto(
-    studyId = studyId.studyReviewId,
+    studyId = studyId,
     systematicStudyId = systematicStudyId.value(),
     researcherId = researcherId.value,
     stage = stage,
@@ -17,7 +17,7 @@ fun ReviewerStudy.toDto() = ReviewerStudyDto(
 )
 
 fun ReviewerStudyDto.toDomain() = ReviewerStudy(
-    studyId = StudyReviewId(systematicStudyId, studyId),
+    studyId = studyId,
     systematicStudyId = SystematicStudyId(systematicStudyId),
     researcherId = ResearcherId(researcherId),
     stage = stage,

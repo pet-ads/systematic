@@ -7,7 +7,7 @@ import br.all.domain.shared.user.ResearcherId
 import br.all.infrastructure.study.StudyReviewId
 
 class ReviewerStudy(
-    val studyId: StudyReviewId,
+    val studyId: Long,
     val systematicStudyId: SystematicStudyId,
     val researcherId: ResearcherId,
     val stage: StudyReviewStage,
