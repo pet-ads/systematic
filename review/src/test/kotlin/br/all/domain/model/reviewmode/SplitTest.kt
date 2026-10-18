@@ -143,6 +143,18 @@ class SplitTest {
                     { assertEquals(1, trio.drop(1).count { study in result.getValue(it) }) }
                 )
             }
+
+            @Test
+            fun `should give every study to exactly reviewPerStudy reviewers`() {
+                val split = Split(reviewers, reviewPerStudy = 2)
+                val studies = List(10) { it.toLong() + 1 }
+
+                val result = split.split(studies, emptyMap())
+
+                studies.forEach { study ->
+                    assertEquals(2, result.values.count { study in it })
+                }
+            }
         }
     }
 }
