@@ -20,6 +20,10 @@ class Split(
         reviewerStudies: Map<ResearcherId, Set<Long>>,
     ): Map<ResearcherId, Set<Long>> {
         require(availableStudies.isNotEmpty()) { "There must be at least one available study to split" }
+        require(reviewerStudies.keys.all { it in reviewers }) {
+            "Reviewer studies can only contain researchers configured in the split"
+        }
+        
         return emptyMap()
     }
 }
