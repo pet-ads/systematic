@@ -41,6 +41,18 @@ class ReplicationTest {
                     Replication(mainReviewer, secondaries, noStudySharedBySecondaries = true)
                 }
             }
+
+            @Test
+            fun `should allow secondary percentages above 100 when studies are shared`() {
+                val secondaries = mapOf(
+                    ResearcherId(UUID.randomUUID()) to 60.0,
+                    ResearcherId(UUID.randomUUID()) to 50.0,
+                )
+
+                assertDoesNotThrow {
+                    Replication(mainReviewer, secondaries, noStudySharedBySecondaries = false)
+                }
+            }
         }
 
         @Nested
