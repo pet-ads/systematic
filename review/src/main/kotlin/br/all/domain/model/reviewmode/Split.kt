@@ -31,15 +31,19 @@ class Split(
         val result = reviewers.associateWith { mutableSetOf<Long>() }
 
         availableStudies.forEach { study ->
+            val holders = reviewers.count { study in (reviewerStudies[it] ?: emptySet()) }
+            val missing = reviewPerStudy - holders
+
             reviewers
                 .filter { study !in (reviewerStudies[it] ?: emptySet()) }
                 .sortedBy { load.getValue(it) }
-                .take(reviewPerStudy)
+                .take(missing)
                 .forEach { reviewer ->
                     result.getValue(reviewer).add(study)
                     load[reviewer] = load.getValue(reviewer) + 1
                 }
         }
+
         return result
     }
 }
