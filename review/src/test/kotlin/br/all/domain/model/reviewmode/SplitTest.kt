@@ -86,6 +86,20 @@ class SplitTest {
                     split.split(listOf(2L), studies)
                 }
             }
+
+            @Test
+            fun `should not split when available study is already assigned to maximum of reviewers`() {
+                val split = Split(reviewers, reviewPerStudy = 2)
+                val fullyAssigned = 100L
+                val studies = mapOf(
+                    reviewers[0] to setOf(fullyAssigned),
+                    reviewers[1] to setOf(fullyAssigned),
+                )
+
+                assertThrows<IllegalArgumentException> {
+                    split.split(listOf(fullyAssigned), studies)
+                }
+            }
         }
     }
 }
