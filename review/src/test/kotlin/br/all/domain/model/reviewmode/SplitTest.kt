@@ -2,6 +2,7 @@ package br.all.domain.model.reviewmode
 
 import br.all.domain.shared.user.ResearcherId
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
@@ -114,6 +115,17 @@ class SplitTest {
                 val result = split.split(listOf(study), emptyMap())
 
                 assertEquals(1, result.values.count { study in it })
+            }
+
+            @Test
+            fun `should not give a study to a reviewer who already has it`() {
+                val split = Split(reviewers, reviewPerStudy = 2)
+                val study = 1L
+                val reviewerStudies = mapOf(reviewers[0] to setOf(study))
+
+                val result = split.split(listOf(study), reviewerStudies)
+
+                assertFalse(study in result.getValue(reviewers[0]))
             }
         }
     }
