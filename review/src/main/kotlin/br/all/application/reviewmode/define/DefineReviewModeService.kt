@@ -11,12 +11,23 @@ import java.util.UUID
 interface DefineReviewModeService {
     fun define(presenter: DefineReviewModePresenter, request: RequestModel)
 
-    data class ReplicationRequest(val mainReviewer: UUID) {
-        fun toReviewMode(): ReviewMode = Replication(ResearcherId(mainReviewer))
+    data class ReplicationRequest(
+        val mainReviewer: UUID,
+        val secondaryReviewers: Map<UUID, Double> = emptyMap(),
+        val noStudySharedBySecondaries: Boolean = true,
+    ) {
+        fun toReviewMode(): ReviewMode = Replication(
+            ResearcherId(mainReviewer),
+            secondaryReviewers.mapKeys { ResearcherId(it.key) },
+            noStudySharedBySecondaries,
+        )
     }
 
-    data class SplitRequest(val reviewPerStudy: Int) {
-        fun toReviewMode(): ReviewMode = Split(reviewPerStudy)
+    data class SplitRequest(
+        val reviewers: List<UUID> = emptyList(),
+        val reviewPerStudy: Int,
+    ) {
+        fun toReviewMode(): ReviewMode = Split(reviewers.map(::ResearcherId), reviewPerStudy)
     }
 
     data class RequestModel(

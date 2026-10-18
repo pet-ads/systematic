@@ -20,13 +20,16 @@ data class PatchReviewModeRequest(
 
     data class ReplicationRequest(
         val mainReviewer: UUID,
+        val secondaryReviewers: Map<UUID, Double> = emptyMap(),
+        val noStudySharedBySecondaries: Boolean = true,
     ) {
-        fun toRequestModel() = DefineReviewModeService.ReplicationRequest(mainReviewer)
+        fun toRequestModel() = DefineReviewModeService.ReplicationRequest(mainReviewer, secondaryReviewers, noStudySharedBySecondaries)
     }
 
     data class SplitRequest(
+        val reviewers: List<UUID> = emptyList(),
         val reviewPerStudy: Int,
     ) {
-        fun toRequestModel() = DefineReviewModeService.SplitRequest(reviewPerStudy)
+        fun toRequestModel() = DefineReviewModeService.SplitRequest(reviewers, reviewPerStudy)
     }
 }

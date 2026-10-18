@@ -15,7 +15,14 @@ data class ReviewModeDocument(
 sealed class ReviewModeStageDocument
 
 @TypeAlias("SPLIT")
-data class SplitDocument(val reviewPerStudy: Int) : ReviewModeStageDocument()
+data class SplitDocument(
+    val reviewers: List<UUID> = emptyList(),
+    val reviewPerStudy: Int,
+) : ReviewModeStageDocument()
 
 @TypeAlias("REPLICATION")
-data class ReplicationDocument(val mainReviewer: UUID) : ReviewModeStageDocument()
+data class ReplicationDocument(
+    val mainReviewer: UUID,
+    val secondaryReviewers: Map<UUID, Double> = emptyMap(),
+    val noStudySharedBySecondaries: Boolean = true,
+) : ReviewModeStageDocument()
