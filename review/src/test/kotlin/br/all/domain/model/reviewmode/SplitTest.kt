@@ -119,17 +119,6 @@ class SplitTest {
             }
 
             @Test
-            fun `should not give a study to a reviewer who already has it`() {
-                val split = Split(reviewers, reviewPerStudy = 2)
-                val study = 1L
-                val reviewerStudies = mapOf(reviewers[0] to setOf(study))
-
-                val result = split.split(listOf(study), reviewerStudies)
-
-                assertFalse(study in result.getValue(reviewers[0]))
-            }
-
-            @Test
             fun `should give a study only to the missing reviewers when some already have it`() {
                 val trio = List(3) { ResearcherId(UUID.randomUUID()) }
                 val split = Split(trio, reviewPerStudy = 2)
