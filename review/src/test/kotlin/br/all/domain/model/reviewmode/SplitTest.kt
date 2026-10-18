@@ -171,6 +171,17 @@ class SplitTest {
                     { assertEquals(3, result.getValue(trio[2]).size) }
                 )
             }
+
+            @Test
+            fun `should balance new studies as evenly as possible when no reviewer has studies yet`() {
+                val trio = List(3) { ResearcherId(UUID.randomUUID()) }
+                val split = Split(trio, reviewPerStudy = 2)
+                val studies = (1L..10L).toList()
+
+                val result = split.split(studies, emptyMap())
+
+                assertEquals(listOf(7, 7, 6), trio.map { result.getValue(it).size })
+            }
         }
     }
 }
