@@ -46,4 +46,8 @@ open class ReviewerStudyRepositoryImpl(
         stage: StudyReviewStage
     ): List<ReviewerStudyDto> =
         innerRepository.findAllBySystematicStudyIdAndStage(systematicStudyId, stage.name).map { it.toDto() }
+
+    override fun saveAll(dtos: List<ReviewerStudyDto>) {
+        innerRepository.saveAll(dtos.map { it.toDocument() })
+    }
 }
