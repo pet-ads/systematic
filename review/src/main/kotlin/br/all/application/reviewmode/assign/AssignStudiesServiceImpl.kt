@@ -2,6 +2,7 @@ package br.all.application.reviewmode.assign
 
 import br.all.application.reviewmode.repository.ReviewModeRepository
 import br.all.application.reviewmode.repository.ReviewerStudyRepository
+import br.all.application.reviewmode.repository.toDomain
 import br.all.application.shared.service.AuthorizationService
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.domain.model.study.StudyReviewStage
@@ -34,16 +35,18 @@ class AssignStudiesServiceImpl(
             return
         }
 
-        val stageMode = when (request.stage) {
+        val stageModeDto = when (request.stage) {
             StudyReviewStage.SELECTION -> reviewMode.selection
             StudyReviewStage.EXTRACTION -> reviewMode.extraction
         }
-        if (stageMode == null) {
+        if (stageModeDto == null) {
             presenter.prepareFailView(
                 IllegalStateException("Review mode not configured for stage ${request.stage}")
             )
             return
         }
+
+        val stageMode = stageModeDto.toDomain()
 
         val studies = studyReviewRepository.findAllFromReview(request.systematicStudyId)
         if (studies.isEmpty()) {
@@ -55,5 +58,14 @@ class AssignStudiesServiceImpl(
 
         val reviewerStudies = reviewerStudyRepository
             .findAllBySystematicStudyIdAndStage(request.systematicStudyId, request.stage)
+
+        val alreadyAssigned = reviewerStudies.map { it.studyId }.toSet()
+        val availableStudies = studies.map { it.studyReviewId }.filter { it !in alreadyAssigned }
+        if (availableStudies.isEmpty()) {
+            presenter.prepareFailView(
+                IllegalStateException("All studies are already assigned for stage ${request.stage}")
+            )
+            return
+        }
     }
 }
