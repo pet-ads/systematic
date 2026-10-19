@@ -3,6 +3,7 @@ package br.all.application.study.util
 import br.all.application.question.repository.QuestionDto
 import br.all.application.reviewmode.repository.ReviewerStudyDto
 import br.all.application.study.create.CreateStudyReviewService
+import br.all.application.study.find.service.FindAllStudyReviewsByReviewerService
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService
 import br.all.application.study.find.service.FindAllStudyReviewsService
 import br.all.application.study.find.service.FindStudyReviewService
@@ -108,6 +109,28 @@ class TestDataFactory {
         systematicStudyId,
         searchSource,
         List(amountOfStudies) { generateDto(studyReviewId = Random(1).nextLong()) }
+    )
+
+    fun findAllByReviewerRequestModel(
+        reviewerId: UUID,
+        stage: StudyReviewStage? = null,
+        page: Int = 0,
+        pageSize: Int = 20,
+        sort: String = "id,asc"
+    ) = FindAllStudyReviewsByReviewerService.RequestModel(
+        researcherId, systematicStudyId, reviewerId, stage, page, pageSize, sort
+    )
+
+    fun generateReviewerStudyDto(
+        studyReviewId: Long,
+        reviewerId: UUID,
+        stage: StudyReviewStage = StudyReviewStage.SELECTION
+    ) = ReviewerStudyDto(
+        studyId = studyReviewId,
+        systematicStudyId = systematicStudyId,
+        researcherId = reviewerId,
+        stage = stage,
+        studyReview = generateDto(studyReviewId = studyReviewId)
     )
 
     fun updateRequestModel(

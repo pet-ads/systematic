@@ -2,6 +2,8 @@ package br.all.application.reviewmode.repository
 
 import java.util.UUID
 import br.all.domain.model.study.StudyReviewStage
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 
 interface ReviewerStudyRepository {
     fun saveOrUpdate(dto: ReviewerStudyDto)
@@ -25,7 +27,14 @@ interface ReviewerStudyRepository {
         stage: StudyReviewStage,
     ): Boolean
 
-    fun findAllBySystematicStudyIdAndStage(systematicStudyId: UUID, stage: StudyReviewStage): List<ReviewerStudyDto>
+    fun findAllByReviewerPaged(
+        systematicStudyId: UUID,
+        researcherId: UUID,
+        stage: StudyReviewStage? = null,
+        pageable: Pageable = Pageable.unpaged(),
+    ): Page<ReviewerStudyDto>
+
+    fun findAllByIdSystematicStudyIdAndIdStage(systematicStudyId: UUID, stage: StudyReviewStage): List<ReviewerStudyDto>
 
     fun saveAll(dtos: List<ReviewerStudyDto>)
 }

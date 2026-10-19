@@ -38,6 +38,7 @@ class StudyReviewController(
     private val findAllBySourceService: FindAllStudyReviewsBySourceService,
     private val findAllBySessionService: FindAllStudyReviewsBySessionService,
     private val findAllByAuthorService: FindAllStudyReviewsByAuthorService,
+    private val findAllByReviewerService: FindAllStudyReviewsByReviewerService,
     private val findAllIncludedStudyReviewsService: FindAllIncludedStudyReviewsService,
     private val findAllStudyReviewsByAdvancedSearchService: FindAllStudyReviewsByAdvancedSearchService,
     private val findOneService: FindStudyReviewService,
@@ -236,6 +237,43 @@ class StudyReviewController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = FindAllStudyReviewsByAuthorService.RequestModel(userId, systematicStudy, author)
         findAllByAuthorService.findAllByAuthor(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("/study-review/reviewer/{reviewerId}")
+    @Operation(summary = "Get the study reviews of a systematic study assigned to a reviewer (optionally filtered by stage)")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success getting study reviews assigned to the reviewer, either found studies or found none",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = FindAllStudyReviewsByReviewerService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(responseCode = "401", description = "Fail getting study reviews by reviewer - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "403", description = "Fail getting study reviews by reviewer - unauthorized user",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "404", description = "Fail getting study reviews by reviewer - systematic study not found",
+                content = [Content(schema = Schema(hidden = true))]),
+        ]
+    )
+    fun findAllStudyReviewsByReviewer(
+        @PathVariable systematicStudy: UUID,
+        @PathVariable reviewerId: UUID,
+        @RequestParam("stage", required = false) stage: StudyReviewStage?,
+        @RequestParam("page", required = false, defaultValue = "0") page: Int,
+        @RequestParam("size", required = false, defaultValue = "20") size: Int,
+        @RequestParam("sort", required = false, defaultValue = "id,asc") sort: String,
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindAllStudyReviewsByReviewerPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindAllStudyReviewsByReviewerService.RequestModel(
+            userId, systematicStudy, reviewerId, stage, page, size, sort
+        )
+        findAllByReviewerService.findAllByReviewer(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
