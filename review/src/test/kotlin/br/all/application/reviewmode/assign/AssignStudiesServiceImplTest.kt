@@ -107,7 +107,7 @@ class AssignStudiesServiceImplTest {
             every { reviewModeRepository.findById(systematicStudyId) } returns reviewModeDto
             every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns studies
             every {
-                reviewerStudyRepository.findAllBySystematicStudyIdAndStage(systematicStudyId, StudyReviewStage.SELECTION)
+                reviewerStudyRepository.findAllByIdSystematicStudyIdAndIdStage(systematicStudyId, StudyReviewStage.SELECTION)
             } returns existingReviewerStudies
         }
 
@@ -199,7 +199,7 @@ class AssignStudiesServiceImplTest {
             every { reviewModeRepository.findById(systematicStudyId) } returns reviewModeDto
             every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns studies.take(2)
             every {
-                reviewerStudyRepository.findAllBySystematicStudyIdAndStage(systematicStudyId, StudyReviewStage.SELECTION)
+                reviewerStudyRepository.findAllByIdSystematicStudyIdAndIdStage(systematicStudyId, StudyReviewStage.SELECTION)
             } returns existingReviewerStudies
 
             sut.assign(presenter, request)
