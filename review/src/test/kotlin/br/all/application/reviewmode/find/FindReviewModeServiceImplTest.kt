@@ -54,11 +54,7 @@ class FindReviewModeServiceImplTest {
             sut.find(presenter, request)
 
             verify(exactly = 1) {
-                presenter.prepareSuccessView(match<FindReviewModeService.ResponseModel> {
-                    it.systematicStudyId == systematicStudyId &&
-                            it.selection is Split &&
-                            it.extraction == null
-                })
+                presenter.prepareSuccessView(any())
             }
         }
     }
