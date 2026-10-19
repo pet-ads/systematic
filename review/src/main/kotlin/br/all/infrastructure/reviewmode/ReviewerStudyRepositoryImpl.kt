@@ -40,4 +40,10 @@ open class ReviewerStudyRepositoryImpl(
         stage: StudyReviewStage,
     ): Boolean =
         innerRepository.existsById(ReviewerStudyDocumentId(systematicStudyId, researcherId, studyId, stage))
+
+    override fun findAllBySystematicStudyIdAndStage(
+        systematicStudyId: UUID,
+        stage: StudyReviewStage
+    ): List<ReviewerStudyDto> =
+        innerRepository.findAllBySystematicStudyIdAndStage(systematicStudyId, stage.name).map { it.toDto() }
 }

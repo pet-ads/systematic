@@ -1,6 +1,7 @@
 package br.all.application.reviewmode.assign
 
 import br.all.application.reviewmode.repository.ReviewModeRepository
+import br.all.application.reviewmode.repository.ReviewerStudyRepository
 import br.all.application.shared.service.AuthorizationService
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.domain.model.study.StudyReviewStage
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service
 class AssignStudiesServiceImpl(
     private val reviewModeRepository: ReviewModeRepository,
     private val studyReviewRepository: StudyReviewRepository,
+    private val reviewerStudyRepository: ReviewerStudyRepository,
     private val authorizationService: AuthorizationService,
 ) : AssignStudiesService {
 
@@ -50,5 +52,8 @@ class AssignStudiesServiceImpl(
             )
             return
         }
+
+        val reviewerStudies = reviewerStudyRepository
+            .findAllBySystematicStudyIdAndStage(request.systematicStudyId, request.stage)
     }
 }

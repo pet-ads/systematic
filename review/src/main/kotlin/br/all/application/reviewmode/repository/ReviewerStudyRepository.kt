@@ -24,4 +24,6 @@ interface ReviewerStudyRepository {
         studyId: Long,
         stage: StudyReviewStage,
     ): Boolean
+
+    fun findAllBySystematicStudyIdAndStage(systematicStudyId: UUID, stage: StudyReviewStage): List<ReviewerStudyDto>
 }

@@ -8,4 +8,9 @@ interface MongoReviewerStudyRepository : MongoRepository<ReviewerStudyDocument, 
         systematicStudyId: UUID,
         researcherId: UUID,
     ): List<ReviewerStudyDocument>
+
+    fun findAllBySystematicStudyIdAndStage(
+        systematicStudyId: UUID,
+        stage: String,
+    ): List<ReviewerStudyDocument>
 }
