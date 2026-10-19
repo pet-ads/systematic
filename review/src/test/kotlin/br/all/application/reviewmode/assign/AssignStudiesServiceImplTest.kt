@@ -4,6 +4,7 @@ import br.all.application.reviewmode.repository.ReviewModeDto
 import br.all.application.reviewmode.repository.ReviewModeRepository
 import br.all.application.reviewmode.repository.toDto
 import br.all.application.shared.service.AuthorizationService
+import br.all.application.study.repository.StudyReviewRepository
 import br.all.domain.model.reviewmode.Replication
 import br.all.domain.model.reviewmode.Split
 import br.all.domain.model.study.StudyReviewStage
@@ -27,6 +28,8 @@ import java.util.UUID
 class AssignStudiesServiceImplTest {
     @MockK(relaxed = true)
     private lateinit var reviewModeRepository: ReviewModeRepository
+    @MockK
+    private lateinit var studyReviewRepository: StudyReviewRepository
     @MockK
     private lateinit var authorizationService: AuthorizationService
     @MockK
@@ -114,6 +117,16 @@ class AssignStudiesServiceImplTest {
                     withoutExtractionDto
 
             sut.assign(presenter, withExtractionRequest)
+
+            verify(exactly = 1) { presenter.prepareFailView(any<IllegalStateException>()) }
+        }
+
+        @Test
+        fun `should prepare fail view when there are no studies to assign`() {
+            every { reviewModeRepository.findById(systematicStudyId) } returns reviewModeDto
+            every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns emptyList()
+
+            sut.assign(presenter, request)
 
             verify(exactly = 1) { presenter.prepareFailView(any<IllegalStateException>()) }
         }
