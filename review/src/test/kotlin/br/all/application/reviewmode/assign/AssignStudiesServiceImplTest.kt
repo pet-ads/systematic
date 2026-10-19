@@ -6,6 +6,7 @@ import br.all.application.reviewmode.repository.ReviewerStudyDto
 import br.all.application.reviewmode.repository.ReviewerStudyRepository
 import br.all.application.reviewmode.repository.toDto
 import br.all.application.shared.service.AuthorizationService
+import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.util.TestDataFactory
 import br.all.domain.model.reviewmode.Replication
@@ -47,6 +48,7 @@ class AssignStudiesServiceImplTest {
 
     private lateinit var factory: TestDataFactory
     private lateinit var existingReviewerStudies: List<ReviewerStudyDto>
+    private lateinit var studies: List<StudyReviewDto>
 
     private val researcherId = UUID.randomUUID()
     private val systematicStudyId = UUID.randomUUID()
@@ -83,7 +85,7 @@ class AssignStudiesServiceImplTest {
     fun setUp() {
         factory = TestDataFactory()
 
-        val studies = List(5) { factory.generateDto(studyReviewId = it + 1L) }
+        studies = List(5) { factory.generateDto(studyReviewId = it + 1L) }
 
         existingReviewerStudies = listOf(
             factory.generateReviewerStudyDto(studyId = 1L, researcherId = reviewers[0].value),
@@ -166,6 +168,19 @@ class AssignStudiesServiceImplTest {
         fun `should prepare fail view when there are no studies to assign`() {
             every { reviewModeRepository.findById(systematicStudyId) } returns reviewModeDto
             every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns emptyList()
+
+            sut.assign(presenter, request)
+
+            verify(exactly = 1) { presenter.prepareFailView(any<IllegalStateException>()) }
+        }
+
+        @Test
+        fun `should prepare fail view and not save when every study is already assigned`() {
+            every { reviewModeRepository.findById(systematicStudyId) } returns reviewModeDto
+            every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns studies.take(2)
+            every {
+                reviewerStudyRepository.findAllBySystematicStudyIdAndStage(systematicStudyId, StudyReviewStage.SELECTION)
+            } returns existingReviewerStudies
 
             sut.assign(presenter, request)
 
