@@ -30,11 +30,11 @@ import java.util.UUID
 
 @ExtendWith(MockKExtension::class)
 class AssignStudiesServiceImplTest {
-    @MockK(relaxed = true)
-    private lateinit var reviewModeRepository: ReviewModeRepository
     @MockK
     private lateinit var studyReviewRepository: StudyReviewRepository
-    @MockK
+    @MockK(relaxUnitFun = true)
+    private lateinit var reviewModeRepository: ReviewModeRepository
+    @MockK(relaxUnitFun = true)
     private lateinit var reviewerStudyRepository: ReviewerStudyRepository
     @MockK
     private lateinit var authorizationService: AuthorizationService
@@ -104,13 +104,33 @@ class AssignStudiesServiceImplTest {
             every {
                 authorizationService.authorize(presenter, researcherId, systematicStudyId, setOf(Role.OWNER))
             } returns authorizationContext
-
+            every { reviewModeRepository.findById(systematicStudyId) } returns reviewModeDto
+            every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns studies
             every {
                 reviewerStudyRepository.findAllBySystematicStudyIdAndStage(systematicStudyId, StudyReviewStage.SELECTION)
             } returns existingReviewerStudies
         }
 
+        @Test
+        fun `should assign available studies to reviewers, save them and prepare success view`() {
+            val reviewerIds = reviewers.map { it.value }.toSet()
 
+            sut.assign(presenter, request)
+
+            verify(exactly = 1) {
+                reviewerStudyRepository.saveAll(match { result ->
+                    result.map { it.studyId }.toSet() == setOf(3L, 4L, 5L) &&
+                            result.groupBy { it.studyId }.values.all { rows ->
+                                rows.size == 2 && rows.map { it.researcherId }.toSet().size == 2
+                            } &&
+                            result.all { it.researcherId in reviewerIds } &&
+                            result.groupBy { it.researcherId }.values.all { it.size == 2 } &&
+                            result.all { it.systematicStudyId == systematicStudyId && it.stage == StudyReviewStage.SELECTION } &&
+                            result.all { dto -> dto.studyReview == studies.first { it.studyReviewId == dto.studyId } }
+                })
+            }
+            verify(exactly = 1) { presenter.prepareSuccessView(any()) }
+        }
     }
 
     @Nested
