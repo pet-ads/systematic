@@ -1,10 +1,13 @@
 package br.all.reviewmode.controller
 
+import br.all.application.reviewmode.assign.AssignStudiesService
 import br.all.application.reviewmode.define.DefineReviewModeService
 import br.all.application.reviewmode.find.FindReviewModeService
+import br.all.reviewmode.presenter.RestfulAssignStudiesPresenter
 import br.all.reviewmode.presenter.RestfulDefineReviewModePresenter
 import br.all.reviewmode.presenter.RestfulFindReviewModePresenter
 import br.all.reviewmode.requests.PatchReviewModeRequest
+import br.all.reviewmode.requests.PostAssignStudiesRequest
 import br.all.security.service.AuthenticationInfoService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -16,6 +19,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -24,10 +28,56 @@ import java.util.UUID
 @RestController
 @RequestMapping("/api/v1/systematic-study/{systematicStudyId}/review-mode")
 class ReviewModeController(
+    private val assignStudiesService: AssignStudiesService,
     private val defineReviewModeService: DefineReviewModeService,
     private val findReviewModeService: FindReviewModeService,
     private val authenticationInfoService: AuthenticationInfoService,
 ) {
+
+    @PostMapping("/assign-studies")
+    @Operation(summary = "Assign unassigned studies to the reviewers configured for a stage")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success assigning studies",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = AssignStudiesService.ResponseModel::class),
+                )],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail assigning studies - invalid stage configuration or no studies available",
+                content = [Content(schema = Schema(hidden = true))],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail assigning studies - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))],
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail assigning studies - user is not the study owner",
+                content = [Content(schema = Schema(hidden = true))],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail assigning studies - review mode not found",
+                content = [Content(schema = Schema(hidden = true))],
+            ),
+        ],
+    )
+    fun assignStudies(
+        @PathVariable systematicStudyId: UUID,
+        @RequestBody request: PostAssignStudiesRequest,
+    ): ResponseEntity<*> {
+        val presenter = RestfulAssignStudiesPresenter()
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+
+        assignStudiesService.assign(presenter, request.toRequestModel(userId, systematicStudyId))
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
 
     @GetMapping
     @Operation(summary = "Get the review mode of a systematic study stage")
