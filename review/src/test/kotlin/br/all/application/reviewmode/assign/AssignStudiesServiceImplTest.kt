@@ -15,6 +15,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
@@ -70,6 +71,13 @@ class AssignStudiesServiceImplTest {
     @Tag("InvalidClasses")
     @DisplayName("When preconditions fail")
     inner class WhenPreconditionsFail {
+        @BeforeEach
+        fun setUp() {
+            every {
+                authorizationService.authorize(presenter, researcherId, systematicStudyId, setOf(Role.OWNER))
+            } returns authorizationContext
+        }
+
         @Test
         fun `should not look for the review mode when authorization fails`() {
             every {
@@ -83,9 +91,6 @@ class AssignStudiesServiceImplTest {
 
         @Test
         fun `should prepare fail view when the review mode of the systematic study is not found`() {
-            every {
-                authorizationService.authorize(presenter, researcherId, systematicStudyId, setOf(Role.OWNER))
-            } returns authorizationContext
             every { reviewModeRepository.findById(systematicStudyId) } returns null
 
             sut.assign(presenter, request)
@@ -95,9 +100,6 @@ class AssignStudiesServiceImplTest {
 
         @Test
         fun `should prepare fail view when the selection stage is not configured`() {
-            every {
-                authorizationService.authorize(presenter, researcherId, systematicStudyId, setOf(Role.OWNER))
-            } returns authorizationContext
             every { reviewModeRepository.findById(systematicStudyId) } returns
                     withoutSelectionDto
 
@@ -108,9 +110,6 @@ class AssignStudiesServiceImplTest {
 
         @Test
         fun `should prepare fail view when the extraction stage is not configured`() {
-            every {
-                authorizationService.authorize(presenter, researcherId, systematicStudyId, setOf(Role.OWNER))
-            } returns authorizationContext
             every { reviewModeRepository.findById(systematicStudyId) } returns
                     withoutExtractionDto
 
