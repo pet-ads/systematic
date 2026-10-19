@@ -9,7 +9,7 @@ interface MongoReviewerStudyRepository : MongoRepository<ReviewerStudyDocument, 
         researcherId: UUID,
     ): List<ReviewerStudyDocument>
 
-    fun findAllBySystematicStudyIdAndStage(
+    fun findAllByIdSystematicStudyIdAndIdStage(
         systematicStudyId: UUID,
         stage: String,
     ): List<ReviewerStudyDocument>
