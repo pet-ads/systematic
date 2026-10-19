@@ -1,9 +1,12 @@
 package br.all.study.utils
 
 import br.all.domain.model.question.QuestionContextEnum
+import br.all.domain.model.study.StudyReviewStage
 import br.all.domain.model.study.StudyType
 import br.all.domain.shared.utils.*
 import br.all.infrastructure.question.QuestionDocument
+import br.all.infrastructure.reviewmode.ReviewerStudyDocument
+import br.all.infrastructure.reviewmode.ReviewerStudyDocumentId
 import br.all.infrastructure.study.StudyReviewDocument
 import br.all.infrastructure.study.StudyReviewId
 import io.github.serpro69.kfaker.Faker
@@ -146,6 +149,17 @@ class TestDataFactory {
             extractionStatus, selectionStatus, score
         )
     }
+
+    fun reviewerStudyDocument(
+        systematicStudyId: UUID,
+        studyReviewId: Long,
+        reviewerId: UUID,
+        stage: StudyReviewStage = StudyReviewStage.SELECTION,
+        searchSessionId: UUID = UUID.randomUUID(),
+    ) = ReviewerStudyDocument(
+        id = ReviewerStudyDocumentId(systematicStudyId, reviewerId, studyReviewId, stage),
+        studyReview = reviewDocument(systematicStudyId, studyReviewId, searchSessionId),
+    )
 
     fun generateRobQuestionTextualDto(
         questionId: UUID,

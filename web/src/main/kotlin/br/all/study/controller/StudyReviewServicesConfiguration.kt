@@ -2,6 +2,7 @@ package br.all.study.controller
 
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.reviewmode.repository.ReviewerStudyRepository
 import br.all.application.study.create.CreateStudyReviewServiceImpl
 import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresenter
 import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
@@ -95,6 +96,14 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository, studyReviewRepository, credentialsService
     )
 
+    @Bean
+    fun findAllByReviewerService(
+        systematicStudyRepository: SystematicStudyRepository,
+        reviewerStudyRepository: ReviewerStudyRepository,
+        credentialsService: CredentialsService
+    ) = FindAllStudyReviewsByReviewerServiceImpl(
+        systematicStudyRepository, reviewerStudyRepository, credentialsService
+    )
 
     @Bean
     fun updateReviewSelectionService(

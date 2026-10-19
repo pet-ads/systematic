@@ -1,7 +1,9 @@
 package br.all.study.controller
 
+import br.all.domain.model.study.StudyReviewStage
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
+import br.all.infrastructure.reviewmode.MongoReviewerStudyRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
 import br.all.infrastructure.study.StudyReviewId
@@ -35,6 +37,7 @@ import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 @Tag("ControllerTest")
 class StudyReviewControllerTest @Autowired constructor(
     val repository: MongoStudyReviewRepository,
+    val reviewerStudyRepository: MongoReviewerStudyRepository,
     val systematicStudyRepository: MongoSystematicStudyRepository,
     private val testHelperService: TestHelperService,
     val idService: StudyReviewIdGeneratorService,
@@ -59,6 +62,10 @@ class StudyReviewControllerTest @Autowired constructor(
 
     fun findByAuthorUrl(author: String = "") =
         "/api/v1/systematic-study/$systematicStudyId/study-review/author/${author}"
+
+    fun findByReviewerUrl(reviewerId: UUID, stage: String? = null) =
+        "/api/v1/systematic-study/$systematicStudyId/study-review/reviewer/$reviewerId" +
+                (stage?.let { "?stage=$it" } ?: "")
 
     fun updateStudyUrl(studyReviewId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}"
@@ -342,6 +349,50 @@ class StudyReviewControllerTest @Autowired constructor(
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
                 .andExpect(jsonPath("$.size").value(1))
+        }
+
+        @Test
+        fun `should find only the studies assigned to the reviewer in the stage and return 200`() {
+            val reviewerId = UUID.randomUUID()
+            val otherReviewerId = UUID.randomUUID()
+            reviewerStudyRepository.insert(factory.reviewerStudyDocument(systematicStudyId, 1L, reviewerId))
+            reviewerStudyRepository.insert(factory.reviewerStudyDocument(systematicStudyId, 2L, reviewerId))
+            reviewerStudyRepository.insert(factory.reviewerStudyDocument(systematicStudyId, 3L, reviewerId, StudyReviewStage.EXTRACTION))
+            reviewerStudyRepository.insert(factory.reviewerStudyDocument(systematicStudyId, 1L, otherReviewerId))
+
+            mockMvc.perform(get(findByReviewerUrl(reviewerId, "SELECTION"))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+                .andExpect(jsonPath("$.reviewerId").value(reviewerId.toString()))
+                .andExpect(jsonPath("$.size").value(2))
+                .andExpect(jsonPath("$.totalElements").value(2))
+        }
+
+        @Test
+        fun `should find the studies of all stages when no stage is informed`() {
+            val reviewerId = UUID.randomUUID()
+            reviewerStudyRepository.insert(factory.reviewerStudyDocument(systematicStudyId, 1L, reviewerId))
+            reviewerStudyRepository.insert(factory.reviewerStudyDocument(systematicStudyId, 1L, reviewerId, StudyReviewStage.EXTRACTION))
+
+            mockMvc.perform(get(findByReviewerUrl(reviewerId))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.size").value(2))
+        }
+
+        @Test
+        fun `should return 200 with no studies when reviewer has none assigned`() {
+            mockMvc.perform(get(findByReviewerUrl(UUID.randomUUID(), "SELECTION"))
+                .with(SecurityMockMvcRequestPostProcessors.user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.size").value(0))
         }
     }
 

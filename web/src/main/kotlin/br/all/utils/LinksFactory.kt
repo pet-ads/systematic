@@ -292,6 +292,16 @@ class LinksFactory {
     ): Link =
         findAllStudiesBySession(systematicStudyId, searchSessionId, currentPage - 1, size, sort).withRel("prev").withType("GET")
 
+    fun findAllStudiesByReviewer(
+        systematicStudyId: UUID,
+        reviewerId: UUID,
+        stage: StudyReviewStage? = null,
+        page: Int = 0,
+        size: Int = 20,
+        sort: String = "id,asc"
+    ): Link = linkTo<StudyReviewController> {
+        findAllStudyReviewsByReviewer(systematicStudyId, reviewerId, stage, page, size, sort)
+    }.withRel("find-all-studies-by-reviewer").withType("GET")
 
     fun updateStudySelectionStatus(systematicStudyId: UUID): Link = linkTo<StudyReviewController> {
         updateStudyReviewSelectionStatus(
