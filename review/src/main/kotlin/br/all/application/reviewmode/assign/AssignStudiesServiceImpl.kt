@@ -58,8 +58,7 @@ class AssignStudiesServiceImpl(
             return
         }
 
-        val reviewerStudies = reviewerStudyRepository
-            .findAllBySystematicStudyIdAndStage(request.systematicStudyId, request.stage)
+        val reviewerStudies = reviewerStudyRepository.findAllByIdSystematicStudyIdAndIdStage(request.systematicStudyId, request.stage)
 
         val alreadyAssigned = reviewerStudies.map { it.studyId }.toSet()
         val availableStudies = studies.map { it.studyReviewId }.filter { it !in alreadyAssigned }
