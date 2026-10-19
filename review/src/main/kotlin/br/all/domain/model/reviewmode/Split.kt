@@ -6,8 +6,6 @@ class Split(
     val reviewers: List<ResearcherId> = emptyList(),
     val reviewPerStudy: Int,
 ) : ReviewMode {
-    constructor(reviewPerStudy: Int) : this(emptyList(), reviewPerStudy)
-
     init {
         require(reviewers.isNotEmpty()) { "Split needs at least one reviewer" }
         require(reviewPerStudy in 1..reviewers.size) {
@@ -15,7 +13,7 @@ class Split(
         }
     }
 
-    fun split(
+    override fun assign(
         availableStudies: List<Long>,
         reviewerStudies: Map<ResearcherId, Set<Long>>,
     ): Map<ResearcherId, Set<Long>> {

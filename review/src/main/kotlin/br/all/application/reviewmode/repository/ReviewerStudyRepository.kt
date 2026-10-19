@@ -33,4 +33,6 @@ interface ReviewerStudyRepository {
         stage: StudyReviewStage? = null,
         pageable: Pageable = Pageable.unpaged(),
     ): Page<ReviewerStudyDto>
+
+    fun findAllBySystematicStudyIdAndStage(systematicStudyId: UUID, stage: StudyReviewStage): List<ReviewerStudyDto>
 }

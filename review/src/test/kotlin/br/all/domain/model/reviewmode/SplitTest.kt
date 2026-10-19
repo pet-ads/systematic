@@ -37,7 +37,7 @@ class SplitTest {
             @ParameterizedTest(name = "[{index}]: reviewPerStudy = {0}")
             @ValueSource(ints = [0, -1])
             fun `should not create split with review per study not greater than zero`(reviewPerStudy: Int) {
-                assertThrows<IllegalArgumentException> { Split(reviewPerStudy) }
+                assertThrows<IllegalArgumentException> { Split(listOf(ResearcherId( UUID.randomUUID())), reviewPerStudy) }
             }
 
             @Test
@@ -74,7 +74,7 @@ class SplitTest {
                 val split = Split(reviewers, reviewPerStudy = 1)
 
                 assertThrows<IllegalArgumentException> {
-                    split.split(emptyList(), reviewerStudies)
+                    split.assign(emptyList(), reviewerStudies)
                 }
             }
 
@@ -85,7 +85,7 @@ class SplitTest {
                 val studies = mapOf(notConfigured to setOf(1L))
 
                 assertThrows<IllegalArgumentException> {
-                    split.split(listOf(2L), studies)
+                    split.assign(listOf(2L), studies)
                 }
             }
 
@@ -99,7 +99,7 @@ class SplitTest {
                 )
 
                 assertThrows<IllegalArgumentException> {
-                    split.split(listOf(fullyAssigned), studies)
+                    split.assign(listOf(fullyAssigned), studies)
                 }
             }
         }
@@ -113,7 +113,7 @@ class SplitTest {
                 val split = Split(reviewers, reviewPerStudy = 1)
                 val study = 1L
 
-                val result = split.split(listOf(study), emptyMap())
+                val result = split.assign(listOf(study), emptyMap())
 
                 assertEquals(1, result.values.count { study in it })
             }
@@ -125,7 +125,7 @@ class SplitTest {
                 val study = 1L
                 val reviewerStudies = mapOf(trio[0] to setOf(study))
 
-                val result = split.split(listOf(study), reviewerStudies)
+                val result = split.assign(listOf(study), reviewerStudies)
 
                 assertAll(
                     { assertFalse(study in result.getValue(trio[0])) },
@@ -138,7 +138,7 @@ class SplitTest {
                 val split = Split(reviewers, reviewPerStudy = 2)
                 val studies = List(10) { it.toLong() + 1 }
 
-                val result = split.split(studies, emptyMap())
+                val result = split.assign(studies, emptyMap())
 
                 studies.forEach { study ->
                     assertEquals(2, result.values.count { study in it })
@@ -152,7 +152,7 @@ class SplitTest {
                 val reviewerStudies = mapOf(trio[0] to (100L..104L).toSet())
                 val studies = (1L..6L).toList()
 
-                val result = split.split(studies, reviewerStudies)
+                val result = split.assign(studies, reviewerStudies)
 
                 assertAll(
                     { assertEquals(0, result.getValue(trio[0]).size) },
@@ -167,7 +167,7 @@ class SplitTest {
                 val split = Split(trio, reviewPerStudy = 2)
                 val studies = (1L..10L).toList()
 
-                val result = split.split(studies, emptyMap())
+                val result = split.assign(studies, emptyMap())
 
                 assertEquals(listOf(7, 7, 6), trio.map { result.getValue(it).size })
             }

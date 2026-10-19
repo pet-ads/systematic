@@ -286,6 +286,23 @@ class TestDataFactory {
         answer = answer
     )
 
+    fun generateReviewerStudyDto(
+        studyId: Long = this.studyReviewId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        researcherId: UUID = UUID.randomUUID(),
+        stage: StudyReviewStage = StudyReviewStage.SELECTION,
+        studyReview: StudyReviewDto = generateDto(
+            systematicStudyId = systematicStudyId,
+            studyReviewId = studyId,
+        ),
+    ): ReviewerStudyDto = ReviewerStudyDto(
+        studyId = studyId,
+        systematicStudyId = systematicStudyId,
+        researcherId = researcherId,
+        stage = stage,
+        studyReview = studyReview,
+    )
+
     operator fun component1() = researcherId
     operator fun component2() = studyReviewId
 }
