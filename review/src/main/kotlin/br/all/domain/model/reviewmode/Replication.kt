@@ -9,6 +9,13 @@ class Replication(
 ) : ReviewMode {
     val reviewers: Set<ResearcherId> = setOf(mainReviewer) + secondaryReviewers.keys
 
+    override fun assign(
+        availableStudies: List<Long>,
+        reviewerStudies: Map<ResearcherId, Set<Long>>
+    ): Map<ResearcherId, Set<Long>> {
+        TODO("Not yet implemented")
+    }
+
     init {
         require(secondaryReviewers.values.all { it in 0.0..100.0 }) {
             "Each secondary percentage must be between 0 and 100"
