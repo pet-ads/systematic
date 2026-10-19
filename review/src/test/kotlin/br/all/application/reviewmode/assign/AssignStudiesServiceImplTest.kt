@@ -3,13 +3,13 @@ package br.all.application.reviewmode.assign
 import br.all.application.reviewmode.repository.ReviewModeRepository
 import br.all.application.shared.service.AuthorizationService
 import br.all.domain.model.study.StudyReviewStage
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.domain.shared.user.Role
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
@@ -23,6 +23,8 @@ class AssignStudiesServiceImplTest {
     private lateinit var reviewModeRepository: ReviewModeRepository
     @MockK
     private lateinit var authorizationService: AuthorizationService
+    @MockK
+    private lateinit var authorizationContext: AuthorizationService.AuthorizationContext
     @MockK(relaxed = true)
     private lateinit var presenter: AssignStudiesPresenter
 
@@ -51,6 +53,18 @@ class AssignStudiesServiceImplTest {
             sut.assign(presenter, request)
 
             verify(exactly = 0) { reviewModeRepository.findById(any()) }
+        }
+
+        @Test
+        fun `should prepare fail view when the review mode of the systematic study is not found`() {
+            every {
+                authorizationService.authorize(presenter, researcherId, systematicStudyId, setOf(Role.OWNER))
+            } returns authorizationContext
+            every { reviewModeRepository.findById(systematicStudyId) } returns null
+
+            sut.assign(presenter, request)
+
+            verify(exactly = 1) { presenter.prepareFailView(any<EntityNotFoundException>()) }
         }
     }
 }
