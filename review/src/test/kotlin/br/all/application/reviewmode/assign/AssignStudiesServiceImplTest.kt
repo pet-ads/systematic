@@ -2,9 +2,13 @@ package br.all.application.reviewmode.assign
 
 import br.all.application.reviewmode.repository.ReviewModeDto
 import br.all.application.reviewmode.repository.ReviewModeRepository
+import br.all.application.reviewmode.repository.ReviewerStudyRepository
 import br.all.application.reviewmode.repository.toDto
 import br.all.application.shared.service.AuthorizationService
+import br.all.application.study.find.service.FindStudyReviewServiceImpl
 import br.all.application.study.repository.StudyReviewRepository
+import br.all.application.study.util.TestDataFactory
+import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.model.reviewmode.Replication
 import br.all.domain.model.reviewmode.Split
 import br.all.domain.model.study.StudyReviewStage
@@ -31,6 +35,8 @@ class AssignStudiesServiceImplTest {
     @MockK
     private lateinit var studyReviewRepository: StudyReviewRepository
     @MockK
+    private lateinit var reviewerStudyRepository: ReviewerStudyRepository
+    @MockK
     private lateinit var authorizationService: AuthorizationService
     @MockK
     private lateinit var authorizationContext: AuthorizationService.AuthorizationContext
@@ -39,6 +45,8 @@ class AssignStudiesServiceImplTest {
 
     @InjectMockKs
     private lateinit var sut: AssignStudiesServiceImpl
+
+    private lateinit var factory: TestDataFactory
 
     private val researcherId = UUID.randomUUID()
     private val systematicStudyId = UUID.randomUUID()
@@ -69,6 +77,32 @@ class AssignStudiesServiceImplTest {
 
     private val withoutSelectionDto = reviewModeDto.copy(selection = null)
     private val withoutExtractionDto = reviewModeDto.copy(extraction = null)
+
+    private val studies = List(5) { factory.generateDto(studyReviewId = it + 1L) }
+
+    private val existingReviewerStudies = listOf(
+        factory.generateReviewerStudyDto(studyId = 1L, researcherId = reviewers[0].value),
+        factory.generateReviewerStudyDto(studyId = 1L, researcherId = reviewers[1].value),
+        factory.generateReviewerStudyDto(studyId = 2L, researcherId = reviewers[2].value),
+    )
+
+    @Nested
+    @Tag("ValidClasses")
+    @DisplayName("When assigning studies")
+    inner class WhenAssigningStudies {
+        @BeforeEach
+        fun setUp() {
+            every {
+                authorizationService.authorize(presenter, researcherId, systematicStudyId, setOf(Role.OWNER))
+            } returns authorizationContext
+
+            every {
+                reviewerStudyRepository.findAllBySystematicStudyIdAndStage(systematicStudyId, StudyReviewStage.SELECTION)
+            } returns existingReviewerStudies
+        }
+
+
+    }
 
     @Nested
     @Tag("InvalidClasses")

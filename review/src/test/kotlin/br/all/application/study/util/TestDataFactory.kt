@@ -1,6 +1,7 @@
 package br.all.application.study.util
 
 import br.all.application.question.repository.QuestionDto
+import br.all.application.reviewmode.repository.ReviewerStudyDto
 import br.all.application.study.create.CreateStudyReviewService
 import br.all.application.study.find.service.FindAllStudyReviewsBySourceService
 import br.all.application.study.find.service.FindAllStudyReviewsService
@@ -260,6 +261,23 @@ class TestDataFactory {
         questionId = questionId,
         type = type,
         answer = answer
+    )
+
+    fun generateReviewerStudyDto(
+        studyId: Long = this.studyReviewId,
+        systematicStudyId: UUID = this.systematicStudyId,
+        researcherId: UUID = UUID.randomUUID(),
+        stage: StudyReviewStage = StudyReviewStage.SELECTION,
+        studyReview: StudyReviewDto = generateDto(
+            systematicStudyId = systematicStudyId,
+            studyReviewId = studyId,
+        ),
+    ): ReviewerStudyDto = ReviewerStudyDto(
+        studyId = studyId,
+        systematicStudyId = systematicStudyId,
+        researcherId = researcherId,
+        stage = stage,
+        studyReview = studyReview,
     )
 
     operator fun component1() = researcherId
