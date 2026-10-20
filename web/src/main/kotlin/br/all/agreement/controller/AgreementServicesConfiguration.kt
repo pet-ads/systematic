@@ -3,8 +3,7 @@ package br.all.agreement.controller
 import br.all.application.agreement.repository.AgreementVisibilityRepository
 import br.all.application.agreement.visibility.GetAgreementVisibilityServiceImpl
 import br.all.application.agreement.visibility.SetAgreementVisibilityServiceImpl
-import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.user.CredentialsService
+import br.all.application.shared.service.AuthorizationService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -13,19 +12,13 @@ class AgreementServicesConfiguration {
 
     @Bean
     fun setAgreementVisibilityService(
-        systematicStudyRepository: SystematicStudyRepository,
+        authorizationService: AuthorizationService,
         agreementVisibilityRepository: AgreementVisibilityRepository,
-        credentialsService: CredentialsService,
-    ) = SetAgreementVisibilityServiceImpl(
-        systematicStudyRepository, agreementVisibilityRepository, credentialsService
-    )
+    ) = SetAgreementVisibilityServiceImpl(authorizationService, agreementVisibilityRepository)
 
     @Bean
     fun getAgreementVisibilityService(
-        systematicStudyRepository: SystematicStudyRepository,
+        authorizationService: AuthorizationService,
         agreementVisibilityRepository: AgreementVisibilityRepository,
-        credentialsService: CredentialsService,
-    ) = GetAgreementVisibilityServiceImpl(
-        systematicStudyRepository, agreementVisibilityRepository, credentialsService
-    )
+    ) = GetAgreementVisibilityServiceImpl(authorizationService, agreementVisibilityRepository)
 }

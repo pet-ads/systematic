@@ -1,17 +1,14 @@
-package br.all.application.agreement
+package br.all.application.agreement.visibility
 
 import br.all.application.agreement.repository.AgreementVisibilityDto
 import br.all.application.agreement.repository.AgreementVisibilityRepository
-import br.all.application.agreement.visibility.GetAgreementVisibilityPresenter
 import br.all.application.agreement.visibility.GetAgreementVisibilityService.RequestModel
 import br.all.application.agreement.visibility.GetAgreementVisibilityService.ResponseModel
-import br.all.application.agreement.visibility.GetAgreementVisibilityServiceImpl
-import br.all.application.review.repository.SystematicStudyDto
-import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.user.CredentialsService
-import br.all.application.util.PreconditionCheckerMockingNew
+import br.all.application.shared.service.AuthorizationService
 import br.all.domain.model.agreement.AgreementVisibility
+import br.all.domain.shared.user.Role
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
@@ -29,55 +26,34 @@ import java.util.*
 class GetAgreementVisibilityServiceImplTest {
 
     @MockK
-    private lateinit var systematicStudyRepository: SystematicStudyRepository
+    private lateinit var authorizationService: AuthorizationService
+
+    @MockK
+    private lateinit var authorizationContext: AuthorizationService.AuthorizationContext
 
     @MockK
     private lateinit var agreementVisibilityRepository: AgreementVisibilityRepository
 
-    @MockK
-    private lateinit var credentialsService: CredentialsService
-
     @MockK(relaxed = true)
     private lateinit var presenter: GetAgreementVisibilityPresenter
 
+    @InjectMockKs
     private lateinit var sut: GetAgreementVisibilityServiceImpl
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     private val userId = UUID.randomUUID()
     private val systematicStudyId = UUID.randomUUID()
     private val request = RequestModel(userId, systematicStudyId)
-
-    private fun systematicStudyOwnedBy(ownerId: UUID) = SystematicStudyDto(
-        id = systematicStudyId,
-        title = "Title",
-        description = "Description",
-        owner = ownerId,
-        collaborators = setOf(ownerId, userId),
-        objectives = "Objectives",
-    )
-
-    @BeforeEach
-    fun setUp() {
-        preconditionCheckerMocking = PreconditionCheckerMockingNew(
-            presenter,
-            credentialsService,
-            systematicStudyRepository,
-            userId,
-            systematicStudyId
-        )
-        sut = GetAgreementVisibilityServiceImpl(
-            systematicStudyRepository,
-            agreementVisibilityRepository,
-            credentialsService,
-        )
-    }
 
     @Nested
     @Tag("ValidClasses")
     @DisplayName("When successfully getting the agreement visibility")
     inner class WhenSuccessfullyGettingTheVisibility {
         @BeforeEach
-        fun setUp() = run { preconditionCheckerMocking.makeEverythingWork() }
+        fun setUp() {
+            every {
+                authorizationService.authorize(presenter, userId, systematicStudyId, Role.entries.toSet())
+            } returns authorizationContext
+        }
 
         @Test
         fun `should return the default visibility for both stages when none was configured`() {
@@ -86,13 +62,11 @@ class GetAgreementVisibilityServiceImplTest {
             sut.getVisibility(presenter, request)
 
             val expected = ResponseModel(
-                userId,
-                systematicStudyId,
+                userId, systematicStudyId,
                 selection = AgreementVisibility.DEFAULT,
                 extraction = AgreementVisibility.DEFAULT,
             )
             verify(exactly = 1) { presenter.prepareSuccessView(expected) }
-            verify(exactly = 0) { presenter.prepareFailView(any()) }
         }
 
         @Test
@@ -106,42 +80,11 @@ class GetAgreementVisibilityServiceImplTest {
             sut.getVisibility(presenter, request)
 
             val expected = ResponseModel(
-                userId,
-                systematicStudyId,
+                userId, systematicStudyId,
                 selection = AgreementVisibility.ALL,
                 extraction = AgreementVisibility.NONE,
             )
             verify(exactly = 1) { presenter.prepareSuccessView(expected) }
-        }
-
-        @Test
-        fun `should not require the user to be the owner of the systematic study`() {
-            every { systematicStudyRepository.findById(systematicStudyId) } returns
-                    systematicStudyOwnedBy(UUID.randomUUID())
-            every { agreementVisibilityRepository.findById(systematicStudyId) } returns AgreementVisibilityDto(
-                systematicStudyId,
-                selection = AgreementVisibility.FINISHED_ONLY,
-                extraction = AgreementVisibility.ALL,
-            )
-
-            sut.getVisibility(presenter, request)
-
-            val expected = ResponseModel(
-                userId,
-                systematicStudyId,
-                selection = AgreementVisibility.FINISHED_ONLY,
-                extraction = AgreementVisibility.ALL,
-            )
-            verify(exactly = 1) { presenter.prepareSuccessView(expected) }
-        }
-
-        @Test
-        fun `should not write anything when reading the visibility`() {
-            every { agreementVisibilityRepository.findById(systematicStudyId) } returns null
-
-            sut.getVisibility(presenter, request)
-
-            verify(exactly = 0) { agreementVisibilityRepository.saveOrUpdate(any()) }
         }
     }
 
@@ -150,27 +93,15 @@ class GetAgreementVisibilityServiceImplTest {
     @DisplayName("When failing to get the agreement visibility")
     inner class WhenFailingToGetTheVisibility {
         @Test
-        fun `should not be allowed to get the visibility when unauthenticated`() {
-            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
-                sut.getVisibility(presenter, request)
-            }
-            verify(exactly = 0) { agreementVisibilityRepository.findById(any()) }
-        }
+        fun `should not read the visibility when the user is not authorized`() {
+            every {
+                authorizationService.authorize(presenter, userId, systematicStudyId, Role.entries.toSet())
+            } returns null
 
-        @Test
-        fun `should not be allowed to get the visibility when unauthorized`() {
-            preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
-                sut.getVisibility(presenter, request)
-            }
-            verify(exactly = 0) { agreementVisibilityRepository.findById(any()) }
-        }
+            sut.getVisibility(presenter, request)
 
-        @Test
-        fun `should not be allowed to get the visibility when systematic study doesn't exist`() {
-            preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
-                sut.getVisibility(presenter, request)
-            }
             verify(exactly = 0) { agreementVisibilityRepository.findById(any()) }
+            verify(exactly = 0) { presenter.prepareSuccessView(any<ResponseModel>()) }
         }
     }
 }

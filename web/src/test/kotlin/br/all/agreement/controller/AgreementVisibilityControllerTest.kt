@@ -2,6 +2,8 @@ package br.all.agreement.controller
 
 import br.all.infrastructure.agreement.AgreementVisibilityDocument
 import br.all.infrastructure.agreement.MongoAgreementVisibilityRepository
+import br.all.infrastructure.collaborator.CollaboratorDocument
+import br.all.infrastructure.collaborator.MongoCollaboratorRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.shared.toNullable
 import br.all.security.service.ApplicationUser
@@ -35,6 +37,7 @@ import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 class AgreementVisibilityControllerTest @Autowired constructor(
     val repository: MongoAgreementVisibilityRepository,
     val systematicStudyRepository: MongoSystematicStudyRepository,
+    val collaboratorRepository: MongoCollaboratorRepository,
     private val testHelperService: TestHelperService,
     val mockMvc: MockMvc,
 ) {
@@ -45,13 +48,16 @@ class AgreementVisibilityControllerTest @Autowired constructor(
     private var otherUser: ApplicationUser? = null
     private lateinit var systematicStudyId: UUID
 
-    fun url(id: UUID = systematicStudyId) = "/api/v1/systematic-study/$id/agreement/visibility"
+    fun url(id: UUID = systematicStudyId) =
+        "/api/v1/systematic-study/$id/agreement/visibility"
 
-    fun body(stage: String, visibility: String) = """{ "stage": "$stage", "visibility": "$visibility" }"""
+    fun body(stage: String, visibility: String) =
+        """{ "stage": "$stage", "visibility": "$visibility" }"""
 
     private fun createOtherCollaborator(): ApplicationUser {
         val collaborator = testHelperService.createApplicationUser()
         otherUser = collaborator
+
         systematicStudyRepository.deleteAll()
         systematicStudyRepository.save(
             systematicStudyFactory.createSystematicStudyDocument(
@@ -60,6 +66,18 @@ class AgreementVisibilityControllerTest @Autowired constructor(
                 collaborators = mutableSetOf(collaborator.id),
             )
         )
+
+        collaboratorRepository.save(
+            CollaboratorDocument(
+                CollaboratorDocument.buildId(collaborator.id, systematicStudyId),
+                collaborator.id,
+                systematicStudyId,
+                collaborator.username,
+                "reviewer@test.com",
+                "REVIEWER",
+            )
+        )
+
         return collaborator
     }
 
@@ -77,12 +95,18 @@ class AgreementVisibilityControllerTest @Autowired constructor(
                 owner = user.id,
             )
         )
+
+        collaboratorRepository.deleteAll()
+        collaboratorRepository.save(
+            systematicStudyFactory.createCollaboratorDocument(user, systematicStudyId)
+        )
     }
 
     @AfterEach
     fun teardown() {
         repository.deleteAll()
         systematicStudyRepository.deleteAll()
+        collaboratorRepository.deleteAll()
         testHelperService.deleteApplicationUser(user.id)
         otherUser?.let { testHelperService.deleteApplicationUser(it.id) }
         otherUser = null
@@ -91,6 +115,7 @@ class AgreementVisibilityControllerTest @Autowired constructor(
     @Nested
     @DisplayName("When getting the agreement visibility")
     inner class GetTests {
+
         @Test
         fun `should return the default visibility when never configured and return 200`() {
             mockMvc.perform(
@@ -106,7 +131,9 @@ class AgreementVisibilityControllerTest @Autowired constructor(
 
         @Test
         fun `should return the saved visibility of each stage and return 200`() {
-            repository.save(AgreementVisibilityDocument(systematicStudyId, "ALL", "NONE"))
+            repository.save(
+                AgreementVisibilityDocument(systematicStudyId, "ALL", "NONE")
+            )
 
             mockMvc.perform(
                 get(url())
@@ -121,7 +148,9 @@ class AgreementVisibilityControllerTest @Autowired constructor(
         @Test
         fun `should allow a collaborator who is not the owner to read the visibility`() {
             val collaborator = createOtherCollaborator()
-            repository.save(AgreementVisibilityDocument(systematicStudyId, "NONE", "ALL"))
+            repository.save(
+                AgreementVisibilityDocument(systematicStudyId, "NONE", "ALL")
+            )
 
             mockMvc.perform(
                 get(url())
@@ -157,6 +186,7 @@ class AgreementVisibilityControllerTest @Autowired constructor(
     @Nested
     @DisplayName("When changing the agreement visibility")
     inner class PutTests {
+
         @Test
         fun `owner should change the visibility of the selection stage and return 200`() {
             mockMvc.perform(
@@ -191,7 +221,9 @@ class AgreementVisibilityControllerTest @Autowired constructor(
 
         @Test
         fun `should keep the other stage when changing only one of them`() {
-            repository.save(AgreementVisibilityDocument(systematicStudyId, "ALL", "NONE"))
+            repository.save(
+                AgreementVisibilityDocument(systematicStudyId, "ALL", "NONE")
+            )
 
             mockMvc.perform(
                 put(url())
@@ -215,7 +247,8 @@ class AgreementVisibilityControllerTest @Autowired constructor(
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(body("SELECTION", "NONE"))
-            ).andExpect(status().isOk)
+            )
+                .andExpect(status().isOk)
 
             mockMvc.perform(
                 get(url())
@@ -295,14 +328,16 @@ class AgreementVisibilityControllerTest @Autowired constructor(
         @Test
         fun `should not change the visibility if user is unauthenticated`() {
             testHelperService.testForUnauthenticatedUser(
-                mockMvc, put(url()).content(body("SELECTION", "ALL"))
+                mockMvc,
+                put(url()).content(body("SELECTION", "ALL"))
             )
         }
 
         @Test
         fun `should not change the visibility if user is unauthorized`() {
             testHelperService.testForUnauthorizedUser(
-                mockMvc, put(url()).content(body("SELECTION", "ALL"))
+                mockMvc,
+                put(url()).content(body("SELECTION", "ALL"))
             )
         }
     }

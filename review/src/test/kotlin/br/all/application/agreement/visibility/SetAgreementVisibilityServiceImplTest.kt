@@ -1,25 +1,25 @@
-package br.all.application.agreement
+package br.all.application.agreement.visibility
 
 import br.all.application.agreement.repository.AgreementVisibilityDto
 import br.all.application.agreement.repository.AgreementVisibilityRepository
-import br.all.application.agreement.visibility.SetAgreementVisibilityPresenter
 import br.all.application.agreement.visibility.SetAgreementVisibilityService.RequestModel
 import br.all.application.agreement.visibility.SetAgreementVisibilityService.ResponseModel
-import br.all.application.agreement.visibility.SetAgreementVisibilityServiceImpl
-import br.all.application.review.repository.SystematicStudyDto
-import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.user.CredentialsService
-import br.all.application.util.PreconditionCheckerMockingNew
+import br.all.application.shared.service.AuthorizationService
 import br.all.domain.model.agreement.AgreementVisibility
 import br.all.domain.model.study.StudyReviewStage
-import br.all.domain.shared.exception.UnauthorizedUserException
+import br.all.domain.shared.user.Role
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.just
-import io.mockk.Runs
 import io.mockk.verify
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 
@@ -29,38 +29,22 @@ import java.util.*
 class SetAgreementVisibilityServiceImplTest {
 
     @MockK
-    private lateinit var systematicStudyRepository: SystematicStudyRepository
+    private lateinit var authorizationService: AuthorizationService
+
+    @MockK
+    private lateinit var authorizationContext: AuthorizationService.AuthorizationContext
+
     @MockK
     private lateinit var agreementVisibilityRepository: AgreementVisibilityRepository
-    @MockK
-    private lateinit var credentialsService: CredentialsService
+
     @MockK(relaxed = true)
     private lateinit var presenter: SetAgreementVisibilityPresenter
 
+    @InjectMockKs
     private lateinit var sut: SetAgreementVisibilityServiceImpl
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     private val userId = UUID.randomUUID()
     private val systematicStudyId = UUID.randomUUID()
-
-    private fun systematicStudyOwnedBy(ownerId: UUID) = SystematicStudyDto(
-        id = systematicStudyId,
-        title = "Title",
-        description = "Description",
-        owner = ownerId,
-        collaborators = setOf(ownerId, userId),
-        objectives = "Objectives",
-    )
-
-    @BeforeEach
-    fun setUp() {
-        preconditionCheckerMocking = PreconditionCheckerMockingNew(
-            presenter, credentialsService, systematicStudyRepository, userId, systematicStudyId
-        )
-        sut = SetAgreementVisibilityServiceImpl(
-            systematicStudyRepository, agreementVisibilityRepository, credentialsService
-        )
-    }
 
     @Nested
     @Tag("ValidClasses")
@@ -68,8 +52,9 @@ class SetAgreementVisibilityServiceImplTest {
     inner class WhenSuccessfullyChangingTheVisibility {
         @BeforeEach
         fun setUp() {
-            preconditionCheckerMocking.makeEverythingWork()
-            every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudyOwnedBy(userId)
+            every {
+                authorizationService.authorize(presenter, userId, systematicStudyId, setOf(Role.OWNER))
+            } returns authorizationContext
             every { agreementVisibilityRepository.saveOrUpdate(any()) } just Runs
         }
 
@@ -114,38 +99,19 @@ class SetAgreementVisibilityServiceImplTest {
     @Tag("InvalidClasses")
     @DisplayName("When failing to change the agreement visibility")
     inner class WhenFailingToChangeTheVisibility {
-        private val request = RequestModel(userId, systematicStudyId, StudyReviewStage.SELECTION, AgreementVisibility.NONE)
-
         @Test
-        fun `should not allow a collaborator who is not the owner`() {
-            preconditionCheckerMocking.makeEverythingWork()
-            every { systematicStudyRepository.findById(systematicStudyId) } returns systematicStudyOwnedBy(UUID.randomUUID())
+        fun `should not change anything when the user is not authorized`() {
+            every {
+                authorizationService.authorize(presenter, userId, systematicStudyId, setOf(Role.OWNER))
+            } returns null
 
-            sut.setVisibility(presenter, request)
+            sut.setVisibility(
+                presenter, RequestModel(userId, systematicStudyId, StudyReviewStage.SELECTION, AgreementVisibility.NONE)
+            )
 
-            verify(exactly = 1) { presenter.prepareFailView(any<UnauthorizedUserException>()) }
+            verify(exactly = 0) { agreementVisibilityRepository.findById(any()) }
             verify(exactly = 0) { agreementVisibilityRepository.saveOrUpdate(any()) }
-        }
-
-        @Test
-        fun `should not be allowed when unauthenticated`() {
-            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
-                sut.setVisibility(presenter, request)
-            }
-        }
-
-        @Test
-        fun `should not be allowed when unauthorized`() {
-            preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
-                sut.setVisibility(presenter, request)
-            }
-        }
-
-        @Test
-        fun `should not be allowed when systematic study doesn't exist`() {
-            preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
-                sut.setVisibility(presenter, request)
-            }
+            verify(exactly = 0) { presenter.prepareSuccessView(any<ResponseModel>()) }
         }
     }
 }
