@@ -48,12 +48,14 @@ class TestDataFactory {
         selectionStatus: String = "UNCLASSIFIED",
         extractionStatus: String = "UNCLASSIFIED",
         readingPriority: String = "LOW",
-        score: Int = 0
+        score: Int = 0,
+        originalStudyId: Long? = null,
+        duplicateStudyIds: Set<Long> = setOf(),
     ): StudyReviewDto {
         return StudyReviewDto(
             studyReviewId, systematicStudyId, searchSessionId, type, title, year,
             authors, venue, abstract, keywords, references, doi, sources, selectionCriteria,
-            extractionCriteria, formAnswers, robAnswers, comments, readingPriority, extractionStatus, selectionStatus, score
+            extractionCriteria, formAnswers, robAnswers, comments, readingPriority, extractionStatus, selectionStatus, score,  originalStudyId, duplicateStudyIds
         )
     }
 

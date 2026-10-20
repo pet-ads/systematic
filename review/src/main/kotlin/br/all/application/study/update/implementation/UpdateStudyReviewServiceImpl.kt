@@ -30,11 +30,12 @@ class UpdateStudyReviewServiceImpl(
         if(presenter.isDone()) return
 
         val studyId = request.studyReviewId
-        if(studyReviewRepository.findById(request.systematicStudyId, studyId) == null){
+        val originalStudy = studyReviewRepository.findById(request.systematicStudyId, studyId)
+        if(originalStudy == null){
             presenter.prepareFailView(EntityNotFoundException("Study of id $studyId not found"))
             return }
 
-        val studyReview = StudyReview.fromStudyUpdateRequestModel(studyId, request)
+        val studyReview = StudyReview.fromStudyUpdateRequestModel(studyId, request, originalStudy.duplicateStudyIds)
 
         studyReviewRepository.saveOrUpdate(studyReview.toDto())
         presenter.prepareSuccessView(UpdateStudyReviewService.ResponseModel(request.userId,

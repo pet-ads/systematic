@@ -14,6 +14,7 @@ import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
 import br.all.application.user.CredentialsService
 import br.all.domain.model.protocol.Criterion
 import br.all.domain.model.review.SystematicStudy
+import br.all.domain.model.study.ExtractionStatus
 import br.all.domain.model.study.StudyReview
 
 class UpdateStudyReviewExtractionService(
@@ -50,7 +51,11 @@ class UpdateStudyReviewExtractionService(
 
             val studyReview = StudyReview.fromDto(studyReviewDto)
             when (newStatus) {
-                "UNCLASSIFIED" -> studyReview.declassifyInExtraction()
+                "UNCLASSIFIED" -> {
+                    removeDuplicateRelationship(studyReview)
+                    studyReview.declassifyInExtraction()
+                }
+
                 "INCLUDED" -> studyReview.includeInExtraction()
                 "EXCLUDED" -> studyReview.excludeInExtraction()
                 else -> throw IllegalArgumentException("Unknown study review status: ${request.status}.")
@@ -79,5 +84,26 @@ class UpdateStudyReviewExtractionService(
                 request.studyReviewId
             )
         )
+    }
+
+    private fun removeDuplicateRelationship(
+        studyReview: StudyReview
+    ) {
+        val originalStudyId = studyReview.originalStudyId ?: return
+
+        if(studyReview.extractionStatus != ExtractionStatus.DUPLICATED) return
+
+        val originalStudyDto = studyReviewRepository.findById(
+            studyReview.systematicStudyId.value(),
+            originalStudyId.value()
+        ) ?: throw EntityNotFoundException(
+            "Original study review of id ${originalStudyId.value()} not found."
+        )
+
+        val originalStudy = StudyReview.fromDto(originalStudyDto)
+
+        originalStudy.removeDuplicate(studyReview)
+
+        studyReviewRepository.saveOrUpdate(originalStudy.toDto())
     }
 }

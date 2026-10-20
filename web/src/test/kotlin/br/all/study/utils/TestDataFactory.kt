@@ -8,6 +8,7 @@ import br.all.infrastructure.study.StudyReviewDocument
 import br.all.infrastructure.study.StudyReviewId
 import io.github.serpro69.kfaker.Faker
 import java.util.*
+import kotlin.Long
 
 class TestDataFactory {
 
@@ -136,14 +137,16 @@ class TestDataFactory {
         selectionStatus: String = "UNCLASSIFIED",
         extractionStatus: String = "UNCLASSIFIED",
         readingPriority: String = "LOW",
-        score: Int = 0
+        score: Int = 0,
+        originalStudyId: Long? = null,
+        duplicateStudyIds: Set<StudyReviewId> = setOf(),
     ): StudyReviewDocument {
         val studyId = StudyReviewId(systematicStudyId, studyReviewId)
         return StudyReviewDocument(
             studyId, searchSessionId, type, title, year,
             authors, venue, abstract, keywords, references, doi, sources,
             selectionCriteria, extractionCriteria, formAnswers, robAnswers, comments, readingPriority,
-            extractionStatus, selectionStatus, score
+            extractionStatus, selectionStatus, score, originalStudyId, duplicateStudyIds
         )
     }
 

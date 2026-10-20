@@ -24,7 +24,9 @@ fun StudyReviewDocument.toDto() = StudyReviewDto(
     readingPriority,
     extractionStatus,
     selectionStatus,
-    score
+    score,
+    originalStudyId,
+    duplicateStudyIds.map { it.studyReviewId }.toSet()
 )
 
 fun StudyReviewDto.toDocument() = StudyReviewDocument(
@@ -48,5 +50,7 @@ fun StudyReviewDto.toDocument() = StudyReviewDocument(
     readingPriority,
     extractionStatus,
     selectionStatus,
-    score
+    score,
+    originalStudyId,
+    duplicateStudyIds.map { StudyReviewId(systematicStudyId, it) }.toSet(),
 )

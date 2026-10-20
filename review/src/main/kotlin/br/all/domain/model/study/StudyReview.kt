@@ -27,7 +27,9 @@ class StudyReview(
     var readingPriority: ReadingPriority = ReadingPriority.LOW,
     selectionStatus: SelectionStatus = SelectionStatus.UNCLASSIFIED,
     extractionStatus: ExtractionStatus = ExtractionStatus.UNCLASSIFIED,
-    var score: Int = 0
+    var score: Int = 0,
+    originalStudyId: StudyReviewId? = null,
+    duplicateStudyIds: Set<StudyReviewId> = setOf()
 ) : Entity<Long>(studyId) {
 
     private val study: Study
@@ -59,6 +61,16 @@ class StudyReview(
     var selectionStatus: SelectionStatus = selectionStatus
         private set
     var extractionStatus: ExtractionStatus = extractionStatus
+        private set
+
+    var originalStudyId: StudyReviewId? = originalStudyId
+        private set
+
+    private val _duplicateStudyIds = duplicateStudyIds.toMutableSet()
+    val duplicateStudyIds: Set<StudyReviewId>
+        get() = _duplicateStudyIds.toSet()
+
+    var studyId: StudyReviewId = studyId
         private set
 
     init {
@@ -103,6 +115,7 @@ class StudyReview(
         selectionStatus = SelectionStatus.UNCLASSIFIED
         extractionStatus = ExtractionStatus.UNCLASSIFIED
         clearExtractionCriteria()
+        removeDuplicateReference()
     }
 
     private fun shouldNotConsiderForExtraction() =
@@ -135,7 +148,10 @@ class StudyReview(
         extractionStatus = ExtractionStatus.EXCLUDED
     }
 
-    fun declassifyInExtraction() = apply { extractionStatus = ExtractionStatus.UNCLASSIFIED }
+    fun declassifyInExtraction() = apply {
+        extractionStatus = ExtractionStatus.UNCLASSIFIED
+        removeDuplicateReference()
+    }
 
     private fun mergeSearchSources(duplicates: List<StudyReview>): MutableSet<String> {
         val unionSources = _searchSources.toMutableSet()
@@ -159,9 +175,16 @@ class StudyReview(
         duplicates.forEach { duplicate ->
             duplicate.ensureCanChangeSelectionStatus()
 
+            if(duplicate.duplicateStudyIds.isNotEmpty())(
+                throw IllegalStateException("A study with copies can't be marked as duplicate.")
+            )
+
             duplicate.clearExtractionCriteria()
+            duplicate.markAsDuplicateOf(studyId)
             duplicate.selectionStatus = SelectionStatus.DUPLICATED
             duplicate.extractionStatus = ExtractionStatus.DUPLICATED
+
+            _duplicateStudyIds.add(duplicate.studyId)
         }
     }
 
@@ -169,10 +192,31 @@ class StudyReview(
         mergeDuplicateInformation(duplicates)
 
         duplicates.forEach { duplicate ->
+            if(duplicate.duplicateStudyIds.isNotEmpty())(
+                throw IllegalStateException("A study with copies can't be marked as duplicate.")
+            )
+
+            duplicate.markAsDuplicateOf(studyId)
             duplicate.extractionStatus = ExtractionStatus.DUPLICATED
+            _duplicateStudyIds.add(duplicate.studyId)
         }
     }
 
+    fun removeDuplicate(studyReview: StudyReview) {
+        if(!duplicateStudyIds.contains(studyReview.studyId)) {
+            throw IllegalStateException("This study review is not duplicate of this study.")
+        }
+
+        _duplicateStudyIds.remove(studyReview.studyId)
+    }
+
+    private fun markAsDuplicateOf(original: StudyReviewId) {
+        originalStudyId = original
+    }
+
+    private fun removeDuplicateReference() {
+        originalStudyId = null
+    }
 
     override fun toString(): String {
         return "StudyReview(reviewId=$systematicStudyId, searchSources=$searchSources, " +
