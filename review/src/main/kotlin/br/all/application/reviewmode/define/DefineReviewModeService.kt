@@ -15,19 +15,22 @@ interface DefineReviewModeService {
         val mainReviewer: UUID,
         val secondaryReviewers: Map<UUID, Double> = emptyMap(),
         val noStudySharedBySecondaries: Boolean = true,
+        val acceptMajority: Boolean = false,
     ) {
         fun toReviewMode(): ReviewMode = Replication(
             ResearcherId(mainReviewer),
             secondaryReviewers.mapKeys { ResearcherId(it.key) },
             noStudySharedBySecondaries,
+            acceptMajority,
         )
     }
 
     data class SplitRequest(
         val reviewers: List<UUID> = emptyList(),
         val reviewPerStudy: Int,
+        val acceptMajority: Boolean = false,
     ) {
-        fun toReviewMode(): ReviewMode = Split(reviewers.map(::ResearcherId), reviewPerStudy)
+        fun toReviewMode(): ReviewMode = Split(reviewers.map(::ResearcherId), reviewPerStudy, acceptMajority)
     }
 
     data class RequestModel(

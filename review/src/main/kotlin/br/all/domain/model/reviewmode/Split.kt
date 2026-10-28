@@ -5,6 +5,7 @@ import br.all.domain.shared.user.ResearcherId
 class Split(
     val reviewers: List<ResearcherId> = emptyList(),
     val reviewPerStudy: Int,
+    override val acceptMajority: Boolean = false,
 ) : ReviewMode {
     init {
         require(reviewers.isNotEmpty()) { "Split needs at least one reviewer" }

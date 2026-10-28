@@ -6,6 +6,7 @@ class Replication(
     val mainReviewer: ResearcherId,
     val secondaryReviewers: Map<ResearcherId, Double> = emptyMap(),
     val noStudySharedBySecondaries: Boolean = true,
+    override val acceptMajority: Boolean = false,
 ) : ReviewMode {
     val reviewers: Set<ResearcherId> = setOf(mainReviewer) + secondaryReviewers.keys
 

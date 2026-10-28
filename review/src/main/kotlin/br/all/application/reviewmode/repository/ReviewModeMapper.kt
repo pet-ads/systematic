@@ -20,19 +20,21 @@ fun ReviewModeDto.toDomain() = SystematicStudyReviewMode(
 )
 
 fun ReviewMode.toDto(): ReviewModeStageDto = when (this) {
-    is Split -> SplitDto(reviewers.map { it.value() }, reviewPerStudy)
+    is Split -> SplitDto(reviewers.map { it.value() }, reviewPerStudy, acceptMajority)
     is Replication -> ReplicationDto(
         mainReviewer = mainReviewer.value(),
         secondaryReviewers = secondaryReviewers.mapKeys { it.key.value() },
         noStudySharedBySecondaries = noStudySharedBySecondaries,
+        acceptMajority = acceptMajority,
     )
 }
 
 fun ReviewModeStageDto.toDomain(): ReviewMode = when (this) {
-    is SplitDto -> Split(reviewers.map(::ResearcherId), reviewPerStudy)
+    is SplitDto -> Split(reviewers.map(::ResearcherId), reviewPerStudy, acceptMajority)
     is ReplicationDto -> Replication(
         mainReviewer = ResearcherId(mainReviewer),
         secondaryReviewers = secondaryReviewers.mapKeys { ResearcherId(it.key) },
         noStudySharedBySecondaries = noStudySharedBySecondaries,
+        acceptMajority = acceptMajority,
     )
 }

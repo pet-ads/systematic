@@ -18,11 +18,11 @@ fun ReviewModeDocument.toDto() = ReviewModeDto(
 )
 
 private fun ReviewModeStageDto.toDocument(): ReviewModeStageDocument = when (this) {
-    is SplitDto -> SplitDocument(reviewers, reviewPerStudy)
-    is ReplicationDto -> ReplicationDocument(mainReviewer, secondaryReviewers, noStudySharedBySecondaries)
+    is SplitDto -> SplitDocument(reviewers, reviewPerStudy, acceptMajority)
+    is ReplicationDto -> ReplicationDocument(mainReviewer, secondaryReviewers, noStudySharedBySecondaries, acceptMajority)
 }
 
 private fun ReviewModeStageDocument.toDto(): ReviewModeStageDto = when (this) {
-    is SplitDocument -> SplitDto(reviewers, reviewPerStudy)
-    is ReplicationDocument -> ReplicationDto(mainReviewer, secondaryReviewers, noStudySharedBySecondaries)
+    is SplitDocument -> SplitDto(reviewers, reviewPerStudy, acceptMajority)
+    is ReplicationDocument -> ReplicationDto(mainReviewer, secondaryReviewers, noStudySharedBySecondaries, acceptMajority)
 }

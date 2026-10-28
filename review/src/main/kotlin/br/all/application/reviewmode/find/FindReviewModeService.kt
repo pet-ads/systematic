@@ -25,26 +25,30 @@ interface FindReviewModeService {
 
     data class SplitResponse(
         val reviewers: List<UUID>,
-        val reviewPerStudy: Int
+        val reviewPerStudy: Int,
+        val acceptMajority: Boolean,
     )
 
     data class ReplicationResponse(
         val mainReviewer: UUID,
         val secondaryReviewers: Map<UUID, Double>,
-        val noStudySharedBySecondaries: Boolean
+        val noStudySharedBySecondaries: Boolean,
+        val acceptMajority: Boolean,
     )
 
     fun ReviewMode.toStageResponse(): ReviewModeStageResponse = when (this) {
         is Split -> ReviewModeStageResponse(split = SplitResponse(
             reviewers = reviewers.map { it.value },
-            reviewPerStudy = reviewPerStudy
+            reviewPerStudy = reviewPerStudy,
+            acceptMajority = acceptMajority,
         ))
 
         is Replication ->  ReviewModeStageResponse(
             replication =  ReplicationResponse(
                 mainReviewer = mainReviewer.value,
                 secondaryReviewers = secondaryReviewers.mapKeys { it.key.value },
-                noStudySharedBySecondaries = noStudySharedBySecondaries
+                noStudySharedBySecondaries = noStudySharedBySecondaries,
+                acceptMajority = acceptMajority,
             )
         )
     }

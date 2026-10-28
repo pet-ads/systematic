@@ -21,6 +21,7 @@ sealed class ReviewModeStageDocument
 data class SplitDocument(
     val reviewers: List<UUID> = emptyList(),
     val reviewPerStudy: Int,
+    val acceptMajority: Boolean = false,
 ) : ReviewModeStageDocument()
 
 @Persistent
@@ -29,4 +30,5 @@ data class ReplicationDocument(
     val mainReviewer: UUID,
     val secondaryReviewers: Map<UUID, Double> = emptyMap(),
     val noStudySharedBySecondaries: Boolean = true,
+    val acceptMajority: Boolean = false,
 ) : ReviewModeStageDocument()
