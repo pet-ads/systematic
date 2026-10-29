@@ -6,14 +6,16 @@ import java.util.*
 data class PatchStatusStudyReviewRequest(
     val studyReviewId: List<Long>,
     val status: String,
-    val criteria: Set<String>
+    val criteria: Set<String>,
+    val reviewerId: UUID? = null,
 ) {
     fun toRequestModel(userId: UUID, systematicStudyId: UUID)
-    = UpdateStudyReviewStatusService.RequestModel(
+            = UpdateStudyReviewStatusService.RequestModel(
         userId,
         systematicStudyId,
         studyReviewId,
         status,
-        this.criteria
+        this.criteria,
+        reviewerId,
     )
 }

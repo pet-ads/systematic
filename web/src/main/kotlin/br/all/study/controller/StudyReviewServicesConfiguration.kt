@@ -2,12 +2,14 @@ package br.all.study.controller
 
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.reviewmode.repository.ReviewModeRepository
 import br.all.application.reviewmode.repository.ReviewerStudyRepository
 import br.all.application.study.create.CreateStudyReviewServiceImpl
 import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresenter
 import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
 import br.all.application.study.find.presenter.FindStudyReviewPresenter
 import br.all.application.study.find.service.*
+import br.all.application.study.majority.MajorityDecisionApplier
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.update.implementation.*
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusPresenter
@@ -110,9 +112,11 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
-        credentialsService: CredentialsService
+        credentialsService: CredentialsService,
+        reviewerStudyRepository: ReviewerStudyRepository,
+        majorityApplier: MajorityDecisionApplier,
     ) = UpdateStudyReviewSelectionService(
-        systematicStudyRepository, studyReviewRepository, credentialsService
+        systematicStudyRepository, studyReviewRepository, credentialsService, reviewerStudyRepository, majorityApplier
     )
 
     @Bean
@@ -120,9 +124,11 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
-        credentialsService: CredentialsService
+        credentialsService: CredentialsService,
+        reviewerStudyRepository: ReviewerStudyRepository,
+        majorityApplier: MajorityDecisionApplier,
     ) = UpdateStudyReviewExtractionService(
-        systematicStudyRepository, studyReviewRepository, credentialsService
+        systematicStudyRepository, studyReviewRepository, credentialsService, reviewerStudyRepository, majorityApplier
     )
 
     @Bean
@@ -179,4 +185,11 @@ class StudyReviewServicesConfiguration {
         studyReviewRepository,
         credentialsService
     )
+
+    @Bean
+    fun majorityDecisionApplier(
+        reviewModeRepository: ReviewModeRepository,
+        reviewerStudyRepository: ReviewerStudyRepository,
+        studyReviewRepository: StudyReviewRepository,
+    ) = MajorityDecisionApplier(reviewModeRepository, reviewerStudyRepository, studyReviewRepository)
 }

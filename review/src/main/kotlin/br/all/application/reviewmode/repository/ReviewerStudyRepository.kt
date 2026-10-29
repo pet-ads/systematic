@@ -34,6 +34,12 @@ interface ReviewerStudyRepository {
         pageable: Pageable = Pageable.unpaged(),
     ): Page<ReviewerStudyDto>
 
+    fun findAllByStudy(
+        systematicStudyId: UUID,
+        studyId: Long,
+        stage: StudyReviewStage,
+    ): List<ReviewerStudyDto>
+
     fun findAllByIdSystematicStudyIdAndIdStage(systematicStudyId: UUID, stage: StudyReviewStage): List<ReviewerStudyDto>
 
     fun saveAll(dtos: List<ReviewerStudyDto>)

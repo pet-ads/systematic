@@ -10,7 +10,8 @@ interface UpdateStudyReviewStatusService {
         val systematicStudyId: UUID,
         val studyReviewId: List<Long>,
         val status: String,
-        val criteria: Set<String>
+        val criteria: Set<String>,
+        val reviewerId: UUID? = null
     )
 
     class ResponseModel(

@@ -67,6 +67,14 @@ open class ReviewerStudyRepositoryImpl(
         return page.map { it.toDto() }
     }
 
+    override fun findAllByStudy(
+        systematicStudyId: UUID,
+        studyId: Long,
+        stage: StudyReviewStage,
+    ): List<ReviewerStudyDto> =
+        innerRepository.findAllByIdSystematicStudyIdAndIdStudyIdAndIdStage(systematicStudyId, studyId, stage)
+            .map { it.toDto() }
+
     private fun Pageable.toDocumentPageable(): Pageable {
         if (isUnpaged) return this
         val orders = sort.map { order ->

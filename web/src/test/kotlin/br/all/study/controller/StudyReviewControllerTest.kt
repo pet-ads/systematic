@@ -3,7 +3,11 @@ package br.all.study.controller
 import br.all.domain.model.study.StudyReviewStage
 import br.all.infrastructure.question.MongoQuestionRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
+import br.all.infrastructure.reviewmode.MongoReviewModeRepository
 import br.all.infrastructure.reviewmode.MongoReviewerStudyRepository
+import br.all.infrastructure.reviewmode.ReviewModeDocument
+import br.all.infrastructure.reviewmode.ReviewerStudyDocumentId
+import br.all.infrastructure.reviewmode.SplitDocument
 import br.all.infrastructure.shared.toNullable
 import br.all.infrastructure.study.MongoStudyReviewRepository
 import br.all.infrastructure.study.StudyReviewId
@@ -42,6 +46,7 @@ class StudyReviewControllerTest @Autowired constructor(
     private val testHelperService: TestHelperService,
     val idService: StudyReviewIdGeneratorService,
     val mockMvc: MockMvc,
+    val reviewModeRepository: MongoReviewModeRepository,
 ) {
 
     private lateinit var factory: TestDataFactory
@@ -49,6 +54,15 @@ class StudyReviewControllerTest @Autowired constructor(
 
     private lateinit var systematicStudyId: UUID
     private lateinit var searchSessionId: UUID
+
+    private fun reviewerPatchJson(studyId: Long, status: String, reviewerId: UUID) = """
+            {
+              "studyReviewId": [$studyId],
+              "status": "$status",
+              "criteria": [],
+              "reviewerId": "$reviewerId"
+            }
+        """.trimIndent()
 
     fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/study-review"
     fun findUrl(studyId: String = "") =
@@ -104,6 +118,7 @@ class StudyReviewControllerTest @Autowired constructor(
     fun teardown() {
         repository.deleteAll()
         testHelperService.deleteApplicationUser(user.id)
+        reviewModeRepository.deleteAll()
     }
 
     @Nested
@@ -725,6 +740,96 @@ class StudyReviewControllerTest @Autowired constructor(
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(factory.validMarkAsDuplicateRequest(duplicateIds))
             )
+        }
+    }
+
+    @Nested
+    @DisplayName("When classifying a study review")
+    inner class ClassifyTests {
+
+        @Test
+        fun `reviewer should classify only his own copy and return 200`() {
+            val studyId = idService.next(systematicStudyId)
+            val original = factory.reviewDocument(systematicStudyId, studyId)
+            repository.insert(original)
+            reviewerStudyRepository.insert(
+                factory.reviewerStudyDocument(systematicStudyId, studyId, user.id, StudyReviewStage.SELECTION)
+            )
+
+            mockMvc.perform(
+                patch(updateStatusStatus("selection-status"))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(reviewerPatchJson(studyId, "INCLUDED", user.id))
+            ).andExpect(status().isOk)
+
+            val copy = reviewerStudyRepository.findById(
+                ReviewerStudyDocumentId(systematicStudyId, user.id, studyId, StudyReviewStage.SELECTION)
+            ).toNullable()
+            assertEquals("INCLUDED", copy?.studyReview?.selectionStatus)
+
+            // o StudyReview original não muda (a opção de maioria está desligada)
+            val untouched = repository.findById(StudyReviewId(systematicStudyId, studyId)).toNullable()
+            assertEquals(original, untouched)
+        }
+
+        @Test
+        fun `should apply the majority to the original study when the option is enabled and return 200`() {
+            val studyId = idService.next(systematicStudyId)
+            val reviewer2 = UUID.randomUUID()
+            val reviewer3 = UUID.randomUUID()
+            reviewModeRepository.save(
+                ReviewModeDocument(
+                    systematicStudyId,
+                    selection = SplitDocument(listOf(user.id, reviewer2, reviewer3), 3, acceptMajority = true),
+                )
+            )
+            repository.insert(factory.reviewDocument(systematicStudyId, studyId))
+            reviewerStudyRepository.insert(
+                factory.reviewerStudyDocument(systematicStudyId, studyId, user.id, StudyReviewStage.SELECTION)
+            )
+            factory.reviewerStudyDocument(systematicStudyId, studyId, reviewer2, StudyReviewStage.SELECTION).let {
+                reviewerStudyRepository.insert(it.copy(studyReview = it.studyReview.copy(selectionStatus = "INCLUDED")))
+            }
+            reviewerStudyRepository.insert(
+                factory.reviewerStudyDocument(systematicStudyId, studyId, reviewer3, StudyReviewStage.SELECTION)
+            )
+
+            mockMvc.perform(
+                patch(updateStatusStatus("selection-status"))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(reviewerPatchJson(studyId, "INCLUDED", user.id))
+            ).andExpect(status().isOk)
+
+            val original = repository.findById(StudyReviewId(systematicStudyId, studyId)).toNullable()
+            assertEquals("INCLUDED", original?.selectionStatus)
+        }
+
+        @Test
+        fun `should not let a user classify another reviewer's copy and return 403`() {
+            val studyId = idService.next(systematicStudyId)
+            repository.insert(factory.reviewDocument(systematicStudyId, studyId))
+
+            mockMvc.perform(
+                patch(updateStatusStatus("selection-status"))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(reviewerPatchJson(studyId, "INCLUDED", UUID.randomUUID()))
+            ).andExpect(status().isForbidden)
+        }
+
+        @Test
+        fun `should return 404 when the study was not assigned to the reviewer`() {
+            val studyId = idService.next(systematicStudyId)
+            repository.insert(factory.reviewDocument(systematicStudyId, studyId))
+
+            mockMvc.perform(
+                patch(updateStatusStatus("selection-status"))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(reviewerPatchJson(studyId, "INCLUDED", user.id))
+            ).andExpect(status().isNotFound)
         }
     }
 }

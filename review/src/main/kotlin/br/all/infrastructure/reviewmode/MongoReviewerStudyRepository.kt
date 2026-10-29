@@ -29,4 +29,10 @@ interface MongoReviewerStudyRepository : MongoRepository<ReviewerStudyDocument, 
         stage: StudyReviewStage,
         pageable: Pageable,
     ): Page<ReviewerStudyDocument>
+
+    fun findAllByIdSystematicStudyIdAndIdStudyIdAndIdStage(
+        systematicStudyId: UUID,
+        studyId: Long,
+        stage: StudyReviewStage,
+    ): List<ReviewerStudyDocument>
 }
