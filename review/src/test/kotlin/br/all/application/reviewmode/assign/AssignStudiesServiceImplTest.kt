@@ -190,6 +190,47 @@ class AssignStudiesServiceImplTest {
 
             verify(exactly = 0) { studyReviewRepository.findAllIncludedInSelection(any()) }
         }
+
+        @Test
+        fun `should not assign studies marked as duplicated in selection`() {
+            val selectionStudies = listOf(
+                factory.generateDto(studyReviewId = 1L),
+                factory.generateDto(studyReviewId = 2L),
+                factory.generateDto(studyReviewId = 3L, selectionStatus = "DUPLICATED"),
+                factory.generateDto(studyReviewId = 4L),
+                factory.generateDto(studyReviewId = 5L, selectionStatus = "DUPLICATED"),
+            )
+            every { reviewModeRepository.findById(systematicStudyId) } returns reviewModeDto
+            every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns selectionStudies
+            every {
+                reviewerStudyRepository.findAllByIdSystematicStudyIdAndIdStage(systematicStudyId, StudyReviewStage.SELECTION)
+            } returns existingReviewerStudies
+
+            sut.assign(presenter, withSelectionRequest)
+
+            verify(exactly = 1) {
+                reviewerStudyRepository.saveAll(match { result -> result.map { it.studyId }.toSet() == setOf(4L) })
+            }
+        }
+
+        @Test
+        fun `should not assign studies marked as duplicated in extraction`() {
+            val included = listOf(
+                factory.generateDto(studyReviewId = 1L, selectionStatus = "INCLUDED", extractionStatus = "DUPLICATED"),
+                factory.generateDto(studyReviewId = 3L, selectionStatus = "INCLUDED"),
+            )
+            every { reviewModeRepository.findById(systematicStudyId) } returns reviewModeDto.copy(extraction = selectionDto)
+            every { studyReviewRepository.findAllIncludedInSelection(systematicStudyId) } returns included
+            every {
+                reviewerStudyRepository.findAllByIdSystematicStudyIdAndIdStage(systematicStudyId, StudyReviewStage.EXTRACTION)
+            } returns emptyList()
+
+            sut.assign(presenter, withExtractionRequest)
+
+            verify(exactly = 1) {
+                reviewerStudyRepository.saveAll(match { result -> result.map { it.studyId }.toSet() == setOf(3L) })
+            }
+        }
     }
 
     @Nested
@@ -276,6 +317,21 @@ class AssignStudiesServiceImplTest {
             verify(exactly = 1) { presenter.prepareFailView(any<IllegalStateException>()) }
             verify(exactly = 0) { reviewerStudyRepository.saveAll(any()) }
             verify(exactly = 0) { studyReviewRepository.findAllFromReview(any()) }
+        }
+
+        @Test
+        fun `should prepare fail view and not save when every study is duplicated`() {
+            every { reviewModeRepository.findById(systematicStudyId) } returns reviewModeDto
+            every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns
+                    listOf(
+                        factory.generateDto(studyReviewId = 1L, selectionStatus = "DUPLICATED"),
+                        factory.generateDto(studyReviewId = 2L, selectionStatus = "DUPLICATED"),
+                    )
+
+            sut.assign(presenter, withSelectionRequest)
+
+            verify(exactly = 1) { presenter.prepareFailView(any<IllegalStateException>()) }
+            verify(exactly = 0) { reviewerStudyRepository.saveAll(any()) }
         }
     }
 }
