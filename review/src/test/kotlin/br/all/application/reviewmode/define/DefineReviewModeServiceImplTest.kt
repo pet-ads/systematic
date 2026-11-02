@@ -1,5 +1,6 @@
 package br.all.application.reviewmode.define
 
+import br.all.application.collaborator.repository.CollaboratorRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.reviewmode.define.DefineReviewModeService.RequestModel
 import br.all.application.reviewmode.define.DefineReviewModeService.SplitRequest
@@ -9,9 +10,11 @@ import br.all.application.reviewmode.repository.ReviewModeDto
 import br.all.application.reviewmode.repository.ReviewModeRepository
 import br.all.application.reviewmode.repository.toDto
 import br.all.application.shared.service.AuthorizationService
+import br.all.application.study.util.TestDataFactory
 import br.all.application.user.CredentialsService
 import br.all.application.util.PreconditionCheckerMockingNew
 import br.all.domain.model.study.StudyReviewStage
+import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.domain.shared.user.Role
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -34,6 +37,8 @@ class DefineReviewModeServiceImplTest {
     private lateinit var reviewModeRepository: ReviewModeRepository
     @MockK(relaxUnitFun = true)
     private lateinit var systematicStudyRepository: SystematicStudyRepository
+    @MockK(relaxUnitFun = true)
+    private lateinit var collaboratorRepository: CollaboratorRepository
     @MockK
     private lateinit var credentialsService: CredentialsService
     @MockK(relaxed = true)
@@ -45,15 +50,18 @@ class DefineReviewModeServiceImplTest {
     @InjectMockKs
     private lateinit var sut: DefineReviewModeServiceImpl
 
-    private val researcherId = UUID.randomUUID()
+    private lateinit var factory: TestDataFactory
+
     private val systematicStudyId = UUID.randomUUID()
+    private val collaboratorIds = List(3) { UUID.randomUUID() }
+    private val researcherId = collaboratorIds.first()
     private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
 
     private val splitRequest = RequestModel(
         userId = researcherId,
         systematicStudyId = systematicStudyId,
         stage = StudyReviewStage.SELECTION,
-        split = SplitRequest(reviewers = listOf(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()), reviewPerStudy = 2)
+        split = SplitRequest(reviewers = collaboratorIds, reviewPerStudy = 2)
     )
 
     private val replicationRequest = RequestModel(
@@ -82,6 +90,8 @@ class DefineReviewModeServiceImplTest {
             researcherId,
             systematicStudyId
         )
+
+        factory = TestDataFactory()
     }
 
     @Nested
@@ -94,6 +104,8 @@ class DefineReviewModeServiceImplTest {
                 authorizationService.authorize(presenter, researcherId, systematicStudyId, setOf(Role.OWNER))
             } returns authorizationContext
             every { reviewModeRepository.findById(systematicStudyId) } returns ReviewModeDto(systematicStudyId)
+            every { collaboratorRepository.findAll(systematicStudyId) } returns
+                    collaboratorIds.map { factory.generateCollaboratorDto(researcherId = it) }
         }
 
         @Test
@@ -125,6 +137,7 @@ class DefineReviewModeServiceImplTest {
         fun `should save the review mode with the replication mode defined on the given stage`() {
             sut.define(presenter, replicationRequest)
 
+            verify(exactly = 0) { presenter.prepareFailView(any()) }
             verify(exactly = 1) { reviewModeRepository.saveOrUpdate(replicationReviewModeDto) }
         }
 
@@ -132,6 +145,7 @@ class DefineReviewModeServiceImplTest {
         fun `should save the review mode with the split mode defined on the given stage`() {
             sut.define(presenter, splitRequest)
 
+            verify(exactly = 0) { presenter.prepareFailView(any()) }
             verify(exactly = 1) { reviewModeRepository.saveOrUpdate(splitReviewModeDto) }
         }
     }
@@ -140,6 +154,15 @@ class DefineReviewModeServiceImplTest {
     @Tag("InvalidClasses")
     @DisplayName("When preconditions fail")
     inner class WhenPreconditionsFail {
+        @BeforeEach
+        fun setUp() {
+            every {
+                authorizationService.authorize(presenter, researcherId, systematicStudyId, setOf(Role.OWNER))
+            } returns authorizationContext
+            every { collaboratorRepository.findAll(systematicStudyId) } returns
+                    collaboratorIds.map { factory.generateCollaboratorDto(researcherId = it) }
+        }
+
         @Test
         fun `should not save the review mode when preconditions fail`() {
             every {
@@ -151,6 +174,41 @@ class DefineReviewModeServiceImplTest {
             verify(exactly = 0) { reviewModeRepository.findById(any()) }
             verify(exactly = 0) { reviewModeRepository.saveOrUpdate(any()) }
             verify(exactly = 0) { presenter.prepareSuccessView(any<ResponseModel>()) }
+        }
+
+        @Test
+        fun `should prepare fail view when a split reviewer is not a collaborator`() {
+            val request = splitRequest.copy(
+                split = SplitRequest(collaboratorIds.take(2) + UUID.randomUUID(), reviewPerStudy = 2)
+            )
+
+            sut.define(presenter, request)
+
+            verify(exactly = 1) { presenter.prepareFailView(any<EntityNotFoundException>()) }
+            verify(exactly = 0) { reviewModeRepository.saveOrUpdate(any()) }
+            verify(exactly = 0) { presenter.prepareSuccessView(any<ResponseModel>()) }
+        }
+
+        @Test
+        fun `should prepare fail view when the main reviewer is not a collaborator`() {
+            val request = replicationRequest.copy(replication = ReplicationRequest(UUID.randomUUID()))
+
+            sut.define(presenter, request)
+
+            verify(exactly = 1) { presenter.prepareFailView(any<EntityNotFoundException>()) }
+            verify(exactly = 0) { reviewModeRepository.saveOrUpdate(any()) }
+        }
+
+        @Test
+        fun `should prepare fail view when a secondary reviewer is not a collaborator`() {
+            val request = replicationRequest.copy(
+                replication = ReplicationRequest(researcherId, mapOf(UUID.randomUUID() to 50.0))
+            )
+
+            sut.define(presenter, request)
+
+            verify(exactly = 1) { presenter.prepareFailView(any<EntityNotFoundException>()) }
+            verify(exactly = 0) { reviewModeRepository.saveOrUpdate(any()) }
         }
     }
 }

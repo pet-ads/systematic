@@ -1,5 +1,6 @@
 package br.all.application.study.util
 
+import br.all.application.collaborator.repository.CollaboratorDto
 import br.all.application.question.repository.QuestionDto
 import br.all.application.reviewmode.repository.ReviewerStudyDto
 import br.all.application.study.create.CreateStudyReviewService
@@ -301,6 +302,20 @@ class TestDataFactory {
         researcherId = researcherId,
         stage = stage,
         studyReview = studyReview,
+    )
+
+    fun generateCollaboratorDto(
+        researcherId: UUID = UUID.randomUUID(),
+        systematicStudyId: UUID = this.systematicStudyId,
+        username: String = "user-${researcherId.toString().take(8)}",
+        email: String = "$username@example.com",
+        role: String = "COLLABORATOR",
+    ): CollaboratorDto = CollaboratorDto(
+        researcherId = researcherId,
+        systematicStudyId = systematicStudyId,
+        username = username,
+        email = email,
+        role = role,
     )
 
     operator fun component1() = researcherId
