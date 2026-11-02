@@ -131,6 +131,65 @@ class AssignStudiesServiceImplTest {
             }
             verify(exactly = 1) { presenter.prepareSuccessView(any()) }
         }
+
+        @Test
+        fun `should assign only studies included in selection when the stage is extraction`() {
+            val included = listOf(
+                factory.generateDto(studyReviewId = 1L, selectionStatus = "INCLUDED"),
+                factory.generateDto(studyReviewId = 3L, selectionStatus = "INCLUDED"),
+            )
+            every { reviewModeRepository.findById(systematicStudyId) } returns reviewModeDto.copy(extraction = selectionDto)
+            every { studyReviewRepository.findAllIncludedInSelection(systematicStudyId) } returns included
+            every {
+                reviewerStudyRepository.findAllByIdSystematicStudyIdAndIdStage(systematicStudyId, StudyReviewStage.EXTRACTION)
+            } returns emptyList()
+
+            sut.assign(presenter, withExtractionRequest)
+
+            verify(exactly = 1) { studyReviewRepository.findAllIncludedInSelection(systematicStudyId) }
+            verify(exactly = 0) { studyReviewRepository.findAllFromReview(any()) }
+            verify(exactly = 1) {
+                reviewerStudyRepository.saveAll(match { result ->
+                    result.map { it.studyId }.toSet() == setOf(1L, 3L) &&
+                            result.all { it.stage == StudyReviewStage.EXTRACTION } &&
+                            result.all { dto -> dto.studyReview == included.first { it.studyReviewId == dto.studyId } }
+                })
+            }
+            verify(exactly = 0) { presenter.prepareFailView(any()) }
+        }
+
+        @Test
+        fun `should not assign studies already held by reviewers on extraction stage`() {
+            val included = listOf(
+                factory.generateDto(studyReviewId = 1L, selectionStatus = "INCLUDED"),
+                factory.generateDto(studyReviewId = 3L, selectionStatus = "INCLUDED"),
+            )
+            every { reviewModeRepository.findById(systematicStudyId) } returns reviewModeDto.copy(extraction = selectionDto)
+            every { studyReviewRepository.findAllIncludedInSelection(systematicStudyId) } returns included
+            every {
+                reviewerStudyRepository.findAllByIdSystematicStudyIdAndIdStage(systematicStudyId, StudyReviewStage.EXTRACTION)
+            } returns listOf(
+                factory.generateReviewerStudyDto(
+                    studyId = 1L, researcherId = reviewers[0].value, stage = StudyReviewStage.EXTRACTION
+                )
+            )
+
+            sut.assign(presenter, withExtractionRequest)
+
+            verify(exactly = 1) {
+                reviewerStudyRepository.saveAll(match { result -> result.map { it.studyId }.toSet() == setOf(3L) })
+            }
+        }
+
+        @Test
+        fun `should not look for included studies when the stage is selection`() {
+            every { reviewModeRepository.findById(systematicStudyId) } returns reviewModeDto
+            every { studyReviewRepository.findAllFromReview(systematicStudyId) } returns studies
+
+            sut.assign(presenter, withSelectionRequest)
+
+            verify(exactly = 0) { studyReviewRepository.findAllIncludedInSelection(any()) }
+        }
     }
 
     @Nested
@@ -205,6 +264,18 @@ class AssignStudiesServiceImplTest {
             sut.assign(presenter, request)
 
             verify(exactly = 1) { presenter.prepareFailView(any<IllegalStateException>()) }
+        }
+
+        @Test
+        fun `should prepare fail view and not save when no study was included in selection`() {
+            every { reviewModeRepository.findById(systematicStudyId) } returns reviewModeDto.copy(extraction = selectionDto)
+            every { studyReviewRepository.findAllIncludedInSelection(systematicStudyId) } returns emptyList()
+
+            sut.assign(presenter, withExtractionRequest)
+
+            verify(exactly = 1) { presenter.prepareFailView(any<IllegalStateException>()) }
+            verify(exactly = 0) { reviewerStudyRepository.saveAll(any()) }
+            verify(exactly = 0) { studyReviewRepository.findAllFromReview(any()) }
         }
     }
 }
