@@ -50,6 +50,11 @@ interface DefineReviewModeService {
             replication != null -> replication.toReviewMode()
             else -> requireNotNull(split).toReviewMode()
         }
+
+        fun reviewerIds(): Set<UUID> = when {
+            replication != null -> setOf(replication.mainReviewer) + replication.secondaryReviewers.keys
+            else -> requireNotNull(split).reviewers.toSet()
+        }
     }
 
     data class ResponseModel(
