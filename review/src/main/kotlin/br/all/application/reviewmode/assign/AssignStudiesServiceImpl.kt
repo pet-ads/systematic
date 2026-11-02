@@ -5,6 +5,7 @@ import br.all.application.reviewmode.repository.ReviewerStudyDto
 import br.all.application.reviewmode.repository.ReviewerStudyRepository
 import br.all.application.reviewmode.repository.toDomain
 import br.all.application.shared.service.AuthorizationService
+import br.all.application.study.repository.StudyReviewDto
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.domain.model.study.StudyReviewStage
 import br.all.domain.shared.exception.EntityNotFoundException
@@ -53,7 +54,8 @@ class AssignStudiesServiceImpl(
         val studies = when (request.stage) {
             StudyReviewStage.SELECTION -> studyReviewRepository.findAllFromReview(request.systematicStudyId)
             StudyReviewStage.EXTRACTION -> studyReviewRepository.findAllIncludedInSelection(request.systematicStudyId)
-        }
+        }.filterNot { statusOf(it, request.stage) == "DUPLICATED" }
+
         if (studies.isEmpty()) {
             presenter.prepareFailView(
                 IllegalStateException("No studies to assign in systematic study ${request.systematicStudyId}")
@@ -95,5 +97,10 @@ class AssignStudiesServiceImpl(
         presenter.prepareSuccessView(
             AssignStudiesService.ResponseModel()
         )
+    }
+
+    private fun statusOf(study: StudyReviewDto, stage: StudyReviewStage) = when (stage) {
+        StudyReviewStage.SELECTION -> study.selectionStatus
+        StudyReviewStage.EXTRACTION -> study.extractionStatus
     }
 }
