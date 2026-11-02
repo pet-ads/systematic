@@ -34,6 +34,8 @@ interface StudyReviewRepository {
         filters: Map<String, Any?>,
         pageable: Pageable
     ): Page<StudyReviewDto>
+
+    fun findAllIncludedInSelection(systematicStudyId: UUID): List<StudyReviewDto>
 }
 
 data class AnswerDto(

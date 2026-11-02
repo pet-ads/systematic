@@ -64,4 +64,9 @@ interface MongoStudyReviewRepository : MongoRepository<StudyReviewDocument, Stud
         pipeline = [ MATCH_QUALITY, ANSWERS_QUERY]
     )
     fun findAllAnswersForQuestion(questionId: String): List<AnswerDto>
+
+    fun findAllBySystematicStudyIdAndSelectionStatus(
+        systematicStudyId: UUID,
+        selectionStatus: String,
+    ): List<StudyReviewDocument>
 }

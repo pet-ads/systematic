@@ -50,7 +50,10 @@ class AssignStudiesServiceImpl(
 
         val stageMode = stageModeDto.toDomain()
 
-        val studies = studyReviewRepository.findAllFromReview(request.systematicStudyId)
+        val studies = when (request.stage) {
+            StudyReviewStage.SELECTION -> studyReviewRepository.findAllFromReview(request.systematicStudyId)
+            StudyReviewStage.EXTRACTION -> studyReviewRepository.findAllIncludedInSelection(request.systematicStudyId)
+        }
         if (studies.isEmpty()) {
             presenter.prepareFailView(
                 IllegalStateException("No studies to assign in systematic study ${request.systematicStudyId}")
