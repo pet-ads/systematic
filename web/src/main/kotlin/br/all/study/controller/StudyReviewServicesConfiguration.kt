@@ -4,6 +4,7 @@ import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.reviewmode.repository.ReviewModeRepository
 import br.all.application.reviewmode.repository.ReviewerStudyRepository
+import br.all.application.reviewmode.repository.ReviewerStudySearchRepository
 import br.all.application.study.create.CreateStudyReviewServiceImpl
 import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresenter
 import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
@@ -136,9 +137,13 @@ class StudyReviewServicesConfiguration {
         systematicStudyRepository: SystematicStudyRepository,
         studyReviewRepository: StudyReviewRepository,
         updateStudyReviewStatusPresenter: UpdateStudyReviewStatusPresenter,
-        credentialsService: CredentialsService
+        credentialsService: CredentialsService,
+        reviewerStudyRepository: ReviewerStudyRepository,
     ) = UpdateStudyReviewPriorityService(
-        systematicStudyRepository, studyReviewRepository, credentialsService
+        systematicStudyRepository,
+        studyReviewRepository,
+        credentialsService,
+        reviewerStudyRepository
     )
 
     @Bean
@@ -156,12 +161,14 @@ class StudyReviewServicesConfiguration {
         studyReviewRepository: StudyReviewRepository,
         questionRepository: QuestionRepository,
         systematicStudyRepository: SystematicStudyRepository,
-        credentialsService: CredentialsService
+        credentialsService: CredentialsService,
+        reviewerStudyRepository: ReviewerStudyRepository,
     ) = BatchAnswerQuestionServiceImpl(
         studyReviewRepository,
         questionRepository,
         systematicStudyRepository,
-        credentialsService
+        credentialsService,
+        reviewerStudyRepository
     )
 
     @Bean
@@ -169,10 +176,12 @@ class StudyReviewServicesConfiguration {
         studyReviewRepository: StudyReviewRepository,
         systematicStudyRepository: SystematicStudyRepository,
         credentialsService: CredentialsService,
+        reviewerStudyRepository: ReviewerStudyRepository,
     ) = RemoveCriteriaServiceImpl(
         studyReviewRepository,
         systematicStudyRepository,
-        credentialsService
+        credentialsService,
+        reviewerStudyRepository
     )
 
     @Bean
@@ -192,4 +201,20 @@ class StudyReviewServicesConfiguration {
         reviewerStudyRepository: ReviewerStudyRepository,
         studyReviewRepository: StudyReviewRepository,
     ) = MajorityDecisionApplier(reviewModeRepository, reviewerStudyRepository, studyReviewRepository)
+
+    @Bean
+    fun findReviewerStudyService(
+        systematicStudyRepository: SystematicStudyRepository,
+        reviewerStudyRepository: ReviewerStudyRepository,
+        credentialsService: CredentialsService
+    ) = FindReviewerStudyServiceImpl(systematicStudyRepository, reviewerStudyRepository, credentialsService)
+
+    @Bean
+    fun findAllReviewerStudiesBySearchService(
+        systematicStudyRepository: SystematicStudyRepository,
+        reviewerStudySearchRepository: ReviewerStudySearchRepository,
+        credentialsService: CredentialsService
+    ) = FindAllReviewerStudiesBySearchServiceImpl(
+        systematicStudyRepository, reviewerStudySearchRepository, credentialsService
+    )
 }

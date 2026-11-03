@@ -39,6 +39,8 @@ class StudyReviewController(
     private val findAllBySessionService: FindAllStudyReviewsBySessionService,
     private val findAllByAuthorService: FindAllStudyReviewsByAuthorService,
     private val findAllByReviewerService: FindAllStudyReviewsByReviewerService,
+    private val findReviewerStudyService: FindReviewerStudyService,
+    private val findAllReviewerStudiesBySearchService: FindAllReviewerStudiesBySearchService,
     private val findAllIncludedStudyReviewsService: FindAllIncludedStudyReviewsService,
     private val findAllStudyReviewsByAdvancedSearchService: FindAllStudyReviewsByAdvancedSearchService,
     private val findOneService: FindStudyReviewService,
@@ -274,6 +276,64 @@ class StudyReviewController(
             userId, systematicStudy, reviewerId, stage, page, size, sort
         )
         findAllByReviewerService.findAllByReviewer(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("/study-review/reviewer/{reviewerId}/search")
+    @Operation(summary = "Search the logged reviewer's own study copies (filters, pagination and sorting)")
+    fun searchReviewerStudies(
+        @PathVariable systematicStudy: UUID,
+        @PathVariable reviewerId: UUID,
+        @RequestParam(required = false) stage: StudyReviewStage?,
+        @RequestParam(required = false) id: Long?,
+        @RequestParam(required = false) title: String?,
+        @RequestParam(required = false) authors: String?,
+        @RequestParam(required = false) venue: String?,
+        @RequestParam(required = false) year: Int?,
+        @RequestParam(required = false) selectionStatus: String?,
+        @RequestParam(required = false) extractionStatus: String?,
+        @RequestParam(required = false) score: Double?,
+        @RequestParam(required = false) readingPriority: Int?,
+        @RequestParam(required = false, defaultValue = "0") page: Int,
+        @RequestParam(required = false, defaultValue = "20") size: Int,
+        @RequestParam(required = false, defaultValue = "id,asc") sort: String,
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindAllStudyReviewsByAdvancedSearchPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindAllReviewerStudiesBySearchService.RequestModel(
+            userId = userId,
+            systematicStudyId = systematicStudy,
+            reviewerId = reviewerId,
+            stage = stage,
+            id = id,
+            title = title,
+            authors = authors,
+            venue = venue,
+            year = year,
+            selectionStatus = selectionStatus,
+            extractionStatus = extractionStatus,
+            score = score,
+            readingPriority = readingPriority,
+            page = page,
+            pageSize = size,
+            sort = sort,
+        )
+        findAllReviewerStudiesBySearchService.findAllBySearch(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("/study-review/reviewer/{reviewerId}/{studyReview}")
+    @Operation(summary = "Get the logged reviewer's own copy of a study review in a stage")
+    fun findReviewerStudy(
+        @PathVariable systematicStudy: UUID,
+        @PathVariable reviewerId: UUID,
+        @PathVariable studyReview: Long,
+        @RequestParam("stage") stage: StudyReviewStage,
+    ): ResponseEntity<*> {
+        val presenter = RestfulFindStudyReviewPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = FindReviewerStudyService.RequestModel(userId, systematicStudy, reviewerId, studyReview, stage)
+        findReviewerStudyService.findOne(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 

@@ -63,11 +63,11 @@ class StudyReviewControllerTest @Autowired constructor(
     private lateinit var systematicStudyId: UUID
     private lateinit var searchSessionId: UUID
 
-    private fun reviewerPatchJson(studyId: Long, status: String) = """
+    private fun reviewerPatchJson(studyId: Long, status: String, stage: String? = null) = """
         {
             "studyReviewId": [$studyId],
             "status": "$status",
-            "criteria": []
+            "criteria": []${if (stage != null) ",\n            \"stage\": \"$stage\"" else ""}
         }
     """.trimIndent()
 
@@ -553,6 +553,77 @@ class StudyReviewControllerTest @Autowired constructor(
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.size").value(0))
         }
+
+        @Test
+        fun `reviewer should find his own copy of a study and return 200`() {
+            val studyId = idService.next(systematicStudyId)
+            repository.insert(factory.reviewDocument(systematicStudyId, studyId))
+            reviewerStudyRepository.insert(
+                factory.reviewerStudyDocument(systematicStudyId, studyId, user.id, StudyReviewStage.SELECTION)
+            )
+
+            mockMvc.perform(
+                get("/api/v1/systematic-study/$systematicStudyId/study-review/reviewer/${user.id}/$studyId?stage=SELECTION")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.studyReviewId").value(studyId))
+        }
+
+        @Test
+        fun `should return 404 when the study was not assigned to the reviewer in the stage`() {
+            val studyId = idService.next(systematicStudyId)
+            repository.insert(factory.reviewDocument(systematicStudyId, studyId))
+            reviewerStudyRepository.insert(
+                factory.reviewerStudyDocument(systematicStudyId, studyId, user.id, StudyReviewStage.SELECTION)
+            )
+
+            mockMvc.perform(
+                get("/api/v1/systematic-study/$systematicStudyId/study-review/reviewer/${user.id}/$studyId?stage=EXTRACTION")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should not find another reviewer's copy and return 403`() {
+            mockMvc.perform(
+                get("/api/v1/systematic-study/$systematicStudyId/study-review/reviewer/${UUID.randomUUID()}/1?stage=SELECTION")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isForbidden)
+        }
+
+        @Test
+        fun `should search only the logged reviewer's copies and return 200`() {
+            val studyA = idService.next(systematicStudyId)
+            val studyB = idService.next(systematicStudyId)
+            reviewerStudyRepository.insert(
+                factory.reviewerStudyDocument(systematicStudyId, studyA, user.id, StudyReviewStage.SELECTION)
+            )
+            reviewerStudyRepository.insert(
+                factory.reviewerStudyDocument(systematicStudyId, studyB, UUID.randomUUID(), StudyReviewStage.SELECTION)
+            )
+
+            mockMvc.perform(
+                get("/api/v1/systematic-study/$systematicStudyId/study-review/reviewer/${user.id}/search?stage=SELECTION")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.studyReviews.length()").value(1))
+                .andExpect(jsonPath("$.totalElements").value(1))
+        }
+
+        @Test
+        fun `should not search another reviewer's copies and return 403`() {
+            mockMvc.perform(
+                get("/api/v1/systematic-study/$systematicStudyId/study-review/reviewer/${UUID.randomUUID()}/search")
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isForbidden)
+        }
     }
 
     @Nested
@@ -660,15 +731,6 @@ class StudyReviewControllerTest @Autowired constructor(
             val studyId = idService.next(systematicStudyId)
             val statusToBeUpdated = "HIGH"
 
-            val json = """
-                {
-                    "studyReviewId": [$studyId],
-                    "status": "$statusToBeUpdated",
-                    "criteria": [],
-                    "stage": "SELECTION"
-                }
-            """.trimIndent()
-
             repository.insert(factory.reviewDocument(systematicStudyId, studyId))
             insertReviewerStudy(studyId, StudyReviewStage.SELECTION)
 
@@ -676,7 +738,7 @@ class StudyReviewControllerTest @Autowired constructor(
                 patch(updateStatusStatus("reading-priority"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(json)
+                    .content(reviewerPatchJson(studyId, statusToBeUpdated, "SELECTION"))
             ).andExpect(status().isOk)
 
             val updatedReview = findReviewerStudy(studyId, StudyReviewStage.SELECTION)
@@ -694,15 +756,6 @@ class StudyReviewControllerTest @Autowired constructor(
                 StudyReviewStage.SELECTION
             )
 
-            val json = """
-                {
-                    "studyReviewId": [$studyId],
-                    "status": "NONE",
-                    "criteria": [],
-                    "stage": "SELECTION"
-                }
-            """.trimIndent()
-
             repository.insert(original)
             reviewerStudyRepository.insert(reviewerCopy)
 
@@ -710,7 +763,7 @@ class StudyReviewControllerTest @Autowired constructor(
                 patch(updateStatusStatus("reading-priority"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(json)
+                    .content(reviewerPatchJson(studyId, "NONE", "SELECTION"))
             ).andExpect(status().isBadRequest)
 
             val updatedCopy = findReviewerStudy(studyId, StudyReviewStage.SELECTION)
@@ -728,16 +781,7 @@ class StudyReviewControllerTest @Autowired constructor(
             testHelperService.testForUnauthorizedUser(
                 mockMvc,
                 patch(updateStatusStatus("reading-priority"))
-                    .content(
-                        """
-                        {
-                            "studyReviewId": [$studyId],
-                            "status": "HIGH",
-                            "criteria": [],
-                            "stage": "SELECTION"
-                        }
-                        """.trimIndent()
-                    )
+                    .content(reviewerPatchJson(studyId, "HIGH", "SELECTION"))
             )
         }
 
@@ -981,7 +1025,6 @@ class StudyReviewControllerTest @Autowired constructor(
             val copy = findReviewerStudy(studyId, StudyReviewStage.SELECTION)
             assertEquals("INCLUDED", copy?.studyReview?.selectionStatus)
 
-            // O StudyReview original não muda quando a opção de maioria está desligada.
             val untouched = repository.findById(
                 StudyReviewId(systematicStudyId, studyId)
             ).toNullable()
