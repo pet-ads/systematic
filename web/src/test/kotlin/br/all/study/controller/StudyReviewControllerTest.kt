@@ -15,25 +15,33 @@ import br.all.infrastructure.study.StudyReviewIdGeneratorService
 import br.all.security.service.ApplicationUser
 import br.all.shared.TestHelperService
 import br.all.study.utils.TestDataFactory
+import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
 import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.hasItem
 import org.hamcrest.Matchers.hasSize
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.util.*
-import br.all.review.shared.TestDataFactory as SystematicStudyTestDataFactory
+import java.util.UUID
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -55,47 +63,64 @@ class StudyReviewControllerTest @Autowired constructor(
     private lateinit var systematicStudyId: UUID
     private lateinit var searchSessionId: UUID
 
-    private fun reviewerPatchJson(studyId: Long, status: String, reviewerId: UUID) = """
-            {
-              "studyReviewId": [$studyId],
-              "status": "$status",
-              "criteria": [],
-              "reviewerId": "$reviewerId"
-            }
-        """.trimIndent()
+    private fun reviewerPatchJson(studyId: Long, status: String) = """
+        {
+            "studyReviewId": [$studyId],
+            "status": "$status",
+            "criteria": []
+        }
+    """.trimIndent()
+
+    private fun insertReviewerStudy(
+        studyId: Long,
+        stage: StudyReviewStage,
+    ) {
+        reviewerStudyRepository.insert(
+            factory.reviewerStudyDocument(systematicStudyId, studyId, user.id, stage)
+        )
+    }
+
+    private fun findReviewerStudy(
+        studyId: Long,
+        stage: StudyReviewStage,
+    ) = reviewerStudyRepository.findById(
+        ReviewerStudyDocumentId(systematicStudyId, user.id, studyId, stage)
+    ).toNullable()
 
     fun postUrl() = "/api/v1/systematic-study/$systematicStudyId/study-review"
+
     fun findUrl(studyId: String = "") =
-        "/api/v1/systematic-study/$systematicStudyId/study-review${studyId}"
+        "/api/v1/systematic-study/$systematicStudyId/study-review$studyId"
 
     fun findBySourceUrl(searchSource: String = "") =
-        "/api/v1/systematic-study/$systematicStudyId/search-source/${searchSource}"
+        "/api/v1/systematic-study/$systematicStudyId/search-source/$searchSource"
 
     fun findBySessionUrl(sessionId: String = "") =
-        "/api/v1/systematic-study/$systematicStudyId/find-by-search-session/${sessionId}"
+        "/api/v1/systematic-study/$systematicStudyId/find-by-search-session/$sessionId"
 
     fun findByAuthorUrl(author: String = "") =
-        "/api/v1/systematic-study/$systematicStudyId/study-review/author/${author}"
+        "/api/v1/systematic-study/$systematicStudyId/study-review/author/$author"
 
     fun findByReviewerUrl(reviewerId: UUID, stage: String? = null) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/reviewer/$reviewerId" +
                 (stage?.let { "?stage=$it" } ?: "")
 
     fun updateStudyUrl(studyReviewId: Long) =
-        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}"
+        "/api/v1/systematic-study/$systematicStudyId/study-review/$studyReviewId"
 
     fun updateStatusStatus(attributeName: String) =
-        "/api/v1/systematic-study/$systematicStudyId/study-review/${attributeName}"
+        "/api/v1/systematic-study/$systematicStudyId/study-review/$attributeName"
 
     fun markAsDuplicatedUrl(studyToUpdateId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated"
 
     fun batchAnswerQuestion(studyReviewId: Long) =
-        "/api/v1/systematic-study/$systematicStudyId/study-review/${studyReviewId}/batch-answer-question"
+        "/api/v1/systematic-study/$systematicStudyId/study-review/$studyReviewId/batch-answer-question"
 
     @BeforeEach
     fun setUp() {
         repository.deleteAll()
+        reviewerStudyRepository.deleteAll()
 
         factory = TestDataFactory()
         systematicStudyId = factory.systematicStudyId
@@ -117,6 +142,7 @@ class StudyReviewControllerTest @Autowired constructor(
     @AfterEach
     fun teardown() {
         repository.deleteAll()
+        reviewerStudyRepository.deleteAll()
         testHelperService.deleteApplicationUser(user.id)
         reviewModeRepository.deleteAll()
     }
@@ -124,13 +150,16 @@ class StudyReviewControllerTest @Autowired constructor(
     @Nested
     @DisplayName("When creating a study review")
     inner class CreateTests {
+
         @Test
         fun `should create study and return 201`() {
             val json = factory.validPostRequest()
+
             mockMvc.perform(
                 post(postUrl())
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
             )
                 .andDo(print())
                 .andExpect(status().isCreated)
@@ -142,6 +171,7 @@ class StudyReviewControllerTest @Autowired constructor(
         @Test
         fun `should not create study with invalid input and return 400`() {
             val json = factory.invalidPostRequest()
+
             mockMvc.perform(
                 post(postUrl())
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
@@ -151,7 +181,7 @@ class StudyReviewControllerTest @Autowired constructor(
         }
 
         @Test
-        fun `should not create if user is unauthorized`(){
+        fun `should not create if user is unauthorized`() {
             testHelperService.testForUnauthorizedUser(
                 mockMvc,
                 post(postUrl()).content(factory.validPostRequest())
@@ -160,34 +190,36 @@ class StudyReviewControllerTest @Autowired constructor(
 
         @Test
         fun `should not create if user is unauthenticated`() {
-            testHelperService.testForUnauthenticatedUser(mockMvc, post(postUrl()),
+            testHelperService.testForUnauthenticatedUser(
+                mockMvc,
+                post(postUrl()),
             )
         }
-
     }
 
     @Nested
     @DisplayName("When updating study review")
     inner class UpdateTests {
+
         @Test
         fun `should update a study and return 200`() {
-            val studyID = 20L
-            val studyReview = factory.reviewDocument(systematicStudyId, studyID)
+            val studyId = 20L
+            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
             val initialTitle = studyReview.title
 
             repository.insert(studyReview)
 
-            val json = factory.validPutRequest(systematicStudyId, studyID)
-            mockMvc.perform(put(updateStudyUrl(studyID))
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON).content(json)
-            )
-                .andExpect(status().isOk)
+            val json = factory.validPutRequest(systematicStudyId, studyId)
 
-            val studyReviewId = StudyReviewId(systematicStudyId, studyID)
-            val updatedReview = repository.findById(studyReviewId)
-            val updatedTitle = updatedReview.get().title
-            assertTrue(initialTitle != updatedTitle)
+            mockMvc.perform(
+                put(updateStudyUrl(studyId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+            ).andExpect(status().isOk)
+
+            val updatedReview = repository.findById(StudyReviewId(systematicStudyId, studyId))
+            assertTrue(initialTitle != updatedReview.get().title)
         }
 
         @Test
@@ -198,56 +230,63 @@ class StudyReviewControllerTest @Autowired constructor(
             repository.insert(studyReview)
 
             val json = factory.invalidPutRequest()
-            mockMvc.perform(put(updateStudyUrl(studyId))
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON).content(json)
-            )
-                .andExpect(status().isBadRequest)
+
+            mockMvc.perform(
+                put(updateStudyUrl(studyId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+            ).andExpect(status().isBadRequest)
         }
 
         @Test
         fun `should not update if study review does not exist and return 404`() {
             val studyId = 5L
-
             val json = factory.validPutRequest(systematicStudyId, studyId)
-            mockMvc.perform(put(updateStudyUrl(studyId))
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON).content(json)
-            )
-                .andExpect(status().isNotFound)
+
+            mockMvc.perform(
+                put(updateStudyUrl(studyId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+            ).andExpect(status().isNotFound)
         }
 
         @Test
-        fun `should not update if user is unauthorized`(){
+        fun `should not update if user is unauthorized`() {
             val studyId = 5L
 
-            testHelperService.testForUnauthorizedUser(mockMvc,
-                put(updateStudyUrl(studyId)).content(factory.validPutRequest(systematicStudyId, studyId))
+            testHelperService.testForUnauthorizedUser(
+                mockMvc,
+                put(updateStudyUrl(studyId))
+                    .content(factory.validPutRequest(systematicStudyId, studyId))
             )
         }
 
         @Test
-        fun `should not update if user is unauthenticated`(){
+        fun `should not update if user is unauthenticated`() {
             val studyId = 5L
 
-            testHelperService.testForUnauthenticatedUser(mockMvc, put(updateStudyUrl(studyId)),
+            testHelperService.testForUnauthenticatedUser(
+                mockMvc,
+                put(updateStudyUrl(studyId)),
             )
         }
-
     }
 
     @Nested
     @DisplayName("When finding study review")
     inner class FindTests {
+
         @Test
         fun `should find the study and return 200`() {
             val studyReview = factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId))
             repository.insert(studyReview)
 
-            val studyId = "/${studyReview.id.studyReviewId}"
-            mockMvc.perform(get(findUrl(studyId))
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON)
+            mockMvc.perform(
+                get(findUrl("/${studyReview.id.studyReviewId}"))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(studyReview.id.systematicStudyId.toString()))
@@ -256,42 +295,66 @@ class StudyReviewControllerTest @Autowired constructor(
 
         @Test
         fun `should return 404 if don't find the study review`() {
-            mockMvc.perform(get(findUrl("/-1"))
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON)
-            )
-                .andExpect(status().isNotFound)
+            mockMvc.perform(
+                get(findUrl("/-1"))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isNotFound)
         }
 
         @Test
-        fun `should not find if user is unauthorized`(){
+        fun `should not find if user is unauthorized`() {
             val studyReview = factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId))
             repository.insert(studyReview)
 
-            testHelperService.testForUnauthorizedUser(mockMvc,
+            testHelperService.testForUnauthorizedUser(
+                mockMvc,
                 get(findUrl("/${studyReview.id.studyReviewId}"))
             )
         }
 
         @Test
-        fun `should not find if user is unauthenticated`(){
+        fun `should not find if user is unauthenticated`() {
             val studyReview = factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId))
             repository.insert(studyReview)
 
-            testHelperService.testForUnauthenticatedUser(mockMvc,
+            testHelperService.testForUnauthenticatedUser(
+                mockMvc,
                 get(findUrl("/${studyReview.id.studyReviewId}")),
             )
         }
 
         @Test
         fun `should find all studies and return 200`() {
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId), searchSessionId, "study"))
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId), searchSessionId, "study"))
-            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(systematicStudyId), searchSessionId, "study"))
+            repository.insert(
+                factory.reviewDocument(
+                    systematicStudyId,
+                    idService.next(systematicStudyId),
+                    searchSessionId,
+                    "study"
+                )
+            )
+            repository.insert(
+                factory.reviewDocument(
+                    systematicStudyId,
+                    idService.next(systematicStudyId),
+                    searchSessionId,
+                    "study"
+                )
+            )
+            repository.insert(
+                factory.reviewDocument(
+                    UUID.randomUUID(),
+                    idService.next(systematicStudyId),
+                    searchSessionId,
+                    "study"
+                )
+            )
 
-            mockMvc.perform(get(findUrl())
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON)
+            mockMvc.perform(
+                get(findUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
@@ -300,9 +363,10 @@ class StudyReviewControllerTest @Autowired constructor(
 
         @Test
         fun `should return empty list and return 200 if no study is found`() {
-            mockMvc.perform(get(findUrl())
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON)
+            mockMvc.perform(
+                get(findUrl())
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
             )
                 .andDo(print())
                 .andExpect(status().isOk)
@@ -315,21 +379,35 @@ class StudyReviewControllerTest @Autowired constructor(
         fun `should find all studies by source and return 200`() {
             repository.insert(
                 factory.reviewDocument(
-                    systematicStudyId, idService.next(systematicStudyId), searchSessionId, "study",
+                    systematicStudyId,
+                    idService.next(systematicStudyId),
+                    searchSessionId,
+                    "study",
                     sources = setOf("ACM")
                 )
             )
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId), searchSessionId, "study"))
             repository.insert(
                 factory.reviewDocument(
-                    UUID.randomUUID(), idService.next(systematicStudyId), searchSessionId, "study",
+                    systematicStudyId,
+                    idService.next(systematicStudyId),
+                    searchSessionId,
+                    "study"
+                )
+            )
+            repository.insert(
+                factory.reviewDocument(
+                    UUID.randomUUID(),
+                    idService.next(systematicStudyId),
+                    searchSessionId,
+                    "study",
                     sources = setOf("ACM")
                 )
             )
 
-            mockMvc.perform(get(findBySourceUrl("ACM"))
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON)
+            mockMvc.perform(
+                get(findBySourceUrl("ACM"))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
@@ -338,13 +416,32 @@ class StudyReviewControllerTest @Autowired constructor(
 
         @Test
         fun `should find all studies by session and return 200`() {
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId), searchSessionId))
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId), UUID.randomUUID()))
-            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(systematicStudyId), UUID.randomUUID()))
+            repository.insert(
+                factory.reviewDocument(
+                    systematicStudyId,
+                    idService.next(systematicStudyId),
+                    searchSessionId
+                )
+            )
+            repository.insert(
+                factory.reviewDocument(
+                    systematicStudyId,
+                    idService.next(systematicStudyId),
+                    UUID.randomUUID()
+                )
+            )
+            repository.insert(
+                factory.reviewDocument(
+                    UUID.randomUUID(),
+                    idService.next(systematicStudyId),
+                    UUID.randomUUID()
+                )
+            )
 
-            mockMvc.perform(get(findBySessionUrl(searchSessionId.toString()))
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON)
+            mockMvc.perform(
+                get(findBySessionUrl(searchSessionId.toString()))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
@@ -353,13 +450,33 @@ class StudyReviewControllerTest @Autowired constructor(
 
         @Test
         fun `should find all studies by author and return 200`() {
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId), searchSessionId))
-            repository.insert(factory.reviewDocument(systematicStudyId, idService.next(systematicStudyId), UUID.randomUUID(), authors = "Test"))
-            repository.insert(factory.reviewDocument(UUID.randomUUID(), idService.next(systematicStudyId), UUID.randomUUID()))
+            repository.insert(
+                factory.reviewDocument(
+                    systematicStudyId,
+                    idService.next(systematicStudyId),
+                    searchSessionId
+                )
+            )
+            repository.insert(
+                factory.reviewDocument(
+                    systematicStudyId,
+                    idService.next(systematicStudyId),
+                    UUID.randomUUID(),
+                    authors = "Test"
+                )
+            )
+            repository.insert(
+                factory.reviewDocument(
+                    UUID.randomUUID(),
+                    idService.next(systematicStudyId),
+                    UUID.randomUUID()
+                )
+            )
 
-            mockMvc.perform(get(findByAuthorUrl("Marie Curie"))
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON)
+            mockMvc.perform(
+                get(findByAuthorUrl("Marie Curie"))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
@@ -370,14 +487,29 @@ class StudyReviewControllerTest @Autowired constructor(
         fun `should find only the studies assigned to the reviewer in the stage and return 200`() {
             val reviewerId = UUID.randomUUID()
             val otherReviewerId = UUID.randomUUID()
-            reviewerStudyRepository.insert(factory.reviewerStudyDocument(systematicStudyId, 1L, reviewerId))
-            reviewerStudyRepository.insert(factory.reviewerStudyDocument(systematicStudyId, 2L, reviewerId))
-            reviewerStudyRepository.insert(factory.reviewerStudyDocument(systematicStudyId, 3L, reviewerId, StudyReviewStage.EXTRACTION))
-            reviewerStudyRepository.insert(factory.reviewerStudyDocument(systematicStudyId, 1L, otherReviewerId))
 
-            mockMvc.perform(get(findByReviewerUrl(reviewerId, "SELECTION"))
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON)
+            reviewerStudyRepository.insert(
+                factory.reviewerStudyDocument(systematicStudyId, 1L, reviewerId)
+            )
+            reviewerStudyRepository.insert(
+                factory.reviewerStudyDocument(systematicStudyId, 2L, reviewerId)
+            )
+            reviewerStudyRepository.insert(
+                factory.reviewerStudyDocument(
+                    systematicStudyId,
+                    3L,
+                    reviewerId,
+                    StudyReviewStage.EXTRACTION
+                )
+            )
+            reviewerStudyRepository.insert(
+                factory.reviewerStudyDocument(systematicStudyId, 1L, otherReviewerId)
+            )
+
+            mockMvc.perform(
+                get(findByReviewerUrl(reviewerId, "SELECTION"))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
@@ -389,12 +521,23 @@ class StudyReviewControllerTest @Autowired constructor(
         @Test
         fun `should find the studies of all stages when no stage is informed`() {
             val reviewerId = UUID.randomUUID()
-            reviewerStudyRepository.insert(factory.reviewerStudyDocument(systematicStudyId, 1L, reviewerId))
-            reviewerStudyRepository.insert(factory.reviewerStudyDocument(systematicStudyId, 1L, reviewerId, StudyReviewStage.EXTRACTION))
 
-            mockMvc.perform(get(findByReviewerUrl(reviewerId))
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON)
+            reviewerStudyRepository.insert(
+                factory.reviewerStudyDocument(systematicStudyId, 1L, reviewerId)
+            )
+            reviewerStudyRepository.insert(
+                factory.reviewerStudyDocument(
+                    systematicStudyId,
+                    1L,
+                    reviewerId,
+                    StudyReviewStage.EXTRACTION
+                )
+            )
+
+            mockMvc.perform(
+                get(findByReviewerUrl(reviewerId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.size").value(2))
@@ -402,9 +545,10 @@ class StudyReviewControllerTest @Autowired constructor(
 
         @Test
         fun `should return 200 with no studies when reviewer has none assigned`() {
-            mockMvc.perform(get(findByReviewerUrl(UUID.randomUUID(), "SELECTION"))
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON)
+            mockMvc.perform(
+                get(findByReviewerUrl(UUID.randomUUID(), "SELECTION"))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.size").value(0))
@@ -414,149 +558,193 @@ class StudyReviewControllerTest @Autowired constructor(
     @Nested
     @DisplayName("When updating study review status")
     inner class UpdateStatusTests {
+
         @Test
         fun `should update the study selection status and return 200`() {
             val studyId = idService.next(systematicStudyId)
-
             val statusToBeUpdated = "INCLUDED"
-            val json = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
 
-            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
-            repository.insert(studyReview)
+            repository.insert(factory.reviewDocument(systematicStudyId, studyId))
+            insertReviewerStudy(studyId, StudyReviewStage.SELECTION)
 
             mockMvc.perform(
                 patch(updateStatusStatus("selection-status"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(reviewerPatchJson(studyId, statusToBeUpdated))
             ).andExpect(status().isOk)
 
-            val studyReviewId = StudyReviewId(systematicStudyId, studyId)
-            val updatedReview = repository.findById(studyReviewId).toNullable()
-            val updatedStatus = updatedReview?.selectionStatus
-            assertEquals(statusToBeUpdated, updatedStatus)
+            val updatedReview = findReviewerStudy(studyId, StudyReviewStage.SELECTION)
+            assertEquals(statusToBeUpdated, updatedReview?.studyReview?.selectionStatus)
         }
 
         @Test
         fun `should not update the study selection if the status is invalid and return 400`() {
             val studyId = idService.next(systematicStudyId)
+            val original = factory.reviewDocument(systematicStudyId, studyId)
+            val reviewerCopy = factory.reviewerStudyDocument(
+                systematicStudyId,
+                studyId,
+                user.id,
+                StudyReviewStage.SELECTION
+            )
 
-            val statusToBeUpdated = "KILLED"
-            val json = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
-
-            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
-            repository.insert(studyReview)
+            repository.insert(original)
+            reviewerStudyRepository.insert(reviewerCopy)
 
             mockMvc.perform(
                 patch(updateStatusStatus("selection-status"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(reviewerPatchJson(studyId, "KILLED"))
             ).andExpect(status().isBadRequest)
 
-            val studyReviewId = StudyReviewId(systematicStudyId, studyId)
-            val updatedReview = repository.findById(studyReviewId).toNullable()
-            assertEquals(studyReview, updatedReview)
+            val updatedCopy = findReviewerStudy(studyId, StudyReviewStage.SELECTION)
+            assertEquals(reviewerCopy.studyReview, updatedCopy?.studyReview)
+            assertEquals(
+                original,
+                repository.findById(StudyReviewId(systematicStudyId, studyId)).toNullable()
+            )
         }
 
         @Test
         fun `should update the study extraction status and return 200`() {
             val studyId = idService.next(systematicStudyId)
-
             val statusToBeUpdated = "EXCLUDED"
-            val json = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
 
-            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
-            repository.insert(studyReview)
+            repository.insert(factory.reviewDocument(systematicStudyId, studyId))
+            insertReviewerStudy(studyId, StudyReviewStage.EXTRACTION)
 
-            val patchStatusStatus = updateStatusStatus("extraction-status")
-            mockMvc.perform(patch(patchStatusStatus)
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isOk)
+            mockMvc.perform(
+                patch(updateStatusStatus("extraction-status"))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(reviewerPatchJson(studyId, statusToBeUpdated))
+            ).andExpect(status().isOk)
 
-            val studyReviewId = StudyReviewId(systematicStudyId, studyId)
-            val updatedReview = repository.findById(studyReviewId).toNullable()
-            val updatedStatus = updatedReview?.extractionStatus
-            assertEquals(statusToBeUpdated, updatedStatus)
+            val updatedReview = findReviewerStudy(studyId, StudyReviewStage.EXTRACTION)
+            assertEquals(statusToBeUpdated, updatedReview?.studyReview?.extractionStatus)
         }
 
         @Test
         fun `should not update the study extraction if the status is invalid and return 400`() {
             val studyId = idService.next(systematicStudyId)
+            val original = factory.reviewDocument(systematicStudyId, studyId)
+            val reviewerCopy = factory.reviewerStudyDocument(
+                systematicStudyId,
+                studyId,
+                user.id,
+                StudyReviewStage.EXTRACTION
+            )
 
-            val statusToBeUpdated = "DISPATCHED"
-            val json = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
+            repository.insert(original)
+            reviewerStudyRepository.insert(reviewerCopy)
 
-            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
-            repository.insert(studyReview)
+            mockMvc.perform(
+                patch(updateStatusStatus("extraction-status"))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(reviewerPatchJson(studyId, "DISPATCHED"))
+            ).andExpect(status().isBadRequest)
 
-            val patchStatusStatus = updateStatusStatus("extraction-status")
-            mockMvc.perform(patch(patchStatusStatus)
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isBadRequest)
-
-            val studyReviewId = StudyReviewId(systematicStudyId, studyId)
-            val updatedReview = repository.findById(studyReviewId).toNullable()
-            assertEquals(studyReview, updatedReview)
+            val updatedCopy = findReviewerStudy(studyId, StudyReviewStage.EXTRACTION)
+            assertEquals(reviewerCopy.studyReview, updatedCopy?.studyReview)
+            assertEquals(
+                original,
+                repository.findById(StudyReviewId(systematicStudyId, studyId)).toNullable()
+            )
         }
 
         @Test
         fun `should update the study reading priority and return 200`() {
             val studyId = idService.next(systematicStudyId)
-
             val statusToBeUpdated = "HIGH"
-            val json = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
 
-            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
-            repository.insert(studyReview)
+            val json = """
+                {
+                    "studyReviewId": [$studyId],
+                    "status": "$statusToBeUpdated",
+                    "criteria": [],
+                    "stage": "SELECTION"
+                }
+            """.trimIndent()
+
+            repository.insert(factory.reviewDocument(systematicStudyId, studyId))
+            insertReviewerStudy(studyId, StudyReviewStage.SELECTION)
 
             mockMvc.perform(
                 patch(updateStatusStatus("reading-priority"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(json)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
             ).andExpect(status().isOk)
 
-            val studyReviewId = StudyReviewId(systematicStudyId, studyId)
-            val updatedReview = repository.findById(studyReviewId).toNullable()
-            val updatedStatus = updatedReview?.readingPriority
-            assertEquals(statusToBeUpdated, updatedStatus)
+            val updatedReview = findReviewerStudy(studyId, StudyReviewStage.SELECTION)
+            assertEquals(statusToBeUpdated, updatedReview?.studyReview?.readingPriority)
         }
 
         @Test
         fun `should not update the study reading priority if the status is invalid and return 400`() {
             val studyId = idService.next(systematicStudyId)
+            val original = factory.reviewDocument(systematicStudyId, studyId)
+            val reviewerCopy = factory.reviewerStudyDocument(
+                systematicStudyId,
+                studyId,
+                user.id,
+                StudyReviewStage.SELECTION
+            )
 
-            val statusToBeUpdated = "NONE"
-            val json = factory.validStatusUpdatePatchRequest(studyId, statusToBeUpdated)
+            val json = """
+                {
+                    "studyReviewId": [$studyId],
+                    "status": "NONE",
+                    "criteria": [],
+                    "stage": "SELECTION"
+                }
+            """.trimIndent()
 
-            val studyReview = factory.reviewDocument(systematicStudyId, studyId)
-            repository.insert(studyReview)
+            repository.insert(original)
+            reviewerStudyRepository.insert(reviewerCopy)
 
-            val patchStatusStatus = updateStatusStatus("reading-priority")
-            mockMvc.perform(patch(patchStatusStatus)
-                .with(SecurityMockMvcRequestPostProcessors.user(user))
-                .contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isBadRequest)
+            mockMvc.perform(
+                patch(updateStatusStatus("reading-priority"))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+            ).andExpect(status().isBadRequest)
 
-            val studyReviewId = StudyReviewId(systematicStudyId, studyId)
-            val updatedReview = repository.findById(studyReviewId).toNullable()
-            assertEquals(studyReview, updatedReview)
+            val updatedCopy = findReviewerStudy(studyId, StudyReviewStage.SELECTION)
+            assertEquals(reviewerCopy.studyReview, updatedCopy?.studyReview)
+            assertEquals(
+                original,
+                repository.findById(StudyReviewId(systematicStudyId, studyId)).toNullable()
+            )
         }
 
         @Test
         fun `should not update if user is unauthorized`() {
             val studyId = idService.next(systematicStudyId)
 
-            testHelperService.testForUnauthorizedUser(mockMvc,
+            testHelperService.testForUnauthorizedUser(
+                mockMvc,
                 patch(updateStatusStatus("reading-priority"))
-                    .content(factory.validStatusUpdatePatchRequest(studyId, "HIGH"))
+                    .content(
+                        """
+                        {
+                            "studyReviewId": [$studyId],
+                            "status": "HIGH",
+                            "criteria": [],
+                            "stage": "SELECTION"
+                        }
+                        """.trimIndent()
+                    )
             )
         }
 
         @Test
         fun `should not update if user is unauthenticated`() {
-
-            testHelperService.testForUnauthenticatedUser(mockMvc,
+            testHelperService.testForUnauthenticatedUser(
+                mockMvc,
                 patch(updateStatusStatus("reading-priority")),
             )
         }
@@ -567,23 +755,38 @@ class StudyReviewControllerTest @Autowired constructor(
     inner class BatchAnswerQuestionTests @Autowired constructor(
         val questionRepository: MongoQuestionRepository
     ) {
+
         @Test
         fun `should handle partial success correctly by saving answers to their respective contexts`() {
             val studyId = idService.next(systematicStudyId)
+
             val studyReview = factory.reviewDocument(systematicStudyId, studyId).copy(
                 qualityAnswers = mutableMapOf(),
                 formAnswers = mutableMapOf()
             )
             repository.insert(studyReview)
 
+            val reviewerCopy = factory.reviewerStudyDocument(
+                systematicStudyId,
+                studyId,
+                user.id,
+                StudyReviewStage.EXTRACTION
+            ).let {
+                it.copy(
+                    studyReview = it.studyReview.copy(
+                        qualityAnswers = mutableMapOf(),
+                        formAnswers = mutableMapOf()
+                    )
+                )
+            }
+            reviewerStudyRepository.insert(reviewerCopy)
+
             val validRobQId = UUID.randomUUID()
             val validExtractionQId = UUID.randomUUID()
             val invalidRobQId = UUID.randomUUID()
 
             val question1 = factory.generateRobQuestionTextualDto(validRobQId, systematicStudyId)
-
             val question2 = factory.generateExtractionQuestionTextualDto(validExtractionQId, systematicStudyId)
-
             val question3 = factory.generateRobQuestionNumberScaleDto(invalidRobQId, systematicStudyId)
 
             questionRepository.insert(question1)
@@ -592,18 +795,31 @@ class StudyReviewControllerTest @Autowired constructor(
 
             val jsonPayload = """
                 {
-                  "answers": [
-                    { "questionId": "$validRobQId", "type": "TEXTUAL", "answer": "Valid ROB answer" },
-                    { "questionId": "$validExtractionQId", "type": "TEXTUAL", "answer": "Valid Extraction answer" },
-                    { "questionId": "$invalidRobQId", "type": "NUMBERED_SCALE", "answer": "This answer is invalid for a number scale" }
-                  ]
+                    "answers": [
+                        {
+                            "questionId": "$validRobQId",
+                            "type": "TEXTUAL",
+                            "answer": "Valid ROB answer"
+                        },
+                        {
+                            "questionId": "$validExtractionQId",
+                            "type": "TEXTUAL",
+                            "answer": "Valid Extraction answer"
+                        },
+                        {
+                            "questionId": "$invalidRobQId",
+                            "type": "NUMBERED_SCALE",
+                            "answer": "This answer is invalid for a number scale"
+                        }
+                    ]
                 }
             """.trimIndent()
 
             mockMvc.perform(
                 patch(batchAnswerQuestion(studyId))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON).content(jsonPayload)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonPayload)
             )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.totalAnswered").value(2))
@@ -612,28 +828,43 @@ class StudyReviewControllerTest @Autowired constructor(
                 .andExpect(jsonPath("$.succeededAnswers", hasItem(validExtractionQId.toString())))
                 .andExpect(jsonPath("$.failedAnswers", hasSize<Any>(1)))
                 .andExpect(jsonPath("$.failedAnswers[0].questionId").value(invalidRobQId.toString()))
-                .andExpect(jsonPath("$.failedAnswers[0].reason", containsString("not compatible with question type 'NUMBERED_SCALE'")))
+                .andExpect(
+                    jsonPath(
+                        "$.failedAnswers[0].reason",
+                        containsString("not compatible with question type 'NUMBERED_SCALE'")
+                    )
+                )
 
-            val updatedReview = repository.findById(StudyReviewId(systematicStudyId, studyId)).get()
+            val updatedReview = findReviewerStudy(studyId, StudyReviewStage.EXTRACTION)?.studyReview
 
-            assertEquals(1, updatedReview.qualityAnswers.size)
-            assertEquals("Valid ROB answer", updatedReview.qualityAnswers[validRobQId])
+            assertEquals(1, updatedReview?.qualityAnswers?.size)
+            assertEquals("Valid ROB answer", updatedReview?.qualityAnswers?.get(validRobQId))
 
-            assertEquals(1, updatedReview.formAnswers.size)
-            assertEquals("Valid Extraction answer", updatedReview.formAnswers[validExtractionQId])
+            assertEquals(1, updatedReview?.formAnswers?.size)
+            assertEquals("Valid Extraction answer", updatedReview?.formAnswers?.get(validExtractionQId))
 
-            assertNull(updatedReview.qualityAnswers[invalidRobQId])
-            assertNull(updatedReview.formAnswers[invalidRobQId])
+            assertNull(updatedReview?.qualityAnswers?.get(invalidRobQId))
+            assertNull(updatedReview?.formAnswers?.get(invalidRobQId))
+
+            val unchangedOriginal = repository.findById(
+                StudyReviewId(systematicStudyId, studyId)
+            ).toNullable()
+
+            assertEquals(studyReview, unchangedOriginal)
         }
 
         @Test
         fun `should not update if user is unauthenticated`() {
-            testHelperService.testForUnauthenticatedUser(mockMvc, patch(batchAnswerQuestion(1L)))
+            testHelperService.testForUnauthenticatedUser(
+                mockMvc,
+                patch(batchAnswerQuestion(1L))
+            )
         }
 
         @Test
         fun `should not update if user is unauthorized`() {
             val jsonPayload = """{ "answers": [] }"""
+
             testHelperService.testForUnauthorizedUser(
                 mockMvc,
                 patch(batchAnswerQuestion(1L)).content(jsonPayload)
@@ -650,10 +881,8 @@ class StudyReviewControllerTest @Autowired constructor(
             val studyToUpdateId = idService.next(systematicStudyId)
             val studyToDuplicateId = idService.next(systematicStudyId)
 
-            val studyReviewToUpdate = factory.reviewDocument(systematicStudyId, studyToUpdateId)
-            repository.insert(studyReviewToUpdate)
-            val studyReviewToDuplicate = factory.reviewDocument(systematicStudyId, studyToDuplicateId)
-            repository.insert(studyReviewToDuplicate)
+            repository.insert(factory.reviewDocument(systematicStudyId, studyToUpdateId))
+            repository.insert(factory.reviewDocument(systematicStudyId, studyToDuplicateId))
 
             val duplicateIds = listOf(studyToDuplicateId)
 
@@ -666,31 +895,26 @@ class StudyReviewControllerTest @Autowired constructor(
                 .andDo(print())
                 .andExpect(status().isOk)
 
-            val duplicateStudy = repository.findById(StudyReviewId(systematicStudyId, studyToDuplicateId)).toNullable()
+            val duplicateStudy = repository.findById(
+                StudyReviewId(systematicStudyId, studyToDuplicateId)
+            ).toNullable()
 
-            assertAll(
-                { assertEquals("DUPLICATED", duplicateStudy?.selectionStatus) },
-            )
+            assertEquals("DUPLICATED", duplicateStudy?.selectionStatus)
         }
-
 
         @Test
         fun `should return 404 if study to be marked as duplicated (source) is not found`() {
             val studyToUpdateId = idService.next(systematicStudyId)
             val studyToDuplicateId = idService.next(systematicStudyId)
 
-            val studyReviewToUpdate = factory.reviewDocument(systematicStudyId, studyToUpdateId)
-            repository.insert(studyReviewToUpdate)
-
-            val duplicateIds = listOf(studyToDuplicateId)
+            repository.insert(factory.reviewDocument(systematicStudyId, studyToUpdateId))
 
             mockMvc.perform(
                 patch(markAsDuplicatedUrl(studyToUpdateId))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(factory.validMarkAsDuplicateRequest(duplicateIds))
-            )
-                .andExpect(status().isNotFound)
+                    .content(factory.validMarkAsDuplicateRequest(listOf(studyToDuplicateId)))
+            ).andExpect(status().isNotFound)
         }
 
         @Test
@@ -698,18 +922,14 @@ class StudyReviewControllerTest @Autowired constructor(
             val studyToUpdateId = idService.next(systematicStudyId)
             val studyToDuplicateId = idService.next(systematicStudyId)
 
-            val studyReviewToDuplicate = factory.reviewDocument(systematicStudyId, studyToDuplicateId)
-            repository.insert(studyReviewToDuplicate)
-
-            val duplicateIds = listOf(studyToDuplicateId)
+            repository.insert(factory.reviewDocument(systematicStudyId, studyToDuplicateId))
 
             mockMvc.perform(
                 patch(markAsDuplicatedUrl(studyToUpdateId))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(factory.validMarkAsDuplicateRequest(duplicateIds))
-            )
-                .andExpect(status().isNotFound)
+                    .content(factory.validMarkAsDuplicateRequest(listOf(studyToDuplicateId)))
+            ).andExpect(status().isNotFound)
         }
 
         @Test
@@ -717,13 +937,11 @@ class StudyReviewControllerTest @Autowired constructor(
             val studyToUpdateId = idService.next(systematicStudyId)
             val studyToDuplicateId = idService.next(systematicStudyId)
 
-            val duplicateIds = listOf(studyToDuplicateId)
-
             testHelperService.testForUnauthorizedUser(
                 mockMvc,
                 patch(markAsDuplicatedUrl(studyToUpdateId))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(factory.validMarkAsDuplicateRequest(duplicateIds))
+                    .content(factory.validMarkAsDuplicateRequest(listOf(studyToDuplicateId)))
             )
         }
 
@@ -732,13 +950,11 @@ class StudyReviewControllerTest @Autowired constructor(
             val studyToUpdateId = idService.next(systematicStudyId)
             val studyToDuplicateId = idService.next(systematicStudyId)
 
-            val duplicateIds = listOf(studyToDuplicateId)
-
             testHelperService.testForUnauthenticatedUser(
                 mockMvc,
                 patch(markAsDuplicatedUrl(studyToUpdateId))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(factory.validMarkAsDuplicateRequest(duplicateIds))
+                    .content(factory.validMarkAsDuplicateRequest(listOf(studyToDuplicateId)))
             )
         }
     }
@@ -751,25 +967,25 @@ class StudyReviewControllerTest @Autowired constructor(
         fun `reviewer should classify only his own copy and return 200`() {
             val studyId = idService.next(systematicStudyId)
             val original = factory.reviewDocument(systematicStudyId, studyId)
+
             repository.insert(original)
-            reviewerStudyRepository.insert(
-                factory.reviewerStudyDocument(systematicStudyId, studyId, user.id, StudyReviewStage.SELECTION)
-            )
+            insertReviewerStudy(studyId, StudyReviewStage.SELECTION)
 
             mockMvc.perform(
                 patch(updateStatusStatus("selection-status"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(reviewerPatchJson(studyId, "INCLUDED", user.id))
+                    .content(reviewerPatchJson(studyId, "INCLUDED"))
             ).andExpect(status().isOk)
 
-            val copy = reviewerStudyRepository.findById(
-                ReviewerStudyDocumentId(systematicStudyId, user.id, studyId, StudyReviewStage.SELECTION)
-            ).toNullable()
+            val copy = findReviewerStudy(studyId, StudyReviewStage.SELECTION)
             assertEquals("INCLUDED", copy?.studyReview?.selectionStatus)
 
-            // o StudyReview original não muda (a opção de maioria está desligada)
-            val untouched = repository.findById(StudyReviewId(systematicStudyId, studyId)).toNullable()
+            // O StudyReview original não muda quando a opção de maioria está desligada.
+            val untouched = repository.findById(
+                StudyReviewId(systematicStudyId, studyId)
+            ).toNullable()
+
             assertEquals(original, untouched)
         }
 
@@ -778,57 +994,76 @@ class StudyReviewControllerTest @Autowired constructor(
             val studyId = idService.next(systematicStudyId)
             val reviewer2 = UUID.randomUUID()
             val reviewer3 = UUID.randomUUID()
+
             reviewModeRepository.save(
                 ReviewModeDocument(
                     systematicStudyId,
-                    selection = SplitDocument(listOf(user.id, reviewer2, reviewer3), 3, acceptMajority = true),
+                    selection = SplitDocument(
+                        listOf(user.id, reviewer2, reviewer3),
+                        3,
+                        acceptMajority = true
+                    ),
                 )
             )
+
             repository.insert(factory.reviewDocument(systematicStudyId, studyId))
+
             reviewerStudyRepository.insert(
-                factory.reviewerStudyDocument(systematicStudyId, studyId, user.id, StudyReviewStage.SELECTION)
+                factory.reviewerStudyDocument(
+                    systematicStudyId,
+                    studyId,
+                    user.id,
+                    StudyReviewStage.SELECTION
+                )
             )
-            factory.reviewerStudyDocument(systematicStudyId, studyId, reviewer2, StudyReviewStage.SELECTION).let {
-                reviewerStudyRepository.insert(it.copy(studyReview = it.studyReview.copy(selectionStatus = "INCLUDED")))
+
+            factory.reviewerStudyDocument(
+                systematicStudyId,
+                studyId,
+                reviewer2,
+                StudyReviewStage.SELECTION
+            ).let {
+                reviewerStudyRepository.insert(
+                    it.copy(
+                        studyReview = it.studyReview.copy(selectionStatus = "INCLUDED")
+                    )
+                )
             }
+
             reviewerStudyRepository.insert(
-                factory.reviewerStudyDocument(systematicStudyId, studyId, reviewer3, StudyReviewStage.SELECTION)
+                factory.reviewerStudyDocument(
+                    systematicStudyId,
+                    studyId,
+                    reviewer3,
+                    StudyReviewStage.SELECTION
+                )
             )
 
             mockMvc.perform(
                 patch(updateStatusStatus("selection-status"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(reviewerPatchJson(studyId, "INCLUDED", user.id))
+                    .content(reviewerPatchJson(studyId, "INCLUDED"))
             ).andExpect(status().isOk)
 
-            val original = repository.findById(StudyReviewId(systematicStudyId, studyId)).toNullable()
+            val original = repository.findById(
+                StudyReviewId(systematicStudyId, studyId)
+            ).toNullable()
+
             assertEquals("INCLUDED", original?.selectionStatus)
-        }
-
-        @Test
-        fun `should not let a user classify another reviewer's copy and return 403`() {
-            val studyId = idService.next(systematicStudyId)
-            repository.insert(factory.reviewDocument(systematicStudyId, studyId))
-
-            mockMvc.perform(
-                patch(updateStatusStatus("selection-status"))
-                    .with(SecurityMockMvcRequestPostProcessors.user(user))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(reviewerPatchJson(studyId, "INCLUDED", UUID.randomUUID()))
-            ).andExpect(status().isForbidden)
         }
 
         @Test
         fun `should return 404 when the study was not assigned to the reviewer`() {
             val studyId = idService.next(systematicStudyId)
+
             repository.insert(factory.reviewDocument(systematicStudyId, studyId))
 
             mockMvc.perform(
                 patch(updateStatusStatus("selection-status"))
                     .with(SecurityMockMvcRequestPostProcessors.user(user))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(reviewerPatchJson(studyId, "INCLUDED", user.id))
+                    .content(reviewerPatchJson(studyId, "INCLUDED"))
             ).andExpect(status().isNotFound)
         }
     }

@@ -65,7 +65,7 @@ interface MongoStudyReviewRepository : MongoRepository<StudyReviewDocument, Stud
     )
     fun findAllAnswersForQuestion(questionId: String): List<AnswerDto>
 
-    fun findAllBySystematicStudyIdAndSelectionStatus(
+    fun findAllById_SystematicStudyIdAndSelectionStatus(
         systematicStudyId: UUID,
         selectionStatus: String,
     ): List<StudyReviewDocument>

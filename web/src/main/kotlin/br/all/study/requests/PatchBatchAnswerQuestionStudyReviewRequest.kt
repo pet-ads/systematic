@@ -14,7 +14,8 @@ class PatchBatchAnswerQuestionStudyReviewRequest(
 
     fun toRequestModel(userId: UUID,
                        systematicStudyId: UUID,
-                       studyReviewId: Long
+                       studyReviewId: Long,
+                       reviewerId: UUID? = null
     ): BatchAnswerQuestionService.RequestModel {
         val serviceAnswers = this.answers.map {
             BatchAnswerQuestionService.RequestModel.AnswerDetail(
@@ -23,12 +24,12 @@ class PatchBatchAnswerQuestionStudyReviewRequest(
                 answer = it.answer
             )
         }
-
         return BatchAnswerQuestionService.RequestModel(
             userId = userId,
             systematicStudyId = systematicStudyId,
             studyReviewId = studyReviewId,
-            answers = serviceAnswers
+            answers = serviceAnswers,
+            reviewerId = reviewerId,
         )
     }
 }

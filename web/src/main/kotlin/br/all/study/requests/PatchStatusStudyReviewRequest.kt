@@ -1,15 +1,16 @@
 package br.all.study.requests
 
 import br.all.application.study.update.interfaces.UpdateStudyReviewStatusService
+import br.all.domain.model.study.StudyReviewStage
 import java.util.*
 
 data class PatchStatusStudyReviewRequest(
     val studyReviewId: List<Long>,
     val status: String,
     val criteria: Set<String>,
-    val reviewerId: UUID? = null,
+    val stage: StudyReviewStage? = null,
 ) {
-    fun toRequestModel(userId: UUID, systematicStudyId: UUID)
+    fun toRequestModel(userId: UUID, systematicStudyId: UUID, reviewerId: UUID? = null)
             = UpdateStudyReviewStatusService.RequestModel(
         userId,
         systematicStudyId,
@@ -17,5 +18,6 @@ data class PatchStatusStudyReviewRequest(
         status,
         this.criteria,
         reviewerId,
+        stage,
     )
 }

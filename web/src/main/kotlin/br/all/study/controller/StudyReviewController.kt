@@ -381,7 +381,7 @@ class StudyReviewController(
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = patchRequest.toRequestModel(userId, systematicStudy)
+        val request = patchRequest.toRequestModel(userId, systematicStudy, userId)
         updateSelectionService.changeStatus(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -415,7 +415,7 @@ class StudyReviewController(
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter(linksFactory)
         val userID = authenticationInfoService.getAuthenticatedUserId()
-        val request = patchRequest.toRequestModel(userID, systematicStudy)
+        val request = patchRequest.toRequestModel(userID, systematicStudy, userID)
         updateExtractionService.changeStatus(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -449,7 +449,7 @@ class StudyReviewController(
     ): ResponseEntity<*> {
         val presenter = RestfulUpdateStudyReviewStatusPresenter(linksFactory)
         val userID = authenticationInfoService.getAuthenticatedUserId()
-        val request = patchRequest.toRequestModel(userID, systematicStudy)
+        val request = patchRequest.toRequestModel(userID, systematicStudy, userID)
         updateReadingPriorityService.changeStatus(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -488,7 +488,7 @@ class StudyReviewController(
     ): ResponseEntity<*> {
         val presenter = RestfulBatchAnswerQuestionPresenter(linksFactory)
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = requestBody.toRequestModel(userId, systematicStudy, studyReview)
+        val request = requestBody.toRequestModel(userId, systematicStudy, studyReview, userId)
 
         batchAnswerQuestionService.batchAnswerQuestion(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -571,7 +571,8 @@ class StudyReviewController(
             userId,
             systematicStudy,
             studyReviewId,
-            patchRequest.stage
+            patchRequest.stage,
+            userId
         )
 
         removeCriteriaService.removeCriteria(presenter, request)

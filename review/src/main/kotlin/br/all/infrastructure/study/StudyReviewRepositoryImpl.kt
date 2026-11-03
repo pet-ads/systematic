@@ -128,7 +128,7 @@ open class  StudyReviewRepositoryImpl(private val repository: MongoStudyReviewRe
 
     override fun findAllIncludedInSelection(systematicStudyId: UUID): List<StudyReviewDto> =
         repository
-            .findAllBySystematicStudyIdAndSelectionStatus(systematicStudyId, "INCLUDED")
+            .findAllById_SystematicStudyIdAndSelectionStatus(systematicStudyId, "INCLUDED")
             .map { it.toDto() }
 }
 

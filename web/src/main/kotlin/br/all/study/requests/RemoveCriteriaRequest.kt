@@ -8,11 +8,18 @@ data class RemoveCriteriaRequest (
     val criteria: List<String>,
     val stage: StudyReviewStage
 ) {
-    fun toRequestModel(userId: UUID, systematicStudyId: UUID, studyReviewId: Long, stage: StudyReviewStage) = RemoveCriteriaService.RequestModel (
+    fun toRequestModel(
+        userId: UUID,
+        systematicStudyId: UUID,
+        studyReviewId: Long,
+        stage: StudyReviewStage,
+        reviewerId: UUID? = null
+    ) = RemoveCriteriaService.RequestModel (
         userId,
         systematicStudyId,
         studyReviewId,
         criteria,
-        stage
+        stage,
+        reviewerId,
     )
 }
