@@ -2,8 +2,10 @@ package br.all.application.study.update.implementation
 
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
+import br.all.application.reviewmode.repository.ReviewerStudyRepository
 import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
+import br.all.application.study.access.StudyReviewAccess
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromDto
 import br.all.application.study.repository.toDto
@@ -19,7 +21,11 @@ class RemoveCriteriaServiceImpl(
     private val studyReviewRepository: StudyReviewRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val credentialsService: CredentialsService,
+    reviewerStudyRepository: ReviewerStudyRepository? = null,
 ): RemoveCriteriaService {
+
+    private val studyReviewAccess = StudyReviewAccess(studyReviewRepository, reviewerStudyRepository)
+
     override fun removeCriteria(presenter: RemoveCriteriaPresenter, request: RemoveCriteriaService.RequestModel) {
         val user = credentialsService.loadCredentials(request.userId)?.toUser()
 
@@ -29,15 +35,20 @@ class RemoveCriteriaServiceImpl(
         presenter.prepareIfFailsPreconditions(user, systematicStudy)
         if (presenter.isDone()) return
 
-        val studyReviewDto = studyReviewRepository.findById(request.systematicStudyId, request.studyId)
-        if (studyReviewDto == null) {
+        studyReviewAccess.validate(request.userId, request.reviewerId, request.stage)?.let {
+            presenter.prepareFailView(it)
+            return
+        }
+
+        val target = studyReviewAccess.open(request.systematicStudyId, request.studyId, request.reviewerId, request.stage)
+        if (target == null) {
             presenter.prepareFailView(
                 EntityNotFoundException("Study review of id ${request.systematicStudyId} not found.")
             )
             return
         }
 
-        val studyReview = StudyReview.fromDto(studyReviewDto)
+        val studyReview = StudyReview.fromDto(target.dto)
 
         val criteria = when (request.stage) {
             StudyReviewStage.SELECTION -> studyReview.selectionCriteria
@@ -72,7 +83,7 @@ class RemoveCriteriaServiceImpl(
                 }
             }
 
-        studyReviewRepository.saveOrUpdate(studyReview.toDto())
+        target.save(studyReview.toDto())
 
         presenter.prepareSuccessView(
             RemoveCriteriaService.ResponseModel(

@@ -12,7 +12,8 @@ interface RemoveCriteriaService {
         val systematicStudyId: UUID,
         val studyId: Long,
         val criteria: List<String>,
-        val stage: StudyReviewStage
+        val stage: StudyReviewStage,
+        val reviewerId: UUID? = null
     )
 
     data class ResponseModel(

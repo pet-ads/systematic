@@ -10,7 +10,8 @@ interface BatchAnswerQuestionService {
         val userId: UUID,
         val systematicStudyId: UUID,
         val studyReviewId: Long,
-        val answers: List<AnswerDetail>
+        val answers: List<AnswerDetail>,
+        val reviewerId: UUID? = null
     ) {
         data class AnswerDetail(
             val questionId: UUID,

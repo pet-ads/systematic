@@ -4,8 +4,10 @@ import br.all.application.question.repository.QuestionRepository
 import br.all.application.question.repository.fromDto
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.review.repository.fromDto
+import br.all.application.reviewmode.repository.ReviewerStudyRepository
 import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.application.shared.presenter.prepareIfFailsPreconditions
+import br.all.application.study.access.StudyReviewAccess
 import br.all.application.study.repository.StudyReviewRepository
 import br.all.application.study.repository.fromDto
 import br.all.application.study.repository.toDto
@@ -28,6 +30,7 @@ import br.all.domain.model.question.Textual
 import br.all.domain.model.review.SystematicStudy
 import br.all.domain.model.study.Answer
 import br.all.domain.model.study.StudyReview
+import br.all.domain.model.study.StudyReviewStage
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -38,7 +41,10 @@ class BatchAnswerQuestionServiceImpl(
     private val questionRepository: QuestionRepository,
     private val systematicStudyRepository: SystematicStudyRepository,
     private val credentialsService: CredentialsService,
+    reviewerStudyRepository: ReviewerStudyRepository? = null,
 ): BatchAnswerQuestionService {
+
+    private val studyReviewAccess = StudyReviewAccess(studyReviewRepository, reviewerStudyRepository)
 
     @Transactional
     override fun batchAnswerQuestion(
@@ -53,13 +59,19 @@ class BatchAnswerQuestionServiceImpl(
         presenter.prepareIfFailsPreconditions(user, systematicStudy)
         if (presenter.isDone()) return
 
-        val reviewDto = studyReviewRepository.findById(request.systematicStudyId, request.studyReviewId)
-        if (reviewDto == null) {
+        val stage = StudyReviewStage.EXTRACTION
+        studyReviewAccess.validate(request.userId, request.reviewerId, stage)?.let {
+            presenter.prepareFailView(it)
+            return
+        }
+
+        val target = studyReviewAccess.open(request.systematicStudyId, request.studyReviewId, request.reviewerId, stage)
+        if (target == null) {
             val message = "Review with id ${request.studyReviewId} in systematic study ${request.systematicStudyId} does not exist!"
             presenter.prepareFailView(EntityNotFoundException(message))
             return
         }
-        val review = StudyReview.fromDto(reviewDto)
+        val review = StudyReview.fromDto(target.dto)
 
         val successfulQuestionIds = mutableListOf<UUID>()
         val failedAnswers = mutableListOf<FailedAnswer>()
@@ -90,7 +102,7 @@ class BatchAnswerQuestionServiceImpl(
             }
         }
 
-        studyReviewRepository.saveOrUpdate(review.toDto())
+        target.save(review.toDto())
 
         presenter.prepareSuccessView(
             ResponseModel(

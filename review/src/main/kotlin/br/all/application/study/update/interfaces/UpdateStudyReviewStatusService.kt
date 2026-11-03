@@ -1,5 +1,6 @@
 package br.all.application.study.update.interfaces
 
+import br.all.domain.model.study.StudyReviewStage
 import java.util.*
 
 interface UpdateStudyReviewStatusService {
@@ -11,7 +12,8 @@ interface UpdateStudyReviewStatusService {
         val studyReviewId: List<Long>,
         val status: String,
         val criteria: Set<String>,
-        val reviewerId: UUID? = null
+        val reviewerId: UUID? = null,
+        val stage: StudyReviewStage? = null
     )
 
     class ResponseModel(
