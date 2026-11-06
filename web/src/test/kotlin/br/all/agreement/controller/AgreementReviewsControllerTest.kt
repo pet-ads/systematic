@@ -243,4 +243,67 @@ class AgreementReviewsControllerTest @Autowired constructor(
             testHelperService.testForUnauthorizedUser(mockMvc, get(reviewsUrl("SELECTION")))
         }
     }
+
+    @Nested
+    @DisplayName("When listing a reviewer's studies")
+    inner class ReviewerListTests {
+
+        @Test
+        fun `reviewer should always list his own studies even when the visibility is NONE`() {
+            givenVisibility(AgreementVisibility.NONE)
+            reviewerStudyRepository.insert(copyOf(reviewer.id, StudyReviewStage.SELECTION, "UNCLASSIFIED"))
+
+            get(reviewer, reviewerListUrl(reviewer.id, "SELECTION"))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.size").value(1))
+        }
+
+        @Test
+        fun `reviewer should not list another reviewer's studies when the visibility is NONE and return 403`() {
+            givenVisibility(AgreementVisibility.NONE)
+            givenOtherReviewersVotes()
+
+            get(reviewer, reviewerListUrl(otherReviewerA, "SELECTION"))
+                .andExpect(status().isForbidden)
+        }
+
+        @Test
+        fun `reviewer should list another reviewer's studies when the visibility is ALL and return 200`() {
+            givenVisibility(AgreementVisibility.ALL)
+            givenOtherReviewersVotes()
+
+            get(reviewer, reviewerListUrl(otherReviewerA, "SELECTION"))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.size").value(1))
+        }
+
+        @Test
+        fun `reviewer should not list another reviewer's studies before finishing the phase and return 403`() {
+            givenVisibility(AgreementVisibility.FINISHED_ONLY)
+            givenOtherReviewersVotes()
+            reviewerStudyRepository.insert(copyOf(reviewer.id, StudyReviewStage.SELECTION, "UNCLASSIFIED"))
+
+            get(reviewer, reviewerListUrl(otherReviewerA, "SELECTION"))
+                .andExpect(status().isForbidden)
+        }
+
+        @Test
+        fun `owner should list another reviewer's studies even when the visibility is NONE and return 200`() {
+            givenVisibility(AgreementVisibility.NONE)
+            givenOtherReviewersVotes()
+
+            get(owner, reviewerListUrl(otherReviewerA, "SELECTION"))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.size").value(1))
+        }
+
+        @Test
+        fun `should require the stage to list another reviewer's studies and return 400`() {
+            givenVisibility(AgreementVisibility.ALL)
+            givenOtherReviewersVotes()
+
+            get(reviewer, reviewerListUrl(otherReviewerA))
+                .andExpect(status().isBadRequest)
+        }
+    }
 }

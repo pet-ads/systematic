@@ -2,6 +2,7 @@ package br.all.study.controller
 
 import br.all.domain.model.study.StudyReviewStage
 import br.all.infrastructure.question.MongoQuestionRepository
+import br.all.infrastructure.collaborator.MongoCollaboratorRepository
 import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.reviewmode.MongoReviewModeRepository
 import br.all.infrastructure.reviewmode.MongoReviewerStudyRepository
@@ -51,6 +52,7 @@ class StudyReviewControllerTest @Autowired constructor(
     val repository: MongoStudyReviewRepository,
     val reviewerStudyRepository: MongoReviewerStudyRepository,
     val systematicStudyRepository: MongoSystematicStudyRepository,
+    val collaboratorRepository: MongoCollaboratorRepository,
     private val testHelperService: TestHelperService,
     val idService: StudyReviewIdGeneratorService,
     val mockMvc: MockMvc,
@@ -130,19 +132,20 @@ class StudyReviewControllerTest @Autowired constructor(
 
         user = testHelperService.createApplicationUser()
 
+        val systematicStudyFactory = SystematicStudyTestDataFactory()
         systematicStudyRepository.deleteAll()
         systematicStudyRepository.save(
-            SystematicStudyTestDataFactory().createSystematicStudyDocument(
-                id = systematicStudyId,
-                owner = user.id,
-            )
+            systematicStudyFactory.createSystematicStudyDocument(id = systematicStudyId, owner = user.id)
         )
+        collaboratorRepository.deleteAll()
+        collaboratorRepository.save(systematicStudyFactory.createCollaboratorDocument(user, systematicStudyId))
     }
 
     @AfterEach
     fun teardown() {
         repository.deleteAll()
         reviewerStudyRepository.deleteAll()
+        collaboratorRepository.deleteAll()
         testHelperService.deleteApplicationUser(user.id)
         reviewModeRepository.deleteAll()
     }
@@ -520,8 +523,7 @@ class StudyReviewControllerTest @Autowired constructor(
 
         @Test
         fun `should find the studies of all stages when no stage is informed`() {
-            val reviewerId = UUID.randomUUID()
-
+            val reviewerId = user.id
             reviewerStudyRepository.insert(
                 factory.reviewerStudyDocument(systematicStudyId, 1L, reviewerId)
             )

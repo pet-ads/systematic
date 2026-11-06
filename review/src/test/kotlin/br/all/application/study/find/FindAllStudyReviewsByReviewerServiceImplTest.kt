@@ -1,21 +1,27 @@
 package br.all.application.study.find
 
-import br.all.application.review.repository.SystematicStudyRepository
+import br.all.application.agreement.visibility.AgreementVisibilityPolicy
 import br.all.application.reviewmode.repository.ReviewerStudyRepository
+import br.all.application.shared.service.AuthorizationService
 import br.all.application.study.find.presenter.FindAllStudyReviewsByReviewerPresenter
 import br.all.application.study.find.service.FindAllStudyReviewsByReviewerService.ResponseModel
 import br.all.application.study.find.service.FindAllStudyReviewsByReviewerServiceImpl
 import br.all.application.study.util.TestDataFactory
-import br.all.application.user.CredentialsService
-import br.all.application.util.PreconditionCheckerMockingNew
+import br.all.domain.model.agreement.AgreementVisibility
 import br.all.domain.model.study.StudyReviewStage
+import br.all.domain.shared.exception.UnauthorizedUserException
+import br.all.domain.shared.user.Role
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.slot
 import io.mockk.verify
-import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -28,62 +34,57 @@ import java.util.*
 class FindAllStudyReviewsByReviewerServiceImplTest {
 
     @MockK
+    private lateinit var authorizationService: AuthorizationService
+
+    @MockK
+    private lateinit var authorizationContext: AuthorizationService.AuthorizationContext
+
+    @MockK
     private lateinit var reviewerStudyRepository: ReviewerStudyRepository
+
     @MockK
-    private lateinit var systematicStudyRepository: SystematicStudyRepository
-    @MockK
-    private lateinit var credentialService: CredentialsService
+    private lateinit var agreementVisibilityPolicy: AgreementVisibilityPolicy
+
     @MockK(relaxed = true)
     private lateinit var presenter: FindAllStudyReviewsByReviewerPresenter
 
+    @InjectMockKs
     private lateinit var sut: FindAllStudyReviewsByReviewerServiceImpl
 
-    private lateinit var factory: TestDataFactory
-    private lateinit var preconditionCheckerMocking: PreconditionCheckerMockingNew
-    private lateinit var reviewerId: UUID
+    private val factory = TestDataFactory()
+    private val userId = factory.researcherId
+    private val systematicStudyId = factory.systematicStudyId
+    private val otherReviewerId = UUID.randomUUID()
 
-    @BeforeEach
-    fun setUp() {
-        factory = TestDataFactory()
-        reviewerId = UUID.randomUUID()
-        preconditionCheckerMocking = PreconditionCheckerMockingNew(
-            presenter,
-            credentialService,
-            systematicStudyRepository,
-            factory.researcherId,
-            factory.systematicStudyId
-        )
-        sut = FindAllStudyReviewsByReviewerServiceImpl(
-            systematicStudyRepository,
-            reviewerStudyRepository,
-            credentialService,
-        )
+    private fun authorizedAs(role: Role) {
+        every {
+            authorizationService.authorize(presenter, userId, systematicStudyId, Role.entries.toSet())
+        } returns authorizationContext
+        every { authorizationContext.role } returns role
     }
 
     @Nested
     @Tag("ValidClasses")
     @DisplayName("When successfully finding study reviews by reviewer")
     inner class WhenSuccessfullyFindingStudyReviewsByReviewer {
-        @BeforeEach
-        fun setUp() = run { preconditionCheckerMocking.makeEverythingWork() }
 
         @Test
-        fun `should find the studies assigned to the reviewer in the stage`() {
-            val request = factory.findAllByReviewerRequestModel(reviewerId, StudyReviewStage.SELECTION)
-            val reviewerStudies = List(3) { factory.generateReviewerStudyDto(it + 1L, reviewerId) }
-
+        fun `should find the user's own studies in the stage without consulting the visibility`() {
+            authorizedAs(Role.REVIEWER)
+            val request = factory.findAllByReviewerRequestModel(userId, StudyReviewStage.SELECTION)
+            val reviewerStudies = List(3) { factory.generateReviewerStudyDto(it + 1L, userId) }
             every {
                 reviewerStudyRepository.findAllByReviewerPaged(
-                    request.systematicStudyId, reviewerId, StudyReviewStage.SELECTION, any<Pageable>()
+                    systematicStudyId, userId, StudyReviewStage.SELECTION, any<Pageable>()
                 )
             } returns PageImpl(reviewerStudies)
 
             sut.findAllByReviewer(presenter, request)
 
             val expected = ResponseModel(
-                userId = factory.researcherId,
-                systematicStudyId = factory.systematicStudyId,
-                reviewerId = reviewerId,
+                userId = userId,
+                systematicStudyId = systematicStudyId,
+                reviewerId = userId,
                 stage = StudyReviewStage.SELECTION,
                 studyReviews = reviewerStudies.map { it.studyReview },
                 page = 0,
@@ -92,41 +93,66 @@ class FindAllStudyReviewsByReviewerServiceImplTest {
                 totalPages = 1
             )
             verify(exactly = 1) { presenter.prepareSuccessView(expected) }
+            verify(exactly = 0) { agreementVisibilityPolicy.evaluate(any(), any(), any(), any()) }
         }
 
         @Test
-        fun `should query all stages when no stage is informed`() {
-            val request = factory.findAllByReviewerRequestModel(reviewerId)
-
+        fun `should find the user's own studies of all stages when no stage is informed`() {
+            authorizedAs(Role.REVIEWER)
+            val request = factory.findAllByReviewerRequestModel(userId)
             every {
-                reviewerStudyRepository.findAllByReviewerPaged(request.systematicStudyId, reviewerId, null, any<Pageable>())
+                reviewerStudyRepository.findAllByReviewerPaged(systematicStudyId, userId, null, any<Pageable>())
             } returns PageImpl(emptyList())
 
             sut.findAllByReviewer(presenter, request)
 
-            verify(exactly = 1) { presenter.prepareSuccessView(match { it.stage == null }) }
+            verify(exactly = 1) { presenter.prepareSuccessView(match { it.stage == null && it.studyReviews.isEmpty() }) }
         }
 
         @Test
-        fun `should succeed with an empty list when the reviewer has no studies`() {
-            val request = factory.findAllByReviewerRequestModel(reviewerId)
-
+        fun `should find another reviewer's studies when the visibility allows`() {
+            authorizedAs(Role.REVIEWER)
+            val request = factory.findAllByReviewerRequestModel(otherReviewerId, StudyReviewStage.SELECTION)
             every {
-                reviewerStudyRepository.findAllByReviewerPaged(request.systematicStudyId, reviewerId, null, any<Pageable>())
+                agreementVisibilityPolicy.evaluate(userId, systematicStudyId, StudyReviewStage.SELECTION, Role.REVIEWER)
+            } returns AgreementVisibilityPolicy.Decision(AgreementVisibility.ALL, true)
+            every {
+                reviewerStudyRepository.findAllByReviewerPaged(
+                    systematicStudyId, otherReviewerId, StudyReviewStage.SELECTION, any<Pageable>()
+                )
+            } returns PageImpl(listOf(factory.generateReviewerStudyDto(1L, otherReviewerId)))
+
+            sut.findAllByReviewer(presenter, request)
+
+            verify(exactly = 1) { presenter.prepareSuccessView(match { it.reviewerId == otherReviewerId }) }
+        }
+
+        @Test
+        fun `should evaluate the visibility with the role of the user`() {
+            authorizedAs(Role.OWNER)
+            val request = factory.findAllByReviewerRequestModel(otherReviewerId, StudyReviewStage.EXTRACTION)
+            every {
+                agreementVisibilityPolicy.evaluate(userId, systematicStudyId, StudyReviewStage.EXTRACTION, Role.OWNER)
+            } returns AgreementVisibilityPolicy.Decision(AgreementVisibility.NONE, true)
+            every {
+                reviewerStudyRepository.findAllByReviewerPaged(any(), any(), any(), any<Pageable>())
             } returns PageImpl(emptyList())
 
             sut.findAllByReviewer(presenter, request)
 
-            verify(exactly = 1) { presenter.prepareSuccessView(match { it.studyReviews.isEmpty() }) }
+            verify(exactly = 1) {
+                agreementVisibilityPolicy.evaluate(userId, systematicStudyId, StudyReviewStage.EXTRACTION, Role.OWNER)
+            }
+            verify(exactly = 1) { presenter.prepareSuccessView(any()) }
         }
 
         @Test
         fun `should forward page, size and sort to the repository`() {
-            val request = factory.findAllByReviewerRequestModel(reviewerId, page = 2, pageSize = 5, sort = "year,desc")
+            authorizedAs(Role.REVIEWER)
+            val request = factory.findAllByReviewerRequestModel(userId, page = 2, pageSize = 5, sort = "year,desc")
             val pageable = slot<Pageable>()
-
             every {
-                reviewerStudyRepository.findAllByReviewerPaged(request.systematicStudyId, reviewerId, null, capture(pageable))
+                reviewerStudyRepository.findAllByReviewerPaged(systematicStudyId, userId, null, capture(pageable))
             } returns PageImpl(emptyList())
 
             sut.findAllByReviewer(presenter, request)
@@ -141,31 +167,45 @@ class FindAllStudyReviewsByReviewerServiceImplTest {
     @Tag("InvalidClasses")
     @DisplayName("When failing to find study reviews by reviewer")
     inner class WhenFailingToFindStudyReviewsByReviewer {
-        @Test
-        fun `should not be allowed to find studies when unauthenticated`() {
-            val request = factory.findAllByReviewerRequestModel(reviewerId)
 
-            preconditionCheckerMocking.testForUnauthenticatedUser(presenter, request) { _, _ ->
-                sut.findAllByReviewer(presenter, request)
-            }
+        @Test
+        fun `should not find another reviewer's studies when the visibility does not allow`() {
+            authorizedAs(Role.REVIEWER)
+            val request = factory.findAllByReviewerRequestModel(otherReviewerId, StudyReviewStage.SELECTION)
+            every {
+                agreementVisibilityPolicy.evaluate(userId, systematicStudyId, StudyReviewStage.SELECTION, Role.REVIEWER)
+            } returns AgreementVisibilityPolicy.Decision(
+                AgreementVisibility.NONE, false, AgreementVisibilityPolicy.Reason.HIDDEN
+            )
+
+            sut.findAllByReviewer(presenter, request)
+
+            verify(exactly = 1) { presenter.prepareFailView(any<UnauthorizedUserException>()) }
+            verify(exactly = 0) { reviewerStudyRepository.findAllByReviewerPaged(any(), any(), any(), any()) }
         }
 
         @Test
-        fun `should not be allowed to find studies when unauthorized`() {
-            val request = factory.findAllByReviewerRequestModel(reviewerId)
+        fun `should require the stage to see another reviewer's studies`() {
+            authorizedAs(Role.REVIEWER)
+            val request = factory.findAllByReviewerRequestModel(otherReviewerId)
 
-            preconditionCheckerMocking.testForUnauthorizedUser(presenter, request) { _, _ ->
-                sut.findAllByReviewer(presenter, request)
-            }
+            sut.findAllByReviewer(presenter, request)
+
+            verify(exactly = 1) { presenter.prepareFailView(any<IllegalArgumentException>()) }
+            verify(exactly = 0) { agreementVisibilityPolicy.evaluate(any(), any(), any(), any()) }
+            verify(exactly = 0) { reviewerStudyRepository.findAllByReviewerPaged(any(), any(), any(), any()) }
         }
 
         @Test
-        fun `should not be allowed to find studies when systematic study doesn't exist`() {
-            val request = factory.findAllByReviewerRequestModel(reviewerId)
+        fun `should not do anything when the user is not authorized`() {
+            every {
+                authorizationService.authorize(presenter, userId, systematicStudyId, Role.entries.toSet())
+            } returns null
 
-            preconditionCheckerMocking.testForNonexistentSystematicStudy(presenter, request) { _, _ ->
-                sut.findAllByReviewer(presenter, request)
-            }
+            sut.findAllByReviewer(presenter, factory.findAllByReviewerRequestModel(userId))
+
+            verify(exactly = 0) { reviewerStudyRepository.findAllByReviewerPaged(any(), any(), any(), any()) }
+            verify(exactly = 0) { presenter.prepareSuccessView(any()) }
         }
     }
 }

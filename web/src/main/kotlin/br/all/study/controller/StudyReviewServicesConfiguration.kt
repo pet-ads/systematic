@@ -1,10 +1,12 @@
 package br.all.study.controller
 
+import br.all.application.agreement.visibility.AgreementVisibilityPolicy
 import br.all.application.question.repository.QuestionRepository
 import br.all.application.review.repository.SystematicStudyRepository
 import br.all.application.reviewmode.repository.ReviewModeRepository
 import br.all.application.reviewmode.repository.ReviewerStudyRepository
 import br.all.application.reviewmode.repository.ReviewerStudySearchRepository
+import br.all.application.shared.service.AuthorizationService
 import br.all.application.study.create.CreateStudyReviewServiceImpl
 import br.all.application.study.find.presenter.FindAllStudyReviewsBySourcePresenter
 import br.all.application.study.find.presenter.FindAllStudyReviewsPresenter
@@ -101,11 +103,11 @@ class StudyReviewServicesConfiguration {
 
     @Bean
     fun findAllByReviewerService(
-        systematicStudyRepository: SystematicStudyRepository,
+        authorizationService: AuthorizationService,
         reviewerStudyRepository: ReviewerStudyRepository,
-        credentialsService: CredentialsService
+        agreementVisibilityPolicy: AgreementVisibilityPolicy,
     ) = FindAllStudyReviewsByReviewerServiceImpl(
-        systematicStudyRepository, reviewerStudyRepository, credentialsService
+        authorizationService, reviewerStudyRepository, agreementVisibilityPolicy
     )
 
     @Bean

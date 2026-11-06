@@ -1,31 +1,48 @@
 package br.all.application.study.find.service
 
-import br.all.application.review.repository.SystematicStudyRepository
-import br.all.application.review.repository.fromDto
+import br.all.application.agreement.visibility.AgreementVisibilityPolicy
 import br.all.application.reviewmode.repository.ReviewerStudyRepository
-import br.all.application.shared.presenter.prepareIfFailsPreconditions
+import br.all.application.shared.service.AuthorizationService
 import br.all.application.study.find.presenter.FindAllStudyReviewsByReviewerPresenter
 import br.all.application.study.find.service.FindAllStudyReviewsByReviewerService.RequestModel
 import br.all.application.study.find.service.FindAllStudyReviewsByReviewerService.ResponseModel
-import br.all.application.user.CredentialsService
-import br.all.domain.model.review.SystematicStudy
+import br.all.domain.shared.exception.UnauthorizedUserException
+import br.all.domain.shared.user.Role
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 
 class FindAllStudyReviewsByReviewerServiceImpl(
-    private val systematicStudyRepository: SystematicStudyRepository,
+    private val authorizationService: AuthorizationService,
     private val reviewerStudyRepository: ReviewerStudyRepository,
-    private val credentialsService: CredentialsService,
+    private val agreementVisibilityPolicy: AgreementVisibilityPolicy,
 ) : FindAllStudyReviewsByReviewerService {
 
     override fun findAllByReviewer(presenter: FindAllStudyReviewsByReviewerPresenter, request: RequestModel) {
-        val user = credentialsService.loadCredentials(request.userId)?.toUser()
+        val context = authorizationService.authorize(
+            presenter, request.userId, request.systematicStudyId, Role.entries.toSet()
+        ) ?: return
 
-        val systematicStudyDto = systematicStudyRepository.findById(request.systematicStudyId)
-        val systematicStudy = systematicStudyDto?.let { SystematicStudy.fromDto(it) }
+        if (request.reviewerId != request.userId) {
+            val stage = request.stage
+            if (stage == null) {
+                presenter.prepareFailView(
+                    IllegalArgumentException("The stage is required to see another reviewer's studies.")
+                )
+                return
+            }
 
-        presenter.prepareIfFailsPreconditions(user, systematicStudy)
-        if (presenter.isDone()) return
+            val decision = agreementVisibilityPolicy.evaluate(
+                request.userId, request.systematicStudyId, stage, context.role
+            )
+            if (!decision.allowed) {
+                presenter.prepareFailView(
+                    UnauthorizedUserException(
+                        "The agreement visibility of ${stage.name} does not allow seeing another reviewer's studies."
+                    )
+                )
+                return
+            }
+        }
 
         val pageable = PageRequest.of(request.page, request.pageSize, parseSortParameter(request.sort))
         val reviewerStudies = reviewerStudyRepository.findAllByReviewerPaged(
