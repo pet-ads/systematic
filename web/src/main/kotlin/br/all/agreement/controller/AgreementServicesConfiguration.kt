@@ -1,8 +1,11 @@
 package br.all.agreement.controller
 
 import br.all.application.agreement.repository.AgreementVisibilityRepository
+import br.all.application.agreement.reviews.FindAgreementReviewsServiceImpl
+import br.all.application.agreement.visibility.AgreementVisibilityPolicy
 import br.all.application.agreement.visibility.GetAgreementVisibilityServiceImpl
 import br.all.application.agreement.visibility.SetAgreementVisibilityServiceImpl
+import br.all.application.reviewmode.repository.ReviewerStudySearchRepository
 import br.all.application.shared.service.AuthorizationService
 import br.all.application.study.agreement.AgreementStudyReviewService
 import br.all.application.study.update.implementation.UpdateStudyReviewExtractionService
@@ -43,5 +46,20 @@ class AgreementServicesConfiguration {
         updateReviewPriorityService,
         batchAnswerQuestionService,
         removeCriteriaService,
+    )
+
+    @Bean
+    fun agreementVisibilityPolicy(
+        agreementVisibilityRepository: AgreementVisibilityRepository,
+        reviewerStudySearchRepository: ReviewerStudySearchRepository,
+    ) = AgreementVisibilityPolicy(agreementVisibilityRepository, reviewerStudySearchRepository)
+
+    @Bean
+    fun findAgreementReviewsService(
+        authorizationService: AuthorizationService,
+        agreementVisibilityPolicy: AgreementVisibilityPolicy,
+        reviewerStudySearchRepository: ReviewerStudySearchRepository,
+    ) = FindAgreementReviewsServiceImpl(
+        authorizationService, agreementVisibilityPolicy, reviewerStudySearchRepository
     )
 }

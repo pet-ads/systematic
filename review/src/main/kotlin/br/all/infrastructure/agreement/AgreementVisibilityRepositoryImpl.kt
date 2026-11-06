@@ -14,20 +14,10 @@ open class AgreementVisibilityRepositoryImpl(
 
     override fun findById(systematicStudyId: UUID): AgreementVisibilityDto? =
         innerRepository.findById(systematicStudyId).toNullable()?.let {
-            AgreementVisibilityDto(
-                systematicStudyId = it.id,
-                selection = AgreementVisibility.valueOf(it.selection),
-                extraction = AgreementVisibility.valueOf(it.extraction),
-            )
+            AgreementVisibilityDto(it.id, it.selection, it.extraction)
         }
 
     override fun saveOrUpdate(dto: AgreementVisibilityDto) {
-        innerRepository.save(
-            AgreementVisibilityDocument(
-                id = dto.systematicStudyId,
-                selection = dto.selection.name,
-                extraction = dto.extraction.name,
-            )
-        )
+        innerRepository.save(AgreementVisibilityDocument(dto.systematicStudyId, dto.selection, dto.extraction))
     }
 }

@@ -1,5 +1,6 @@
 package br.all.agreement.controller
 
+import br.all.domain.model.agreement.AgreementVisibility
 import br.all.infrastructure.agreement.AgreementVisibilityDocument
 import br.all.infrastructure.agreement.MongoAgreementVisibilityRepository
 import br.all.infrastructure.collaborator.CollaboratorDocument
@@ -131,9 +132,7 @@ class AgreementVisibilityControllerTest @Autowired constructor(
 
         @Test
         fun `should return the saved visibility of each stage and return 200`() {
-            repository.save(
-                AgreementVisibilityDocument(systematicStudyId, "ALL", "NONE")
-            )
+            repository.save(AgreementVisibilityDocument(systematicStudyId, AgreementVisibility.ALL, AgreementVisibility.NONE))
 
             mockMvc.perform(
                 get(url())
@@ -148,9 +147,7 @@ class AgreementVisibilityControllerTest @Autowired constructor(
         @Test
         fun `should allow a collaborator who is not the owner to read the visibility`() {
             val collaborator = createOtherCollaborator()
-            repository.save(
-                AgreementVisibilityDocument(systematicStudyId, "NONE", "ALL")
-            )
+            repository.save(AgreementVisibilityDocument(systematicStudyId, AgreementVisibility.NONE, AgreementVisibility.ALL))
 
             mockMvc.perform(
                 get(url())
@@ -202,8 +199,8 @@ class AgreementVisibilityControllerTest @Autowired constructor(
 
             val saved = repository.findById(systematicStudyId).toNullable()
             assertNotNull(saved)
-            assertEquals("ALL", saved!!.selection)
-            assertEquals("FINISHED_ONLY", saved.extraction)
+            assertEquals(AgreementVisibility.ALL, saved!!.selection)
+            assertEquals(AgreementVisibility.FINISHED_ONLY, saved.extraction)
         }
 
         @Test
@@ -221,9 +218,7 @@ class AgreementVisibilityControllerTest @Autowired constructor(
 
         @Test
         fun `should keep the other stage when changing only one of them`() {
-            repository.save(
-                AgreementVisibilityDocument(systematicStudyId, "ALL", "NONE")
-            )
+            repository.save(AgreementVisibilityDocument(systematicStudyId, AgreementVisibility.ALL, AgreementVisibility.NONE))
 
             mockMvc.perform(
                 put(url())
@@ -236,8 +231,8 @@ class AgreementVisibilityControllerTest @Autowired constructor(
                 .andExpect(jsonPath("$.extraction").value("FINISHED_ONLY"))
 
             val saved = repository.findById(systematicStudyId).toNullable()
-            assertEquals("ALL", saved!!.selection)
-            assertEquals("FINISHED_ONLY", saved.extraction)
+            assertEquals(AgreementVisibility.ALL, saved!!.selection)
+            assertEquals(AgreementVisibility.FINISHED_ONLY, saved.extraction)
         }
 
         @Test

@@ -57,4 +57,51 @@ open class ReviewerStudySearchRepositoryImpl(
         }.toList()
         return PageRequest.of(pageNumber, pageSize, Sort.by(orders))
     }
+
+    override fun countAssigned(systematicStudyId: UUID, reviewerId: UUID, stage: StudyReviewStage): Long =
+        mongoTemplate.count(
+            Query(
+                Criteria().andOperator(
+                    Criteria.where("_id.systematicStudyId").`is`(systematicStudyId),
+                    Criteria.where("_id.researcherId").`is`(reviewerId),
+                    Criteria.where("_id.stage").`is`(stage),
+                )
+            ),
+            ReviewerStudyDocument::class.java
+        )
+
+    override fun countByStatus(
+        systematicStudyId: UUID,
+        reviewerId: UUID,
+        stage: StudyReviewStage,
+        statusAttribute: String,
+        status: String,
+    ): Long =
+        mongoTemplate.count(
+            Query(
+                Criteria().andOperator(
+                    Criteria.where("_id.systematicStudyId").`is`(systematicStudyId),
+                    Criteria.where("_id.researcherId").`is`(reviewerId),
+                    Criteria.where("_id.stage").`is`(stage),
+                    Criteria.where("studyReview.$statusAttribute").`is`(status),
+                )
+            ),
+            ReviewerStudyDocument::class.java
+        )
+
+    override fun findAllByStudyIds(
+        systematicStudyId: UUID,
+        stage: StudyReviewStage,
+        studyIds: Collection<Long>,
+    ): List<ReviewerStudyDto> =
+        mongoTemplate.find(
+            Query(
+                Criteria().andOperator(
+                    Criteria.where("_id.systematicStudyId").`is`(systematicStudyId),
+                    Criteria.where("_id.stage").`is`(stage),
+                    Criteria.where("_id.studyId").`in`(studyIds),
+                )
+            ),
+            ReviewerStudyDocument::class.java
+        ).map { it.toDto() }
 }

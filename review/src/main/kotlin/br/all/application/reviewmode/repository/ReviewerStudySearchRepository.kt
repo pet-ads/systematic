@@ -13,4 +13,20 @@ interface ReviewerStudySearchRepository {
         filters: Map<String, Any?>,
         pageable: Pageable,
     ): Page<ReviewerStudyDto>
+
+    fun countAssigned(systematicStudyId: UUID, reviewerId: UUID, stage: StudyReviewStage): Long
+
+    fun countByStatus(
+        systematicStudyId: UUID,
+        reviewerId: UUID,
+        stage: StudyReviewStage,
+        statusAttribute: String,
+        status: String,
+    ): Long
+
+    fun findAllByStudyIds(
+        systematicStudyId: UUID,
+        stage: StudyReviewStage,
+        studyIds: Collection<Long>,
+    ): List<ReviewerStudyDto>
 }
