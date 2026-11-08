@@ -16,6 +16,7 @@ import kotlin.test.assertTrue
 @Tag("UnitTest")
 class ReplicationTest {
     private val mainReviewer = ResearcherId(UUID.randomUUID())
+    private val secondaryA = ResearcherId(UUID.randomUUID())
     private val studies = (1L..10L).toList()
 
     @Nested
@@ -63,6 +64,15 @@ class ReplicationTest {
                 val result = replication.assign(studies, emptyMap())
 
                 assertEquals(studies.toSet(), result.getValue(mainReviewer))
+            }
+
+            @Test
+            fun `should assign to a secondary the configured percentage of studies`() {
+                val replication = Replication(mainReviewer, mapOf(secondaryA to 30.0))
+
+                val result = replication.assign(studies, emptyMap())
+
+                assertEquals(3, result.getValue(secondaryA).size)
             }
         }
 
