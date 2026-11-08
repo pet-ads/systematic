@@ -15,6 +15,7 @@ class Replication(
         availableStudies: List<Long>,
         reviewerStudies: Map<ResearcherId, Set<Long>>
     ): Map<ResearcherId, Set<Long>> {
+        require(availableStudies.isNotEmpty()) { "There must be at least one available study to split" }
         val result = mutableMapOf(mainReviewer to availableStudies.toSet())
 
         var cursor = 0
