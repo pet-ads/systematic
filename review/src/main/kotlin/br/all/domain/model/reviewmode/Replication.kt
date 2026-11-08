@@ -17,9 +17,15 @@ class Replication(
     ): Map<ResearcherId, Set<Long>> {
         val result = mutableMapOf(mainReviewer to availableStudies.toSet())
 
+        var cursor = 0
         secondaryReviewers.forEach { (reviewer, percentage) ->
             val quota = (availableStudies.size * percentage / 100).roundToInt()
-            result[reviewer] = availableStudies.take(quota).toSet()
+            val picked = if (noStudySharedBySecondaries) {
+                availableStudies.drop(cursor).take(quota).also { cursor += it.size }
+            } else {
+                availableStudies.take(quota)
+            }
+            result[reviewer] = picked.toSet()
         }
 
         return result
