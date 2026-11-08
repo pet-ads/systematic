@@ -1,6 +1,7 @@
 package br.all.domain.model.reviewmode
 
 import br.all.domain.shared.user.ResearcherId
+import kotlin.math.roundToInt
 
 class Replication(
     val mainReviewer: ResearcherId,
@@ -14,7 +15,14 @@ class Replication(
         availableStudies: List<Long>,
         reviewerStudies: Map<ResearcherId, Set<Long>>
     ): Map<ResearcherId, Set<Long>> {
-        return mapOf(mainReviewer to availableStudies.toSet())
+        val result = mutableMapOf(mainReviewer to availableStudies.toSet())
+
+        secondaryReviewers.forEach { (reviewer, percentage) ->
+            val quota = (availableStudies.size * percentage / 100).roundToInt()
+            result[reviewer] = availableStudies.take(quota).toSet()
+        }
+
+        return result
     }
 
     init {
