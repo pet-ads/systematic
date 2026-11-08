@@ -125,6 +125,15 @@ class ReplicationTest {
                     Replication(mainReviewer, secondaries, noStudySharedBySecondaries = false)
                 }
             }
+
+            @Test
+            fun `should require at least one available study to assign`() {
+                val replication = Replication(mainReviewer)
+
+                assertThrows<IllegalArgumentException> {
+                    replication.assign(emptyList(), emptyMap())
+                }
+            }
         }
 
     }
