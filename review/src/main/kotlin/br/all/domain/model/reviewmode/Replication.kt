@@ -14,7 +14,7 @@ class Replication(
         availableStudies: List<Long>,
         reviewerStudies: Map<ResearcherId, Set<Long>>
     ): Map<ResearcherId, Set<Long>> {
-        TODO("Not yet implemented")
+        return mapOf(mainReviewer to availableStudies.toSet())
     }
 
     init {
