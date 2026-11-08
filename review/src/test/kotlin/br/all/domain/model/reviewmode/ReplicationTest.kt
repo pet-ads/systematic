@@ -17,6 +17,7 @@ import kotlin.test.assertTrue
 class ReplicationTest {
     private val mainReviewer = ResearcherId(UUID.randomUUID())
     private val secondaryA = ResearcherId(UUID.randomUUID())
+    private val secondaryB = ResearcherId(UUID.randomUUID())
     private val studies = (1L..10L).toList()
 
     @Nested
@@ -73,6 +74,16 @@ class ReplicationTest {
                 val result = replication.assign(studies, emptyMap())
 
                 assertEquals(3, result.getValue(secondaryA).size)
+            }
+
+            @Test
+            fun `should not share studies between secondaries when configured`() {
+                val replication = Replication(mainReviewer, mapOf(secondaryA to 50.0, secondaryB to 50.0))
+
+                val result = replication.assign(studies, emptyMap())
+
+                assertTrue(result.getValue(secondaryA).intersect(result.getValue(secondaryB)).isEmpty())
+                assertEquals(10, result.getValue(secondaryA).size + result.getValue(secondaryB).size)
             }
         }
 
