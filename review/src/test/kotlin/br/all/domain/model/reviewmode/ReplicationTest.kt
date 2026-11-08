@@ -1,8 +1,7 @@
 package br.all.domain.model.reviewmode
 
-import br.all.domain.model.review.SystematicStudy
 import br.all.domain.shared.user.ResearcherId
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
@@ -16,7 +15,8 @@ import kotlin.test.assertTrue
 
 @Tag("UnitTest")
 class ReplicationTest {
-    val mainReviewer = ResearcherId(UUID.randomUUID())
+    private val mainReviewer = ResearcherId(UUID.randomUUID())
+    private val studies = (1L..10L).toList()
 
     @Nested
     @DisplayName("When creating a new Replication")
@@ -54,6 +54,15 @@ class ReplicationTest {
                 assertDoesNotThrow {
                     Replication(mainReviewer, secondaries, noStudySharedBySecondaries = false)
                 }
+            }
+
+            @Test
+            fun `should assign every available study to the main reviewer`() {
+                val replication = Replication(mainReviewer)
+
+                val result = replication.assign(studies, emptyMap())
+
+                assertEquals(studies.toSet(), result.getValue(mainReviewer))
             }
         }
 
