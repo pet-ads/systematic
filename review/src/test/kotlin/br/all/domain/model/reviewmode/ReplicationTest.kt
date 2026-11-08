@@ -85,6 +85,19 @@ class ReplicationTest {
                 assertTrue(result.getValue(secondaryA).intersect(result.getValue(secondaryB)).isEmpty())
                 assertEquals(10, result.getValue(secondaryA).size + result.getValue(secondaryB).size)
             }
+
+            @Test
+            fun `should not exceed the number of studies when rounding without sharing`() {
+                val replication = Replication(mainReviewer, mapOf(secondaryA to 50.0, secondaryB to 50.0))
+                val fiveStudies = (1L..5L).toList()
+
+                val result = replication.assign(fiveStudies, emptyMap())
+
+                val a = result.getValue(secondaryA)
+                val b = result.getValue(secondaryB)
+                assertTrue(a.intersect(b).isEmpty())
+                assertEquals(5, a.size + b.size)
+            }
         }
 
         @Nested
