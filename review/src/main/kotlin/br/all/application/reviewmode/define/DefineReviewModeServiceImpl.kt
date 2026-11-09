@@ -7,6 +7,8 @@ import br.all.application.reviewmode.repository.ReviewModeRepository
 import br.all.application.reviewmode.repository.toDomain
 import br.all.application.reviewmode.repository.toDto
 import br.all.application.shared.service.AuthorizationService
+import br.all.domain.model.review.SystematicStudyId
+import br.all.domain.model.reviewmode.SystematicStudyReviewMode
 import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.domain.shared.user.Role
 import org.springframework.stereotype.Service
@@ -41,9 +43,10 @@ class DefineReviewModeServiceImpl(
         }
 
         val reviewMode = reviewModeRepository.findById(request.systematicStudyId)?.toDomain()
+            ?: SystematicStudyReviewMode(SystematicStudyId(request.systematicStudyId))
 
-        reviewMode?.defineMode(request.stage, request.toReviewMode())
-        reviewMode?.let { reviewModeRepository.saveOrUpdate(it.toDto()) }
+        reviewMode.defineMode(request.stage, request.toReviewMode())
+        reviewModeRepository.saveOrUpdate(reviewMode.toDto())
 
         presenter.prepareSuccessView(
             ResponseModel(request.userId, request.systematicStudyId, request.stage)
