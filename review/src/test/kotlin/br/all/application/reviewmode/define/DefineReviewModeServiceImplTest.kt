@@ -148,6 +148,17 @@ class DefineReviewModeServiceImplTest {
             verify(exactly = 0) { presenter.prepareFailView(any()) }
             verify(exactly = 1) { reviewModeRepository.saveOrUpdate(splitReviewModeDto) }
         }
+
+        @Test
+        fun `should save both review mode stages when repeat configuration`() {
+            val request = splitRequest.copy(repeatConfiguration = true)
+            val dto = splitReviewModeDto.copy(extraction = splitRequest.toReviewMode().toDto())
+
+            sut.define(presenter, request)
+
+            verify(exactly = 0) { presenter.prepareFailView(any()) }
+            verify(exactly = 1) { reviewModeRepository.saveOrUpdate(dto) }
+        }
     }
 
     @Nested
