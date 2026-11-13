@@ -39,6 +39,7 @@ interface DefineReviewModeService {
         val stage: StudyReviewStage,
         val replication: ReplicationRequest? = null,
         val split: SplitRequest? = null,
+        val repeatConfiguration: Boolean = false
     ) {
         init {
             require((replication == null) != (split == null)) {

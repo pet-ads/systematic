@@ -8,6 +8,7 @@ data class PatchReviewModeRequest(
     val stage: StudyReviewStage,
     val replication: ReplicationRequest? = null,
     val split: SplitRequest? = null,
+    val repeatConfiguration: Boolean = false
 ) {
     fun toRequestModel(userId: UUID, systematicStudyId: UUID) =
         DefineReviewModeService.RequestModel(
@@ -22,7 +23,7 @@ data class PatchReviewModeRequest(
         val mainReviewer: UUID,
         val secondaryReviewers: Map<UUID, Double> = emptyMap(),
         val noStudySharedBySecondaries: Boolean = true,
-        val acceptMajority: Boolean = false,
+        val acceptMajority: Boolean = false
     ) {
         fun toRequestModel() = DefineReviewModeService.ReplicationRequest(mainReviewer, secondaryReviewers, noStudySharedBySecondaries, acceptMajority)
     }

@@ -9,6 +9,7 @@ import br.all.application.reviewmode.repository.toDto
 import br.all.application.shared.service.AuthorizationService
 import br.all.domain.model.review.SystematicStudyId
 import br.all.domain.model.reviewmode.SystematicStudyReviewMode
+import br.all.domain.model.study.StudyReviewStage
 import br.all.domain.shared.exception.EntityNotFoundException
 import br.all.domain.shared.user.Role
 import org.springframework.stereotype.Service
@@ -47,6 +48,11 @@ class DefineReviewModeServiceImpl(
 
         reviewMode.defineMode(request.stage, request.toReviewMode())
         reviewModeRepository.saveOrUpdate(reviewMode.toDto())
+
+        if(request.repeatConfiguration && request.stage == StudyReviewStage.SELECTION){
+            reviewMode.defineMode(StudyReviewStage.EXTRACTION, request.toReviewMode())
+            reviewModeRepository.saveOrUpdate(reviewMode.toDto())
+        }
 
         presenter.prepareSuccessView(
             ResponseModel(request.userId, request.systematicStudyId, request.stage)
