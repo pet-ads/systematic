@@ -47,12 +47,12 @@ class DefineReviewModeServiceImpl(
             ?: SystematicStudyReviewMode(SystematicStudyId(request.systematicStudyId))
 
         reviewMode.defineMode(request.stage, request.toReviewMode())
-        reviewModeRepository.saveOrUpdate(reviewMode.toDto())
 
         if(request.repeatConfiguration && request.stage == StudyReviewStage.SELECTION){
             reviewMode.defineMode(StudyReviewStage.EXTRACTION, request.toReviewMode())
-            reviewModeRepository.saveOrUpdate(reviewMode.toDto())
         }
+
+        reviewModeRepository.saveOrUpdate(reviewMode.toDto())
 
         presenter.prepareSuccessView(
             ResponseModel(request.userId, request.systematicStudyId, request.stage)
