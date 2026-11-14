@@ -17,6 +17,7 @@ data class PatchReviewModeRequest(
             stage = stage,
             replication = replication?.toRequestModel(),
             split = split?.toRequestModel(),
+            repeatConfiguration = repeatConfiguration
         )
 
     data class ReplicationRequest(
