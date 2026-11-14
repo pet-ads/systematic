@@ -1,11 +1,15 @@
 package br.all.reviewmode.controller
 
 import br.all.application.reviewmode.assign.AssignStudiesService
+import br.all.application.reviewmode.assign.CheckAvailableStudiesToAssignService
 import br.all.application.reviewmode.define.DefineReviewModeService
 import br.all.application.reviewmode.find.FindReviewModeService
+import br.all.domain.model.study.StudyReviewStage
 import br.all.reviewmode.presenter.RestfulAssignStudiesPresenter
+import br.all.reviewmode.presenter.RestfulCheckAvailableStudiesToAssignPresenter
 import br.all.reviewmode.presenter.RestfulDefineReviewModePresenter
 import br.all.reviewmode.presenter.RestfulFindReviewModePresenter
+import br.all.reviewmode.requests.GetCheckAvailableStudiesRequest
 import br.all.reviewmode.requests.PatchReviewModeRequest
 import br.all.reviewmode.requests.PostAssignStudiesRequest
 import br.all.security.service.AuthenticationInfoService
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
@@ -29,6 +34,7 @@ import java.util.UUID
 @RequestMapping("/api/v1/systematic-study/{systematicStudyId}/review-mode")
 class ReviewModeController(
     private val assignStudiesService: AssignStudiesService,
+    private val checkAvailableStudiesToAssignService: CheckAvailableStudiesToAssignService,
     private val defineReviewModeService: DefineReviewModeService,
     private val findReviewModeService: FindReviewModeService,
     private val authenticationInfoService: AuthenticationInfoService,
@@ -76,6 +82,52 @@ class ReviewModeController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
 
         assignStudiesService.assign(presenter, request.toRequestModel(userId, systematicStudyId))
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @GetMapping("/assign-studies/available")
+    @Operation(summary = "Check if there are studies available to assign for a stage")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success checking available studies",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = CheckAvailableStudiesToAssignService.ResponseModel::class),
+                )],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Fail checking available studies - invalid stage configuration",
+                content = [Content(schema = Schema(hidden = true))],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Fail checking available studies - unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))],
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Fail checking available studies - user is not the study owner",
+                content = [Content(schema = Schema(hidden = true))],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Fail checking available studies - review mode not found",
+                content = [Content(schema = Schema(hidden = true))],
+            ),
+        ],
+    )
+    fun checkAvailableStudiesToAssign(
+        @PathVariable systematicStudyId: UUID,
+        @RequestBody requestModel: GetCheckAvailableStudiesRequest,
+    ): ResponseEntity<*> {
+        val presenter = RestfulCheckAvailableStudiesToAssignPresenter()
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = requestModel.toRequestModel(userId, systematicStudyId)
+
+        checkAvailableStudiesToAssignService.check(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
