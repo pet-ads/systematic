@@ -7,6 +7,7 @@ import br.all.infrastructure.review.MongoSystematicStudyRepository
 import br.all.infrastructure.reviewmode.MongoReviewModeRepository
 import br.all.infrastructure.reviewmode.MongoReviewerStudyRepository
 import br.all.infrastructure.reviewmode.ReviewModeDocument
+import br.all.infrastructure.reviewmode.ReviewerStudyDocument
 import br.all.infrastructure.reviewmode.ReviewerStudyDocumentId
 import br.all.infrastructure.reviewmode.SplitDocument
 import br.all.infrastructure.shared.toNullable
@@ -115,6 +116,20 @@ class StudyReviewControllerTest @Autowired constructor(
 
     fun markAsDuplicatedUrl(studyToUpdateId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/$studyToUpdateId/duplicated"
+
+    fun reviewerDuplicatedUrl(reviewerId: UUID, referenceStudyId: Long) =
+        "/api/v1/systematic-study/$systematicStudyId/study-review/reviewer/$reviewerId/$referenceStudyId/duplicated"
+
+    fun duplicatedJson(duplicatedIds: List<Long>, stage: String) =
+        """{ "duplicatedStudyIds": ${duplicatedIds}, "stage": "$stage" }"""
+
+    fun unclassifiedCopy(studyId: Long, reviewerId: UUID, stage: StudyReviewStage): ReviewerStudyDocument {
+        val doc = factory.reviewerStudyDocument(systematicStudyId, studyId, reviewerId, stage)
+        return doc.copy(studyReview = doc.studyReview.copy(selectionStatus = "UNCLASSIFIED", extractionStatus = "UNCLASSIFIED"))
+    }
+
+    fun copyOf(studyId: Long, reviewerId: UUID, stage: StudyReviewStage) =
+        reviewerStudyRepository.findById(ReviewerStudyDocumentId(systematicStudyId, reviewerId, studyId, stage)).toNullable()
 
     fun batchAnswerQuestion(studyReviewId: Long) =
         "/api/v1/systematic-study/$systematicStudyId/study-review/$studyReviewId/batch-answer-question"
@@ -1001,6 +1016,109 @@ class StudyReviewControllerTest @Autowired constructor(
                 patch(markAsDuplicatedUrl(studyToUpdateId))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(factory.validMarkAsDuplicateRequest(listOf(studyToDuplicateId)))
+            )
+        }
+
+        @Test
+        fun `reviewer should mark his own copy as duplicated in selection and return 200`() {
+            val referenceId = idService.next(systematicStudyId)
+            val duplicateId = idService.next(systematicStudyId)
+            val originalDuplicate = factory.reviewDocument(systematicStudyId, duplicateId)
+            repository.insert(factory.reviewDocument(systematicStudyId, referenceId))
+            repository.insert(originalDuplicate)
+            reviewerStudyRepository.insert(unclassifiedCopy(referenceId, user.id, StudyReviewStage.SELECTION))
+            reviewerStudyRepository.insert(unclassifiedCopy(duplicateId, user.id, StudyReviewStage.SELECTION))
+
+            mockMvc.perform(
+                patch(reviewerDuplicatedUrl(user.id, referenceId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(duplicatedJson(listOf(duplicateId), "SELECTION"))
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.systematicStudyId").value(systematicStudyId.toString()))
+
+            val duplicateCopy = copyOf(duplicateId, user.id, StudyReviewStage.SELECTION)
+            assertEquals("DUPLICATED", duplicateCopy?.studyReview?.selectionStatus)
+            assertEquals("DUPLICATED", duplicateCopy?.studyReview?.extractionStatus)
+            assertEquals("UNCLASSIFIED", copyOf(referenceId, user.id, StudyReviewStage.SELECTION)?.studyReview?.selectionStatus)
+            // o StudyReview original não é tocado
+            assertEquals(originalDuplicate, repository.findById(StudyReviewId(systematicStudyId, duplicateId)).toNullable())
+        }
+
+        @Test
+        fun `reviewer should mark his own copy as duplicated in extraction and return 200`() {
+            val referenceId = idService.next(systematicStudyId)
+            val duplicateId = idService.next(systematicStudyId)
+            repository.insert(factory.reviewDocument(systematicStudyId, referenceId))
+            repository.insert(factory.reviewDocument(systematicStudyId, duplicateId))
+            reviewerStudyRepository.insert(unclassifiedCopy(referenceId, user.id, StudyReviewStage.EXTRACTION))
+            reviewerStudyRepository.insert(unclassifiedCopy(duplicateId, user.id, StudyReviewStage.EXTRACTION))
+
+            mockMvc.perform(
+                patch(reviewerDuplicatedUrl(user.id, referenceId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(duplicatedJson(listOf(duplicateId), "EXTRACTION"))
+            ).andExpect(status().isOk)
+
+            val duplicateCopy = copyOf(duplicateId, user.id, StudyReviewStage.EXTRACTION)
+            assertEquals("DUPLICATED", duplicateCopy?.studyReview?.extractionStatus)
+            assertEquals("UNCLASSIFIED", duplicateCopy?.studyReview?.selectionStatus)
+        }
+
+        @Test
+        fun `should not let a user mark another reviewer's copies and return 403`() {
+            mockMvc.perform(
+                patch(reviewerDuplicatedUrl(UUID.randomUUID(), 1L))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(duplicatedJson(listOf(2L), "SELECTION"))
+            ).andExpect(status().isForbidden)
+        }
+
+        @Test
+        fun `should return 404 when a copy was not assigned to the reviewer in the stage`() {
+            val referenceId = idService.next(systematicStudyId)
+            val duplicateId = idService.next(systematicStudyId)
+            reviewerStudyRepository.insert(unclassifiedCopy(referenceId, user.id, StudyReviewStage.SELECTION))
+            // a duplicada só tem cópia na Extração
+            reviewerStudyRepository.insert(unclassifiedCopy(duplicateId, user.id, StudyReviewStage.EXTRACTION))
+
+            mockMvc.perform(
+                patch(reviewerDuplicatedUrl(user.id, referenceId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(duplicatedJson(listOf(duplicateId), "SELECTION"))
+            ).andExpect(status().isNotFound)
+        }
+
+        @Test
+        fun `should not mark a study as duplicate of itself and return 400`() {
+            val studyId = idService.next(systematicStudyId)
+            reviewerStudyRepository.insert(unclassifiedCopy(studyId, user.id, StudyReviewStage.SELECTION))
+
+            mockMvc.perform(
+                patch(reviewerDuplicatedUrl(user.id, studyId))
+                    .with(SecurityMockMvcRequestPostProcessors.user(user))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(duplicatedJson(listOf(studyId), "SELECTION"))
+            ).andExpect(status().isBadRequest)
+        }
+
+        @Test
+        fun `should not mark as duplicated if user is unauthenticated`() {
+            testHelperService.testForUnauthenticatedUser(
+                mockMvc,
+                patch(reviewerDuplicatedUrl(UUID.randomUUID(), 1L)).content(duplicatedJson(listOf(2L), "SELECTION"))
+            )
+        }
+
+        @Test
+        fun `should not mark as duplicated if user is unauthorized`() {
+            testHelperService.testForUnauthorizedUser(
+                mockMvc,
+                patch(reviewerDuplicatedUrl(UUID.randomUUID(), 1L)).content(duplicatedJson(listOf(2L), "SELECTION"))
             )
         }
     }

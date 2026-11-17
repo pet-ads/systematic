@@ -49,6 +49,7 @@ class StudyReviewController(
     private val updateReadingPriorityService: UpdateStudyReviewPriorityService,
     private val removeCriteriaService: RemoveCriteriaService,
     private val markAsDuplicatedService: MarkAsDuplicatedService,
+    private val markReviewerStudyAsDuplicatedService: MarkReviewerStudyAsDuplicatedService,
     private val batchAnswerQuestionService: BatchAnswerQuestionService,
     private val authenticationInfoService: AuthenticationInfoService,
     private val linksFactory: LinksFactory
@@ -592,6 +593,41 @@ class StudyReviewController(
         val userId = authenticationInfoService.getAuthenticatedUserId()
         val request = duplicatedRequest.toRequestModel(userId, systematicStudy, referenceStudyId)
         markAsDuplicatedService.markAsDuplicated(presenter, request)
+        return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @PatchMapping("/study-review/reviewer/{reviewerId}/{referenceStudyId}/duplicated")
+    @Operation(summary = "Mark multiple of the logged reviewer's own study copies as duplicated")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Success marking the reviewer's copies as duplicated",
+                content = [Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = MarkAsDuplicatedService.ResponseModel::class)
+                )]
+            ),
+            ApiResponse(responseCode = "400", description = "Invalid request, e.g. a study marked as duplicate of itself",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "401", description = "Unauthenticated user",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "403", description = "Unauthorized user or copies of another reviewer",
+                content = [Content(schema = Schema(hidden = true))]),
+            ApiResponse(responseCode = "404", description = "Systematic study not found or study not assigned to the reviewer in the stage",
+                content = [Content(schema = Schema(hidden = true))]),
+        ]
+    )
+    fun markReviewerStudyAsDuplicated(
+        @PathVariable systematicStudy: UUID,
+        @PathVariable reviewerId: UUID,
+        @PathVariable referenceStudyId: Long,
+        @RequestBody duplicatedRequest: PatchDuplicatedStudiesRequest
+    ): ResponseEntity<*> {
+        val presenter = RestfulMarkAsDuplicatedPresenter(linksFactory)
+        val userId = authenticationInfoService.getAuthenticatedUserId()
+        val request = duplicatedRequest.toReviewerRequestModel(userId, systematicStudy, reviewerId, referenceStudyId)
+        markReviewerStudyAsDuplicatedService.markAsDuplicated(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 

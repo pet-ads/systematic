@@ -1,6 +1,7 @@
 package br.all.study.requests
 
 import br.all.application.study.update.interfaces.MarkAsDuplicatedService
+import br.all.application.study.update.interfaces.MarkReviewerStudyAsDuplicatedService
 import br.all.domain.model.study.StudyReviewStage
 import org.springframework.data.mongodb.core.aggregation.Aggregation.stage
 import java.util.*
@@ -14,6 +15,16 @@ data class PatchDuplicatedStudiesRequest (
         userId,
         systematicStudyId,
         studyReviewId,
+        duplicatedStudyIds,
+        stage
+    )
+
+    fun toReviewerRequestModel(userId: UUID, systematicStudyId: UUID, reviewerId: UUID, referenceStudyId: Long)
+            = MarkReviewerStudyAsDuplicatedService.RequestModel(
+        userId,
+        systematicStudyId,
+        reviewerId,
+        referenceStudyId,
         duplicatedStudyIds,
         stage
     )

@@ -159,6 +159,16 @@ class StudyReviewServicesConfiguration {
     )
 
     @Bean
+    fun markReviewerStudyAsDuplicatedService(
+        systematicStudyRepository: SystematicStudyRepository,
+        studyReviewRepository: StudyReviewRepository,
+        reviewerStudyRepository: ReviewerStudyRepository,
+        credentialsService: CredentialsService
+    ) = MarkReviewerStudyAsDuplicatedServiceImpl(
+        systematicStudyRepository, studyReviewRepository, reviewerStudyRepository, credentialsService
+    )
+
+    @Bean
     fun batchAnswerQuestionService(
         studyReviewRepository: StudyReviewRepository,
         questionRepository: QuestionRepository,
