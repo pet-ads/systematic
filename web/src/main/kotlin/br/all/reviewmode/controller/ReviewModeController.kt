@@ -121,11 +121,11 @@ class ReviewModeController(
     )
     fun checkAvailableStudiesToAssign(
         @PathVariable systematicStudyId: UUID,
-        @RequestBody requestModel: GetCheckAvailableStudiesRequest,
+        @RequestParam stage: StudyReviewStage,
     ): ResponseEntity<*> {
         val presenter = RestfulCheckAvailableStudiesToAssignPresenter()
         val userId = authenticationInfoService.getAuthenticatedUserId()
-        val request = requestModel.toRequestModel(userId, systematicStudyId)
+        val request = CheckAvailableStudiesToAssignService.RequestModel(userId, systematicStudyId, stage)
 
         checkAvailableStudiesToAssignService.check(presenter, request)
         return presenter.responseEntity ?: ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
